@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, HTTPException
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -6,7 +6,7 @@ import os
 import logging
 from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict
-from typing import List
+from typing import List, Optional, Dict, Any
 import uuid
 from datetime import datetime, timezone
 
@@ -19,6 +19,10 @@ mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
+# Collections
+settings_collection = db.settings
+orders_collection = db.orders
+
 # Create the main app without a prefix
 app = FastAPI()
 
@@ -26,45 +30,137 @@ app = FastAPI()
 api_router = APIRouter(prefix="/api")
 
 
-# Define Models
-class StatusCheck(BaseModel):
-    model_config = ConfigDict(extra="ignore")  # Ignore MongoDB's _id field
+# ===== MODELS =====
+
+class CompanySettings(BaseModel):
+    model_config = ConfigDict(extra="ignore")
     
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    client_name: str
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    company_name_ar: str = "خير بغداد للصرافة"
+    company_name_en: str = "Khair Baghdad for Exchange"
+    company_name_ku: str = "خەیر بەغداد بۆ گۆڕینەوە"
+    phone: str = "+964 XXX XXX XXXX"
+    whatsapp: str = "+964 XXX XXX XXXX"
+    email: str = "info@khairbaghdad.com"
+    address_ar: str = "بغداد، العراق"
+    address_en: str = "Baghdad, Iraq"
+    address_ku: str = "بەغدا، عێراق"
+    facebook: Optional[str] = "#"
+    twitter: Optional[str] = "#"
+    instagram: Optional[str] = "#"
+    linkedin: Optional[str] = "#"
 
-class StatusCheckCreate(BaseModel):
-    client_name: str
+class CurrencyRate(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    from_currency: str
+    to_currency: str
+    rate: float
+    last_updated: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
-# Add your routes to the router instead of directly to app
+class ExchangeRatesSettings(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    
+    mode: str = "manual"  # "auto" or "manual"
+    rates: List[CurrencyRate] = []
+
+
+# ===== SETTINGS ENDPOINTS =====
+
 @api_router.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "Khair Baghdad Exchange API"}
 
-@api_router.post("/status", response_model=StatusCheck)
-async def create_status_check(input: StatusCheckCreate):
-    status_dict = input.model_dump()
-    status_obj = StatusCheck(**status_dict)
-    
-    # Convert to dict and serialize datetime to ISO string for MongoDB
-    doc = status_obj.model_dump()
-    doc['timestamp'] = doc['timestamp'].isoformat()
-    
-    _ = await db.status_checks.insert_one(doc)
-    return status_obj
+@api_router.get("/settings/company", response_model=CompanySettings)
+async def get_company_settings():
+    """Get company contact and branding information"""
+    settings = await settings_collection.find_one({"type": "company"}, {"_id": 0})
+    if not settings:
+        # Return default settings
+        default_settings = CompanySettings()
+        return default_settings
+    return CompanySettings(**settings)
 
-@api_router.get("/status", response_model=List[StatusCheck])
-async def get_status_checks():
-    # Exclude MongoDB's _id field from the query results
-    status_checks = await db.status_checks.find({}, {"_id": 0}).to_list(1000)
+@api_router.put("/settings/company", response_model=CompanySettings)
+async def update_company_settings(settings: CompanySettings):
+    """Update company settings (Admin only - will add auth later)"""
+    settings_dict = settings.model_dump()
+    settings_dict["type"] = "company"
     
-    # Convert ISO string timestamps back to datetime objects
-    for check in status_checks:
-        if isinstance(check['timestamp'], str):
-            check['timestamp'] = datetime.fromisoformat(check['timestamp'])
+    await settings_collection.update_one(
+        {"type": "company"},
+        {"$set": settings_dict},
+        upsert=True
+    )
+    return settings
+
+@api_router.get("/settings/exchange-rates", response_model=ExchangeRatesSettings)
+async def get_exchange_rates():
+    """Get exchange rates settings"""
+    settings = await settings_collection.find_one({"type": "exchange_rates"}, {"_id": 0})
+    if not settings:
+        # Return default rates
+        default_rates = ExchangeRatesSettings(
+            mode="manual",
+            rates=[
+                CurrencyRate(from_currency="USD", to_currency="IQD", rate=1500.0),
+                CurrencyRate(from_currency="EUR", to_currency="IQD", rate=1650.0),
+                CurrencyRate(from_currency="GBP", to_currency="IQD", rate=1900.0),
+            ]
+        )
+        return default_rates
+    return ExchangeRatesSettings(**settings)
+
+@api_router.put("/settings/exchange-rates", response_model=ExchangeRatesSettings)
+async def update_exchange_rates(settings: ExchangeRatesSettings):
+    """Update exchange rates (Admin only)"""
+    settings_dict = settings.model_dump()
+    settings_dict["type"] = "exchange_rates"
     
-    return status_checks
+    await settings_collection.update_one(
+        {"type": "exchange_rates"},
+        {"$set": settings_dict},
+        upsert=True
+    )
+    return settings
+
+@api_router.post("/convert")
+async def convert_currency(from_currency: str, to_currency: str, amount: float):
+    """Convert currency based on current rates"""
+    rates_settings = await get_exchange_rates()
+    
+    # Find the rate
+    rate_obj = None
+    for rate in rates_settings.rates:
+        if rate.from_currency == from_currency and rate.to_currency == to_currency:
+            rate_obj = rate
+            break
+    
+    if not rate_obj:
+        # Try reverse rate
+        for rate in rates_settings.rates:
+            if rate.from_currency == to_currency and rate.to_currency == from_currency:
+                rate_obj = CurrencyRate(
+                    from_currency=from_currency,
+                    to_currency=to_currency,
+                    rate=1/rate.rate,
+                    last_updated=rate.last_updated
+                )
+                break
+    
+    if not rate_obj:
+        raise HTTPException(status_code=404, detail="Exchange rate not found")
+    
+    result = amount * rate_obj.rate
+    
+    return {
+        "from_currency": from_currency,
+        "to_currency": to_currency,
+        "amount": amount,
+        "result": round(result, 2),
+        "rate": rate_obj.rate,
+        "last_updated": rate_obj.last_updated
+    }
+
 
 # Include the router in the main app
 app.include_router(api_router)
