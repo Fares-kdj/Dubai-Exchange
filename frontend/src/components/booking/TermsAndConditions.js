@@ -178,16 +178,19 @@ const TermsAndConditions = ({ onAccept }) => {
             >
               {/* Checkbox */}
               <div className="flex items-start gap-3">
-                <Checkbox
-                  id="accept-terms"
-                  checked={accepted}
-                  onCheckedChange={(checked) => {
-                    setAccepted(checked);
-                    setShowError(false);
-                  }}
-                  className="mt-1"
-                  data-testid="accept-checkbox"
-                />
+                <div className="flex items-center h-6">
+                  <input
+                    type="checkbox"
+                    id="accept-terms"
+                    checked={accepted}
+                    onChange={(e) => {
+                      setAccepted(e.target.checked);
+                      setShowError(false);
+                    }}
+                    className="w-5 h-5 rounded border-slate-300 text-[#D4AF37] focus:ring-[#D4AF37] cursor-pointer"
+                    data-testid="accept-checkbox"
+                  />
+                </div>
                 <label htmlFor="accept-terms" className="text-sm text-slate-700 cursor-pointer leading-relaxed">
                   {currentLanguage === 'ar'
                     ? 'لقد قرأت وأوافق على الشروط والأحكام المذكورة أعلاه. أدرك أن المعلومات المقدمة يجب أن تكون دقيقة وصحيحة.'
