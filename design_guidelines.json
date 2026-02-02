@@ -1,0 +1,144 @@
+{
+  "identity": {
+    "persona": "E1",
+    "philosophy": "Fusion over Imitation. Emotion First. Content is King.",
+    "anti_patterns": [
+      "Purple/Teal for CTAs",
+      "Inter font for headings",
+      "Symmetry everywhere",
+      "Generic full-screen gradients"
+    ]
+  },
+  "project": {
+    "name": "Khair Baghdad Exchange",
+    "type": "Fintech Landing Page & Web App",
+    "theme": "Modern Trust (Light Mode)",
+    "languages": ["ar", "en", "ku"],
+    "direction": "rtl"
+  },
+  "design_tokens": {
+    "colors": {
+      "palette": {
+        "background": "#FFFFFF",
+        "surface": "#F8FAFC",
+        "surface_highlight": "#F1F5F9",
+        "primary": "#0F172A",
+        "secondary": "#334155",
+        "accent": "#D4AF37",
+        "accent_light": "#FCD34D",
+        "success": "#10B981",
+        "info": "#3B82F6",
+        "border": "#E2E8F0"
+      },
+      "usage": {
+        "body_bg": "bg-white",
+        "text_main": "text-slate-900",
+        "text_muted": "text-slate-500",
+        "cta_primary": "bg-slate-900 text-white hover:bg-slate-800",
+        "cta_accent": "bg-[#D4AF37] text-white hover:bg-[#B5952F]",
+        "border_subtle": "border-slate-100"
+      }
+    },
+    "typography": {
+      "font_family": {
+        "heading": "Tajawal, sans-serif",
+        "body": "Tajawal, Manrope, sans-serif",
+        "english_heading": "Manrope, sans-serif"
+      },
+      "scale": {
+        "h1": "text-5xl md:text-7xl font-bold tracking-tight leading-tight",
+        "h2": "text-3xl md:text-5xl font-bold tracking-tight",
+        "h3": "text-2xl md:text-3xl font-semibold",
+        "body": "text-base md:text-lg leading-relaxed text-slate-600"
+      }
+    },
+    "spacing": {
+      "container": "container mx-auto px-4 md:px-8",
+      "section_padding": "py-20 md:py-32",
+      "element_gap": "gap-6 md:gap-8"
+    },
+    "radius": {
+      "default": "rounded-2xl",
+      "button": "rounded-full",
+      "card": "rounded-3xl"
+    }
+  },
+  "components": {
+    "buttons": {
+      "primary": "h-12 px-8 rounded-full bg-slate-900 text-white font-medium hover:scale-105 transition-transform duration-200 shadow-lg shadow-slate-900/20",
+      "accent": "h-12 px-8 rounded-full bg-[#D4AF37] text-white font-medium hover:scale-105 transition-transform duration-200 shadow-lg shadow-[#D4AF37]/20",
+      "ghost": "h-12 px-6 rounded-full text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+    },
+    "cards": {
+      "glass": "bg-white/70 backdrop-blur-xl border border-white/40 shadow-xl shadow-slate-200/50 rounded-3xl",
+      "solid": "bg-white border border-slate-100 shadow-lg shadow-slate-200/40 rounded-3xl hover:-translate-y-1 transition-transform duration-300",
+      "feature": "bg-slate-50 border border-slate-100 rounded-3xl p-8 hover:bg-white hover:shadow-xl transition-all duration-300"
+    },
+    "inputs": {
+      "default": "h-12 bg-white border-slate-200 focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] rounded-xl text-lg"
+    }
+  },
+  "layout_strategies": {
+    "hero": {
+      "type": "Asymmetric Split",
+      "structure": "grid grid-cols-1 lg:grid-cols-12 gap-12 items-center min-h-[90vh]",
+      "content_col": "lg:col-span-7 order-2 lg:order-1",
+      "visual_col": "lg:col-span-5 order-1 lg:order-2 relative h-[50vh] lg:h-auto"
+    },
+    "bento_grid": {
+      "type": "Mode A (Tetris)",
+      "wrapper": "grid grid-cols-1 md:grid-cols-3 gap-6",
+      "items": {
+        "large": "md:col-span-2 md:row-span-2",
+        "tall": "md:row-span-2",
+        "wide": "md:col-span-2"
+      }
+    }
+  },
+  "assets": {
+    "images": {
+      "hero_fallback": "https://images.unsplash.com/photo-1636204614252-415af22b3dc8?q=85&w=1000&auto=format&fit=crop",
+      "trust_section": "https://images.unsplash.com/photo-1758539578069-ab7808646bb7?q=85&w=1000&auto=format&fit=crop",
+      "coin_3d": "https://images.unsplash.com/photo-1708714290523-e9f76878bf53?q=85&w=1000&auto=format&fit=crop"
+    },
+    "icons": {
+      "library": "lucide-react",
+      "style": "stroke-1.5"
+    },
+    "flags": {
+      "library": "flag-icons",
+      "usage": "rounded-full object-cover shadow-sm border border-slate-100"
+    }
+  },
+  "motion": {
+    "library": "framer-motion",
+    "presets": {
+      "fade_up": {
+        "initial": { "opacity": 0, "y": 20 },
+        "whileInView": { "opacity": 1, "y": 0 },
+        "viewport": { "once": true },
+        "transition": { "duration": 0.5, "ease": "easeOut" }
+      },
+      "scale_in": {
+        "initial": { "scale": 0.9, "opacity": 0 },
+        "whileInView": { "scale": 1, "opacity": 1 },
+        "transition": { "duration": 0.4 }
+      },
+      "hover_lift": {
+        "whileHover": { "y": -5 }
+      }
+    },
+    "3d_library": "Spline (via @splinetool/react-spline) or React Three Fiber"
+  },
+  "universal_guidelines": [
+    "Avoid generic 'AI slop' designs.",
+    "Do not use gradients for dark colors.",
+    "Use 2-3x more spacing than typical designs.",
+    "Every interaction needs micro-animations.",
+    "Use 'sonner' for toasts.",
+    "All interactive elements MUST include data-testid.",
+    "Do not use transparent backgrounds for overlays/dropdowns.",
+    "Ensure high contrast for text (APCA standards)."
+  ],
+  "instructions_to_main_agent": "You are building the frontend for Khair Baghdad Exchange. Use the defined colors and typography. Implement the 'Modern Trust' theme. Prioritize the Currency Converter functionality with a premium glassmorphism look. Use the provided image URLs. Ensure Arabic RTL support is flawless."
+}
