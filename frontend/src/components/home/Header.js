@@ -1,0 +1,173 @@
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useLanguage } from '@/context/LanguageContext';
+import { Menu, X, Globe } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const Header = () => {
+  const { t } = useTranslation();
+  const { currentLanguage, changeLanguage } = useLanguage();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [langDropdownOpen, setLangDropdownOpen] = useState(false);
+
+  const languages = [
+    { code: 'ar', name: 'العربية' },
+    { code: 'en', name: 'English' },
+    { code: 'ku', name: 'کوردی' }
+  ];
+
+  const navItems = [
+    { key: 'home', href: '#home' },
+    { key: 'services', href: '#services' },
+    { key: 'converter', href: '#converter' },
+    { key: 'track', href: '#track' },
+    { key: 'contact', href: '#contact' }
+  ];
+
+  return (
+    <header className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-xl border-b border-[#D4AF37]/20">
+      <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-20">
+          {/* Logo */}
+          <motion.div 
+            className="flex items-center gap-3 cursor-pointer"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <img 
+              src="https://customer-assets.emergentagent.com/job_7efbc9ce-8094-4873-885a-2d609c6c609c/artifacts/lmq1ukzi_%D8%B4%D8%B9%D8%A7%D8%B1_%D8%AE%D8%AA%D9%85_%D8%B5%D8%A7%D9%81%D9%8A-removebg-preview.png" 
+              alt="Khair Baghdad Logo" 
+              className="h-14 w-14 object-contain"
+            />
+            <span className="text-lg sm:text-xl font-bold text-[#D4AF37]">
+              {currentLanguage === 'ar' ? 'خير بغداد' : currentLanguage === 'ku' ? 'خەیر بەغداد' : 'Khair Baghdad'}
+            </span>
+          </motion.div>
+
+          {/* Desktop Navigation */}
+          <div className="hidden lg:flex items-center gap-8">
+            {navItems.map((item) => (
+              <a
+                key={item.key}
+                href={item.href}
+                className="text-gray-300 hover:text-[#D4AF37] transition-colors duration-300 text-sm font-medium relative group"
+              >
+                {t(`nav.${item.key}`)}
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-[#D4AF37] to-[#FFD700] group-hover:w-full transition-all duration-300"></span>
+              </a>
+            ))}
+          </div>
+
+          {/* Language & CTA */}
+          <div className="hidden lg:flex items-center gap-4">
+            {/* Language Dropdown */}
+            <div className="relative">
+              <motion.button
+                onClick={() => setLangDropdownOpen(!langDropdownOpen)}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-[#D4AF37]/30 transition-all duration-300"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Globe className="w-4 h-4 text-[#D4AF37]" />
+                <span className="text-sm text-gray-300">
+                  {languages.find(l => l.code === currentLanguage)?.name}
+                </span>
+              </motion.button>
+
+              <AnimatePresence>
+                {langDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="absolute top-full mt-2 right-0 bg-black/95 backdrop-blur-xl border border-[#D4AF37]/30 rounded-lg overflow-hidden shadow-2xl min-w-[140px]"
+                  >
+                    {languages.map((lang) => (
+                      <button
+                        key={lang.code}
+                        onClick={() => {
+                          changeLanguage(lang.code);
+                          setLangDropdownOpen(false);
+                        }}
+                        className={`w-full px-4 py-2.5 text-left text-sm hover:bg-[#D4AF37]/10 transition-colors ${
+                          currentLanguage === lang.code ? 'text-[#D4AF37] bg-[#D4AF37]/5' : 'text-gray-300'
+                        }`}
+                      >
+                        {lang.name}
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* CTA Button */}
+            <motion.button
+              className="px-6 py-2.5 bg-gradient-to-r from-[#D4AF37] to-[#FFD700] text-black font-semibold rounded-lg shadow-lg shadow-[#D4AF37]/30 hover:shadow-[#D4AF37]/50 transition-all duration-300"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              {t('common.getStarted')}
+            </motion.button>
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="lg:hidden p-2 text-gray-300 hover:text-[#D4AF37] transition-colors"
+          >
+            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
+
+        {/* Mobile Menu */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="lg:hidden border-t border-[#D4AF37]/20 py-4"
+            >
+              <div className="flex flex-col gap-4">
+                {navItems.map((item) => (
+                  <a
+                    key={item.key}
+                    href={item.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="text-gray-300 hover:text-[#D4AF37] transition-colors py-2 text-sm font-medium"
+                  >
+                    {t(`nav.${item.key}`)}
+                  </a>
+                ))}
+                
+                <div className="flex flex-col gap-2 pt-2 border-t border-[#D4AF37]/20">
+                  {languages.map((lang) => (
+                    <button
+                      key={lang.code}
+                      onClick={() => {
+                        changeLanguage(lang.code);
+                        setMobileMenuOpen(false);
+                      }}
+                      className={`text-left py-2 text-sm ${
+                        currentLanguage === lang.code ? 'text-[#D4AF37]' : 'text-gray-300'
+                      }`}
+                    >
+                      {lang.name}
+                    </button>
+                  ))}
+                </div>
+
+                <button className="w-full mt-2 px-6 py-2.5 bg-gradient-to-r from-[#D4AF37] to-[#FFD700] text-black font-semibold rounded-lg">
+                  {t('common.getStarted')}
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </nav>
+    </header>
+  );
+};
+
+export default Header;
