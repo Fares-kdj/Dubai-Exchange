@@ -152,7 +152,7 @@ const Hero = () => {
                 transition={{ duration: 0.3 }}
               >
                 <img 
-                  src="https://images.unsplash.com/photo-1633158829875-e5316a358c6f?q=85&w=1200&auto=format&fit=crop"
+                  src="https://customer-assets.emergentagent.com/job_exchange-kbag/artifacts/2t5hm46y_image.png"
                   alt="Exchange Services"
                   className="w-full h-full object-cover"
                 />
