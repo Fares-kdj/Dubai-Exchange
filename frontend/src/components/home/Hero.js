@@ -110,9 +110,9 @@ const Hero = () => {
             className="mt-16 grid grid-cols-3 gap-8 max-w-2xl mx-auto"
           >
             {[
-              { value: '10K+', label: currentLanguage => currentLanguage === 'ar' ? 'عميل راضٍ' : currentLanguage === 'ku' ? 'کڕیاری ڕازی' : 'Happy Clients' },
-              { value: '15+', label: currentLanguage => currentLanguage === 'ar' ? 'سنوات خبرة' : currentLanguage === 'ku' ? 'ساڵی ئەزموون' : 'Years Experience' },
-              { value: '50+', label: currentLanguage => currentLanguage === 'ar' ? 'دولة' : currentLanguage === 'ku' ? 'وڵات' : 'Countries' }
+              { value: '10K+', labelAr: 'عميل راضٍ', labelEn: 'Happy Clients', labelKu: 'کڕیاری ڕازی' },
+              { value: '15+', labelAr: 'سنوات خبرة', labelEn: 'Years Experience', labelKu: 'ساڵی ئەزموون' },
+              { value: '50+', labelAr: 'دولة', labelEn: 'Countries', labelKu: 'وڵات' }
             ].map((stat, index) => (
               <motion.div
                 key={index}
@@ -120,7 +120,9 @@ const Hero = () => {
                 className="text-center"
               >
                 <div className="text-2xl sm:text-3xl font-bold text-[#D4AF37] mb-1">{stat.value}</div>
-                <div className="text-xs sm:text-sm text-gray-500">{stat.label}</div>
+                <div className="text-xs sm:text-sm text-gray-500">
+                  {currentLanguage === 'ar' ? stat.labelAr : currentLanguage === 'ku' ? stat.labelKu : stat.labelEn}
+                </div>
               </motion.div>
             ))}
           </motion.div>
