@@ -323,10 +323,212 @@ const BookingForm = ({ onSubmit }) => {
           </div>
 
           {/* Booking Details - Continue in next message due to length */}
+          {/* Booking Amount */}
+          <div className=\"bg-white rounded-3xl border-2 border-slate-200 shadow-xl p-8 mb-6\">
+            <div className=\"flex items-center gap-3 mb-6\">
+              <div className=\"w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center\">
+                <DollarSign className=\"w-6 h-6 text-emerald-600\" />
+              </div>
+              <h2 className=\"text-2xl font-bold text-slate-900\">
+                {currentLanguage === 'ar' ? 'بيانات الحجز' : 'Booking Details'}
+              </h2>
+            </div>
+
+            <div className=\"grid grid-cols-1 md:grid-cols-2 gap-6\">
+              <div className=\"space-y-2\">
+                <Label htmlFor=\"usdAmount\" className=\"text-slate-700 font-medium\">
+                  {currentLanguage === 'ar' ? 'المبلغ بالدولار (USD)' : 'Amount in USD'} *
+                </Label>
+                <Input
+                  id=\"usdAmount\"
+                  type=\"number\"
+                  value={formData.usdAmount}
+                  onChange={(e) => handleInputChange('usdAmount', e.target.value)}
+                  className=\"h-12 border-slate-300 focus:border-[#D4AF37]\"
+                  placeholder=\"1000\"
+                  min=\"1\"
+                  data-testid=\"usd-amount-input\"
+                />
+                {errors.usdAmount && <p className=\"text-sm text-red-600 flex items-center gap-1\"><AlertCircle className=\"w-4 h-4\" />{errors.usdAmount}</p>}
+              </div>
+
+              <div className=\"space-y-2\">
+                <Label htmlFor=\"iqdAmount\" className=\"text-slate-700 font-medium\">
+                  {currentLanguage === 'ar' ? 'المقابل بالدينار العراقي (IQD)' : 'Equivalent in IQD'}
+                </Label>
+                <Input
+                  id=\"iqdAmount\"
+                  type=\"text\"
+                  value={formData.iqdAmount}
+                  readOnly
+                  className=\"h-12 border-slate-300 bg-slate-50 text-slate-700 font-bold\"
+                  placeholder=\"0\"
+                  data-testid=\"iqd-amount-display\"
+                />
+                <p className=\"text-xs text-slate-500\">
+                  {currentLanguage === 'ar' ? 'يتم الحساب تلقائياً' : 'Calculated automatically'}
+                </p>
+              </div>
+
+              <div className=\"space-y-2 md:col-span-2\">
+                <Label className=\"text-slate-700 font-medium\">
+                  {currentLanguage === 'ar' ? 'طريقة الدفع' : 'Payment Method'} *
+                </Label>
+                <Select value={formData.paymentMethod} onValueChange={(value) => handleInputChange('paymentMethod', value)}>
+                  <SelectTrigger className=\"h-12 border-slate-300\" data-testid=\"payment-method-select\">
+                    <SelectValue placeholder={currentLanguage === 'ar' ? 'اختر طريقة الدفع' : 'Select payment method'} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {paymentMethods.map(method => (
+                      <SelectItem key={method.value} value={method.value}>
+                        {currentLanguage === 'ar' ? method.labelAr : method.labelEn}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.paymentMethod && <p className=\"text-sm text-red-600 flex items-center gap-1\"><AlertCircle className=\"w-4 h-4\" />{errors.paymentMethod}</p>}
+              </div>
+            </div>
+          </div>
+
+          {/* Document Upload */}
+          <div className=\"bg-white rounded-3xl border-2 border-slate-200 shadow-xl p-8 mb-8\">
+            <div className=\"flex items-center gap-3 mb-6\">
+              <div className=\"w-12 h-12 bg-amber-100 rounded-2xl flex items-center justify-center\">
+                <Upload className=\"w-6 h-6 text-amber-600\" />
+              </div>
+              <h2 className=\"text-2xl font-bold text-slate-900\">
+                {currentLanguage === 'ar' ? 'رفع الوثائق' : 'Upload Documents'}
+              </h2>
+            </div>
+
+            <div className=\"space-y-6\">
+              {/* Passport */}
+              <FileUploadField
+                id=\"passport\"
+                label={currentLanguage === 'ar' ? 'صورة جواز السفر' : 'Passport Image'}
+                required={true}
+                file={uploadedFiles.passport}
+                error={errors.passport}
+                onUpload={(e) => handleFileUpload('passport', e)}
+                onRemove={() => removeFile('passport')}
+                currentLanguage={currentLanguage}
+              />
+
+              {/* Ticket */}
+              <FileUploadField
+                id=\"ticket\"
+                label={currentLanguage === 'ar' ? 'صورة تذكرة السفر' : 'Flight Ticket Image'}
+                required={true}
+                file={uploadedFiles.ticket}
+                error={errors.ticket}
+                onUpload={(e) => handleFileUpload('ticket', e)}
+                onRemove={() => removeFile('ticket')}
+                currentLanguage={currentLanguage}
+              />
+
+              {/* Personal Photo */}
+              <FileUploadField
+                id=\"photo\"
+                label={currentLanguage === 'ar' ? 'صورة شخصية' : 'Personal Photo'}
+                required={false}
+                file={uploadedFiles.photo}
+                error={errors.photo}
+                onUpload={(e) => handleFileUpload('photo', e)}
+                onRemove={() => removeFile('photo')}
+                currentLanguage={currentLanguage}
+              />
+            </div>
+          </div>
+
+          {/* Submit Button */}
+          <motion.button
+            type=\"submit\"
+            disabled={loading}
+            whileHover={{ scale: 1.02, y: -2 }}
+            whileTap={{ scale: 0.98 }}
+            data-testid=\"submit-booking-button\"
+            className=\"w-full py-5 bg-slate-900 text-white font-bold rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed\"
+          >
+            {loading ? (
+              <>
+                <div className=\"w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin\"></div>
+                {currentLanguage === 'ar' ? 'جارٍ التسجيل...' : 'Submitting...'}
+              </>
+            ) : (
+              <>
+                <CheckCircle className=\"w-5 h-5\" />
+                {currentLanguage === 'ar' ? 'تسجيل الطلب' : 'Submit Booking'}
+              </>
+            )}
+          </motion.button>
         </motion.form>
       </div>
     </div>
   );
 };
+
+// File Upload Component
+const FileUploadField = ({ id, label, required, file, error, onUpload, onRemove, currentLanguage }) => (
+  <div className=\"space-y-2\">
+    <Label htmlFor={id} className=\"text-slate-700 font-medium\">
+      {label} {required && '*'}
+    </Label>
+    
+    {!file ? (
+      <label 
+        htmlFor={id}
+        className=\"block border-2 border-dashed border-slate-300 rounded-2xl p-8 hover:border-[#D4AF37] hover:bg-slate-50 transition-all cursor-pointer group\"
+        data-testid={`${id}-upload-area`}
+      >
+        <input
+          id={id}
+          type=\"file\"
+          accept=\"image/*\"
+          onChange={onUpload}
+          className=\"hidden\"
+        />
+        <div className=\"text-center\">
+          <Upload className=\"w-12 h-12 text-slate-400 group-hover:text-[#D4AF37] mx-auto mb-3 transition-colors\" />
+          <p className=\"text-sm text-slate-600 mb-1\">
+            {currentLanguage === 'ar' ? 'اضغط لرفع الملف' : 'Click to upload file'}
+          </p>
+          <p className=\"text-xs text-slate-400\">
+            {currentLanguage === 'ar' ? 'PNG, JPG أو JPEG (الحد الأقصى 5 ميجابايت)' : 'PNG, JPG or JPEG (max 5MB)'}
+          </p>
+        </div>
+      </label>
+    ) : (
+      <div className=\"border-2 border-green-200 bg-green-50 rounded-2xl p-4 flex items-center justify-between\">
+        <div className=\"flex items-center gap-3\">
+          <div className=\"w-16 h-16 rounded-lg overflow-hidden bg-white border border-slate-200\">
+            <img src={file.preview} alt=\"Preview\" className=\"w-full h-full object-cover\" />
+          </div>
+          <div>
+            <p className=\"text-sm font-medium text-slate-900\">{file.name}</p>
+            <p className=\"text-xs text-green-600 flex items-center gap-1 mt-1\">
+              <CheckCircle className=\"w-3 h-3\" />
+              {currentLanguage === 'ar' ? 'تم الرفع بنجاح' : 'Uploaded successfully'}
+            </p>
+          </div>
+        </div>
+        <button
+          type=\"button\"
+          onClick={onRemove}
+          className=\"p-2 hover:bg-red-100 rounded-lg transition-colors\"
+        >
+          <X className=\"w-5 h-5 text-red-600\" />
+        </button>
+      </div>
+    )}
+    
+    {error && (
+      <p className=\"text-sm text-red-600 flex items-center gap-1\">
+        <AlertCircle className=\"w-4 h-4\" />
+        {error}
+      </p>
+    )}
+  </div>
+);
 
 export default BookingForm;
