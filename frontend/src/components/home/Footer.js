@@ -13,9 +13,9 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="bg-black border-t border-[#D4AF37]/20 py-8">
+    <footer className="bg-slate-900 border-t border-slate-800 py-12">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           {/* Logo & Company Name */}
           <div className="flex items-center gap-3">
             <img 
@@ -24,10 +24,10 @@ const Footer = () => {
               className="h-10 w-10 object-contain"
             />
             <div>
-              <div className="text-[#D4AF37] font-bold text-sm">
+              <div className="bg-gradient-to-r from-[#D4AF37] to-[#FCD34D] bg-clip-text text-transparent font-bold text-sm">
                 {currentLanguage === 'ar' ? 'خير بغداد للصرافة' : currentLanguage === 'ku' ? 'خەیر بەغداد بۆ گۆڕینەوە' : 'Khair Baghdad for Exchange'}
               </div>
-              <div className="text-gray-500 text-xs">
+              <div className="text-slate-400 text-xs mt-1">
                 © {currentYear} {t('footer.rights')}
               </div>
             </div>
@@ -39,7 +39,7 @@ const Footer = () => {
               <a
                 key={link.key}
                 href={link.href}
-                className="text-gray-400 hover:text-[#D4AF37] transition-colors text-sm"
+                className="text-slate-400 hover:text-white transition-colors text-sm"
               >
                 {t(`footer.${link.key}`)}
               </a>

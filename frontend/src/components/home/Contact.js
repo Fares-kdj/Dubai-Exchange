@@ -11,41 +11,48 @@ const Contact = () => {
       icon: Phone,
       titleKey: 'contact.phone',
       value: '+964 XXX XXX XXXX',
-      link: 'tel:+964XXXXXXXXX'
+      link: 'tel:+964XXXXXXXXX',
+      color: 'from-blue-500 to-cyan-500',
+      bgColor: 'bg-blue-50'
     },
     {
       icon: MessageCircle,
       titleKey: 'contact.whatsapp',
       value: '+964 XXX XXX XXXX',
-      link: 'https://wa.me/964XXXXXXXXX'
+      link: 'https://wa.me/964XXXXXXXXX',
+      color: 'from-green-500 to-emerald-500',
+      bgColor: 'bg-green-50'
     },
     {
       icon: Mail,
       titleKey: 'contact.email',
       value: 'info@khairbaghdad.com',
-      link: 'mailto:info@khairbaghdad.com'
+      link: 'mailto:info@khairbaghdad.com',
+      color: 'from-purple-500 to-pink-500',
+      bgColor: 'bg-purple-50'
     },
     {
       icon: MapPin,
       titleKey: 'contact.address',
       value: 'بغداد، العراق',
-      link: null
+      link: null,
+      color: 'from-amber-500 to-orange-500',
+      bgColor: 'bg-amber-50'
     }
   ];
 
   const socialLinks = [
-    { icon: Facebook, href: '#', label: 'Facebook' },
-    { icon: Twitter, href: '#', label: 'Twitter' },
-    { icon: Instagram, href: '#', label: 'Instagram' },
-    { icon: Linkedin, href: '#', label: 'LinkedIn' }
+    { icon: Facebook, href: '#', label: 'Facebook', color: 'hover:bg-blue-500' },
+    { icon: Twitter, href: '#', label: 'Twitter', color: 'hover:bg-sky-500' },
+    { icon: Instagram, href: '#', label: 'Instagram', color: 'hover:bg-pink-500' },
+    { icon: Linkedin, href: '#', label: 'LinkedIn', color: 'hover:bg-blue-600' }
   ];
 
   return (
-    <section id="contact" className="py-20 bg-black relative overflow-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyMTIsIDE3NSwgNTUsIDAuNSkiIHN0cm9rZS13aWR0aD0iMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')]" />
-      </div>
+    <section id="contact" className="py-20 md:py-32 bg-white relative overflow-hidden">
+      {/* Background Decoration */}
+      <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-purple-100/30 to-pink-100/30 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-100/30 to-cyan-100/30 rounded-full blur-3xl" />
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
@@ -56,15 +63,17 @@ const Contact = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-            <span className="bg-gradient-to-r from-[#D4AF37] to-[#FFD700] bg-clip-text text-transparent">
-              {t('contact.title')}
-            </span>
+          <h2 className="text-3xl sm:text-5xl font-bold mb-4 text-slate-900">
+            {t('contact.title')}
           </h2>
+          <p className="text-lg text-slate-600">
+            نحن هنا لخدمتك دائماً
+          </p>
         </motion.div>
 
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          {/* Contact Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
             {contactInfo.map((info, index) => (
               <motion.div
                 key={index}
@@ -72,27 +81,37 @@ const Contact = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                whileHover={{ y: -5 }}
+                whileHover={{ y: -5, scale: 1.02 }}
+                data-testid={`contact-card-${index}`}
               >
-                <div className="bg-gradient-to-br from-zinc-900/90 to-black/90 border border-[#D4AF37]/30 rounded-xl p-6 hover:border-[#D4AF37]/60 transition-all backdrop-blur-sm h-full">
+                <div className="bg-white border-2 border-slate-100 rounded-2xl p-6 hover:border-slate-200 hover:shadow-xl transition-all h-full">
                   <div className="flex flex-col items-center text-center">
-                    <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#D4AF37]/20 to-[#FFD700]/20 flex items-center justify-center mb-4">
-                      <info.icon className="w-6 h-6 text-[#D4AF37]" />
-                    </div>
-                    <h3 className="text-sm font-medium text-gray-400 mb-2">
+                    {/* Icon */}
+                    <motion.div 
+                      className={`w-16 h-16 ${info.bgColor} rounded-2xl flex items-center justify-center mb-4`}
+                      whileHover={{ rotate: [0, -10, 10, -10, 0] }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      <info.icon className="w-8 h-8 text-slate-700" />
+                    </motion.div>
+                    
+                    {/* Title */}
+                    <h3 className="text-sm font-semibold text-slate-500 mb-2">
                       {t(info.titleKey)}
                     </h3>
+                    
+                    {/* Value */}
                     {info.link ? (
                       <a
                         href={info.link}
-                        className="text-white hover:text-[#D4AF37] transition-colors text-sm"
+                        className="text-slate-900 hover:text-slate-700 transition-colors text-sm font-medium"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
                         {info.value}
                       </a>
                     ) : (
-                      <p className="text-white text-sm">{info.value}</p>
+                      <p className="text-slate-900 text-sm font-medium">{info.value}</p>
                     )}
                   </div>
                 </div>
@@ -106,22 +125,28 @@ const Contact = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="flex justify-center items-center gap-4"
+            className="text-center"
           >
-            {socialLinks.map((social, index) => (
-              <motion.a
-                key={index}
-                href={social.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                whileHover={{ scale: 1.2, y: -5 }}
-                whileTap={{ scale: 0.9 }}
-                className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#D4AF37]/20 to-[#FFD700]/20 border border-[#D4AF37]/30 flex items-center justify-center hover:border-[#D4AF37]/60 transition-all backdrop-blur-sm"
-                aria-label={social.label}
-              >
-                <social.icon className="w-5 h-5 text-[#D4AF37]" />
-              </motion.a>
-            ))}
+            <h3 className="text-lg font-semibold text-slate-900 mb-6">
+              تابعنا على مواقع التواصل
+            </h3>
+            <div className="flex justify-center items-center gap-4">
+              {socialLinks.map((social, index) => (
+                <motion.a
+                  key={index}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  whileHover={{ scale: 1.2, y: -5 }}
+                  whileTap={{ scale: 0.9 }}
+                  className={`w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center hover:text-white ${social.color} transition-all duration-300`}
+                  aria-label={social.label}
+                  data-testid={`social-${social.label.toLowerCase()}`}
+                >
+                  <social.icon className="w-5 h-5" />
+                </motion.a>
+              ))}
+            </div>
           </motion.div>
         </div>
       </div>
