@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { useLanguage } from '@/context/LanguageContext';
 import { motion } from 'framer-motion';
 import { CheckCircle, AlertCircle, FileText, ArrowRight } from 'lucide-react';
-import { Checkbox } from '@/components/ui/checkbox';
 
 const TermsAndConditions = ({ onAccept }) => {
   const { t } = useTranslation();
