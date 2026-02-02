@@ -178,17 +178,18 @@ const CurrencyConverter = () => {
               {/* Convert Button */}
               <motion.button
                 onClick={handleConvert}
+                disabled={loading}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full py-4 bg-gradient-to-r from-[#D4AF37] to-[#FFD700] text-black font-bold rounded-xl shadow-lg shadow-[#D4AF37]/40 hover:shadow-[#D4AF37]/60 transition-all duration-300 flex items-center justify-center gap-2"
+                className="w-full py-4 bg-gradient-to-r from-[#D4AF37] to-[#FFD700] text-black font-bold rounded-xl shadow-lg shadow-[#D4AF37]/40 hover:shadow-[#D4AF37]/60 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <TrendingUp className="w-5 h-5" />
-                {t('converter.convert')}
+                {loading ? (currentLanguage === 'ar' ? 'جارٍ التحويل...' : 'Converting...') : t('converter.convert')}
               </motion.button>
 
               {/* Last Update Info */}
               <div className="mt-4 text-center text-xs text-gray-500">
-                {t('converter.lastUpdate')}: {new Date().toLocaleString(currentLanguage === 'ar' ? 'ar-IQ' : 'en-US')}
+                {t('converter.lastUpdate')}: {new Date(lastUpdated).toLocaleString(currentLanguage === 'ar' ? 'ar-IQ' : 'en-US')}
               </div>
             </div>
           </div>
