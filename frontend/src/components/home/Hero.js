@@ -3,10 +3,12 @@ import { useTranslation } from 'react-i18next';
 import { useLanguage } from '@/context/LanguageContext';
 import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles, TrendingUp, Shield, Zap } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Hero = () => {
   const { t } = useTranslation();
   const { currentLanguage } = useLanguage();
+  const navigate = useNavigate();
 
   return (
     <section id="home" className="relative min-h-screen flex items-center pt-20 overflow-hidden">
