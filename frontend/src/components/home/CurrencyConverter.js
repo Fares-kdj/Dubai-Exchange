@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLanguage } from '@/context/LanguageContext';
 import { motion } from 'framer-motion';
 import { ArrowRightLeft, TrendingUp } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import axios from 'axios';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
 
 const CurrencyConverter = () => {
   const { t } = useTranslation();
@@ -13,6 +17,8 @@ const CurrencyConverter = () => {
   const [toCurrency, setToCurrency] = useState('IQD');
   const [amount, setAmount] = useState('100');
   const [result, setResult] = useState('150000');
+  const [loading, setLoading] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState(new Date().toISOString());
 
   const currencies = [
     { code: 'USD', symbol: '$', name: currentLanguage === 'ar' ? 'دولار أمريكي' : 'US Dollar' },
@@ -21,12 +27,38 @@ const CurrencyConverter = () => {
     { code: 'GBP', symbol: '£', name: currentLanguage === 'ar' ? 'جنيه إسترليني' : 'British Pound' }
   ];
 
-  const handleConvert = () => {
-    // Placeholder logic - will be connected to backend API
-    const rate = 1500; // Example rate
-    const calculatedResult = parseFloat(amount) * rate;
-    setResult(calculatedResult.toLocaleString());
+  const handleConvert = async () => {
+    if (!amount || parseFloat(amount) <= 0) return;
+    
+    setLoading(true);
+    try {
+      const response = await axios.post(`${API}/convert`, null, {
+        params: {
+          from_currency: fromCurrency,
+          to_currency: toCurrency,
+          amount: parseFloat(amount)
+        }
+      });
+      
+      setResult(response.data.result.toLocaleString());
+      setLastUpdated(response.data.last_updated);
+    } catch (error) {
+      console.error('Conversion error:', error);
+      // Fallback to simple calculation
+      const rate = 1500;
+      const calculatedResult = parseFloat(amount) * rate;
+      setResult(calculatedResult.toLocaleString());
+    } finally {
+      setLoading(false);
+    }
   };
+
+  // Auto-convert when values change
+  useEffect(() => {
+    if (amount && parseFloat(amount) > 0) {
+      handleConvert();
+    }
+  }, [fromCurrency, toCurrency]);
 
   const swapCurrencies = () => {
     setFromCurrency(toCurrency);
