@@ -99,6 +99,7 @@ const Hero = () => {
               <motion.button
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={() => navigate('/traveler-booking')}
                 data-testid="cta-booking"
                 className="group px-8 py-4 bg-slate-900 text-white font-bold rounded-full shadow-xl shadow-slate-900/30 hover:shadow-slate-900/50 transition-all duration-300 flex items-center justify-center gap-2"
               >
