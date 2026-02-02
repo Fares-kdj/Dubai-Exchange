@@ -1,10 +1,12 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Plane, Send, Search, Sparkles, ArrowRight } from 'lucide-react';
 
 const Services = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   const services = [
     {
@@ -14,7 +16,8 @@ const Services = () => {
       gradient: 'from-blue-500 to-cyan-500',
       bgColor: 'bg-blue-50',
       iconColor: 'text-blue-600',
-      delay: 0.2
+      delay: 0.2,
+      link: '/traveler-booking'
     },
     {
       icon: Send,
@@ -23,7 +26,8 @@ const Services = () => {
       gradient: 'from-emerald-500 to-teal-500',
       bgColor: 'bg-emerald-50',
       iconColor: 'text-emerald-600',
-      delay: 0.3
+      delay: 0.3,
+      link: '/transfers'
     },
     {
       icon: Search,
@@ -32,7 +36,8 @@ const Services = () => {
       gradient: 'from-purple-500 to-pink-500',
       bgColor: 'bg-purple-50',
       iconColor: 'text-purple-600',
-      delay: 0.4
+      delay: 0.4,
+      link: '/track-order'
     },
     {
       icon: Sparkles,
