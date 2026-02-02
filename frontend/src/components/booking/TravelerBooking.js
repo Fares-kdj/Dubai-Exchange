@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import TermsAndConditions from './TermsAndConditions';
 import BookingForm from './BookingForm';
+import SuccessPage from './SuccessPage';
 import Header from '../home/Header';
 import Footer from '../home/Footer';
 
@@ -24,15 +25,7 @@ const TravelerBooking = () => {
       <Header />
       {step === 1 && <TermsAndConditions onAccept={handleTermsAccept} />}
       {step === 2 && <BookingForm onSubmit={handleFormSubmit} />}
-      {step === 3 && (
-        <div className="pt-20 min-h-screen flex items-center justify-center">
-          <div className="text-center p-12">
-            <h1 className="text-4xl font-bold text-green-600 mb-4">✅ تم التسجيل بنجاح!</h1>
-            <p className="text-slate-600 mb-4">سيتم إنشاء صفحة التأكيد الكاملة في الخطوة التالية</p>
-            <p className="text-sm text-slate-500">Order ID: TRV-{Date.now()}</p>
-          </div>
-        </div>
-      )}
+      {step === 3 && <SuccessPage orderData={bookingData} />}
       <Footer />
     </div>
   );
