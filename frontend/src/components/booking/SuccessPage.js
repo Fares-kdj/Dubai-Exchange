@@ -16,10 +16,30 @@ const SuccessPage = ({ orderData }) => {
   const orderId = `TRV-${Date.now().toString().slice(-8)}`;
   const orderDate = new Date().toLocaleString(currentLanguage === 'ar' ? 'ar-IQ' : 'en-US');
 
-  const copyOrderId = () => {
-    navigator.clipboard.writeText(orderId);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const copyOrderId = async () => {
+    try {
+      // Try modern Clipboard API first
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(orderId);
+      } else {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = orderId;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      }
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      // Even if copy fails, show feedback
+      console.warn('Copy failed:', err);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   const handleFileUpload = (event) => {
