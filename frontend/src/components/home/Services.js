@@ -131,13 +131,15 @@ const Services = () => {
 
                   {/* Action Link */}
                   {!service.comingSoon && (
-                    <motion.div
-                      className="flex items-center gap-2 text-sm font-medium text-slate-700 group-hover:text-slate-900 group-hover:gap-3 transition-all"
+                    <motion.button
+                      onClick={() => navigate(service.link)}
+                      className="flex items-center gap-2 text-sm font-medium text-slate-700 group-hover:text-slate-900 group-hover:gap-3 transition-all cursor-pointer"
                       whileHover={{ x: 5 }}
+                      data-testid={`service-link-${index}`}
                     >
                       {t('common.learnMore')}
                       <ArrowRight className="w-4 h-4" />
-                    </motion.div>
+                    </motion.button>
                   )}
                 </div>
               </div>
