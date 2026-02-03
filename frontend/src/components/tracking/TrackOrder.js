@@ -12,6 +12,7 @@ import Footer from '../home/Footer';
 const TrackOrder = () => {
   const { currentLanguage } = useLanguage();
   const isArabic = currentLanguage === 'ar';
+  const API_URL = process.env.REACT_APP_BACKEND_URL;
   
   const [searchData, setSearchData] = useState({ orderId: '', orderType: '' });
   const [loading, setLoading] = useState(false);
