@@ -1,0 +1,508 @@
+import React, { useState } from 'react';
+import { useLanguage } from '@/context/LanguageContext';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Search, Package, User, Phone, MapPin, Calendar, DollarSign, CreditCard, FileText, Upload, X, CheckCircle, Clock, AlertCircle, Copy, Eye, Globe } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { QRCodeSVG } from 'qrcode.react';
+import Header from '../home/Header';
+import Footer from '../home/Footer';
+
+const TrackOrder = () => {
+  const { currentLanguage } = useLanguage();
+  const isArabic = currentLanguage === 'ar';
+  
+  const [searchData, setSearchData] = useState({ orderId: '', orderType: '' });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [orderResult, setOrderResult] = useState(null);
+  const [paymentProofs, setPaymentProofs] = useState([]);
+  const [uploading, setUploading] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const orderTypes = [
+    { value: 'traveler', labelAr: 'حجز الدولار للمسافرين', labelEn: 'Traveler USD Booking' },
+    { value: 'local', labelAr: 'تحويل محلي', labelEn: 'Local Transfer' },
+    { value: 'western_union', labelAr: 'ويسترن يونيون', labelEn: 'Western Union' },
+    { value: 'moneygram', labelAr: 'موني جرام', labelEn: 'MoneyGram' },
+    { value: 'country_based', labelAr: 'تحويل حسب الدولة', labelEn: 'Country-based Transfer' }
+  ];
+
+  const statusConfig = {
+    waiting_payment: { labelAr: 'في انتظار الدفع', labelEn: 'Waiting for Payment', color: 'bg-amber-500', icon: Clock },
+    under_review: { labelAr: 'قيد المراجعة', labelEn: 'Under Review', color: 'bg-yellow-500', icon: Search },
+    approved: { labelAr: 'تم القبول', labelEn: 'Approved', color: 'bg-green-500', icon: CheckCircle },
+    rejected: { labelAr: 'تم الرفض', labelEn: 'Rejected', color: 'bg-red-500', icon: AlertCircle }
+  };
+
+  // Mock order data - In production this would come from API
+  const mockOrders = {
+    'TRV-12345678': {
+      type: 'traveler',
+      status: 'waiting_payment',
+      createdAt: '2025-02-03T10:30:00',
+      customer: { fullName: 'أحمد محمد علي', phone: '+964 770 123 4567' },
+      details: {
+        travelType: 'جوي',
+        destination: 'تركيا - إسطنبول',
+        travelDate: '2025-02-15',
+        pickupLocation: 'مطار بغداد الدولي',
+        usdAmount: '2000',
+        iqdAmount: '3000000',
+        paymentMethod: 'نقداً'
+      },
+      documents: { passport: true, ticket: true }
+    },
+    'LOC-87654321': {
+      type: 'local',
+      status: 'under_review',
+      createdAt: '2025-02-02T14:20:00',
+      customer: { fullName: 'سارة حسين', phone: '+964 771 987 6543' },
+      details: {
+        senderName: 'سارة حسين',
+        receiverName: 'محمد أحمد',
+        senderProvince: 'بغداد',
+        receiverProvince: 'البصرة',
+        amount: '1500000',
+        serviceFee: '30000',
+        paymentMethod: 'تحويل بنكي'
+      },
+      documents: { paymentProof: true }
+    },
+    'WU-11223344': {
+      type: 'western_union',
+      status: 'approved',
+      createdAt: '2025-02-01T09:15:00',
+      customer: { fullName: 'علي كريم', phone: '+964 772 555 1234' },
+      details: {
+        senderName: 'علي كريم',
+        receiverName: 'فاطمة أحمد',
+        senderCountry: 'العراق',
+        receiverCountry: 'الأردن',
+        currency: 'USD',
+        amount: '500',
+        iqdAmount: '750000',
+        serviceFee: '15000',
+        paymentMethod: 'نقداً'
+      },
+      documents: { senderId: true, paymentProof: true }
+    }
+  };
+
+  const handleSearch = async () => {
+    if (!searchData.orderId.trim()) {
+      setError(isArabic ? 'أدخل رقم الطلب' : 'Enter order ID');
+      return;
+    }
+    if (!searchData.orderType) {
+      setError(isArabic ? 'اختر نوع الطلب' : 'Select order type');
+      return;
+    }
+
+    setError('');
+    setLoading(true);
+    
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    const order = mockOrders[searchData.orderId.toUpperCase()];
+    
+    if (order && order.type === searchData.orderType) {
+      setOrderResult({ ...order, orderId: searchData.orderId.toUpperCase() });
+    } else {
+      setError(isArabic ? 'الطلب غير موجود. تأكد من رقم الطلب ونوعه.' : 'Order not found. Verify order ID and type.');
+      setOrderResult(null);
+    }
+    
+    setLoading(false);
+  };
+
+  const copyOrderId = async () => {
+    try {
+      await navigator.clipboard.writeText(orderResult?.orderId || '');
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (e) {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  const handleFileUpload = (e) => {
+    const files = Array.from(e.target.files);
+    const newProofs = files.map(file => ({
+      id: Date.now() + Math.random(),
+      name: file.name,
+      preview: URL.createObjectURL(file)
+    }));
+    setPaymentProofs(prev => [...prev, ...newProofs]);
+  };
+
+  const removeProof = (id) => {
+    setPaymentProofs(prev => prev.filter(p => p.id !== id));
+  };
+
+  const submitPaymentProof = async () => {
+    if (paymentProofs.length === 0) return;
+    setUploading(true);
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    setUploading(false);
+    alert(isArabic ? 'تم إرسال إثبات الدفع بنجاح!' : 'Payment proof submitted!');
+    setPaymentProofs([]);
+  };
+
+  const getStatusLabel = (status) => {
+    const config = statusConfig[status];
+    return config ? (isArabic ? config.labelAr : config.labelEn) : status;
+  };
+
+  const getOrderTypeLabel = (type) => {
+    const t = orderTypes.find(o => o.value === type);
+    return t ? (isArabic ? t.labelAr : t.labelEn) : type;
+  };
+
+  const formatDate = (dateStr) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString(isArabic ? 'ar-IQ' : 'en-US', { 
+      year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' 
+    });
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
+      <Header />
+      
+      <main className="pt-24 pb-20">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Header */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center mb-12"
+          >
+            <div className="w-20 h-20 bg-gradient-to-br from-[#D4AF37] to-[#FCD34D] rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl">
+              <Package className="w-10 h-10 text-slate-900" />
+            </div>
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+              {isArabic ? 'تتبع طلبك' : 'Track Your Order'}
+            </h1>
+            <p className="text-lg text-slate-400 max-w-xl mx-auto">
+              {isArabic 
+                ? 'أدخل رقم الطلب ونوعه لمعرفة حالته وتفاصيله الكاملة'
+                : 'Enter your order ID and type to check its status and full details'}
+            </p>
+          </motion.div>
+
+          {/* Search Panel */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="max-w-2xl mx-auto mb-12"
+          >
+            <div className="bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 p-8 shadow-2xl">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div className="space-y-2">
+                  <Label className="text-white font-medium">
+                    {isArabic ? 'رقم الطلب' : 'Order ID'}
+                  </Label>
+                  <Input
+                    value={searchData.orderId}
+                    onChange={(e) => setSearchData(prev => ({ ...prev, orderId: e.target.value }))}
+                    className="h-12 bg-white/10 border-white/20 text-white placeholder:text-slate-400"
+                    placeholder={isArabic ? 'مثال: TRV-12345678' : 'e.g., TRV-12345678'}
+                    data-testid="track-order-id"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-white font-medium">
+                    {isArabic ? 'نوع الطلب' : 'Order Type'}
+                  </Label>
+                  <Select value={searchData.orderType} onValueChange={(v) => setSearchData(prev => ({ ...prev, orderType: v }))}>
+                    <SelectTrigger className="h-12 bg-white/10 border-white/20 text-white" data-testid="track-order-type">
+                      <SelectValue placeholder={isArabic ? 'اختر نوع الطلب' : 'Select order type'} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {orderTypes.map(t => (
+                        <SelectItem key={t.value} value={t.value}>
+                          {isArabic ? t.labelAr : t.labelEn}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {error && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-6 p-4 bg-red-500/20 border border-red-500/30 rounded-xl text-red-300 flex items-center gap-2"
+                >
+                  <AlertCircle className="w-5 h-5" />
+                  {error}
+                </motion.div>
+              )}
+
+              <motion.button
+                onClick={handleSearch}
+                disabled={loading}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="w-full py-4 bg-gradient-to-r from-[#D4AF37] to-[#FCD34D] text-slate-900 font-bold rounded-2xl flex items-center justify-center gap-2 disabled:opacity-50"
+                data-testid="track-search-btn"
+              >
+                {loading ? (
+                  <div className="w-5 h-5 border-2 border-slate-900 border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <><Search className="w-5 h-5" />{isArabic ? 'بحث' : 'Search'}</>
+                )}
+              </motion.button>
+            </div>
+          </motion.div>
+
+          {/* Order Result */}
+          <AnimatePresence>
+            {orderResult && (
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -30 }}
+                className="max-w-5xl mx-auto"
+              >
+                {/* Order Header Card */}
+                <div className="bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 p-8 mb-6">
+                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                    <div>
+                      <p className="text-slate-400 text-sm mb-1">{isArabic ? 'رقم الطلب' : 'Order ID'}</p>
+                      <div className="flex items-center gap-3">
+                        <h2 className="text-3xl font-bold text-white">{orderResult.orderId}</h2>
+                        <button onClick={copyOrderId} className="p-2 hover:bg-white/10 rounded-lg transition-colors">
+                          {copied ? <CheckCircle className="w-5 h-5 text-green-400" /> : <Copy className="w-5 h-5 text-slate-400" />}
+                        </button>
+                      </div>
+                      <div className="flex items-center gap-4 mt-3">
+                        <span className="px-3 py-1 bg-white/10 rounded-full text-sm text-slate-300">
+                          {getOrderTypeLabel(orderResult.type)}
+                        </span>
+                        <span className="text-sm text-slate-400">
+                          {formatDate(orderResult.createdAt)}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    {/* Status Badge */}
+                    <div className={`px-6 py-3 ${statusConfig[orderResult.status]?.color} rounded-2xl flex items-center gap-2`}>
+                      {React.createElement(statusConfig[orderResult.status]?.icon || Clock, { className: 'w-5 h-5 text-white' })}
+                      <span className="font-bold text-white">{getStatusLabel(orderResult.status)}</span>
+                    </div>
+                  </div>
+
+                  {/* Status Timeline */}
+                  <div className="mt-8 flex items-center justify-between max-w-xl">
+                    {['waiting_payment', 'under_review', 'approved'].map((s, i) => {
+                      const statuses = ['waiting_payment', 'under_review', 'approved', 'rejected'];
+                      const currentIdx = statuses.indexOf(orderResult.status);
+                      const isActive = statuses.indexOf(s) <= currentIdx && orderResult.status !== 'rejected';
+                      const isRejected = orderResult.status === 'rejected';
+                      
+                      return (
+                        <React.Fragment key={s}>
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                            isRejected ? 'bg-red-500/30' : isActive ? 'bg-[#D4AF37]' : 'bg-white/20'
+                          }`}>
+                            {isActive && !isRejected && <CheckCircle className="w-4 h-4 text-white" />}
+                          </div>
+                          {i < 2 && <div className={`flex-1 h-1 mx-2 rounded ${isActive && statuses.indexOf(s) < currentIdx ? 'bg-[#D4AF37]' : 'bg-white/20'}`} />}
+                        </React.Fragment>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  {/* Left Column - Details */}
+                  <div className="lg:col-span-2 space-y-6">
+                    {/* Customer Info */}
+                    <div className="bg-white rounded-3xl p-8 shadow-xl">
+                      <h3 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+                        <User className="w-6 h-6 text-blue-600" />
+                        {isArabic ? 'بيانات العميل' : 'Customer Information'}
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="flex items-start gap-3">
+                          <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                            <User className="w-5 h-5 text-blue-600" />
+                          </div>
+                          <div>
+                            <p className="text-xs text-slate-500">{isArabic ? 'الاسم' : 'Name'}</p>
+                            <p className="font-medium text-slate-900">{orderResult.customer.fullName}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                            <Phone className="w-5 h-5 text-green-600" />
+                          </div>
+                          <div>
+                            <p className="text-xs text-slate-500">{isArabic ? 'الهاتف' : 'Phone'}</p>
+                            <p className="font-medium text-slate-900">{orderResult.customer.phone}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Service Details */}
+                    <div className="bg-white rounded-3xl p-8 shadow-xl">
+                      <h3 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+                        <FileText className="w-6 h-6 text-purple-600" />
+                        {isArabic ? 'تفاصيل الطلب' : 'Order Details'}
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {Object.entries(orderResult.details).map(([key, value]) => {
+                          const labels = {
+                            travelType: { ar: 'نوع السفر', en: 'Travel Type' },
+                            destination: { ar: 'الوجهة', en: 'Destination' },
+                            travelDate: { ar: 'تاريخ السفر', en: 'Travel Date' },
+                            pickupLocation: { ar: 'مكان الاستلام', en: 'Pickup Location' },
+                            usdAmount: { ar: 'المبلغ ($)', en: 'Amount ($)' },
+                            iqdAmount: { ar: 'المبلغ (د.ع)', en: 'Amount (IQD)' },
+                            paymentMethod: { ar: 'طريقة الدفع', en: 'Payment Method' },
+                            senderName: { ar: 'اسم المرسل', en: 'Sender Name' },
+                            receiverName: { ar: 'اسم المستلم', en: 'Receiver Name' },
+                            senderProvince: { ar: 'محافظة المرسل', en: 'Sender Province' },
+                            receiverProvince: { ar: 'محافظة المستلم', en: 'Receiver Province' },
+                            senderCountry: { ar: 'دولة المرسل', en: 'Sender Country' },
+                            receiverCountry: { ar: 'دولة المستلم', en: 'Receiver Country' },
+                            currency: { ar: 'العملة', en: 'Currency' },
+                            amount: { ar: 'المبلغ', en: 'Amount' },
+                            serviceFee: { ar: 'رسوم الخدمة', en: 'Service Fee' }
+                          };
+                          const label = labels[key] || { ar: key, en: key };
+                          
+                          return (
+                            <div key={key} className="p-4 bg-slate-50 rounded-xl">
+                              <p className="text-xs text-slate-500 mb-1">{isArabic ? label.ar : label.en}</p>
+                              <p className="font-medium text-slate-900">{value}</p>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Documents */}
+                    <div className="bg-white rounded-3xl p-8 shadow-xl">
+                      <h3 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+                        <Eye className="w-6 h-6 text-amber-600" />
+                        {isArabic ? 'الوثائق المرفوعة' : 'Uploaded Documents'}
+                      </h3>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {orderResult.documents.passport && (
+                          <div className="p-4 bg-green-50 border border-green-200 rounded-xl text-center">
+                            <FileText className="w-8 h-8 text-green-600 mx-auto mb-2" />
+                            <p className="text-sm font-medium text-green-800">{isArabic ? 'جواز السفر' : 'Passport'}</p>
+                          </div>
+                        )}
+                        {orderResult.documents.ticket && (
+                          <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl text-center">
+                            <FileText className="w-8 h-8 text-blue-600 mx-auto mb-2" />
+                            <p className="text-sm font-medium text-blue-800">{isArabic ? 'التذكرة' : 'Ticket'}</p>
+                          </div>
+                        )}
+                        {orderResult.documents.senderId && (
+                          <div className="p-4 bg-purple-50 border border-purple-200 rounded-xl text-center">
+                            <FileText className="w-8 h-8 text-purple-600 mx-auto mb-2" />
+                            <p className="text-sm font-medium text-purple-800">{isArabic ? 'الهوية' : 'ID'}</p>
+                          </div>
+                        )}
+                        {orderResult.documents.paymentProof && (
+                          <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl text-center">
+                            <FileText className="w-8 h-8 text-amber-600 mx-auto mb-2" />
+                            <p className="text-sm font-medium text-amber-800">{isArabic ? 'إثبات الدفع' : 'Payment Proof'}</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Column - QR & Payment */}
+                  <div className="space-y-6">
+                    {/* QR Code */}
+                    <div className="bg-white rounded-3xl p-8 shadow-xl text-center">
+                      <h3 className="text-lg font-bold text-slate-900 mb-4">
+                        {isArabic ? 'رمز QR للطلب' : 'Order QR Code'}
+                      </h3>
+                      <div className="bg-slate-50 p-6 rounded-2xl inline-block">
+                        <QRCodeSVG value={orderResult.orderId} size={150} level="H" />
+                      </div>
+                      <p className="text-xs text-slate-500 mt-4">
+                        {isArabic ? 'للتحقق عند الاستلام' : 'For verification at pickup'}
+                      </p>
+                    </div>
+
+                    {/* SMS Note */}
+                    <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6">
+                      <p className="text-sm text-blue-800">
+                        📱 {isArabic ? 'ستصلك رسالة SMS عند تحديث حالة طلبك' : 'You will receive an SMS when your order status updates'}
+                      </p>
+                    </div>
+
+                    {/* Payment Proof Upload - Only if waiting */}
+                    {orderResult.status === 'waiting_payment' && (
+                      <div className="bg-white rounded-3xl p-8 shadow-xl">
+                        <h3 className="text-lg font-bold text-slate-900 mb-4">
+                          {isArabic ? 'إرسال إثبات الدفع' : 'Submit Payment Proof'}
+                        </h3>
+                        
+                        {paymentProofs.length === 0 ? (
+                          <label className="block border-2 border-dashed border-slate-300 rounded-2xl p-6 hover:border-[#D4AF37] cursor-pointer text-center">
+                            <input type="file" accept="image/*" multiple onChange={handleFileUpload} className="hidden" />
+                            <Upload className="w-10 h-10 text-slate-400 mx-auto mb-2" />
+                            <p className="text-sm text-slate-600">{isArabic ? 'رفع صورة' : 'Upload image'}</p>
+                          </label>
+                        ) : (
+                          <div className="space-y-3">
+                            {paymentProofs.map(p => (
+                              <div key={p.id} className="flex items-center gap-3 bg-green-50 border border-green-200 rounded-xl p-3">
+                                <img src={p.preview} alt="proof" className="w-12 h-12 rounded-lg object-cover" />
+                                <span className="flex-1 text-sm truncate">{p.name}</span>
+                                <button onClick={() => removeProof(p.id)} className="p-1 hover:bg-red-100 rounded">
+                                  <X className="w-4 h-4 text-red-600" />
+                                </button>
+                              </div>
+                            ))}
+                            <button
+                              onClick={submitPaymentProof}
+                              disabled={uploading}
+                              className="w-full py-3 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 disabled:opacity-50 flex items-center justify-center gap-2"
+                            >
+                              {uploading ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <><CheckCircle className="w-5 h-5" />{isArabic ? 'إرسال' : 'Submit'}</>}
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Payment Received Notice */}
+                    {orderResult.status !== 'waiting_payment' && orderResult.documents.paymentProof && (
+                      <div className="bg-green-50 border border-green-200 rounded-2xl p-6 text-center">
+                        <CheckCircle className="w-10 h-10 text-green-600 mx-auto mb-2" />
+                        <p className="font-medium text-green-800">
+                          {isArabic ? 'تم استلام إثبات الدفع' : 'Payment proof received'}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </main>
+
+      <Footer />
+    </div>
+  );
+};
+
+export default TrackOrder;
