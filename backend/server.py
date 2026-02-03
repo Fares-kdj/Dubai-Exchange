@@ -38,10 +38,12 @@ api_router = APIRouter(prefix="/api")
 from routes.orders import router as orders_router
 from routes.auth import router as auth_router, init_developer_account
 from routes.cms import router as cms_router, init_default_services, init_default_countries
+from routes.rates import router as rates_router, init_default_rates
 
 api_router.include_router(orders_router)
 api_router.include_router(auth_router)
 api_router.include_router(cms_router)
+api_router.include_router(rates_router)
 
 
 # ===== MODELS =====
