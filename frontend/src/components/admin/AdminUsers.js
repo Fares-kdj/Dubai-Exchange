@@ -27,7 +27,7 @@ const AdminUsers = () => {
     if (userStr) setCurrentUser(JSON.parse(userStr));
     fetchUsers();
     fetchPermissions();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem('adminToken');
