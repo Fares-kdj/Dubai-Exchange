@@ -1,4 +1,5 @@
 from fastapi import FastAPI, APIRouter, HTTPException
+from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -23,11 +24,19 @@ db = client[os.environ['DB_NAME']]
 settings_collection = db.settings
 orders_collection = db.orders
 
+# Create upload directory
+UPLOAD_DIR = "/app/uploads"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+
 # Create the main app without a prefix
-app = FastAPI()
+app = FastAPI(title="Khair Baghdad Exchange API")
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
+
+# Import and include orders router
+from routes.orders import router as orders_router
+api_router.include_router(orders_router)
 
 
 # ===== MODELS =====
