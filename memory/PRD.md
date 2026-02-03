@@ -1,85 +1,94 @@
-# Khair Baghdad for Exchange - PRD (Product Requirements Document)
+# Khair Baghdad for Exchange - PRD
 
 ## المشروع
 موقع شركة **خير بغداد للصرافة** - منصة خدمات مالية متكاملة
 
-## الرؤية
-موقع احترافي وموثوق يقدم خدمات صرافة وتحويلات مالية للعملاء في العراق والمنطقة
-
----
-
-## المتطلبات الأساسية
-
-### اللغات
-- **العربية (RTL)**: اللغة الافتراضية
-- **الإنجليزية (LTR)**: مدعومة
-- **الكردية (RTL)**: مدعومة
-
-### التصميم
+## التصميم
 - Modern White Theme with Premium/Luxury Fintech feel
 - 3D elements and animations
 - Glassmorphism effects
 - Fully responsive (Mobile/Tablet/Desktop)
+- RTL Arabic default + English + Kurdish support
 
 ---
 
 ## ما تم إنجازه ✅
 
-### المرحلة 1: الصفحة الرئيسية (مكتملة)
-- **التاريخ**: يناير 2025
-- **المكونات**:
-  - Header مع التنقل وتبديل اللغات
-  - Hero Section مع CTAs
-  - Currency Converter مع أعلام الدول
-  - Services Section مع روابط للخدمات
-  - Trust Section
-  - Contact Section
-  - Footer
+### المرحلة 1: الصفحة الرئيسية ✅
+- Header مع التنقل وتبديل اللغات
+- Hero Section مع CTAs
+- Currency Converter مع أعلام الدول
+- Services Section
+- Trust Section
+- Contact Section
+- Footer
 
-### المرحلة 2: صفحة حجز الدولار للمسافرين (مكتملة)
-- **التاريخ**: فبراير 2025
-- **المكونات**:
-  - **صفحة الشروط والأحكام** (TermsAndConditions.js)
-    - شروط الحجز
-    - الوثائق المطلوبة
-    - سياسة الإلغاء
-    - الدول المحظورة
-    - Checkbox للموافقة
-  - **استمارة الحجز** (BookingForm.js)
-    - بيانات العميل (الاسم، الهاتف)
-    - بيانات السفر (النوع، الوجهة، التاريخ، مكان الاستلام)
-    - بيانات الحجز (المبلغ بالدولار، الحساب التلقائي بالدينار، طريقة الدفع)
-    - رفع الوثائق (جواز السفر، التذكرة، صورة شخصية)
-  - **صفحة النجاح** (SuccessPage.js)
-    - رقم الطلب مع زر نسخ
-    - QR Code للطلب
-    - ملخص كامل للبيانات
-    - حالة الطلب (في انتظار الدفع)
-    - تعليمات الدفع
-    - رفع إثبات الدفع
+### المرحلة 2: صفحة حجز الدولار للمسافرين ✅
+- صفحة الشروط والأحكام
+- استمارة الحجز (بيانات العميل، السفر، الحجز، الوثائق)
+- صفحة النجاح مع QR Code ورفع إثبات الدفع
+
+### المرحلة 3: صفحات التحويلات المالية ✅
+تاريخ الإنجاز: ديسمبر 2025
+
+#### 3.1 Transfers Hub
+- صفحة رئيسية للتحويلات
+- بطاقتين: تحويل محلي + تحويل دولي
+
+#### 3.2 التحويل المحلي (Local Transfer)
+- استمارة كاملة:
+  - اسم المرسل/المستلم
+  - محافظة المرسل/المستلم (18 محافظة عراقية)
+  - رقم الهاتف
+  - المبلغ مع حساب رسوم الخدمة (2%)
+  - طريقة الدفع
+- صفحة نجاح مع QR Code
+
+#### 3.3 التحويل الدولي (International)
+**صفحة اختيار نوع التحويل:**
+- ويسترن يونيون
+- موني جرام
+- تحويل حسب الدولة
+
+**Western Union:**
+- استمارة مع رفع صورة الهوية
+- اختيار العملة والدولة
+- حساب المبلغ بالدينار العراقي
+
+**MoneyGram:**
+- نفس ميزات Western Union
+
+**Country-based Wizard (5 خطوات):**
+1. إدخال المبلغ
+2. اختيار الدولة (مع أعلام وبحث)
+3. اختيار طريقة التحويل المحلية (ديناميكي حسب الدولة)
+4. ملخص التحويل
+5. معلومات المرسل والمستلم
+
+**الدول المدعومة:**
+- الجزائر (بريدي موب، CCP، بنكي)
+- مصر (فودافون كاش، إنستاباي، بنكي)
+- تركيا (باباره، EFT، بنكي)
+- الأردن (كليك، بنكي)
+- الهند (UPI، بنكي)
+- باكستان (جاز كاش، بنكي)
 
 ---
 
 ## المهام القادمة 📋
 
-### المرحلة 3: Backend API للحجز (P1)
-- [ ] إنشاء endpoint لحفظ الحجوزات `/api/bookings`
+### المرحلة 4: Backend API (P1)
+- [ ] إنشاء endpoints للحجوزات والتحويلات
 - [ ] رفع الملفات وحفظها
 - [ ] حفظ الطلبات في MongoDB
-- [ ] API لجلب سعر الصرف الحالي
+- [ ] API لجلب أسعار الصرف
 
-### المرحلة 4: صفحة التحويلات المالية (P2)
-- [ ] Transfer Hub
-- [ ] Local Transfer Form
-- [ ] International Transfer (Western Union, MoneyGram)
-- [ ] Country-based Transfer Wizard
-
-### المرحلة 5: صفحة تتبع الطلبات (P3)
+### المرحلة 5: صفحة تتبع الطلبات (P2)
 - [ ] البحث برقم الطلب
 - [ ] عرض تفاصيل الطلب والحالة
 - [ ] رفع إثبات الدفع
 
-### المرحلة 6: لوحة تحكم المدير (P4)
+### المرحلة 6: لوحة تحكم المدير (P3)
 - [ ] تسجيل دخول المدير
 - [ ] إدارة الطلبات
 - [ ] CMS لتعديل المحتوى
@@ -97,62 +106,52 @@
 - Tailwind CSS
 - Shadcn/UI components
 - Framer Motion
-- i18next for translations
+- i18next
 - react-router-dom
+- qrcode.react
 
-### Backend
+### Backend (مطلوب)
 - FastAPI (Python)
 - MongoDB
 - File uploads
 
-### Database Schema (مقترح)
-```javascript
-// Orders Collection
-{
-  orderId: "TRV-12345678",
-  type: "traveler_booking",
-  status: "waiting_payment" | "under_review" | "approved" | "rejected",
-  customer: {
-    fullName: String,
-    phone: String
-  },
-  travel: {
-    type: "air" | "land",
-    destination: String,
-    date: Date,
-    pickupLocation: String
-  },
-  booking: {
-    usdAmount: Number,
-    iqdAmount: Number,
-    paymentMethod: String
-  },
-  documents: {
-    passport: String, // file path
-    ticket: String,
-    personalPhoto: String
-  },
-  paymentProofs: [String], // array of file paths
-  createdAt: Date,
-  updatedAt: Date
-}
+### حالات الطلب
+1. في انتظار الدفع
+2. قيد المراجعة
+3. تم القبول
+4. تم الرفض
+
+---
+
+## MOCKED Features (تحتاج تنفيذ Backend)
+- أسعار الصرف (hardcoded)
+- رسوم الخدمة (2% hardcoded)
+- حفظ الطلبات (setTimeout simulation)
+- طرق التحويل حسب الدولة (hardcoded)
+
+---
+
+## الملفات الرئيسية
+```
+/app/frontend/src/
+├── components/
+│   ├── booking/           # حجز الدولار للمسافرين
+│   ├── home/              # الصفحة الرئيسية
+│   ├── transfers/         # التحويلات المالية
+│   │   ├── TransfersHub.js
+│   │   ├── LocalTransfer.js
+│   │   ├── InternationalSelector.js
+│   │   ├── WesternUnion.js
+│   │   ├── MoneyGram.js
+│   │   ├── CountryWizard.js
+│   │   └── TransferSuccess.js
+│   └── ui/                # shadcn components
+├── context/
+│   └── LanguageContext.js
+├── App.js
+└── i18n.js
 ```
 
 ---
 
-## Mocked Features (تحتاج تنفيذ)
-1. **سعر الصرف**: حالياً 1500 د.ع/$ (hardcoded)
-2. **إرسال الطلب**: محاكاة بـ setTimeout (بدون حفظ حقيقي)
-3. **رفع إثبات الدفع**: محاكاة فقط
-
----
-
-## الملفات المرجعية
-- `/app/frontend/src/components/booking/` - مكونات صفحة الحجز
-- `/app/frontend/src/components/home/` - مكونات الصفحة الرئيسية
-- `/app/frontend/src/i18n.js` - ملف الترجمات
-- `/app/frontend/src/context/LanguageContext.js` - سياق اللغة
-
----
-
-آخر تحديث: فبراير 2025
+آخر تحديث: ديسمبر 2025
