@@ -1,22 +1,41 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Package, DollarSign, Users, TrendingUp, Clock, CheckCircle, AlertCircle, ArrowUp, ArrowDown } from 'lucide-react';
+import { Package, DollarSign, Users, TrendingUp, Clock, CheckCircle, AlertCircle, ArrowUp, ArrowDown, RefreshCw } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const AdminOverview = () => {
-  // Mock statistics
-  const stats = [
-    { label: 'إجمالي الطلبات', value: '1,247', icon: Package, color: 'bg-blue-500', change: '+12%', up: true },
-    { label: 'في انتظار الدفع', value: '23', icon: Clock, color: 'bg-amber-500', change: '+5%', up: true },
-    { label: 'طلبات اليوم', value: '18', icon: TrendingUp, color: 'bg-green-500', change: '+8%', up: true },
-    { label: 'إجمالي الإيرادات', value: '$45,230', icon: DollarSign, color: 'bg-purple-500', change: '+15%', up: true },
-  ];
+  const [loading, setLoading] = useState(true);
+  const [statsData, setStatsData] = useState(null);
+  const [recentOrders, setRecentOrders] = useState([]);
+  const API_URL = process.env.REACT_APP_BACKEND_URL;
 
-  const recentOrders = [
-    { id: 'TRV-12345678', type: 'حجز مسافرين', customer: 'أحمد محمد', amount: '$2,000', status: 'waiting_payment', time: 'منذ 5 دقائق' },
-    { id: 'LOC-87654321', type: 'تحويل محلي', customer: 'سارة حسين', amount: '1,500,000 د.ع', status: 'under_review', time: 'منذ 15 دقيقة' },
-    { id: 'WU-11223344', type: 'ويسترن يونيون', customer: 'علي كريم', amount: '$500', status: 'approved', time: 'منذ ساعة' },
-    { id: 'MG-99887766', type: 'موني جرام', customer: 'فاطمة أحمد', amount: '€300', status: 'rejected', time: 'منذ ساعتين' },
-    { id: 'CB-55667788', type: 'حسب الدولة', customer: 'محمد علي', amount: '$150', status: 'approved', time: 'منذ 3 ساعات' },
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      // Fetch stats
+      const statsRes = await fetch(`${API_URL}/api/orders/stats/summary`);
+      const statsJson = await statsRes.json();
+      setStatsData(statsJson);
+
+      // Fetch recent orders
+      const ordersRes = await fetch(`${API_URL}/api/orders?page=1&page_size=5`);
+      const ordersJson = await ordersRes.json();
+      setRecentOrders(ordersJson.orders || []);
+    } catch (err) {
+      console.error('Error fetching data:', err);
+    }
+    setLoading(false);
+  };
+
+  const stats = [
+    { label: 'إجمالي الطلبات', value: statsData?.total_orders || 0, icon: Package, color: 'bg-blue-500', change: '+12%', up: true },
+    { label: 'في انتظار الدفع', value: statsData?.waiting_payment || 0, icon: Clock, color: 'bg-amber-500', change: '+5%', up: true },
+    { label: 'قيد المراجعة', value: statsData?.under_review || 0, icon: TrendingUp, color: 'bg-yellow-500', change: '+8%', up: true },
+    { label: 'مقبول', value: statsData?.approved || 0, icon: CheckCircle, color: 'bg-green-500', change: '+15%', up: true },
   ];
 
   const statusConfig = {
