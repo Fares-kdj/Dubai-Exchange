@@ -197,6 +197,15 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+@app.on_event("startup")
+async def startup_event():
+    """Initialize default data on startup"""
+    await init_developer_account()
+    await init_default_services()
+    await init_default_countries()
+    logger.info("Application started with default data initialized")
+
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
