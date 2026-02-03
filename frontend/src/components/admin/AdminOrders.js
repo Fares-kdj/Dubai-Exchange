@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Filter, Eye, Edit, Trash2, CheckCircle, XCircle, Clock, MoreVertical, Download, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Filter, Eye, Edit, Trash2, CheckCircle, XCircle, Clock, MoreVertical, Download, ChevronLeft, ChevronRight, RefreshCw } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 
@@ -8,7 +8,39 @@ const AdminOrders = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterType, setFilterType] = useState('all');
-  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [totalOrders, setTotalOrders] = useState(0);
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(20);
+  const API_URL = process.env.REACT_APP_BACKEND_URL;
+
+  useEffect(() => {
+    fetchOrders();
+  }, [page, filterStatus, filterType]);
+
+  const fetchOrders = async () => {
+    setLoading(true);
+    try {
+      let url = `${API_URL}/api/orders?page=${page}&page_size=${pageSize}`;
+      if (filterStatus !== 'all') url += `&status=${filterStatus}`;
+      if (filterType !== 'all') url += `&order_type=${filterType}`;
+      if (searchQuery) url += `&search=${encodeURIComponent(searchQuery)}`;
+
+      const res = await fetch(url);
+      const data = await res.json();
+      setOrders(data.orders || []);
+      setTotalOrders(data.total || 0);
+    } catch (err) {
+      console.error('Error fetching orders:', err);
+    }
+    setLoading(false);
+  };
+
+  const handleSearch = () => {
+    setPage(1);
+    fetchOrders();
+  };
 
   const orderTypes = [
     { value: 'all', label: 'جميع الأنواع' },
