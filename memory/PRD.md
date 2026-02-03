@@ -3,206 +3,155 @@
 ## المشروع
 موقع شركة **خير بغداد للصرافة** - منصة خدمات مالية متكاملة
 
-## التصميم
-- Modern White Theme with Premium/Luxury Fintech feel
-- 3D elements and animations
-- Glassmorphism effects
-- Fully responsive (Mobile/Tablet/Desktop)
-- RTL Arabic default + English + Kurdish support
-
 ---
 
 ## ما تم إنجازه ✅
 
 ### المرحلة 1: الصفحة الرئيسية ✅
 - Header مع التنقل وتبديل اللغات
-- Hero Section مع CTAs
-- Currency Converter مع أعلام الدول
+- Hero Section مع محول العملات
 - Services Section
-- Trust Section
-- Contact Section
-- Footer
+- Trust Section + Contact + Footer
 
-### المرحلة 2: صفحة حجز الدولار للمسافرين ✅
-- صفحة الشروط والأحكام
-- استمارة الحجز (بيانات العميل، السفر، الحجز، الوثائق)
-- صفحة النجاح مع QR Code ورفع إثبات الدفع
+### المرحلة 2: حجز الدولار للمسافرين ✅
+- الشروط والأحكام
+- استمارة الحجز (4 أقسام)
+- صفحة النجاح مع QR Code
+- **✅ متصل بـ Backend API**
 
-### المرحلة 3: صفحات التحويلات المالية ✅
-تاريخ الإنجاز: ديسمبر 2025
+### المرحلة 3: التحويلات المالية ✅
+- التحويل المحلي - **✅ متصل بـ API**
+- Western Union - **✅ متصل بـ API**
+- MoneyGram - **✅ متصل بـ API**
+- Country-based Wizard
 
-#### 3.1 Transfers Hub
-- صفحة رئيسية للتحويلات
-- بطاقتين: تحويل محلي + تحويل دولي
-
-#### 3.2 التحويل المحلي (Local Transfer)
-- استمارة كاملة مع حساب رسوم الخدمة (2%)
-- صفحة نجاح مع QR Code
-
-#### 3.3 التحويل الدولي (International)
-- Western Union
-- MoneyGram
-- Country-based Wizard (5 خطوات)
-
-### المرحلة 4: Backend API ✅
-تاريخ الإنجاز: فبراير 2026
-
-#### 4.1 هيكل Backend
-```
-/app/backend/
-├── server.py           # Main FastAPI app
-├── routes/
-│   └── orders.py       # Orders API routes
-├── models/
-│   └── order.py        # Order Pydantic models
-└── requirements.txt
-```
-
-#### 4.2 Orders API Endpoints
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | /api/orders | إنشاء طلب جديد |
-| POST | /api/orders/track | تتبع طلب |
-| GET | /api/orders | قائمة الطلبات (مع فلاتر وصفحات) |
-| GET | /api/orders/{id} | جلب طلب بالـ ID |
-| PUT | /api/orders/{id} | تحديث حالة الطلب |
-| DELETE | /api/orders/{id} | حذف طلب |
-| POST | /api/orders/{id}/payment-proof | رفع إثبات دفع |
-| GET | /api/orders/stats/summary | إحصائيات الطلبات |
-
-#### 4.3 Order Schema
-```json
-{
-  "order_id": "TRV-XXXXXXXX",
-  "order_type": "traveler|local|western_union|moneygram|country_based",
-  "status": "waiting_payment|under_review|approved|rejected",
-  "customer": {
-    "full_name": "string",
-    "phone": "string",
-    "email": "string (optional)"
-  },
-  "details": { /* flexible schema */ },
-  "documents": [],
-  "payment_proofs": [],
-  "created_at": "ISO datetime",
-  "updated_at": "ISO datetime"
-}
-```
-
-### المرحلة 5: صفحة تتبع الطلب ✅
-تاريخ الإنجاز: فبراير 2026
-
-- البحث برقم الطلب ونوعه
-- عرض تفاصيل الطلب الكاملة
-- شريط تقدم الحالة
-- QR Code للطلب
+### المرحلة 4: صفحة تتبع الطلب ✅
+- بحث برقم الطلب ونوعه
+- عرض التفاصيل + QR Code
 - رفع إثبات الدفع
-- متصل بـ API الحقيقي
+- **✅ متصل بـ Backend API**
+
+### المرحلة 5: Backend API ✅ (فبراير 2026)
+
+#### نظام المصادقة (JWT)
+| Endpoint | Description |
+|----------|-------------|
+| POST /api/auth/login | تسجيل الدخول |
+| GET /api/auth/me | معلومات المستخدم |
+| POST /api/auth/change-password | تغيير كلمة المرور |
+| GET /api/auth/users | قائمة المستخدمين (Developer) |
+| POST /api/auth/users | إضافة مستخدم (Developer) |
+| PUT /api/auth/users/{id} | تعديل مستخدم |
+| DELETE /api/auth/users/{id} | حذف مستخدم |
+| GET /api/auth/permissions | قائمة الصلاحيات |
+
+#### نظام الطلبات
+| Endpoint | Description |
+|----------|-------------|
+| POST /api/orders | إنشاء طلب |
+| POST /api/orders/track | تتبع طلب |
+| GET /api/orders | قائمة الطلبات |
+| PUT /api/orders/{id} | تحديث حالة |
+| DELETE /api/orders/{id} | حذف طلب |
+| GET /api/orders/stats/summary | إحصائيات |
+
+#### نظام CMS
+| Endpoint | Description |
+|----------|-------------|
+| GET/POST /api/cms/services | إدارة الخدمات |
+| GET/POST /api/cms/countries | إدارة الدول |
+| GET/PUT /api/cms/content | إدارة المحتوى |
+| GET/PUT /api/cms/branding | الهوية البصرية |
 
 ### المرحلة 6: لوحة تحكم المدير ✅
-تاريخ الإنجاز: فبراير 2026
 
-#### 6.1 تسجيل الدخول
-- صفحة تسجيل دخول جميلة
-- بيانات تجريبية: admin@khairbaghdad.com / admin123
-- ⚠️ MOCKED: يستخدم بيانات محفوظة في Frontend
+#### نظام الصلاحيات (مستويين)
+1. **المطور (Developer)**: كامل الصلاحيات + إدارة المستخدمين
+2. **الأدمن (Admin)**: صلاحيات يحددها المطور
 
-#### 6.2 لوحة التحكم الرئيسية
-- إحصائيات من API الحقيقي (إجمالي الطلبات، الحالات)
-- جدول أحدث الطلبات من قاعدة البيانات
-- بطاقات الإجراءات السريعة
+#### الصلاحيات المتاحة:
+- عرض/إدارة/حذف الطلبات
+- عرض/إدارة الخدمات
+- تعديل المحتوى
+- تعديل الهوية البصرية
+- إدارة أسعار الصرف
+- إدارة الدول
+- إدارة النماذج
+- عرض الإحصائيات
 
-#### 6.3 إدارة الطلبات
-- جدول كامل بجميع الطلبات من API
-- فلاتر حسب النوع والحالة
-- البحث برقم الطلب أو اسم العميل
-- تغيير حالة الطلب
-- حذف الطلبات
-- صفحات متعددة (Pagination)
+#### صفحات لوحة التحكم ✅
+- **تسجيل الدخول** (JWT حقيقي)
+- **لوحة التحكم الرئيسية** - إحصائيات حية
+- **إدارة الطلبات** - جدول كامل مع فلاتر
+- **إدارة الخدمات** - إضافة/تعديل/حذف
+- **إدارة الدول** - مع طرق التحويل
+- **إدارة المستخدمين** - مع الصلاحيات
+
+---
+
+## بيانات الدخول
+
+### المطور (كامل الصلاحيات)
+- **Email:** developer@khairbaghdad.com
+- **Password:** dev@123456
 
 ---
 
 ## المهام القادمة 📋
 
 ### P0 - عالي الأولوية
-- [ ] ربط Frontend للحجوزات والتحويلات مع Backend API
-- [ ] تنفيذ رفع الملفات الحقيقي (documents, payment proofs)
-- [ ] تنفيذ Backend Auth للـ Admin (JWT)
+- [ ] CMS للمحتوى النصي (hero, services, footer)
+- [ ] إدارة أسعار الصرف (Rates Engine)
+- [ ] رفع ملفات الوثائق مع الطلبات
 
 ### P1 - متوسط الأولوية
-- [ ] CMS لتعديل محتوى الموقع
-- [ ] أسعار الصرف (Rates Engine)
+- [ ] إدارة الهوية البصرية (الشعار، الألوان)
 - [ ] PDF Generator للإيصالات
+- [ ] Form Builder ديناميكي
 
 ### P2 - منخفض الأولوية
-- [ ] Form Builder ديناميكي
-- [ ] نظام إشعارات SMS
+- [ ] نظام إشعارات SMS (مزود غير جاهز)
 - [ ] أختام رقمية للإيصالات
-- [ ] Roles & Permissions للمستخدمين
+- [ ] إشعارات فورية (WebSockets)
 
 ---
 
 ## البنية التقنية
 
 ### Frontend
-- React 18
-- Tailwind CSS
+- React 18 + Tailwind CSS
 - Shadcn/UI components
 - Framer Motion
-- i18next
+- i18next (AR/EN/KU)
 - react-router-dom
-- qrcode.react
 
 ### Backend
 - FastAPI (Python)
-- MongoDB (via Motor async driver)
-- File uploads
-- Pydantic models
+- MongoDB (Motor async)
+- JWT Authentication
+- Passlib + Bcrypt
 
-### API URLs
-- Frontend: https://money-transfer-hub-10.preview.emergentagent.com
-- Backend API: https://money-transfer-hub-10.preview.emergentagent.com/api
-
----
-
-## الملفات الرئيسية
+### ملفات الـ Backend
 ```
-/app/
-├── backend/
-│   ├── server.py
-│   ├── routes/orders.py
-│   └── models/order.py
-├── frontend/src/
-│   ├── components/
-│   │   ├── admin/
-│   │   │   ├── AdminLogin.js
-│   │   │   ├── AdminLayout.js
-│   │   │   ├── AdminOverview.js ★ Connected to API
-│   │   │   └── AdminOrders.js ★ Connected to API
-│   │   ├── booking/
-│   │   ├── home/
-│   │   ├── tracking/
-│   │   │   └── TrackOrder.js ★ Connected to API
-│   │   └── transfers/
-│   ├── App.js
-│   └── i18n.js
-└── test_reports/
-    └── iteration_3.json
+/app/backend/
+├── server.py
+├── routes/
+│   ├── orders.py
+│   ├── auth.py
+│   └── cms.py
+└── models/
+    ├── order.py
+    ├── user.py
+    └── cms.py
 ```
 
 ---
 
 ## حالات الطلب
-1. ⏳ في انتظار الدفع (waiting_payment)
-2. 🔍 قيد المراجعة (under_review)
-3. ✅ تم القبول (approved)
-4. ❌ تم الرفض (rejected)
-
----
-
-## ⚠️ MOCKED Features
-- Admin Login: يستخدم بيانات محفوظة في localStorage
-- Form submissions (Booking/Transfers): لم تُربط بعد مع Backend
+1. ⏳ waiting_payment - في انتظار الدفع
+2. 🔍 under_review - قيد المراجعة
+3. ✅ approved - تم القبول
+4. ❌ rejected - تم الرفض
 
 ---
 
