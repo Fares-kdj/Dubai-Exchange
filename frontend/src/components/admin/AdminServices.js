@@ -42,7 +42,7 @@ const AdminServices = () => {
 
   useEffect(() => {
     fetchServices();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem('adminToken');
