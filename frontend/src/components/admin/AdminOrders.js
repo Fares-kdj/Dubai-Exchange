@@ -186,16 +186,16 @@ const AdminOrders = () => {
                     <span className="font-mono font-medium text-slate-900">{order.id}</span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="text-sm text-slate-600">{order.typeLabel}</span>
+                    <span className="text-sm text-slate-600">{orderTypeLabels[order.order_type] || order.order_type}</span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="font-medium text-slate-900">{order.customer}</span>
+                    <span className="font-medium text-slate-900">{order.customer_name || 'غير محدد'}</span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="text-sm text-slate-600 font-mono">{order.phone}</span>
+                    <span className="text-sm text-slate-600 font-mono">{order.phone || 'غير محدد'}</span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="font-medium text-slate-900">{order.amount}</span>
+                    <span className="font-medium text-slate-900">{order.amount || 'غير محدد'}</span>
                   </td>
                   <td className="px-6 py-4">
                     <Select defaultValue={order.status} onValueChange={(v) => handleStatusChange(order.id, v)}>
