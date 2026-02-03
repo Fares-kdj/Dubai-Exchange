@@ -1,0 +1,169 @@
+<analysis>**original_problem_statement:**
+The user wants to build a full-stack website for Khair Baghdad for Exchange, a financial services company.
+
+**PRODUCT REQUIREMENTS:**
+- **Platform:** A modern, premium, and trustworthy fintech website with a React frontend and FastAPI backend.
+- **Languages:** Multi-language support with Arabic (RTL) as the default, plus English (LTR) and Kurdish. All text must be manageable via a CMS.
+- **Core Pages:**
+    1.  **Landing Page:** A visually appealing homepage showcasing services, a live currency converter, and trust elements. (COMPLETED)
+    2.  **Traveler USD Booking Page:** A multi-step flow (Terms -> Form -> Success) for users to book US dollars for travel, including document uploads. (COMPLETED)
+    3.  **Money Transfers Page:** Separate flows for Local (Iraq) and International transfers (Western Union, MoneyGram, and a country-based wizard). (COMPLETED)
+    4.  **Track Order Page:** A page for users to search for their order by ID and type to view full details and status. (PENDING)
+    5.  **Admin Dashboard:** A comprehensive backend panel for managing the entire site without code changes. This includes an admin login, order management, a dynamic form builder, a CMS for all text content, a rates engine (manual/auto), PDF receipt generation with automatic stamps, and an SMS notification system. (PENDING)
+- **Key Features:**
+    - **No Live Payments:** All payments are handled by the user uploading an image as proof of payment.
+    - **Unified Order System:** All services create an order with a shared status model: , , , .
+    - **Dynamic Forms:** The admin should be able to build and modify the forms for each service.
+    - **PDF Generation:** The system must generate official PDF receipts for traveler bookings.
+- **Design:** A modern, white-background theme with 3D elements, animations, and high-quality images, blending Luxury Fintech with Modern Tech.
+
+**User's preferred language**: Arabic. The user communicates primarily in Arabic. The next agent MUST respond in Arabic.
+
+**what currently exists?**
+- A full-stack application foundation with a React frontend and a placeholder FastAPI backend.
+- The **Landing Page** is fully implemented and styled.
+- The **Traveler USD Booking** page flow (Phase 2) is fully implemented on the frontend and has been tested.
+- The **Money Transfers** page flow (Phase 3), including the hub, local transfer, international selector, WU/MG forms, and the country-based wizard, is fully implemented on the frontend and tested.
+- Skeleton components for the **Track Order** page and the **Admin Dashboard** have been created but contain no implementation logic.
+- The backend is non-functional; it's a single  file with no APIs. All frontend functionality is currently mocked.
+
+**Last working item**:
+- **Last item agent was working:** The agent created the initial placeholder component files for the next phases of the project: the Track Order page and the Admin Dashboard.
+    - 
+    - 
+    - 
+    - 
+    - 
+- **Status:** NOT STARTED (The files are created, but implementation of the features has not begun).
+- **Agent Testing Done:** N
+- **Which testing method agent to use?** Both. The Track Order page will require a backend testing agent to verify the new API endpoint and a frontend agent to test the UI flow. The Admin Dashboard will require extensive testing for both frontend and backend.
+- **User Testing Done:** N
+
+**All Pending/In progress Issue list**:
+There are no pending high-priority issues or bugs. The previous critical bugs (blank screen on the booking page and the  error) have been resolved.
+
+**In progress Task List**:
+- **Task 1: Implement Track Order Page (P0)**
+  - **Description:** Build the functionality for the Track Order page as per the user's detailed prompt. This is the next phase of the project.
+  - **Where to resume:** Start by implementing the UI in . This includes the search panel (Order ID, Order Type) and the results display area.
+  - **What will be achieved with this?** A user-facing page to track the status and details of submitted orders. This requires building the first functional backend API endpoint to fetch order data.
+  - **Status:** NOT STARTED
+  - **Should Test frontend/backend/both after fix?** Both.
+  - **Blocked on something:** Backend API development. The agent must first create an endpoint (e.g., ) and a mock database entry to test against.
+
+**Upcoming and Future Tasks**
+- **Upcoming Tasks:**
+    - **P0: Backend for All Services:** This is a critical parallel task. The agent must begin building the FastAPI backend to support the frontend flows that have been created. This includes:
+        - Structuring the backend into a scalable architecture (e.g., , , ).
+        - Defining the MongoDB schema for  to accommodate all service types.
+        - Creating API endpoints to handle form submissions for Traveler Booking and all Money Transfer types.
+        - Implementing file upload handling for documents and payment proofs.
+    - **P1: Implement Admin Login (Phase 5):** Create the UI and backend logic for the admin login page at .
+- **Future Tasks:**
+    - **P2: Full Admin Dashboard Implementation (Phase 5):** This is a very large epic, based on the user's detailed prompt.
+        - **Order Management:** Build the UI and APIs for viewing, filtering, searching, and managing all orders.
+        - **CMS:** Create the system to manage all website text content.
+        - **Rates Engine:** Develop the UI and logic for managing currency exchange rates.
+        - **Dynamic Form Builder:** A system to allow admins to create and modify service forms.
+        - **PDF Generation & Stamps:** Logic for creating official PDF receipts with dynamic stamps.
+        - **SMS Notifications:** Integration with an SMS provider and management of message templates.
+        - **Roles & Permissions:** Implement the defined user roles (Owner, Staff, Reviewer).
+
+**Completed work in this session**
+- **Bug Fix: Blank Screen on Booking Page:** Resolved a critical rendering error caused by escaped quotes () in JSX.
+- **Bug Fix:  Crash:** Fixed a  error by simplifying the component code.
+- **Feature: Traveler USD Booking (Phase 2):**
+  - Completed the entire multi-step frontend flow (, , ).
+  - Successfully tested the UI flow using the testing agent.
+- **Feature: Money Transfers (Phase 3):**
+  - Implemented the complete frontend for all transfer types: , , , , , , and .
+  - Added all required routes in .
+  - Successfully tested the UI flows using the testing agent.
+- **Enhancement:** Added navigation links from the homepage services section to the new feature pages.
+
+**Earlier issues found/mentioned but not fixed**
+- **Issue 1: ESLint Warnings**
+    - **Debug checklist:** Run yarn run v1.22.22
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command. in the  directory to see the warnings. They are likely related to unused variables or dependency array issues in  hooks.
+    - **Why to solve this issue and what will be achieved with this?** Fixing these improves code quality and prevents potential subtle bugs.
+    - **Should Test frontend/backend/both after fix:** Frontend (linting).
+    - **Is recurring issue?** N
+
+**Known issue recurrence from previous fork**
+- N/A.
+
+**Code Architecture**
+
+
+**Key Technical Concepts**
+- **Frontend:** React, Tailwind CSS, , shadcn/ui components,  for i18n.
+- **Backend:** FastAPI, Pymongo.
+- **Architecture:** The application follows a component-based structure on the frontend. Multi-step forms are managed using local component state. The backend is currently a monolith  that needs to be structured.
+
+**key DB schema**
+- Not yet implemented. A flexible  collection is required in MongoDB. A proposed structure:
+  - : string (unique)
+  - : string (e.g., traveler_booking, local_transfer)
+  - : string (waiting_for_payment, under_review, approved, rejected)
+  - : object
+  - : object (flexible schema for different services)
+  - : array of objects { : string, : string }
+  - : array of objects { : string, : datetime }
+  - : datetime
+  - : datetime
+
+**changes in tech stack**
+- None.
+
+**All files of reference**
+- **Created/Modified:**
+  - All files in , , , and . These files contain the UI for the main application features.
+  - : Updated with routes for all new pages.
+  - : Updated with translations for new components.
+  - : Updated to link to the new feature pages.
+  - : Created and updated to track progress.
+
+**Areas that need refactoring**:
+- **Backend Architecture:** The single  file must be broken down into a proper structure (e.g., , , ) to handle the upcoming API complexity.
+- **Hardcoded Data:**  was simplified to fix a bug and now contains hardcoded data for transfer methods. This must be fetched from the backend.
+- **Component Refactoring:**  could be broken into smaller child components as suggested in the previous handoff.
+
+**key api endpoints**
+-  (Placeholder).
+- No functional CRUD endpoints have been implemented. The immediate need is for endpoints to create and retrieve orders.
+
+**Critical Info for New Agent**
+- **PRIORITY:** The next step is to build the **Track Order page (Phase 4)**. However, this is impossible without a backend. The agent MUST begin building the backend APIs and database schema in parallel. Start with a simple API to create and retrieve a mock order to unblock the Track Order page development.
+- **MOCKED FRONTEND:** Be aware that the entire application is currently a frontend prototype. No data is being saved. All success messages are cosmetic.
+- **USER PROMPTS:** The user has provided extremely detailed prompts for all remaining work (Track Order, Admin Dashboard). These should be followed closely.
+
+**documents and test reports created in this job**
+- 
+- 
+- 
+
+**Last 10 User Messages and any pending HUMAN messages**
+- The user has provided a series of very detailed prompts outlining the complete requirements for the remaining sections of the website: Track Order Page, Admin Dashboard (including login, roles, CMS, PDF generation, etc.), a reusable Success Page template, and the Global Rules for the order system. This effectively defines the entire backlog. The agent has acknowledged these and is starting with the next phase.
+
+**Project Health Check:**
+- **Broken:** No part of the UI is currently broken.
+- **Mocked:** The entire application logic is mocked on the frontend. The backend is non-existent, meaning no data persistence, order tracking, or real functionality is in place.
+
+**3rd Party Integrations**
+- 
+- 
+-  & 
+
+**Testing status**
+- **Testing agent used after significant changes:** YES (for Traveler Booking and Money Transfer frontend flows).
+- **Troubleshoot agent used after agent stuck in loop:** NO
+- **Test files created:** None.
+- **Known regressions:** None.
+
+**Credentials to test flow:**
+N/A
+
+**What agent forgot to execute**
+- **Backend Development:** The most significant omission is the lack of any backend development. While the frontend has progressed significantly, it remains a disconnected UI shell.
+- **Linting:** Minor ESLint warnings reported by the testing agent were not addressed.
+- **Refactoring:** A suggestion to refactor  was not acted upon.</analysis>
