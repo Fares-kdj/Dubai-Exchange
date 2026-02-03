@@ -175,7 +175,7 @@ const AdminOrders = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {filteredOrders.map(order => (
+              {orders.map(order => (
                 <motion.tr
                   key={order.id}
                   initial={{ opacity: 0 }}
