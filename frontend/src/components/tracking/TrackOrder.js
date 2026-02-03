@@ -104,14 +104,41 @@ const TrackOrder = () => {
     setError('');
     setLoading(true);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    const order = mockOrders[searchData.orderId.toUpperCase()];
-    
-    if (order && order.type === searchData.orderType) {
-      setOrderResult({ ...order, orderId: searchData.orderId.toUpperCase() });
-    } else {
+    try {
+      const response = await fetch(`${API_URL}/api/orders/track`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          order_id: searchData.orderId.trim(),
+          order_type: searchData.orderType
+        })
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Order not found');
+      }
+      
+      const order = await response.json();
+      // Map API response to component format
+      setOrderResult({
+        orderId: order.order_id,
+        type: order.order_type,
+        status: order.status,
+        createdAt: order.created_at,
+        customer: {
+          fullName: order.customer?.full_name || '',
+          phone: order.customer?.phone || ''
+        },
+        details: order.details || {},
+        documents: {
+          passport: order.documents?.some(d => d.doc_type === 'passport'),
+          ticket: order.documents?.some(d => d.doc_type === 'ticket'),
+          senderId: order.documents?.some(d => d.doc_type === 'id'),
+          paymentProof: order.payment_proofs?.length > 0
+        }
+      });
+    } catch (err) {
       setError(isArabic ? 'الطلب غير موجود. تأكد من رقم الطلب ونوعه.' : 'Order not found. Verify order ID and type.');
       setOrderResult(null);
     }
