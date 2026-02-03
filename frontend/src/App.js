@@ -53,6 +53,8 @@ function App() {
               <Route path="services" element={<AdminServices />} />
               <Route path="countries" element={<AdminCountries />} />
               <Route path="rates" element={<AdminRates />} />
+              <Route path="cms" element={<AdminCMS />} />
+              <Route path="branding" element={<AdminBranding />} />
               <Route path="users" element={<AdminUsers />} />
             </Route>
           </Routes>
