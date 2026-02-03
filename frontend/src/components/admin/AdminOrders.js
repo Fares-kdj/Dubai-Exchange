@@ -178,29 +178,29 @@ const AdminOrders = () => {
             <tbody className="divide-y divide-slate-100">
               {orders.map(order => (
                 <motion.tr
-                  key={order.id}
+                  key={order.order_id}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   className="hover:bg-slate-50"
                 >
                   <td className="px-6 py-4">
-                    <span className="font-mono font-medium text-slate-900">{order.id}</span>
+                    <span className="font-mono font-medium text-slate-900">{order.order_id}</span>
                   </td>
                   <td className="px-6 py-4">
                     <span className="text-sm text-slate-600">{orderTypeLabels[order.order_type] || order.order_type}</span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="font-medium text-slate-900">{order.customer_name || 'غير محدد'}</span>
+                    <span className="font-medium text-slate-900">{order.customer?.full_name}</span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="text-sm text-slate-600 font-mono">{order.phone || 'غير محدد'}</span>
+                    <span className="text-sm text-slate-600 font-mono">{order.customer?.phone}</span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="font-medium text-slate-900">{order.amount || 'غير محدد'}</span>
+                    <span className="font-medium text-slate-900">{order.details?.usdAmount ? `$${order.details.usdAmount}` : order.details?.amount || '-'}</span>
                   </td>
                   <td className="px-6 py-4">
-                    <Select defaultValue={order.status} onValueChange={(v) => handleStatusChange(order.id, v)}>
-                      <SelectTrigger className={`w-36 ${statusConfig[order.status].color} border-0`}>
+                    <Select defaultValue={order.status} onValueChange={(v) => handleStatusChange(order.order_id, v)}>
+                      <SelectTrigger className={`w-36 ${statusConfig[order.status]?.color || 'bg-slate-100'} border-0`}>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -212,7 +212,7 @@ const AdminOrders = () => {
                     </Select>
                   </td>
                   <td className="px-6 py-4">
-                    {order.payment_proof ? (
+                    {order.payment_proofs?.length > 0 ? (
                       <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">مرفوع</span>
                     ) : (
                       <span className="px-2 py-1 bg-slate-100 text-slate-500 text-xs rounded-full">غير مرفوع</span>
@@ -229,11 +229,7 @@ const AdminOrders = () => {
                       <button className="p-2 hover:bg-amber-100 rounded-lg text-amber-600" title="تعديل">
                         <Edit className="w-4 h-4" />
                       </button>
-                      <button 
-                        onClick={() => handleDelete(order.id)}
-                        className="p-2 hover:bg-red-100 rounded-lg text-red-600" 
-                        title="حذف"
-                      >
+                      <button onClick={() => handleDelete(order.order_id)} className="p-2 hover:bg-red-100 rounded-lg text-red-600" title="حذف">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
