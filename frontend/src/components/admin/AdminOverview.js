@@ -38,12 +38,41 @@ const AdminOverview = () => {
     { label: 'مقبول', value: statsData?.approved || 0, icon: CheckCircle, color: 'bg-green-500', change: '+15%', up: true },
   ];
 
+  const orderTypeLabels = {
+    traveler: 'حجز مسافرين',
+    local: 'تحويل محلي',
+    western_union: 'ويسترن يونيون',
+    moneygram: 'موني جرام',
+    country_based: 'حسب الدولة'
+  };
+
   const statusConfig = {
     waiting_payment: { label: 'في انتظار الدفع', color: 'bg-amber-100 text-amber-800' },
     under_review: { label: 'قيد المراجعة', color: 'bg-yellow-100 text-yellow-800' },
     approved: { label: 'مقبول', color: 'bg-green-100 text-green-800' },
     rejected: { label: 'مرفوض', color: 'bg-red-100 text-red-800' },
   };
+
+  const formatTime = (dateStr) => {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 60) return `منذ ${diffMins} دقيقة`;
+    if (diffHours < 24) return `منذ ${diffHours} ساعة`;
+    return `منذ ${diffDays} يوم`;
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <RefreshCw className="w-8 h-8 animate-spin text-[#D4AF37]" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
