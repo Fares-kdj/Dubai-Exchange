@@ -50,6 +50,7 @@ function App() {
               <Route path="orders" element={<AdminOrders />} />
               <Route path="services" element={<AdminServices />} />
               <Route path="countries" element={<AdminCountries />} />
+              <Route path="rates" element={<AdminRates />} />
               <Route path="users" element={<AdminUsers />} />
             </Route>
           </Routes>
