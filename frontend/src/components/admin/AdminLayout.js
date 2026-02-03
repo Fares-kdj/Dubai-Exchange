@@ -3,8 +3,8 @@ import { useNavigate, useLocation, Outlet, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   LayoutDashboard, Package, Settings, FileText, DollarSign, 
-  Palette, Phone, Stamp, MessageSquare, Users, LogOut, 
-  Menu, X, Search, Bell, ChevronDown, Globe
+  Palette, Users, LogOut, 
+  Menu, X, Search, Bell, Globe
 } from 'lucide-react';
 
 const AdminLayout = () => {
