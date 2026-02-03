@@ -11,12 +11,7 @@ const AdminLogin = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-
-  // Mock credentials
-  const validCredentials = {
-    'admin@khairbaghdad.com': { password: 'admin123', role: 'owner' },
-    'staff@khairbaghdad.com': { password: 'staff123', role: 'staff' }
-  };
+  const API_URL = process.env.REACT_APP_BACKEND_URL;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,16 +27,31 @@ const AdminLogin = () => {
     }
 
     setLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    try {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password
+        })
+      });
 
-    const user = validCredentials[formData.email.toLowerCase()];
-    if (user && user.password === formData.password) {
-      // Store auth in localStorage (in production use proper auth)
-      localStorage.setItem('adminAuth', JSON.stringify({ email: formData.email, role: user.role }));
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.detail || 'بيانات الدخول غير صحيحة');
+      }
+
+      // Store token and user info
+      localStorage.setItem('adminToken', data.access_token);
+      localStorage.setItem('adminUser', JSON.stringify(data.user));
       navigate('/admin');
-    } else {
-      setError('بيانات الدخول غير صحيحة');
+    } catch (err) {
+      setError(err.message || 'حدث خطأ في الاتصال');
     }
+    
     setLoading(false);
   };
 
