@@ -94,20 +94,58 @@ const LocalTransfer = () => {
     }
 
     setLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    const API_URL = process.env.REACT_APP_BACKEND_URL;
     
-    // Navigate to success page with order data
-    navigate('/transfers/success', { 
-      state: { 
-        orderData: {
-          ...formData,
-          type: 'local',
+    try {
+      const orderData = {
+        order_type: 'local',
+        customer: {
+          full_name: formData.senderName,
+          phone: formData.senderPhone
+        },
+        details: {
+          senderName: formData.senderName,
+          senderPhone: formData.senderPhone,
+          senderProvince: formData.senderProvince,
+          receiverName: formData.receiverName,
+          receiverPhone: formData.receiverPhone,
+          receiverProvince: formData.receiverProvince,
+          amount: formData.amount,
           serviceFee: calculateFee(),
           total: calculateTotal(),
-          orderId: `LOC-${Date.now().toString().slice(-8)}`
+          paymentMethod: formData.paymentMethod,
+          notes: formData.notes
         }
+      };
+      
+      const response = await fetch(`${API_URL}/api/orders`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData)
+      });
+      
+      if (response.ok) {
+        const order = await response.json();
+        navigate('/transfers/success', { 
+          state: { 
+            orderData: {
+              ...formData,
+              type: 'local',
+              serviceFee: calculateFee(),
+              total: calculateTotal(),
+              orderId: order.order_id
+            }
+          }
+        });
+      } else {
+        throw new Error('Failed to create order');
       }
-    });
+    } catch (err) {
+      console.error('Error:', err);
+      alert(isArabic ? 'حدث خطأ. حاول مرة أخرى.' : 'An error occurred.');
+    }
+    
+    setLoading(false);
   };
 
   const getProvinceLabel = (value) => {
