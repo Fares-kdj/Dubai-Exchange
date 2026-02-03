@@ -128,6 +128,7 @@ const AdminOrders = () => {
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
               placeholder="بحث برقم الطلب أو اسم العميل..."
               className="pl-10"
             />
