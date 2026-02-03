@@ -152,13 +152,15 @@ const BookingForm = ({ onSubmit }) => {
       
       if (response.ok) {
         const order = await response.json();
-        onSubmit(Object.assign({}, formData, { orderId: order.order_id }));
+        onSubmit({ ...formData, orderId: order.order_id });
       } else {
-        throw new Error('Failed');
+        throw new Error('Failed to create order');
       }
     } catch (err) {
       console.error('Error:', err);
-      alert(currentLanguage === 'ar' ? 'حدث خطأ' : 'Error occurred');
+      alert(currentLanguage === 'ar' ? 'حدث خطأ. حاول مرة أخرى.' : 'An error occurred. Please try again.');
+      setLoading(false);
+      return;
     }
     
     setLoading(false);
