@@ -36,66 +36,109 @@
 - بطاقتين: تحويل محلي + تحويل دولي
 
 #### 3.2 التحويل المحلي (Local Transfer)
-- استمارة كاملة:
-  - اسم المرسل/المستلم
-  - محافظة المرسل/المستلم (18 محافظة عراقية)
-  - رقم الهاتف
-  - المبلغ مع حساب رسوم الخدمة (2%)
-  - طريقة الدفع
+- استمارة كاملة مع حساب رسوم الخدمة (2%)
 - صفحة نجاح مع QR Code
 
 #### 3.3 التحويل الدولي (International)
-**صفحة اختيار نوع التحويل:**
-- ويسترن يونيون
-- موني جرام
-- تحويل حسب الدولة
+- Western Union
+- MoneyGram
+- Country-based Wizard (5 خطوات)
 
-**Western Union:**
-- استمارة مع رفع صورة الهوية
-- اختيار العملة والدولة
-- حساب المبلغ بالدينار العراقي
+### المرحلة 4: Backend API ✅
+تاريخ الإنجاز: فبراير 2026
 
-**MoneyGram:**
-- نفس ميزات Western Union
+#### 4.1 هيكل Backend
+```
+/app/backend/
+├── server.py           # Main FastAPI app
+├── routes/
+│   └── orders.py       # Orders API routes
+├── models/
+│   └── order.py        # Order Pydantic models
+└── requirements.txt
+```
 
-**Country-based Wizard (5 خطوات):**
-1. إدخال المبلغ
-2. اختيار الدولة (مع أعلام وبحث)
-3. اختيار طريقة التحويل المحلية (ديناميكي حسب الدولة)
-4. ملخص التحويل
-5. معلومات المرسل والمستلم
+#### 4.2 Orders API Endpoints
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | /api/orders | إنشاء طلب جديد |
+| POST | /api/orders/track | تتبع طلب |
+| GET | /api/orders | قائمة الطلبات (مع فلاتر وصفحات) |
+| GET | /api/orders/{id} | جلب طلب بالـ ID |
+| PUT | /api/orders/{id} | تحديث حالة الطلب |
+| DELETE | /api/orders/{id} | حذف طلب |
+| POST | /api/orders/{id}/payment-proof | رفع إثبات دفع |
+| GET | /api/orders/stats/summary | إحصائيات الطلبات |
 
-**الدول المدعومة:**
-- الجزائر (بريدي موب، CCP، بنكي)
-- مصر (فودافون كاش، إنستاباي، بنكي)
-- تركيا (باباره، EFT، بنكي)
-- الأردن (كليك، بنكي)
-- الهند (UPI، بنكي)
-- باكستان (جاز كاش، بنكي)
+#### 4.3 Order Schema
+```json
+{
+  "order_id": "TRV-XXXXXXXX",
+  "order_type": "traveler|local|western_union|moneygram|country_based",
+  "status": "waiting_payment|under_review|approved|rejected",
+  "customer": {
+    "full_name": "string",
+    "phone": "string",
+    "email": "string (optional)"
+  },
+  "details": { /* flexible schema */ },
+  "documents": [],
+  "payment_proofs": [],
+  "created_at": "ISO datetime",
+  "updated_at": "ISO datetime"
+}
+```
+
+### المرحلة 5: صفحة تتبع الطلب ✅
+تاريخ الإنجاز: فبراير 2026
+
+- البحث برقم الطلب ونوعه
+- عرض تفاصيل الطلب الكاملة
+- شريط تقدم الحالة
+- QR Code للطلب
+- رفع إثبات الدفع
+- متصل بـ API الحقيقي
+
+### المرحلة 6: لوحة تحكم المدير ✅
+تاريخ الإنجاز: فبراير 2026
+
+#### 6.1 تسجيل الدخول
+- صفحة تسجيل دخول جميلة
+- بيانات تجريبية: admin@khairbaghdad.com / admin123
+- ⚠️ MOCKED: يستخدم بيانات محفوظة في Frontend
+
+#### 6.2 لوحة التحكم الرئيسية
+- إحصائيات من API الحقيقي (إجمالي الطلبات، الحالات)
+- جدول أحدث الطلبات من قاعدة البيانات
+- بطاقات الإجراءات السريعة
+
+#### 6.3 إدارة الطلبات
+- جدول كامل بجميع الطلبات من API
+- فلاتر حسب النوع والحالة
+- البحث برقم الطلب أو اسم العميل
+- تغيير حالة الطلب
+- حذف الطلبات
+- صفحات متعددة (Pagination)
 
 ---
 
 ## المهام القادمة 📋
 
-### المرحلة 4: Backend API (P1)
-- [ ] إنشاء endpoints للحجوزات والتحويلات
-- [ ] رفع الملفات وحفظها
-- [ ] حفظ الطلبات في MongoDB
-- [ ] API لجلب أسعار الصرف
+### P0 - عالي الأولوية
+- [ ] ربط Frontend للحجوزات والتحويلات مع Backend API
+- [ ] تنفيذ رفع الملفات الحقيقي (documents, payment proofs)
+- [ ] تنفيذ Backend Auth للـ Admin (JWT)
 
-### المرحلة 5: صفحة تتبع الطلبات (P2)
-- [ ] البحث برقم الطلب
-- [ ] عرض تفاصيل الطلب والحالة
-- [ ] رفع إثبات الدفع
-
-### المرحلة 6: لوحة تحكم المدير (P3)
-- [ ] تسجيل دخول المدير
-- [ ] إدارة الطلبات
-- [ ] CMS لتعديل المحتوى
-- [ ] Form Builder
-- [ ] Rates Engine
+### P1 - متوسط الأولوية
+- [ ] CMS لتعديل محتوى الموقع
+- [ ] أسعار الصرف (Rates Engine)
 - [ ] PDF Generator للإيصالات
-- [ ] نظام SMS
+
+### P2 - منخفض الأولوية
+- [ ] Form Builder ديناميكي
+- [ ] نظام إشعارات SMS
+- [ ] أختام رقمية للإيصالات
+- [ ] Roles & Permissions للمستخدمين
 
 ---
 
@@ -110,48 +153,57 @@
 - react-router-dom
 - qrcode.react
 
-### Backend (مطلوب)
+### Backend
 - FastAPI (Python)
-- MongoDB
+- MongoDB (via Motor async driver)
 - File uploads
+- Pydantic models
 
-### حالات الطلب
-1. في انتظار الدفع
-2. قيد المراجعة
-3. تم القبول
-4. تم الرفض
-
----
-
-## MOCKED Features (تحتاج تنفيذ Backend)
-- أسعار الصرف (hardcoded)
-- رسوم الخدمة (2% hardcoded)
-- حفظ الطلبات (setTimeout simulation)
-- طرق التحويل حسب الدولة (hardcoded)
+### API URLs
+- Frontend: https://money-transfer-hub-10.preview.emergentagent.com
+- Backend API: https://money-transfer-hub-10.preview.emergentagent.com/api
 
 ---
 
 ## الملفات الرئيسية
 ```
-/app/frontend/src/
-├── components/
-│   ├── booking/           # حجز الدولار للمسافرين
-│   ├── home/              # الصفحة الرئيسية
-│   ├── transfers/         # التحويلات المالية
-│   │   ├── TransfersHub.js
-│   │   ├── LocalTransfer.js
-│   │   ├── InternationalSelector.js
-│   │   ├── WesternUnion.js
-│   │   ├── MoneyGram.js
-│   │   ├── CountryWizard.js
-│   │   └── TransferSuccess.js
-│   └── ui/                # shadcn components
-├── context/
-│   └── LanguageContext.js
-├── App.js
-└── i18n.js
+/app/
+├── backend/
+│   ├── server.py
+│   ├── routes/orders.py
+│   └── models/order.py
+├── frontend/src/
+│   ├── components/
+│   │   ├── admin/
+│   │   │   ├── AdminLogin.js
+│   │   │   ├── AdminLayout.js
+│   │   │   ├── AdminOverview.js ★ Connected to API
+│   │   │   └── AdminOrders.js ★ Connected to API
+│   │   ├── booking/
+│   │   ├── home/
+│   │   ├── tracking/
+│   │   │   └── TrackOrder.js ★ Connected to API
+│   │   └── transfers/
+│   ├── App.js
+│   └── i18n.js
+└── test_reports/
+    └── iteration_3.json
 ```
 
 ---
 
-آخر تحديث: ديسمبر 2025
+## حالات الطلب
+1. ⏳ في انتظار الدفع (waiting_payment)
+2. 🔍 قيد المراجعة (under_review)
+3. ✅ تم القبول (approved)
+4. ❌ تم الرفض (rejected)
+
+---
+
+## ⚠️ MOCKED Features
+- Admin Login: يستخدم بيانات محفوظة في localStorage
+- Form submissions (Booking/Transfers): لم تُربط بعد مع Backend
+
+---
+
+آخر تحديث: فبراير 2026
