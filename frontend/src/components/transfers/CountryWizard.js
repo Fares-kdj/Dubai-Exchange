@@ -2,11 +2,67 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ArrowRight, DollarSign, Globe, CreditCard, CheckCircle, AlertCircle, Search, Clock, Zap, Building2, Star, User, Phone } from 'lucide-react';
+import { ArrowLeft, ArrowRight, DollarSign, Globe, CreditCard, CheckCircle, AlertCircle, Search, Clock, User, Phone, Star } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Header from '../home/Header';
 import Footer from '../home/Footer';
+
+// Countries data
+const countriesData = [
+  { 
+    code: 'dz', nameAr: 'الجزائر', nameEn: 'Algeria', flag: '🇩🇿',
+    methods: [
+      { id: 'baridimob', nameAr: 'بريدي موب', nameEn: 'Baridi Mob', rate: 140, duration: '1-2 hours', badge: 'fastest' },
+      { id: 'ccp', nameAr: 'CCP', nameEn: 'CCP', rate: 138, duration: '1-3 days' },
+      { id: 'bank', nameAr: 'تحويل بنكي', nameEn: 'Bank Transfer', rate: 136, duration: '2-5 days' }
+    ]
+  },
+  { 
+    code: 'eg', nameAr: 'مصر', nameEn: 'Egypt', flag: '🇪🇬',
+    methods: [
+      { id: 'vodafone_cash', nameAr: 'فودافون كاش', nameEn: 'Vodafone Cash', rate: 50, duration: 'Instant', badge: 'popular' },
+      { id: 'instapay', nameAr: 'إنستاباي', nameEn: 'InstaPay', rate: 49.5, duration: '1-2 hours' },
+      { id: 'bank', nameAr: 'تحويل بنكي', nameEn: 'Bank Transfer', rate: 48, duration: '2-3 days' }
+    ]
+  },
+  { 
+    code: 'tr', nameAr: 'تركيا', nameEn: 'Turkey', flag: '🇹🇷',
+    methods: [
+      { id: 'papara', nameAr: 'باباره', nameEn: 'Papara', rate: 34, duration: 'Instant', badge: 'fastest' },
+      { id: 'eft', nameAr: 'EFT', nameEn: 'EFT', rate: 33.5, duration: '1-2 hours' },
+      { id: 'bank', nameAr: 'تحويل بنكي', nameEn: 'Bank Transfer', rate: 33, duration: '1-3 days' }
+    ]
+  },
+  { 
+    code: 'jo', nameAr: 'الأردن', nameEn: 'Jordan', flag: '🇯🇴',
+    methods: [
+      { id: 'cliq', nameAr: 'كليك', nameEn: 'CliQ', rate: 2110, duration: '1-2 hours', badge: 'popular' },
+      { id: 'bank', nameAr: 'تحويل بنكي', nameEn: 'Bank Transfer', rate: 2100, duration: '2-3 days' }
+    ]
+  },
+  { 
+    code: 'lb', nameAr: 'لبنان', nameEn: 'Lebanon', flag: '🇱🇧',
+    methods: [
+      { id: 'omt', nameAr: 'OMT', nameEn: 'OMT', rate: 89500, duration: '1-3 hours' },
+      { id: 'bank', nameAr: 'تحويل بنكي', nameEn: 'Bank Transfer', rate: 89000, duration: '2-5 days' }
+    ]
+  },
+  { 
+    code: 'in', nameAr: 'الهند', nameEn: 'India', flag: '🇮🇳',
+    methods: [
+      { id: 'upi', nameAr: 'UPI', nameEn: 'UPI', rate: 83, duration: 'Instant', badge: 'fastest' },
+      { id: 'bank', nameAr: 'تحويل بنكي', nameEn: 'Bank Transfer', rate: 82, duration: '1-3 days' }
+    ]
+  },
+  { 
+    code: 'pk', nameAr: 'باكستان', nameEn: 'Pakistan', flag: '🇵🇰',
+    methods: [
+      { id: 'jazzcash', nameAr: 'جاز كاش', nameEn: 'JazzCash', rate: 278, duration: 'Instant', badge: 'popular' },
+      { id: 'bank', nameAr: 'تحويل بنكي', nameEn: 'Bank Transfer', rate: 276, duration: '2-3 days' }
+    ]
+  }
+];
 
 const CountryWizard = () => {
   const navigate = useNavigate();
@@ -14,85 +70,17 @@ const CountryWizard = () => {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [searchQuery, setSearchQuery] = useState('');
 
   const [wizardData, setWizardData] = useState({
     amount: '',
-    currency: 'USD',
     country: null,
     method: null,
-    // Form fields
     senderName: '',
     receiverName: '',
     phone: '',
     accountNumber: ''
   });
-
-  const [searchQuery, setSearchQuery] = useState('');
-
-  // Countries with their local transfer methods
-  const countriesData = [
-    { 
-      code: 'dz', nameAr: 'الجزائر', nameEn: 'Algeria', flag: '🇩🇿',
-      methods: [
-        { id: 'baridimob', nameAr: 'بريدي موب', nameEn: 'Baridi Mob', rate: 140, duration: '1-2 hours', badge: 'fastest' },
-        { id: 'ccp', nameAr: 'CCP', nameEn: 'CCP', rate: 138, duration: '1-3 days' },
-        { id: 'bank', nameAr: 'تحويل بنكي', nameEn: 'Bank Transfer', rate: 136, duration: '2-5 days' }
-      ]
-    },
-    { 
-      code: 'eg', nameAr: 'مصر', nameEn: 'Egypt', flag: '🇪🇬',
-      methods: [
-        { id: 'vodafone_cash', nameAr: 'فودافون كاش', nameEn: 'Vodafone Cash', rate: 50, duration: 'Instant', badge: 'popular' },
-        { id: 'instapay', nameAr: 'إنستاباي', nameEn: 'InstaPay', rate: 49.5, duration: '1-2 hours' },
-        { id: 'bank', nameAr: 'تحويل بنكي', nameEn: 'Bank Transfer', rate: 48, duration: '2-3 days' }
-      ]
-    },
-    { 
-      code: 'tr', nameAr: 'تركيا', nameEn: 'Turkey', flag: '🇹🇷',
-      methods: [
-        { id: 'papara', nameAr: 'باباره', nameEn: 'Papara', rate: 34, duration: 'Instant', badge: 'fastest' },
-        { id: 'eft', nameAr: 'EFT', nameEn: 'EFT', rate: 33.5, duration: '1-2 hours' },
-        { id: 'bank', nameAr: 'تحويل بنكي', nameEn: 'Bank Transfer', rate: 33, duration: '1-3 days' }
-      ]
-    },
-    { 
-      code: 'jo', nameAr: 'الأردن', nameEn: 'Jordan', flag: '🇯🇴',
-      methods: [
-        { id: 'cliq', nameAr: 'كليك', nameEn: 'CliQ', rate: 2110, duration: '1-2 hours', badge: 'popular' },
-        { id: 'bank', nameAr: 'تحويل بنكي', nameEn: 'Bank Transfer', rate: 2100, duration: '2-3 days' }
-      ]
-    },
-    { 
-      code: 'lb', nameAr: 'لبنان', nameEn: 'Lebanon', flag: '🇱🇧',
-      methods: [
-        { id: 'omt', nameAr: 'OMT', nameEn: 'OMT', rate: 89500, duration: '1-3 hours' },
-        { id: 'bank', nameAr: 'تحويل بنكي', nameEn: 'Bank Transfer', rate: 89000, duration: '2-5 days' }
-      ]
-    },
-    { 
-      code: 'sy', nameAr: 'سوريا', nameEn: 'Syria', flag: '🇸🇾',
-      methods: [
-        { id: 'hawala', nameAr: 'حوالة', nameEn: 'Hawala', rate: 14500, duration: '1-2 days' },
-        { id: 'bank', nameAr: 'تحويل بنكي', nameEn: 'Bank Transfer', rate: 14000, duration: '3-5 days' }
-      ]
-    },
-    { 
-      code: 'in', nameAr: 'الهند', nameEn: 'India', flag: '🇮🇳',
-      methods: [
-        { id: 'upi', nameAr: 'UPI', nameEn: 'UPI', rate: 83, duration: 'Instant', badge: 'fastest' },
-        { id: 'imps', nameAr: 'IMPS', nameEn: 'IMPS', rate: 82.5, duration: '1-2 hours' },
-        { id: 'bank', nameAr: 'تحويل بنكي', nameEn: 'Bank Transfer', rate: 82, duration: '1-3 days' }
-      ]
-    },
-    { 
-      code: 'pk', nameAr: 'باكستان', nameEn: 'Pakistan', flag: '🇵🇰',
-      methods: [
-        { id: 'jazzcash', nameAr: 'جاز كاش', nameEn: 'JazzCash', rate: 278, duration: 'Instant', badge: 'popular' },
-        { id: 'easypaisa', nameAr: 'إيزي بيسا', nameEn: 'Easypaisa', rate: 277, duration: '1-2 hours' },
-        { id: 'bank', nameAr: 'تحويل بنكي', nameEn: 'Bank Transfer', rate: 276, duration: '2-3 days' }
-      ]
-    }
-  ];
 
   const filteredCountries = countriesData.filter(c => 
     c.nameAr.includes(searchQuery) || 
@@ -100,11 +88,11 @@ const CountryWizard = () => {
   );
 
   const selectedCountry = countriesData.find(c => c.code === wizardData.country);
+  const selectedMethod = selectedCountry?.methods.find(m => m.id === wizardData.method);
 
   const calculateReceiveAmount = () => {
-    if (!wizardData.amount || !wizardData.method) return 0;
-    const method = selectedCountry?.methods.find(m => m.id === wizardData.method);
-    return Math.round(parseFloat(wizardData.amount) * (method?.rate || 1));
+    if (!wizardData.amount || !selectedMethod) return 0;
+    return Math.round(parseFloat(wizardData.amount) * selectedMethod.rate);
   };
 
   const handleNext = () => {
@@ -130,22 +118,19 @@ const CountryWizard = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const validateForm = () => {
+  const handleSubmit = async () => {
     const newErrors = {};
     if (!wizardData.senderName.trim()) newErrors.senderName = currentLanguage === 'ar' ? 'مطلوب' : 'Required';
     if (!wizardData.receiverName.trim()) newErrors.receiverName = currentLanguage === 'ar' ? 'مطلوب' : 'Required';
     if (!wizardData.phone.trim()) newErrors.phone = currentLanguage === 'ar' ? 'مطلوب' : 'Required';
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async () => {
-    if (!validateForm()) return;
+    
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
     
     setLoading(true);
     await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    const method = selectedCountry?.methods.find(m => m.id === wizardData.method);
     
     navigate('/transfers/success', { 
       state: { 
@@ -153,7 +138,7 @@ const CountryWizard = () => {
           ...wizardData,
           type: 'country_based',
           countryName: currentLanguage === 'ar' ? selectedCountry?.nameAr : selectedCountry?.nameEn,
-          methodName: currentLanguage === 'ar' ? method?.nameAr : method?.nameEn,
+          methodName: currentLanguage === 'ar' ? selectedMethod?.nameAr : selectedMethod?.nameEn,
           receiveAmount: calculateReceiveAmount(),
           orderId: `CB-${Date.now().toString().slice(-8)}`
         }
@@ -161,7 +146,8 @@ const CountryWizard = () => {
     });
   };
 
-  const renderStepIndicator = () => (
+  // Step Indicator Component
+  const StepIndicator = () => (
     <div className="flex items-center justify-center gap-2 mb-8">
       {[1, 2, 3, 4, 5].map(s => (
         <React.Fragment key={s}>
@@ -205,8 +191,7 @@ const CountryWizard = () => {
             </h1>
           </motion.div>
 
-          {/* Step Indicator */}
-          {renderStepIndicator()}
+          <StepIndicator />
 
           <div className="max-w-2xl mx-auto">
             <AnimatePresence mode="wait">
@@ -245,7 +230,6 @@ const CountryWizard = () => {
                       />
                     </div>
                     {errors.amount && <p className="text-red-600 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.amount}</p>}
-                    
                     <p className="text-sm text-slate-500">
                       {currentLanguage === 'ar' ? 'الحد الأدنى: 10$ | الحد الأقصى: 5000$' : 'Min: $10 | Max: $5000'}
                     </p>
@@ -282,18 +266,16 @@ const CountryWizard = () => {
                     </h2>
                   </div>
 
-                  {/* Search */}
                   <div className="relative mb-6">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                     <Input
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="h-12 pl-12"
-                      placeholder={currentLanguage === 'ar' ? 'ابحث عن دولة...' : 'Search country...'}
+                      placeholder={currentLanguage === 'ar' ? 'ابحث...' : 'Search...'}
                     />
                   </div>
 
-                  {/* Countries Grid */}
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 max-h-[400px] overflow-y-auto">
                     {filteredCountries.map(country => (
                       <motion.button
@@ -323,7 +305,6 @@ const CountryWizard = () => {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     className="w-full mt-8 py-4 bg-slate-900 text-white font-bold rounded-2xl flex items-center justify-center gap-2"
-                    data-testid="wizard-next-2"
                   >
                     {currentLanguage === 'ar' ? 'التالي' : 'Next'}
                     <ArrowRight className="w-5 h-5" />
@@ -345,15 +326,9 @@ const CountryWizard = () => {
                       <CreditCard className="w-6 h-6 text-purple-600" />
                     </div>
                     <h2 className="text-2xl font-bold text-slate-900">
-                      {currentLanguage === 'ar' ? 'اختر طريقة التحويل' : 'Select Transfer Method'}
+                      {currentLanguage === 'ar' ? 'اختر طريقة التحويل' : 'Select Method'}
                     </h2>
                   </div>
-
-                  <p className="text-slate-600 mb-6">
-                    {currentLanguage === 'ar' 
-                      ? `طرق التحويل المتاحة في ${selectedCountry.nameAr}`
-                      : `Available methods in ${selectedCountry.nameEn}`}
-                  </p>
 
                   <div className="space-y-4">
                     {selectedCountry.methods.map(method => (
@@ -367,26 +342,18 @@ const CountryWizard = () => {
                             ? 'border-[#D4AF37] bg-[#D4AF37]/5 shadow-lg' 
                             : 'border-slate-200 hover:border-slate-300'
                         }`}
-                        data-testid={`method-${method.id}`}
                       >
                         {method.badge && (
-                          <span className="absolute -top-2 right-4 px-3 py-1 bg-gradient-to-r from-[#D4AF37] to-[#FCD34D] rounded-full text-xs font-bold text-slate-900">
-                            {method.badge === 'fastest' 
-                              ? (currentLanguage === 'ar' ? 'الأسرع' : 'Fastest')
-                              : (currentLanguage === 'ar' ? 'الأكثر شعبية' : 'Popular')}
+                          <span className="absolute -top-2 right-4 px-3 py-1 bg-gradient-to-r from-[#D4AF37] to-[#FCD34D] rounded-full text-xs font-bold">
+                            {method.badge === 'fastest' ? (currentLanguage === 'ar' ? 'الأسرع' : 'Fastest') : (currentLanguage === 'ar' ? 'شائع' : 'Popular')}
                           </span>
                         )}
-                        
                         <div className="flex items-center justify-between">
                           <div>
-                            <h3 className="font-bold text-lg text-slate-900">
-                              {currentLanguage === 'ar' ? method.nameAr : method.nameEn}
-                            </h3>
-                            <div className="flex items-center gap-4 mt-2 text-sm text-slate-600">
-                              <span className="flex items-center gap-1">
-                                <Clock className="w-4 h-4" />
-                                {method.duration}
-                              </span>
+                            <h3 className="font-bold text-lg">{currentLanguage === 'ar' ? method.nameAr : method.nameEn}</h3>
+                            <div className="flex items-center gap-2 mt-2 text-sm text-slate-600">
+                              <Clock className="w-4 h-4" />
+                              {method.duration}
                             </div>
                           </div>
                           <div className="text-right">
@@ -399,21 +366,15 @@ const CountryWizard = () => {
                   </div>
                   {errors.method && <p className="text-red-600 flex items-center gap-1 mt-4"><AlertCircle className="w-4 h-4" />{errors.method}</p>}
 
-                  <motion.button
-                    onClick={handleNext}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="w-full mt-8 py-4 bg-slate-900 text-white font-bold rounded-2xl flex items-center justify-center gap-2"
-                    data-testid="wizard-next-3"
-                  >
-                    {currentLanguage === 'ar' ? 'التالي' : 'Next'}
-                    <ArrowRight className="w-5 h-5" />
+                  <motion.button onClick={handleNext} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                    className="w-full mt-8 py-4 bg-slate-900 text-white font-bold rounded-2xl flex items-center justify-center gap-2">
+                    {currentLanguage === 'ar' ? 'التالي' : 'Next'} <ArrowRight className="w-5 h-5" />
                   </motion.button>
                 </motion.div>
               )}
 
               {/* Step 4: Summary */}
-              {step === 4 && selectedCountry && (
+              {step === 4 && selectedCountry && selectedMethod && (
                 <motion.div
                   key="step4"
                   initial={{ opacity: 0, x: 50 }}
@@ -426,7 +387,7 @@ const CountryWizard = () => {
                       <Star className="w-6 h-6 text-amber-600" />
                     </div>
                     <h2 className="text-2xl font-bold text-slate-900">
-                      {currentLanguage === 'ar' ? 'ملخص التحويل' : 'Transfer Summary'}
+                      {currentLanguage === 'ar' ? 'ملخص التحويل' : 'Summary'}
                     </h2>
                   </div>
 
@@ -438,32 +399,22 @@ const CountryWizard = () => {
                       </span>
                     </div>
                     <div className="flex justify-between items-center pb-4 border-b border-slate-200">
-                      <span className="text-slate-600">{currentLanguage === 'ar' ? 'طريقة التحويل' : 'Method'}</span>
-                      <span className="font-bold">
-                        {currentLanguage === 'ar' 
-                          ? selectedCountry.methods.find(m => m.id === wizardData.method)?.nameAr
-                          : selectedCountry.methods.find(m => m.id === wizardData.method)?.nameEn}
-                      </span>
+                      <span className="text-slate-600">{currentLanguage === 'ar' ? 'الطريقة' : 'Method'}</span>
+                      <span className="font-bold">{currentLanguage === 'ar' ? selectedMethod.nameAr : selectedMethod.nameEn}</span>
                     </div>
                     <div className="flex justify-between items-center pb-4 border-b border-slate-200">
-                      <span className="text-slate-600">{currentLanguage === 'ar' ? 'المبلغ المرسل' : 'Send Amount'}</span>
+                      <span className="text-slate-600">{currentLanguage === 'ar' ? 'المبلغ' : 'Amount'}</span>
                       <span className="font-bold text-lg">${wizardData.amount}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-slate-600">{currentLanguage === 'ar' ? 'المبلغ المستلم (تقريبي)' : 'Receive Amount (est.)'}</span>
+                      <span className="text-slate-600">{currentLanguage === 'ar' ? 'المستلم (تقريبي)' : 'Receive (est.)'}</span>
                       <span className="font-bold text-2xl text-emerald-600">{calculateReceiveAmount().toLocaleString()}</span>
                     </div>
                   </div>
 
-                  <motion.button
-                    onClick={handleNext}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="w-full mt-8 py-4 bg-slate-900 text-white font-bold rounded-2xl flex items-center justify-center gap-2"
-                    data-testid="wizard-next-4"
-                  >
-                    {currentLanguage === 'ar' ? 'المتابعة للاستمارة' : 'Continue to Form'}
-                    <ArrowRight className="w-5 h-5" />
+                  <motion.button onClick={handleNext} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                    className="w-full mt-8 py-4 bg-slate-900 text-white font-bold rounded-2xl flex items-center justify-center gap-2">
+                    {currentLanguage === 'ar' ? 'المتابعة' : 'Continue'} <ArrowRight className="w-5 h-5" />
                   </motion.button>
                 </motion.div>
               )}
@@ -482,7 +433,7 @@ const CountryWizard = () => {
                       <User className="w-6 h-6 text-blue-600" />
                     </div>
                     <h2 className="text-2xl font-bold text-slate-900">
-                      {currentLanguage === 'ar' ? 'معلومات التحويل' : 'Transfer Information'}
+                      {currentLanguage === 'ar' ? 'معلومات التحويل' : 'Transfer Info'}
                     </h2>
                   </div>
 
@@ -493,9 +444,8 @@ const CountryWizard = () => {
                         value={wizardData.senderName}
                         onChange={(e) => setWizardData(prev => ({ ...prev, senderName: e.target.value }))}
                         className="h-12"
-                        data-testid="wizard-sender-name"
                       />
-                      {errors.senderName && <p className="text-sm text-red-600"><AlertCircle className="w-4 h-4 inline" /> {errors.senderName}</p>}
+                      {errors.senderName && <p className="text-sm text-red-600">{errors.senderName}</p>}
                     </div>
 
                     <div className="space-y-2">
@@ -504,9 +454,8 @@ const CountryWizard = () => {
                         value={wizardData.receiverName}
                         onChange={(e) => setWizardData(prev => ({ ...prev, receiverName: e.target.value }))}
                         className="h-12"
-                        data-testid="wizard-receiver-name"
                       />
-                      {errors.receiverName && <p className="text-sm text-red-600"><AlertCircle className="w-4 h-4 inline" /> {errors.receiverName}</p>}
+                      {errors.receiverName && <p className="text-sm text-red-600">{errors.receiverName}</p>}
                     </div>
 
                     <div className="space-y-2">
@@ -516,18 +465,16 @@ const CountryWizard = () => {
                         onChange={(e) => setWizardData(prev => ({ ...prev, phone: e.target.value }))}
                         className="h-12"
                         placeholder="+964 7XX XXX XXXX"
-                        data-testid="wizard-phone"
                       />
-                      {errors.phone && <p className="text-sm text-red-600"><AlertCircle className="w-4 h-4 inline" /> {errors.phone}</p>}
+                      {errors.phone && <p className="text-sm text-red-600">{errors.phone}</p>}
                     </div>
 
                     <div className="space-y-2">
-                      <Label>{currentLanguage === 'ar' ? 'رقم الحساب/المحفظة (اختياري)' : 'Account/Wallet Number (optional)'}</Label>
+                      <Label>{currentLanguage === 'ar' ? 'رقم الحساب (اختياري)' : 'Account Number (optional)'}</Label>
                       <Input
                         value={wizardData.accountNumber}
                         onChange={(e) => setWizardData(prev => ({ ...prev, accountNumber: e.target.value }))}
                         className="h-12"
-                        data-testid="wizard-account"
                       />
                     </div>
                   </div>
@@ -538,12 +485,11 @@ const CountryWizard = () => {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     className="w-full mt-8 py-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold rounded-2xl flex items-center justify-center gap-2 disabled:opacity-50"
-                    data-testid="wizard-submit"
                   >
                     {loading ? (
-                      <><div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />{currentLanguage === 'ar' ? 'جارٍ...' : 'Submitting...'}</>
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     ) : (
-                      <><CheckCircle className="w-5 h-5" />{currentLanguage === 'ar' ? 'تسجيل الطلب' : 'Submit Request'}</>
+                      <><CheckCircle className="w-5 h-5" />{currentLanguage === 'ar' ? 'تسجيل الطلب' : 'Submit'}</>
                     )}
                   </motion.button>
                 </motion.div>
