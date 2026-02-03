@@ -15,10 +15,6 @@ const AdminOrders = () => {
   const [pageSize] = useState(20);
   const API_URL = process.env.REACT_APP_BACKEND_URL;
 
-  useEffect(() => {
-    fetchOrders();
-  }, [page, filterStatus, filterType]);
-
   const fetchOrders = async () => {
     setLoading(true);
     try {
@@ -36,6 +32,10 @@ const AdminOrders = () => {
     }
     setLoading(false);
   };
+
+  useEffect(() => {
+    fetchOrders();
+  }, [page, filterStatus, filterType]);
 
   const handleSearch = () => {
     setPage(1);
