@@ -174,6 +174,9 @@ async def convert_currency(from_currency: str, to_currency: str, amount: float):
 # Include the router in the main app
 app.include_router(api_router)
 
+# Mount uploads directory for serving files
+app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
