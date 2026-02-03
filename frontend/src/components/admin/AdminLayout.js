@@ -14,32 +14,38 @@ const AdminLayout = () => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const auth = localStorage.getItem('adminAuth');
-    if (!auth) {
+    const token = localStorage.getItem('adminToken');
+    const userStr = localStorage.getItem('adminUser');
+    if (!token || !userStr) {
       navigate('/admin/login');
       return;
     }
-    setUser(JSON.parse(auth));
+    setUser(JSON.parse(userStr));
   }, [navigate]);
 
   const handleLogout = () => {
-    localStorage.removeItem('adminAuth');
+    localStorage.removeItem('adminToken');
+    localStorage.removeItem('adminUser');
     navigate('/admin/login');
   };
 
+  // Check if user has permission
+  const hasPermission = (permission) => {
+    if (!user) return false;
+    if (user.role === 'developer') return true;
+    return user.permissions?.includes(permission);
+  };
+
   const menuItems = [
-    { path: '/admin', icon: LayoutDashboard, label: 'لوحة التحكم', labelEn: 'Overview' },
-    { path: '/admin/orders', icon: Package, label: 'الطلبات', labelEn: 'Orders' },
-    { path: '/admin/services', icon: Settings, label: 'الخدمات', labelEn: 'Services' },
-    { path: '/admin/forms', icon: FileText, label: 'نماذج الطلبات', labelEn: 'Form Builder' },
-    { path: '/admin/rates', icon: DollarSign, label: 'أسعار الصرف', labelEn: 'Rates' },
-    { path: '/admin/cms', icon: Globe, label: 'المحتوى', labelEn: 'CMS' },
-    { path: '/admin/branding', icon: Palette, label: 'الهوية', labelEn: 'Branding' },
-    { path: '/admin/contact', icon: Phone, label: 'التواصل', labelEn: 'Contact' },
-    { path: '/admin/stamps', icon: Stamp, label: 'الأختام', labelEn: 'Stamps' },
-    { path: '/admin/sms', icon: MessageSquare, label: 'الرسائل', labelEn: 'SMS' },
-    { path: '/admin/users', icon: Users, label: 'المستخدمون', labelEn: 'Users' },
-  ];
+    { path: '/admin', icon: LayoutDashboard, label: 'لوحة التحكم', permission: 'view_stats' },
+    { path: '/admin/orders', icon: Package, label: 'الطلبات', permission: 'view_orders' },
+    { path: '/admin/services', icon: Settings, label: 'الخدمات', permission: 'view_services' },
+    { path: '/admin/countries', icon: Globe, label: 'الدول', permission: 'manage_countries' },
+    { path: '/admin/rates', icon: DollarSign, label: 'أسعار الصرف', permission: 'manage_rates' },
+    { path: '/admin/cms', icon: FileText, label: 'المحتوى', permission: 'edit_content' },
+    { path: '/admin/branding', icon: Palette, label: 'الهوية', permission: 'edit_branding' },
+    { path: '/admin/users', icon: Users, label: 'المستخدمون', permission: 'manage_users' },
+  ].filter(item => hasPermission(item.permission));
 
   const isActive = (path) => {
     if (path === '/admin') return location.pathname === '/admin';
