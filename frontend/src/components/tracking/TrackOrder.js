@@ -162,7 +162,8 @@ const TrackOrder = () => {
     const newProofs = files.map(file => ({
       id: Date.now() + Math.random(),
       name: file.name,
-      preview: URL.createObjectURL(file)
+      preview: URL.createObjectURL(file),
+      file: file
     }));
     setPaymentProofs(prev => [...prev, ...newProofs]);
   };
