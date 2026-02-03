@@ -33,7 +33,7 @@ const AdminCountries = () => {
 
   useEffect(() => {
     fetchCountries();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem('adminToken');
