@@ -22,6 +22,7 @@ import AdminOrders from '@/components/admin/AdminOrders';
 import AdminServices from '@/components/admin/AdminServices';
 import AdminCountries from '@/components/admin/AdminCountries';
 import AdminUsers from '@/components/admin/AdminUsers';
+import AdminRates from '@/components/admin/AdminRates';
 import '@/i18n';
 
 function App() {
