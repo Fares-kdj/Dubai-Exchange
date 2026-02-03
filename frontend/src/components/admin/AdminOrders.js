@@ -238,10 +238,11 @@ const AdminOrders = () => {
             </tbody>
           </table>
         </div>
+        )}
 
         {/* Pagination */}
         <div className="px-6 py-4 border-t border-slate-200 flex items-center justify-between">
-          <p className="text-sm text-slate-600">عرض 1-{filteredOrders.length} من {filteredOrders.length} طلب</p>
+          <p className="text-sm text-slate-600">عرض 1-{orders.length} من {totalOrders} طلب</p>
           <div className="flex items-center gap-2">
             <button className="p-2 hover:bg-slate-100 rounded-lg disabled:opacity-50" disabled>
               <ChevronRight className="w-4 h-4" />
