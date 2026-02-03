@@ -23,6 +23,8 @@ import AdminServices from '@/components/admin/AdminServices';
 import AdminCountries from '@/components/admin/AdminCountries';
 import AdminUsers from '@/components/admin/AdminUsers';
 import AdminRates from '@/components/admin/AdminRates';
+import AdminCMS from '@/components/admin/AdminCMS';
+import AdminBranding from '@/components/admin/AdminBranding';
 import '@/i18n';
 
 function App() {
