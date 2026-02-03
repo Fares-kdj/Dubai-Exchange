@@ -37,60 +37,6 @@ const TrackOrder = () => {
     rejected: { labelAr: 'تم الرفض', labelEn: 'Rejected', color: 'bg-red-500', icon: AlertCircle }
   };
 
-  // Mock order data - In production this would come from API
-  const mockOrders = {
-    'TRV-12345678': {
-      type: 'traveler',
-      status: 'waiting_payment',
-      createdAt: '2025-02-03T10:30:00',
-      customer: { fullName: 'أحمد محمد علي', phone: '+964 770 123 4567' },
-      details: {
-        travelType: 'جوي',
-        destination: 'تركيا - إسطنبول',
-        travelDate: '2025-02-15',
-        pickupLocation: 'مطار بغداد الدولي',
-        usdAmount: '2000',
-        iqdAmount: '3000000',
-        paymentMethod: 'نقداً'
-      },
-      documents: { passport: true, ticket: true }
-    },
-    'LOC-87654321': {
-      type: 'local',
-      status: 'under_review',
-      createdAt: '2025-02-02T14:20:00',
-      customer: { fullName: 'سارة حسين', phone: '+964 771 987 6543' },
-      details: {
-        senderName: 'سارة حسين',
-        receiverName: 'محمد أحمد',
-        senderProvince: 'بغداد',
-        receiverProvince: 'البصرة',
-        amount: '1500000',
-        serviceFee: '30000',
-        paymentMethod: 'تحويل بنكي'
-      },
-      documents: { paymentProof: true }
-    },
-    'WU-11223344': {
-      type: 'western_union',
-      status: 'approved',
-      createdAt: '2025-02-01T09:15:00',
-      customer: { fullName: 'علي كريم', phone: '+964 772 555 1234' },
-      details: {
-        senderName: 'علي كريم',
-        receiverName: 'فاطمة أحمد',
-        senderCountry: 'العراق',
-        receiverCountry: 'الأردن',
-        currency: 'USD',
-        amount: '500',
-        iqdAmount: '750000',
-        serviceFee: '15000',
-        paymentMethod: 'نقداً'
-      },
-      documents: { senderId: true, paymentProof: true }
-    }
-  };
-
   const handleSearch = async () => {
     if (!searchData.orderId.trim()) {
       setError(isArabic ? 'أدخل رقم الطلب' : 'Enter order ID');
