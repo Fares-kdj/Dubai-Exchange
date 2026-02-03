@@ -228,7 +228,11 @@ const AdminOrders = () => {
                       <button className="p-2 hover:bg-amber-100 rounded-lg text-amber-600" title="تعديل">
                         <Edit className="w-4 h-4" />
                       </button>
-                      <button className="p-2 hover:bg-red-100 rounded-lg text-red-600" title="حذف">
+                      <button 
+                        onClick={() => handleDelete(order.id)}
+                        className="p-2 hover:bg-red-100 rounded-lg text-red-600" 
+                        title="حذف"
+                      >
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
