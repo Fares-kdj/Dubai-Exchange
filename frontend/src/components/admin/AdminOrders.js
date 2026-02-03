@@ -15,7 +15,7 @@ const AdminOrders = () => {
   const [pageSize] = useState(20);
   const API_URL = process.env.REACT_APP_BACKEND_URL;
 
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     setLoading(true);
     try {
       let url = `${API_URL}/api/orders?page=${page}&page_size=${pageSize}`;
@@ -31,7 +31,7 @@ const AdminOrders = () => {
       console.error('Error fetching orders:', err);
     }
     setLoading(false);
-  };
+  }, [API_URL, page, pageSize, filterStatus, filterType, searchQuery]);
 
   useEffect(() => {
     fetchOrders();
