@@ -35,7 +35,7 @@ const AdminOrders = () => {
 
   useEffect(() => {
     fetchOrders();
-  }, [page, filterStatus, filterType]);
+  }, [page, filterStatus, filterType, fetchOrders]);
 
   const handleSearch = () => {
     setPage(1);
