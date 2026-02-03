@@ -1,0 +1,203 @@
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Search, Filter, Eye, Edit, Trash2, CheckCircle, XCircle, Clock, MoreVertical, Download, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+
+const AdminOrders = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [filterType, setFilterType] = useState('all');
+  const [selectedOrder, setSelectedOrder] = useState(null);
+
+  const orderTypes = [
+    { value: 'all', label: 'جميع الأنواع' },
+    { value: 'traveler', label: 'حجز مسافرين' },
+    { value: 'local', label: 'تحويل محلي' },
+    { value: 'western_union', label: 'ويسترن يونيون' },
+    { value: 'moneygram', label: 'موني جرام' },
+    { value: 'country_based', label: 'حسب الدولة' },
+  ];
+
+  const statusOptions = [
+    { value: 'all', label: 'جميع الحالات' },
+    { value: 'waiting_payment', label: 'في انتظار الدفع' },
+    { value: 'under_review', label: 'قيد المراجعة' },
+    { value: 'approved', label: 'مقبول' },
+    { value: 'rejected', label: 'مرفوض' },
+  ];
+
+  const statusConfig = {
+    waiting_payment: { label: 'في انتظار الدفع', color: 'bg-amber-100 text-amber-800', icon: Clock },
+    under_review: { label: 'قيد المراجعة', color: 'bg-yellow-100 text-yellow-800', icon: Search },
+    approved: { label: 'مقبول', color: 'bg-green-100 text-green-800', icon: CheckCircle },
+    rejected: { label: 'مرفوض', color: 'bg-red-100 text-red-800', icon: XCircle },
+  };
+
+  // Mock orders
+  const orders = [
+    { id: 'TRV-12345678', type: 'traveler', typeLabel: 'حجز مسافرين', customer: 'أحمد محمد علي', phone: '+964 770 123 4567', amount: '$2,000', status: 'waiting_payment', paymentProof: false, createdAt: '2025-02-03 10:30' },
+    { id: 'LOC-87654321', type: 'local', typeLabel: 'تحويل محلي', customer: 'سارة حسين', phone: '+964 771 987 6543', amount: '1,500,000 د.ع', status: 'under_review', paymentProof: true, createdAt: '2025-02-03 09:15' },
+    { id: 'WU-11223344', type: 'western_union', typeLabel: 'ويسترن يونيون', customer: 'علي كريم', phone: '+964 772 555 1234', amount: '$500', status: 'approved', paymentProof: true, createdAt: '2025-02-02 14:20' },
+    { id: 'MG-99887766', type: 'moneygram', typeLabel: 'موني جرام', customer: 'فاطمة أحمد', phone: '+964 773 111 2222', amount: '€300', status: 'rejected', paymentProof: true, createdAt: '2025-02-02 11:45' },
+    { id: 'CB-55667788', type: 'country_based', typeLabel: 'حسب الدولة', customer: 'محمد علي', phone: '+964 774 333 4444', amount: '$150', status: 'approved', paymentProof: true, createdAt: '2025-02-01 16:30' },
+    { id: 'TRV-98765432', type: 'traveler', typeLabel: 'حجز مسافرين', customer: 'نور الدين', phone: '+964 775 555 6666', amount: '$3,500', status: 'under_review', paymentProof: true, createdAt: '2025-02-01 10:00' },
+  ];
+
+  const filteredOrders = orders.filter(order => {
+    if (filterStatus !== 'all' && order.status !== filterStatus) return false;
+    if (filterType !== 'all' && order.type !== filterType) return false;
+    if (searchQuery && !order.id.toLowerCase().includes(searchQuery.toLowerCase()) && !order.customer.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+    return true;
+  });
+
+  const handleStatusChange = (orderId, newStatus) => {
+    alert(`تم تغيير حالة الطلب ${orderId} إلى: ${statusConfig[newStatus].label}`);
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">إدارة الطلبات</h1>
+          <p className="text-slate-600">{orders.length} طلب</p>
+        </div>
+        <button className="flex items-center gap-2 px-4 py-2 bg-[#D4AF37] text-slate-900 font-medium rounded-lg hover:bg-[#c9a431]">
+          <Download className="w-4 h-4" />
+          تصدير Excel
+        </button>
+      </div>
+
+      {/* Filters */}
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="relative md:col-span-2">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="بحث برقم الطلب أو اسم العميل..."
+              className="pl-10"
+            />
+          </div>
+          <Select value={filterType} onValueChange={setFilterType}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {orderTypes.map(t => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          <Select value={filterStatus} onValueChange={setFilterStatus}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {statusOptions.map(s => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      {/* Orders Table */}
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-slate-50">
+              <tr>
+                <th className="text-right px-6 py-4 text-xs font-medium text-slate-500 uppercase">رقم الطلب</th>
+                <th className="text-right px-6 py-4 text-xs font-medium text-slate-500 uppercase">النوع</th>
+                <th className="text-right px-6 py-4 text-xs font-medium text-slate-500 uppercase">العميل</th>
+                <th className="text-right px-6 py-4 text-xs font-medium text-slate-500 uppercase">الهاتف</th>
+                <th className="text-right px-6 py-4 text-xs font-medium text-slate-500 uppercase">المبلغ</th>
+                <th className="text-right px-6 py-4 text-xs font-medium text-slate-500 uppercase">الحالة</th>
+                <th className="text-right px-6 py-4 text-xs font-medium text-slate-500 uppercase">إثبات الدفع</th>
+                <th className="text-right px-6 py-4 text-xs font-medium text-slate-500 uppercase">التاريخ</th>
+                <th className="text-right px-6 py-4 text-xs font-medium text-slate-500 uppercase">إجراءات</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {filteredOrders.map(order => (
+                <motion.tr
+                  key={order.id}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="hover:bg-slate-50"
+                >
+                  <td className="px-6 py-4">
+                    <span className="font-mono font-medium text-slate-900">{order.id}</span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="text-sm text-slate-600">{order.typeLabel}</span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="font-medium text-slate-900">{order.customer}</span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="text-sm text-slate-600 font-mono">{order.phone}</span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="font-medium text-slate-900">{order.amount}</span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <Select defaultValue={order.status} onValueChange={(v) => handleStatusChange(order.id, v)}>
+                      <SelectTrigger className={`w-36 ${statusConfig[order.status].color} border-0`}>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="waiting_payment">في انتظار الدفع</SelectItem>
+                        <SelectItem value="under_review">قيد المراجعة</SelectItem>
+                        <SelectItem value="approved">مقبول</SelectItem>
+                        <SelectItem value="rejected">مرفوض</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </td>
+                  <td className="px-6 py-4">
+                    {order.paymentProof ? (
+                      <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">مرفوع</span>
+                    ) : (
+                      <span className="px-2 py-1 bg-slate-100 text-slate-500 text-xs rounded-full">غير مرفوع</span>
+                    )}
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="text-sm text-slate-500">{order.createdAt}</span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-2">
+                      <button className="p-2 hover:bg-blue-100 rounded-lg text-blue-600" title="عرض">
+                        <Eye className="w-4 h-4" />
+                      </button>
+                      <button className="p-2 hover:bg-amber-100 rounded-lg text-amber-600" title="تعديل">
+                        <Edit className="w-4 h-4" />
+                      </button>
+                      <button className="p-2 hover:bg-red-100 rounded-lg text-red-600" title="حذف">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </motion.tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Pagination */}
+        <div className="px-6 py-4 border-t border-slate-200 flex items-center justify-between">
+          <p className="text-sm text-slate-600">عرض 1-{filteredOrders.length} من {filteredOrders.length} طلب</p>
+          <div className="flex items-center gap-2">
+            <button className="p-2 hover:bg-slate-100 rounded-lg disabled:opacity-50" disabled>
+              <ChevronRight className="w-4 h-4" />
+            </button>
+            <span className="px-3 py-1 bg-[#D4AF37] text-slate-900 rounded-lg text-sm font-medium">1</span>
+            <button className="p-2 hover:bg-slate-100 rounded-lg disabled:opacity-50" disabled>
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AdminOrders;
