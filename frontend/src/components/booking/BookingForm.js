@@ -126,28 +126,6 @@ const BookingForm = ({ onSubmit }) => {
     const API_URL = process.env.REACT_APP_BACKEND_URL;
     
     try {
-      // Upload documents first
-      const documents = [];
-      
-      if (uploadedFiles.passport) {
-        const passportForm = new FormData();
-        passportForm.append('file', formData.passportImage);
-        passportForm.append('order_type', 'traveler');
-        passportForm.append('doc_type', 'passport');
-        const passportRes = await fetch(`${API_URL}/api/orders/upload-document`, { method: 'POST', body: passportForm });
-        if (passportRes.ok) documents.push(await passportRes.json());
-      }
-      
-      if (uploadedFiles.ticket) {
-        const ticketForm = new FormData();
-        ticketForm.append('file', formData.ticketImage);
-        ticketForm.append('order_type', 'traveler');
-        ticketForm.append('doc_type', 'ticket');
-        const ticketRes = await fetch(`${API_URL}/api/orders/upload-document`, { method: 'POST', body: ticketForm });
-        if (ticketRes.ok) documents.push(await ticketRes.json());
-      }
-      
-      // Create order
       const orderData = {
         order_type: 'traveler',
         customer: {
@@ -163,10 +141,10 @@ const BookingForm = ({ onSubmit }) => {
           iqdAmount: formData.iqdAmount,
           paymentMethod: formData.paymentMethod
         },
-        documents: documents
+        documents: []
       };
       
-      const response = await fetch(`${API_URL}/api/orders`, {
+      const response = await fetch(API_URL + '/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderData)
@@ -174,13 +152,13 @@ const BookingForm = ({ onSubmit }) => {
       
       if (response.ok) {
         const order = await response.json();
-        onSubmit({ ...formData, orderId: order.order_id });
+        onSubmit(Object.assign({}, formData, { orderId: order.order_id }));
       } else {
-        throw new Error('Failed to create order');
+        throw new Error('Failed');
       }
     } catch (err) {
       console.error('Error:', err);
-      alert(currentLanguage === 'ar' ? 'حدث خطأ. حاول مرة أخرى.' : 'An error occurred. Please try again.');
+      alert(currentLanguage === 'ar' ? 'حدث خطأ' : 'Error occurred');
     }
     
     setLoading(false);
