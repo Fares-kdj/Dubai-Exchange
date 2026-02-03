@@ -123,9 +123,67 @@ const BookingForm = ({ onSubmit }) => {
     }
 
     setLoading(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    onSubmit(formData);
+    const API_URL = process.env.REACT_APP_BACKEND_URL;
+    
+    try {
+      // Upload documents first
+      const documents = [];
+      
+      if (uploadedFiles.passport) {
+        const passportForm = new FormData();
+        passportForm.append('file', formData.passportImage);
+        passportForm.append('order_type', 'traveler');
+        passportForm.append('doc_type', 'passport');
+        const passportRes = await fetch(`${API_URL}/api/orders/upload-document`, { method: 'POST', body: passportForm });
+        if (passportRes.ok) documents.push(await passportRes.json());
+      }
+      
+      if (uploadedFiles.ticket) {
+        const ticketForm = new FormData();
+        ticketForm.append('file', formData.ticketImage);
+        ticketForm.append('order_type', 'traveler');
+        ticketForm.append('doc_type', 'ticket');
+        const ticketRes = await fetch(`${API_URL}/api/orders/upload-document`, { method: 'POST', body: ticketForm });
+        if (ticketRes.ok) documents.push(await ticketRes.json());
+      }
+      
+      // Create order
+      const orderData = {
+        order_type: 'traveler',
+        customer: {
+          full_name: formData.fullName,
+          phone: formData.phone
+        },
+        details: {
+          travelType: formData.travelType,
+          destination: formData.destination,
+          travelDate: formData.travelDate,
+          pickupLocation: formData.pickupLocation,
+          usdAmount: formData.usdAmount,
+          iqdAmount: formData.iqdAmount,
+          paymentMethod: formData.paymentMethod
+        },
+        documents: documents
+      };
+      
+      const response = await fetch(`${API_URL}/api/orders`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData)
+      });
+      
+      if (response.ok) {
+        const order = await response.json();
+        onSubmit({ ...formData, orderId: order.order_id });
+      } else {
+        throw new Error('Failed to create order');
+      }
+    } catch (err) {
+      console.error('Error:', err);
+      alert(currentLanguage === 'ar' ? 'حدث خطأ. حاول مرة أخرى.' : 'An error occurred. Please try again.');
+    }
+    
+    setLoading(false);
   };
 
   const pickupLocations = formData.travelType === 'air' ? airports : borders;
