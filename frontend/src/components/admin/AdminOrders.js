@@ -133,7 +133,7 @@ const AdminOrders = () => {
               className="pl-10"
             />
           </div>
-          <Select value={filterType} onValueChange={setFilterType}>
+          <Select value={filterType} onValueChange={(v) => { setFilterType(v); setPage(1); }}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
@@ -141,7 +141,7 @@ const AdminOrders = () => {
               {orderTypes.map(t => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}
             </SelectContent>
           </Select>
-          <Select value={filterStatus} onValueChange={setFilterStatus}>
+          <Select value={filterStatus} onValueChange={(v) => { setFilterStatus(v); setPage(1); }}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
