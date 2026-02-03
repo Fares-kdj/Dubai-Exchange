@@ -19,9 +19,6 @@ import AdminLogin from '@/components/admin/AdminLogin';
 import AdminLayout from '@/components/admin/AdminLayout';
 import AdminOverview from '@/components/admin/AdminOverview';
 import AdminOrders from '@/components/admin/AdminOrders';
-import AdminServices from '@/components/admin/AdminServices';
-import AdminCountries from '@/components/admin/AdminCountries';
-import AdminUsers from '@/components/admin/AdminUsers';
 import '@/i18n';
 
 function App() {
