@@ -157,8 +157,7 @@ const AdminLogin = () => {
           {/* Demo Credentials */}
           <div className="mt-6 p-4 bg-slate-800/50 rounded-xl">
             <p className="text-xs text-slate-400 mb-2">بيانات تجريبية:</p>
-            <p className="text-xs text-slate-300">Admin: admin@khairbaghdad.com / admin123</p>
-            <p className="text-xs text-slate-300">Staff: staff@khairbaghdad.com / staff123</p>
+            <p className="text-xs text-slate-300">Developer: developer@khairbaghdad.com / dev@123456</p>
           </div>
         </div>
       </motion.div>
