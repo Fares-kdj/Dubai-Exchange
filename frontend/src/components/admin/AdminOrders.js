@@ -66,25 +66,44 @@ const AdminOrders = () => {
     rejected: { label: 'مرفوض', color: 'bg-red-100 text-red-800', icon: XCircle },
   };
 
-  // Mock orders
-  const orders = [
-    { id: 'TRV-12345678', type: 'traveler', typeLabel: 'حجز مسافرين', customer: 'أحمد محمد علي', phone: '+964 770 123 4567', amount: '$2,000', status: 'waiting_payment', paymentProof: false, createdAt: '2025-02-03 10:30' },
-    { id: 'LOC-87654321', type: 'local', typeLabel: 'تحويل محلي', customer: 'سارة حسين', phone: '+964 771 987 6543', amount: '1,500,000 د.ع', status: 'under_review', paymentProof: true, createdAt: '2025-02-03 09:15' },
-    { id: 'WU-11223344', type: 'western_union', typeLabel: 'ويسترن يونيون', customer: 'علي كريم', phone: '+964 772 555 1234', amount: '$500', status: 'approved', paymentProof: true, createdAt: '2025-02-02 14:20' },
-    { id: 'MG-99887766', type: 'moneygram', typeLabel: 'موني جرام', customer: 'فاطمة أحمد', phone: '+964 773 111 2222', amount: '€300', status: 'rejected', paymentProof: true, createdAt: '2025-02-02 11:45' },
-    { id: 'CB-55667788', type: 'country_based', typeLabel: 'حسب الدولة', customer: 'محمد علي', phone: '+964 774 333 4444', amount: '$150', status: 'approved', paymentProof: true, createdAt: '2025-02-01 16:30' },
-    { id: 'TRV-98765432', type: 'traveler', typeLabel: 'حجز مسافرين', customer: 'نور الدين', phone: '+964 775 555 6666', amount: '$3,500', status: 'under_review', paymentProof: true, createdAt: '2025-02-01 10:00' },
-  ];
+  const orderTypeLabels = {
+    traveler: 'حجز مسافرين',
+    local: 'تحويل محلي',
+    western_union: 'ويسترن يونيون',
+    moneygram: 'موني جرام',
+    country_based: 'حسب الدولة'
+  };
 
-  const filteredOrders = orders.filter(order => {
-    if (filterStatus !== 'all' && order.status !== filterStatus) return false;
-    if (filterType !== 'all' && order.type !== filterType) return false;
-    if (searchQuery && !order.id.toLowerCase().includes(searchQuery.toLowerCase()) && !order.customer.toLowerCase().includes(searchQuery.toLowerCase())) return false;
-    return true;
-  });
+  const handleStatusChange = async (orderId, newStatus) => {
+    try {
+      const res = await fetch(`${API_URL}/api/orders/${orderId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus })
+      });
+      if (res.ok) {
+        fetchOrders();
+      }
+    } catch (err) {
+      console.error('Error updating status:', err);
+    }
+  };
 
-  const handleStatusChange = (orderId, newStatus) => {
-    alert(`تم تغيير حالة الطلب ${orderId} إلى: ${statusConfig[newStatus].label}`);
+  const handleDelete = async (orderId) => {
+    if (!window.confirm('هل أنت متأكد من حذف هذا الطلب؟')) return;
+    try {
+      const res = await fetch(`${API_URL}/api/orders/${orderId}`, { method: 'DELETE' });
+      if (res.ok) {
+        fetchOrders();
+      }
+    } catch (err) {
+      console.error('Error deleting order:', err);
+    }
+  };
+
+  const formatDate = (dateStr) => {
+    const date = new Date(dateStr);
+    return date.toLocaleString('ar-IQ', { dateStyle: 'short', timeStyle: 'short' });
   };
 
   return (
