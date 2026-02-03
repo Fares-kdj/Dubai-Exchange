@@ -111,19 +111,65 @@ const MoneyGram = () => {
       return;
     }
     setLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    navigate('/transfers/success', { 
-      state: { 
-        orderData: {
-          ...formData,
-          type: 'moneygram',
-          serviceFee: calculateFee(),
-          iqdAmount: calculateIQD(),
-          total: calculateTotal(),
-          orderId: `MG-${Date.now().toString().slice(-8)}`
-        }
+    const API_URL = process.env.REACT_APP_BACKEND_URL;
+    
+    try {
+      const documents = [];
+      if (formData.idFile) {
+        const idForm = new FormData();
+        idForm.append('file', formData.idFile);
+        idForm.append('order_type', 'moneygram');
+        idForm.append('doc_type', 'id');
+        const idRes = await fetch(`${API_URL}/api/orders/upload-document`, { method: 'POST', body: idForm });
+        if (idRes.ok) documents.push(await idRes.json());
       }
-    });
+      
+      const orderData = {
+        order_type: 'moneygram',
+        customer: { full_name: formData.senderName, phone: formData.phone },
+        details: {
+          senderName: formData.senderName,
+          senderCountry: formData.senderCountry,
+          receiverName: formData.receiverName,
+          receiverCountry: formData.receiverCountry,
+          currency: formData.currency,
+          amount: formData.amount,
+          iqdAmount: calculateIQD(),
+          serviceFee: calculateFee(),
+          total: calculateTotal(),
+          paymentMethod: formData.paymentMethod
+        },
+        documents: documents
+      };
+      
+      const response = await fetch(`${API_URL}/api/orders`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData)
+      });
+      
+      if (response.ok) {
+        const order = await response.json();
+        navigate('/transfers/success', { 
+          state: { 
+            orderData: {
+              ...formData,
+              type: 'moneygram',
+              serviceFee: calculateFee(),
+              iqdAmount: calculateIQD(),
+              total: calculateTotal(),
+              orderId: order.order_id
+            }
+          }
+        });
+      } else {
+        throw new Error('Failed');
+      }
+    } catch (err) {
+      console.error('Error:', err);
+      alert(currentLanguage === 'ar' ? 'حدث خطأ' : 'Error');
+    }
+    setLoading(false);
   };
 
   return (
