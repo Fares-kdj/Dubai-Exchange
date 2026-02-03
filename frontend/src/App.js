@@ -37,6 +37,14 @@ function App() {
             <Route path="/transfers/moneygram" element={<MoneyGram />} />
             <Route path="/transfers/country-wizard" element={<CountryWizard />} />
             <Route path="/transfers/success" element={<TransferSuccess />} />
+            {/* Tracking */}
+            <Route path="/track-order" element={<TrackOrder />} />
+            {/* Admin Routes */}
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminOverview />} />
+              <Route path="orders" element={<AdminOrders />} />
+            </Route>
           </Routes>
         </BrowserRouter>
       </div>
