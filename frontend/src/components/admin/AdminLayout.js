@@ -110,8 +110,8 @@ const AdminLayout = () => {
             </div>
             {sidebarOpen && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white truncate">{user.email}</p>
-                <p className="text-xs text-slate-400 capitalize">{user.role}</p>
+                <p className="text-sm font-medium text-white truncate">{user.name}</p>
+                <p className="text-xs text-slate-400">{user.role === 'developer' ? 'المطور' : 'مدير'}</p>
               </motion.div>
             )}
             <button onClick={handleLogout} className="p-2 text-slate-400 hover:text-red-400 transition-colors">
