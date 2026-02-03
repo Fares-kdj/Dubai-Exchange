@@ -102,6 +102,7 @@ const WesternUnion = () => {
         setErrors(prev => ({ ...prev, idImage: currentLanguage === 'ar' ? 'حجم الملف كبير جداً' : 'File too large' }));
         return;
       }
+      setFormData(prev => ({ ...prev, idFile: file }));
       const reader = new FileReader();
       reader.onloadend = () => {
         setIdImage({ name: file.name, preview: reader.result });
