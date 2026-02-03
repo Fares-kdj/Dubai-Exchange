@@ -7,151 +7,119 @@
 
 ## ما تم إنجازه ✅
 
-### المرحلة 1: الصفحة الرئيسية ✅
-- Header مع التنقل وتبديل اللغات
-- Hero Section مع محول العملات
-- Services Section
-- Trust Section + Contact + Footer
+### Frontend
+- ✅ الصفحة الرئيسية (Hero, Services, Trust, Contact, Footer)
+- ✅ حجز الدولار للمسافرين (الشروط، الاستمارة، النجاح)
+- ✅ التحويلات المالية (محلي، WU، MG، Country-based)
+- ✅ صفحة تتبع الطلب
 
-### المرحلة 2: حجز الدولار للمسافرين ✅
-- الشروط والأحكام
-- استمارة الحجز (4 أقسام)
-- صفحة النجاح مع QR Code
-- **✅ متصل بـ Backend API**
+### Backend API
+- ✅ نظام الطلبات (CRUD + Stats)
+- ✅ نظام المصادقة JWT (Developer + Admin)
+- ✅ نظام الصلاحيات (11 صلاحية)
+- ✅ إدارة الخدمات (CMS)
+- ✅ إدارة الدول وطرق التحويل
+- ✅ **أسعار الصرف** (8 عملات)
+- ✅ **إدارة المحتوى** (CMS للنصوص)
+- ✅ **الهوية البصرية** (الشعار + الألوان)
 
-### المرحلة 3: التحويلات المالية ✅
-- التحويل المحلي - **✅ متصل بـ API**
-- Western Union - **✅ متصل بـ API**
-- MoneyGram - **✅ متصل بـ API**
-- Country-based Wizard
+### لوحة التحكم (Admin)
+| الصفحة | الوظيفة |
+|--------|---------|
+| /admin | لوحة التحكم الرئيسية + إحصائيات |
+| /admin/orders | إدارة الطلبات (فلاتر + حالات) |
+| /admin/services | إضافة/تعديل/حذف الخدمات |
+| /admin/countries | إدارة دول التحويل + طرق التحويل |
+| /admin/rates | **أسعار الصرف** (8 عملات) |
+| /admin/cms | **إدارة المحتوى النصي** |
+| /admin/branding | **الهوية البصرية** (الشعار + الألوان) |
+| /admin/users | إدارة المستخدمين + الصلاحيات |
 
-### المرحلة 4: صفحة تتبع الطلب ✅
-- بحث برقم الطلب ونوعه
-- عرض التفاصيل + QR Code
-- رفع إثبات الدفع
-- **✅ متصل بـ Backend API**
+---
 
-### المرحلة 5: Backend API ✅ (فبراير 2026)
+## بيانات الدخول
 
-#### نظام المصادقة (JWT)
-| Endpoint | Description |
-|----------|-------------|
-| POST /api/auth/login | تسجيل الدخول |
-| GET /api/auth/me | معلومات المستخدم |
-| POST /api/auth/change-password | تغيير كلمة المرور |
-| GET /api/auth/users | قائمة المستخدمين (Developer) |
-| POST /api/auth/users | إضافة مستخدم (Developer) |
-| PUT /api/auth/users/{id} | تعديل مستخدم |
-| DELETE /api/auth/users/{id} | حذف مستخدم |
-| GET /api/auth/permissions | قائمة الصلاحيات |
+| الدور | البريد | كلمة المرور |
+|-------|--------|-------------|
+| المطور | developer@khairbaghdad.com | dev@123456 |
 
-#### نظام الطلبات
-| Endpoint | Description |
-|----------|-------------|
-| POST /api/orders | إنشاء طلب |
-| POST /api/orders/track | تتبع طلب |
-| GET /api/orders | قائمة الطلبات |
-| PUT /api/orders/{id} | تحديث حالة |
-| DELETE /api/orders/{id} | حذف طلب |
-| GET /api/orders/stats/summary | إحصائيات |
+---
 
-#### نظام CMS
-| Endpoint | Description |
-|----------|-------------|
-| GET/POST /api/cms/services | إدارة الخدمات |
-| GET/POST /api/cms/countries | إدارة الدول |
-| GET/PUT /api/cms/content | إدارة المحتوى |
-| GET/PUT /api/cms/branding | الهوية البصرية |
+## أسعار الصرف المتوفرة
 
-### المرحلة 6: لوحة تحكم المدير ✅
+| العملة | الشراء | البيع |
+|--------|--------|-------|
+| 🇺🇸 USD | 1,460 | 1,470 |
+| 🇪🇺 EUR | 1,580 | 1,595 |
+| 🇬🇧 GBP | 1,840 | 1,860 |
+| 🇹🇷 TRY | 42 | 44 |
+| 🇦🇪 AED | 395 | 400 |
+| 🇸🇦 SAR | 385 | 390 |
+| 🇯🇴 JOD | 2,050 | 2,070 |
+| 🇪🇬 EGP | 29 | 31 |
 
-#### نظام الصلاحيات (مستويين)
-1. **المطور (Developer)**: كامل الصلاحيات + إدارة المستخدمين
-2. **الأدمن (Admin)**: صلاحيات يحددها المطور
+---
 
-#### الصلاحيات المتاحة:
+## نظام الصلاحيات
+
+**المطور (Developer):** جميع الصلاحيات + إدارة المستخدمين
+
+**الأدمن (Admin):** صلاحيات يحددها المطور:
 - عرض/إدارة/حذف الطلبات
 - عرض/إدارة الخدمات
 - تعديل المحتوى
 - تعديل الهوية البصرية
 - إدارة أسعار الصرف
 - إدارة الدول
-- إدارة النماذج
 - عرض الإحصائيات
-
-#### صفحات لوحة التحكم ✅
-- **تسجيل الدخول** (JWT حقيقي)
-- **لوحة التحكم الرئيسية** - إحصائيات حية
-- **إدارة الطلبات** - جدول كامل مع فلاتر
-- **إدارة الخدمات** - إضافة/تعديل/حذف
-- **إدارة الدول** - مع طرق التحويل
-- **إدارة المستخدمين** - مع الصلاحيات
-
----
-
-## بيانات الدخول
-
-### المطور (كامل الصلاحيات)
-- **Email:** developer@khairbaghdad.com
-- **Password:** dev@123456
 
 ---
 
 ## المهام القادمة 📋
 
-### P0 - عالي الأولوية
-- [ ] CMS للمحتوى النصي (hero, services, footer)
-- [ ] إدارة أسعار الصرف (Rates Engine)
-- [ ] رفع ملفات الوثائق مع الطلبات
-
 ### P1 - متوسط الأولوية
-- [ ] إدارة الهوية البصرية (الشعار، الألوان)
 - [ ] PDF Generator للإيصالات
 - [ ] Form Builder ديناميكي
+- [ ] ربط محتوى CMS بالـ Frontend
 
 ### P2 - منخفض الأولوية
-- [ ] نظام إشعارات SMS (مزود غير جاهز)
+- [ ] نظام إشعارات SMS
 - [ ] أختام رقمية للإيصالات
-- [ ] إشعارات فورية (WebSockets)
+- [ ] إشعارات WebSocket
 
 ---
 
 ## البنية التقنية
 
-### Frontend
-- React 18 + Tailwind CSS
-- Shadcn/UI components
-- Framer Motion
-- i18next (AR/EN/KU)
-- react-router-dom
-
-### Backend
-- FastAPI (Python)
-- MongoDB (Motor async)
-- JWT Authentication
-- Passlib + Bcrypt
-
-### ملفات الـ Backend
+### ملفات Backend
 ```
 /app/backend/
 ├── server.py
 ├── routes/
 │   ├── orders.py
 │   ├── auth.py
-│   └── cms.py
+│   ├── cms.py
+│   └── rates.py
 └── models/
     ├── order.py
     ├── user.py
     └── cms.py
 ```
 
----
-
-## حالات الطلب
-1. ⏳ waiting_payment - في انتظار الدفع
-2. 🔍 under_review - قيد المراجعة
-3. ✅ approved - تم القبول
-4. ❌ rejected - تم الرفض
+### ملفات Admin Frontend
+```
+/app/frontend/src/components/admin/
+├── AdminLogin.js
+├── AdminLayout.js
+├── AdminOverview.js
+├── AdminOrders.js
+├── AdminServices.js
+├── AdminCountries.js
+├── AdminRates.js ★
+├── AdminCMS.js ★
+├── AdminBranding.js ★
+└── AdminUsers.js
+```
 
 ---
 
