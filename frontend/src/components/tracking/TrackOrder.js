@@ -172,12 +172,28 @@ const TrackOrder = () => {
   };
 
   const submitPaymentProof = async () => {
-    if (paymentProofs.length === 0) return;
+    if (paymentProofs.length === 0 || !orderResult) return;
     setUploading(true);
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    try {
+      for (const proof of paymentProofs) {
+        const formData = new FormData();
+        formData.append('file', proof.file);
+        
+        await fetch(`${API_URL}/api/orders/${orderResult.orderId}/payment-proof`, {
+          method: 'POST',
+          body: formData
+        });
+      }
+      alert(isArabic ? 'تم إرسال إثبات الدفع بنجاح!' : 'Payment proof submitted!');
+      setPaymentProofs([]);
+      // Refresh order data
+      handleSearch();
+    } catch (err) {
+      alert(isArabic ? 'حدث خطأ أثناء رفع الملف' : 'Error uploading file');
+    }
+    
     setUploading(false);
-    alert(isArabic ? 'تم إرسال إثبات الدفع بنجاح!' : 'Payment proof submitted!');
-    setPaymentProofs([]);
   };
 
   const getStatusLabel = (status) => {
