@@ -211,14 +211,14 @@ const AdminOrders = () => {
                     </Select>
                   </td>
                   <td className="px-6 py-4">
-                    {order.paymentProof ? (
+                    {order.payment_proof ? (
                       <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">مرفوع</span>
                     ) : (
                       <span className="px-2 py-1 bg-slate-100 text-slate-500 text-xs rounded-full">غير مرفوع</span>
                     )}
                   </td>
                   <td className="px-6 py-4">
-                    <span className="text-sm text-slate-500">{order.createdAt}</span>
+                    <span className="text-sm text-slate-500">{formatDate(order.created_at)}</span>
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
