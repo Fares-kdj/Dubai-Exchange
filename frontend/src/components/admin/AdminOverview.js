@@ -131,19 +131,19 @@ const AdminOverview = () => {
             </thead>
             <tbody className="divide-y divide-slate-100">
               {recentOrders.map(order => (
-                <tr key={order.id} className="hover:bg-slate-50 cursor-pointer">
+                <tr key={order.order_id} className="hover:bg-slate-50 cursor-pointer">
                   <td className="px-6 py-4">
-                    <span className="font-mono font-medium text-slate-900">{order.id}</span>
+                    <span className="font-mono font-medium text-slate-900">{order.order_id}</span>
                   </td>
-                  <td className="px-6 py-4 text-slate-600">{order.type}</td>
-                  <td className="px-6 py-4 text-slate-900 font-medium">{order.customer}</td>
-                  <td className="px-6 py-4 text-slate-900">{order.amount}</td>
+                  <td className="px-6 py-4 text-slate-600">{orderTypeLabels[order.order_type] || order.order_type}</td>
+                  <td className="px-6 py-4 text-slate-900 font-medium">{order.customer?.full_name}</td>
+                  <td className="px-6 py-4 text-slate-900">{order.details?.usdAmount ? `$${order.details.usdAmount}` : order.details?.amount || '-'}</td>
                   <td className="px-6 py-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusConfig[order.status].color}`}>
-                      {statusConfig[order.status].label}
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusConfig[order.status]?.color || 'bg-slate-100'}`}>
+                      {statusConfig[order.status]?.label || order.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-sm text-slate-500">{order.time}</td>
+                  <td className="px-6 py-4 text-sm text-slate-500">{formatTime(order.created_at)}</td>
                 </tr>
               ))}
             </tbody>
