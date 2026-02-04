@@ -94,7 +94,11 @@ const CurrencyConverter = () => {
   };
 
   return (
-    <section id="converter" className="py-20 md:py-32 bg-gradient-to-b from-white via-slate-50 to-white relative overflow-hidden">
+    <section id="converter" className={`py-20 md:py-32 relative overflow-hidden transition-colors duration-300 ${
+      isDark 
+        ? 'bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900'
+        : 'bg-gradient-to-b from-white via-slate-50 to-white'
+    }`}>
       {/* Background Decoration */}
       <div className="absolute top-20 right-10 w-64 h-64 bg-gradient-to-br from-[#D4AF37]/10 to-[#FCD34D]/10 rounded-full blur-3xl" />
       <div className="absolute bottom-20 left-10 w-80 h-80 bg-gradient-to-br from-blue-100/20 to-purple-100/20 rounded-full blur-3xl" />
@@ -108,10 +112,10 @@ const CurrencyConverter = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl sm:text-5xl font-bold mb-4 text-slate-900">
+          <h2 className={`text-3xl sm:text-5xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
             {t('converter.title')}
           </h2>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+          <p className={`text-lg max-w-2xl mx-auto ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
             {currentLanguage === 'ar' ? 'احسب قيمة عملتك بدقة وسرعة' : 'Calculate your currency value accurately and quickly'}
           </p>
         </motion.div>
@@ -126,9 +130,15 @@ const CurrencyConverter = () => {
           data-testid="currency-converter"
         >
           {/* Glass Card */}
-          <div className="bg-white/70 backdrop-blur-2xl border border-slate-200/60 rounded-3xl p-8 md:p-10 shadow-2xl shadow-slate-200/50 relative overflow-hidden">
+          <div className={`backdrop-blur-2xl border rounded-3xl p-8 md:p-10 shadow-2xl relative overflow-hidden ${
+            isDark 
+              ? 'bg-slate-800/70 border-slate-700/60 shadow-slate-900/50'
+              : 'bg-white/70 border-slate-200/60 shadow-slate-200/50'
+          }`}>
             {/* Animated gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent pointer-events-none" />
+            <div className={`absolute inset-0 pointer-events-none ${
+              isDark ? 'bg-gradient-to-br from-slate-700/40 to-transparent' : 'bg-gradient-to-br from-white/40 to-transparent'
+            }`} />
             
             <div className="relative z-10">
               {/* Currency Inputs */}
@@ -139,10 +149,14 @@ const CurrencyConverter = () => {
                   whileHover={{ scale: 1.01 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <label className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                  <label className={`text-sm font-semibold flex items-center gap-2 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
                     {t('converter.from')}
                   </label>
-                  <div className="bg-white border-2 border-slate-200 rounded-2xl p-5 hover:border-[#D4AF37]/50 focus-within:border-[#D4AF37] transition-all shadow-sm hover:shadow-md">
+                  <div className={`border-2 rounded-2xl p-5 transition-all shadow-sm hover:shadow-md ${
+                    isDark 
+                      ? 'bg-slate-700 border-slate-600 hover:border-[#D4AF37]/50 focus-within:border-[#D4AF37]'
+                      : 'bg-white border-slate-200 hover:border-[#D4AF37]/50 focus-within:border-[#D4AF37]'
+                  }`}>
                     <div className="flex items-center gap-3 mb-4">
                       <motion.div
                         key={fromCurrency}
@@ -163,15 +177,15 @@ const CurrencyConverter = () => {
                         />
                       </motion.div>
                       <Select value={fromCurrency} onValueChange={setFromCurrency}>
-                        <SelectTrigger className="border-0 bg-transparent text-slate-900 font-medium focus:ring-0 focus:ring-offset-0 text-lg">
+                        <SelectTrigger className={`border-0 bg-transparent font-medium focus:ring-0 focus:ring-offset-0 text-lg ${isDark ? 'text-white' : 'text-slate-900'}`}>
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent className="bg-white border-slate-200 rounded-xl shadow-xl">
+                        <SelectContent className={`border rounded-xl shadow-xl ${isDark ? 'bg-slate-800 border-slate-600' : 'bg-white border-slate-200'}`}>
                           {currencies.map((currency) => (
                             <SelectItem 
                               key={currency.code} 
                               value={currency.code} 
-                              className="text-slate-900 hover:bg-slate-50 rounded-lg py-3"
+                              className={`rounded-lg py-3 ${isDark ? 'text-white hover:bg-slate-700' : 'text-slate-900 hover:bg-slate-50'}`}
                             >
                               <div className="flex items-center gap-3">
                                 <ReactCountryFlag
@@ -180,7 +194,7 @@ const CurrencyConverter = () => {
                                   style={{ width: '24px', height: '24px', borderRadius: '50%' }}
                                 />
                                 <span className="font-semibold">{currency.code}</span>
-                                <span className="text-sm text-slate-500">- {getCurrencyName(currency)}</span>
+                                <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>- {getCurrencyName(currency)}</span>
                               </div>
                             </SelectItem>
                           ))}
@@ -191,7 +205,7 @@ const CurrencyConverter = () => {
                       type="number"
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
-                      className="border-0 bg-transparent text-3xl font-bold text-slate-900 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 p-0"
+                      className={`border-0 bg-transparent text-3xl font-bold focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 p-0 ${isDark ? 'text-white' : 'text-slate-900'}`}
                       placeholder="0.00"
                       data-testid="amount-input"
                     />
@@ -217,8 +231,12 @@ const CurrencyConverter = () => {
                   whileHover={{ scale: 1.01 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <label className="text-sm font-semibold text-slate-700">{t('converter.to')}</label>
-                  <div className="bg-gradient-to-br from-slate-50 to-white border-2 border-slate-200 rounded-2xl p-5 hover:border-[#D4AF37]/50 focus-within:border-[#D4AF37] transition-all shadow-sm hover:shadow-md">
+                  <label className={`text-sm font-semibold ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{t('converter.to')}</label>
+                  <div className={`border-2 rounded-2xl p-5 transition-all shadow-sm hover:shadow-md ${
+                    isDark 
+                      ? 'bg-gradient-to-br from-slate-700 to-slate-800 border-slate-600 hover:border-[#D4AF37]/50 focus-within:border-[#D4AF37]'
+                      : 'bg-gradient-to-br from-slate-50 to-white border-slate-200 hover:border-[#D4AF37]/50 focus-within:border-[#D4AF37]'
+                  }`}>
                     <div className="flex items-center gap-3 mb-4">
                       <motion.div
                         key={toCurrency}
@@ -239,15 +257,15 @@ const CurrencyConverter = () => {
                         />
                       </motion.div>
                       <Select value={toCurrency} onValueChange={setToCurrency}>
-                        <SelectTrigger className="border-0 bg-transparent text-slate-900 font-medium focus:ring-0 focus:ring-offset-0 text-lg">
+                        <SelectTrigger className={`border-0 bg-transparent font-medium focus:ring-0 focus:ring-offset-0 text-lg ${isDark ? 'text-white' : 'text-slate-900'}`}>
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent className="bg-white border-slate-200 rounded-xl shadow-xl">
+                        <SelectContent className={`border rounded-xl shadow-xl ${isDark ? 'bg-slate-800 border-slate-600' : 'bg-white border-slate-200'}`}>
                           {currencies.map((currency) => (
                             <SelectItem 
                               key={currency.code} 
                               value={currency.code} 
-                              className="text-slate-900 hover:bg-slate-50 rounded-lg py-3"
+                              className={`rounded-lg py-3 ${isDark ? 'text-white hover:bg-slate-700' : 'text-slate-900 hover:bg-slate-50'}`}
                             >
                               <div className="flex items-center gap-3">
                                 <ReactCountryFlag
@@ -256,7 +274,7 @@ const CurrencyConverter = () => {
                                   style={{ width: '24px', height: '24px', borderRadius: '50%' }}
                                 />
                                 <span className="font-semibold">{currency.code}</span>
-                                <span className="text-sm text-slate-500">- {getCurrencyName(currency)}</span>
+                                <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>- {getCurrencyName(currency)}</span>
                               </div>
                             </SelectItem>
                           ))}
@@ -281,12 +299,16 @@ const CurrencyConverter = () => {
 
               {/* Convert Button */}
               <motion.button
-                onClick={handleConvert}
+                onClick={() => handleConvert()}
                 disabled={loading}
                 whileHover={{ scale: 1.02, y: -2 }}
                 whileTap={{ scale: 0.98 }}
                 data-testid="convert-button"
-                className="w-full py-5 bg-gradient-to-r from-slate-900 to-slate-700 text-white font-bold rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group"
+                className={`w-full py-5 font-bold rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group ${
+                  isDark 
+                    ? 'bg-gradient-to-r from-[#D4AF37] to-[#FCD34D] text-slate-900'
+                    : 'bg-gradient-to-r from-slate-900 to-slate-700 text-white'
+                }`}
               >
                 {loading ? (
                   <>
@@ -299,7 +321,9 @@ const CurrencyConverter = () => {
                     {t('converter.convert')}
                   </>
                 )}
-                <div className="absolute inset-0 bg-gradient-to-r from-[#D4AF37]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity ${
+                  isDark ? 'bg-gradient-to-r from-white/10 to-transparent' : 'bg-gradient-to-r from-[#D4AF37]/20 to-transparent'
+                }`} />
               </motion.button>
 
               {/* Last Update Info */}
@@ -307,7 +331,7 @@ const CurrencyConverter = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
-                className="mt-6 text-center text-xs text-slate-500 flex items-center justify-center gap-2"
+                className={`mt-6 text-center text-xs flex items-center justify-center gap-2 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}
               >
                 <RefreshCw className="w-3 h-3" />
                 {t('converter.lastUpdate')}: {new Date(lastUpdated).toLocaleString(currentLanguage === 'ar' ? 'ar-IQ' : 'en-US')}
@@ -321,7 +345,9 @@ const CurrencyConverter = () => {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.6 }}
-            className="mt-6 text-center text-sm text-slate-500 bg-blue-50 border border-blue-100 rounded-xl p-4"
+            className={`mt-6 text-center text-sm border rounded-xl p-4 ${
+              isDark ? 'bg-blue-900/30 border-blue-800 text-blue-300' : 'bg-blue-50 border-blue-100 text-slate-500'
+            }`}
           >
             💡 {currentLanguage === 'ar' ? 'الأسعار استرشادية وقابلة للتغيير حسب السوق' : 'Rates are indicative and subject to market changes'}
           </motion.div>
