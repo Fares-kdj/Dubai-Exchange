@@ -252,7 +252,19 @@ const CountryWizard = () => {
                       <motion.button key={c.code} type="button" whileHover={{ scale: 1.05 }}
                         onClick={() => setWizardData(p => ({ ...p, country: c.code, method: null }))}
                         className={`p-4 rounded-2xl border-2 text-center ${wizardData.country === c.code ? 'border-[#D4AF37] bg-[#D4AF37]/10' : 'border-slate-200'}`}>
-                        <span className="text-4xl block mb-2">{c.flag}</span>
+                        <div className="flex justify-center mb-2">
+                          <ReactCountryFlag
+                            countryCode={c.countryCode}
+                            svg
+                            style={{
+                              width: '48px',
+                              height: '36px',
+                              borderRadius: '4px',
+                              objectFit: 'cover',
+                              boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                            }}
+                          />
+                        </div>
                         <span className="text-sm font-medium">{isArabic ? c.nameAr : c.nameEn}</span>
                       </motion.button>
                     ))}
