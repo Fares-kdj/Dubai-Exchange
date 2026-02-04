@@ -30,7 +30,11 @@ const Header = () => {
     <motion.header 
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-100 shadow-sm"
+      className={`fixed top-0 left-0 right-0 z-50 backdrop-blur-xl border-b shadow-sm transition-colors duration-300 ${
+        isDark 
+          ? 'bg-slate-900/90 border-slate-700' 
+          : 'bg-white/80 border-slate-100'
+      }`}
     >
       <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
@@ -58,7 +62,9 @@ const Header = () => {
                 key={item.key}
                 href={item.href}
                 data-testid={`nav-${item.key}`}
-                className="text-slate-600 hover:text-slate-900 transition-colors duration-300 text-sm font-medium relative group"
+                className={`transition-colors duration-300 text-sm font-medium relative group ${
+                  isDark ? 'text-slate-300 hover:text-white' : 'text-slate-600 hover:text-slate-900'
+                }`}
               >
                 {t(`nav.${item.key}`)}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-[#D4AF37] to-[#FCD34D] group-hover:w-full transition-all duration-300"></span>
@@ -66,19 +72,38 @@ const Header = () => {
             ))}
           </div>
 
-          {/* Language & CTA */}
-          <div className="hidden lg:flex items-center gap-4">
+          {/* Language, Theme Toggle & CTA */}
+          <div className="hidden lg:flex items-center gap-3">
+            {/* Theme Toggle */}
+            <motion.button
+              onClick={toggleTheme}
+              data-testid="theme-toggle"
+              className={`p-2.5 rounded-full transition-all duration-300 ${
+                isDark 
+                  ? 'bg-slate-800 hover:bg-slate-700 text-yellow-400' 
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+              }`}
+              whileHover={{ scale: 1.1, rotate: 15 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </motion.button>
+
             {/* Language Dropdown */}
             <div className="relative">
               <motion.button
                 onClick={() => setLangDropdownOpen(!langDropdownOpen)}
                 data-testid="language-switcher"
-                className="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-200 transition-all duration-300"
+                className={`flex items-center gap-2 px-4 py-2 rounded-full border transition-all duration-300 ${
+                  isDark 
+                    ? 'bg-slate-800 hover:bg-slate-700 border-slate-600 text-slate-200' 
+                    : 'bg-slate-50 hover:bg-slate-100 border-slate-200 text-slate-700'
+                }`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
                 <Globe className="w-4 h-4 text-[#D4AF37]" />
-                <span className="text-sm text-slate-700 font-medium">
+                <span className="text-sm font-medium">
                   {languages.find(l => l.code === currentLanguage)?.name}
                 </span>
               </motion.button>
@@ -89,7 +114,9 @@ const Header = () => {
                     initial={{ opacity: 0, y: -10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                    className="absolute top-full mt-2 right-0 bg-white backdrop-blur-xl border border-slate-200 rounded-2xl overflow-hidden shadow-xl min-w-[140px]"
+                    className={`absolute top-full mt-2 right-0 backdrop-blur-xl border rounded-2xl overflow-hidden shadow-xl min-w-[140px] ${
+                      isDark ? 'bg-slate-800 border-slate-600' : 'bg-white border-slate-200'
+                    }`}
                   >
                     {languages.map((lang) => (
                       <button
@@ -99,8 +126,10 @@ const Header = () => {
                           setLangDropdownOpen(false);
                         }}
                         data-testid={`lang-${lang.code}`}
-                        className={`w-full px-4 py-3 text-left text-sm hover:bg-slate-50 transition-colors ${
-                          currentLanguage === lang.code ? 'text-[#D4AF37] bg-slate-50 font-medium' : 'text-slate-700'
+                        className={`w-full px-4 py-3 text-left text-sm transition-colors ${
+                          currentLanguage === lang.code 
+                            ? 'text-[#D4AF37] font-medium ' + (isDark ? 'bg-slate-700' : 'bg-slate-50')
+                            : isDark ? 'text-slate-200 hover:bg-slate-700' : 'text-slate-700 hover:bg-slate-50'
                         }`}
                       >
                         {lang.name}
@@ -114,7 +143,11 @@ const Header = () => {
             {/* CTA Button */}
             <motion.button
               data-testid="cta-get-started"
-              className="px-6 py-2.5 bg-slate-900 text-white font-semibold rounded-full shadow-lg shadow-slate-900/20 hover:shadow-slate-900/40 transition-all duration-300"
+              className={`px-6 py-2.5 font-semibold rounded-full shadow-lg transition-all duration-300 ${
+                isDark 
+                  ? 'bg-[#D4AF37] text-slate-900 hover:bg-[#FCD34D] shadow-[#D4AF37]/20' 
+                  : 'bg-slate-900 text-white shadow-slate-900/20 hover:shadow-slate-900/40'
+              }`}
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -123,13 +156,28 @@ const Header = () => {
           </div>
 
           {/* Mobile Menu Button */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            data-testid="mobile-menu-button"
-            className="lg:hidden p-2 text-slate-700 hover:text-slate-900 transition-colors rounded-lg hover:bg-slate-50"
-          >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          <div className="lg:hidden flex items-center gap-2">
+            {/* Mobile Theme Toggle */}
+            <motion.button
+              onClick={toggleTheme}
+              className={`p-2 rounded-lg transition-colors ${
+                isDark ? 'text-yellow-400 hover:bg-slate-800' : 'text-slate-700 hover:bg-slate-50'
+              }`}
+              whileTap={{ scale: 0.9 }}
+            >
+              {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </motion.button>
+            
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              data-testid="mobile-menu-button"
+              className={`p-2 transition-colors rounded-lg ${
+                isDark ? 'text-slate-200 hover:text-white hover:bg-slate-800' : 'text-slate-700 hover:text-slate-900 hover:bg-slate-50'
+              }`}
+            >
+              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Menu */}
@@ -139,7 +187,7 @@ const Header = () => {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="lg:hidden border-t border-slate-100 py-4"
+              className={`lg:hidden border-t py-4 ${isDark ? 'border-slate-700' : 'border-slate-100'}`}
             >
               <div className="flex flex-col gap-4">
                 {navItems.map((item) => (
@@ -147,13 +195,15 @@ const Header = () => {
                     key={item.key}
                     href={item.href}
                     onClick={() => setMobileMenuOpen(false)}
-                    className="text-slate-600 hover:text-slate-900 transition-colors py-2 text-sm font-medium"
+                    className={`transition-colors py-2 text-sm font-medium ${
+                      isDark ? 'text-slate-300 hover:text-white' : 'text-slate-600 hover:text-slate-900'
+                    }`}
                   >
                     {t(`nav.${item.key}`)}
                   </a>
                 ))}
                 
-                <div className="flex flex-col gap-2 pt-2 border-t border-slate-100">
+                <div className={`flex flex-col gap-2 pt-2 border-t ${isDark ? 'border-slate-700' : 'border-slate-100'}`}>
                   {languages.map((lang) => (
                     <button
                       key={lang.code}
@@ -162,7 +212,9 @@ const Header = () => {
                         setMobileMenuOpen(false);
                       }}
                       className={`text-left py-2 text-sm ${
-                        currentLanguage === lang.code ? 'text-[#D4AF37] font-medium' : 'text-slate-600'
+                        currentLanguage === lang.code 
+                          ? 'text-[#D4AF37] font-medium' 
+                          : isDark ? 'text-slate-400' : 'text-slate-600'
                       }`}
                     >
                       {lang.name}
@@ -170,7 +222,11 @@ const Header = () => {
                   ))}
                 </div>
 
-                <button className="w-full mt-2 px-6 py-2.5 bg-slate-900 text-white font-semibold rounded-full shadow-lg">
+                <button className={`w-full mt-2 px-6 py-2.5 font-semibold rounded-full shadow-lg ${
+                  isDark 
+                    ? 'bg-[#D4AF37] text-slate-900' 
+                    : 'bg-slate-900 text-white'
+                }`}>
                   {t('common.getStarted')}
                 </button>
               </div>
