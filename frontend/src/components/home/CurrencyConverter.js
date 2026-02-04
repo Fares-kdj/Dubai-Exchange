@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLanguage } from '@/context/LanguageContext';
+import { useTheme } from '@/context/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRightLeft, TrendingUp, RefreshCw } from 'lucide-react';
 import ReactCountryFlag from 'react-country-flag';
@@ -14,6 +15,7 @@ const API = `${BACKEND_URL}/api`;
 const CurrencyConverter = () => {
   const { t } = useTranslation();
   const { currentLanguage } = useLanguage();
+  const { isDark } = useTheme();
   const [fromCurrency, setFromCurrency] = useState('USD');
   const [toCurrency, setToCurrency] = useState('IQD');
   const [amount, setAmount] = useState('100');
