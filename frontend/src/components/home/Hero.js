@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLanguage } from '@/context/LanguageContext';
+import { useTheme } from '@/context/ThemeContext';
 import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles, TrendingUp, Shield, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -8,12 +9,17 @@ import { useNavigate } from 'react-router-dom';
 const Hero = () => {
   const { t } = useTranslation();
   const { currentLanguage } = useLanguage();
+  const { isDark } = useTheme();
   const navigate = useNavigate();
 
   return (
     <section id="home" className="relative min-h-screen flex items-center pt-20 overflow-hidden">
       {/* Background Pattern */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-amber-50/30">
+      <div className={`absolute inset-0 transition-colors duration-300 ${
+        isDark 
+          ? 'bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900'
+          : 'bg-gradient-to-br from-slate-50 via-white to-amber-50/30'
+      }`}>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(212,175,55,0.1),transparent_50%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_60%,rgba(252,211,77,0.1),transparent_50%)]" />
       </div>
@@ -58,11 +64,17 @@ const Hero = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-[#D4AF37]/10 to-[#FCD34D]/10 border border-[#D4AF37]/20 mb-8"
+              className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-8 ${
+                isDark 
+                  ? 'bg-[#D4AF37]/20 border-[#D4AF37]/30'
+                  : 'bg-gradient-to-r from-[#D4AF37]/10 to-[#FCD34D]/10 border-[#D4AF37]/20'
+              }`}
               data-testid="hero-badge"
             >
               <Sparkles className="w-4 h-4 text-[#D4AF37]" />
-              <span className="text-sm font-medium text-slate-700">{t('hero.subtitle')}</span>
+              <span className={`text-sm font-medium ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>
+                {t('hero.subtitle')}
+              </span>
             </motion.div>
 
             {/* Main Headline */}
@@ -73,7 +85,11 @@ const Hero = () => {
               className="text-5xl md:text-7xl font-bold mb-6 leading-tight"
               data-testid="hero-title"
             >
-              <span className="bg-gradient-to-r from-slate-900 via-slate-700 to-slate-900 bg-clip-text text-transparent">
+              <span className={`bg-clip-text text-transparent ${
+                isDark 
+                  ? 'bg-gradient-to-r from-white via-slate-200 to-white'
+                  : 'bg-gradient-to-r from-slate-900 via-slate-700 to-slate-900'
+              }`}>
                 {t('hero.title')}
               </span>
             </motion.h1>
@@ -83,7 +99,9 @@ const Hero = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="text-lg md:text-xl text-slate-600 mb-10 max-w-2xl leading-relaxed"
+              className={`text-lg md:text-xl mb-10 max-w-2xl leading-relaxed ${
+                isDark ? 'text-slate-300' : 'text-slate-600'
+              }`}
               data-testid="hero-description"
             >
               {t('hero.description')}
@@ -101,7 +119,11 @@ const Hero = () => {
                 whileTap={{ scale: 0.95 }}
                 onClick={() => navigate('/traveler-booking')}
                 data-testid="cta-booking"
-                className="group px-8 py-4 bg-slate-900 text-white font-bold rounded-full shadow-xl shadow-slate-900/30 hover:shadow-slate-900/50 transition-all duration-300 flex items-center justify-center gap-2"
+                className={`group px-8 py-4 font-bold rounded-full shadow-xl transition-all duration-300 flex items-center justify-center gap-2 ${
+                  isDark 
+                    ? 'bg-[#D4AF37] text-slate-900 hover:bg-[#FCD34D] shadow-[#D4AF37]/30'
+                    : 'bg-slate-900 text-white shadow-slate-900/30 hover:shadow-slate-900/50'
+                }`}
               >
                 {t('hero.ctaBooking')}
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -110,8 +132,13 @@ const Hero = () => {
               <motion.button
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={() => navigate('/transfers')}
                 data-testid="cta-transfer"
-                className="group px-8 py-4 bg-white border-2 border-slate-200 text-slate-900 font-bold rounded-full hover:border-[#D4AF37] hover:bg-slate-50 transition-all duration-300 flex items-center justify-center gap-2 shadow-lg"
+                className={`group px-8 py-4 border-2 font-bold rounded-full transition-all duration-300 flex items-center justify-center gap-2 shadow-lg ${
+                  isDark 
+                    ? 'bg-slate-800 border-slate-600 text-white hover:border-[#D4AF37]'
+                    : 'bg-white border-slate-200 text-slate-900 hover:border-[#D4AF37] hover:bg-slate-50'
+                }`}
               >
                 {t('hero.ctaTransfer')}
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -125,13 +152,13 @@ const Hero = () => {
               transition={{ duration: 0.6, delay: 0.6 }}
               className="flex flex-wrap items-center gap-6"
             >
-              <div className="flex items-center gap-2 text-sm text-slate-600">
+              <div className={`flex items-center gap-2 text-sm ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
                 <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
                   <Shield className="w-5 h-5 text-green-600" />
                 </div>
                 <span className="font-medium">{currentLanguage === 'ar' ? 'مرخصة رسمياً' : 'Licensed'}</span>
               </div>
-              <div className="flex items-center gap-2 text-sm text-slate-600">
+              <div className={`flex items-center gap-2 text-sm ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
                 <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
                   <Zap className="w-5 h-5 text-blue-600" />
                 </div>
@@ -164,7 +191,9 @@ const Hero = () => {
 
               {/* Floating Cards */}
               <motion.div
-                className="absolute -bottom-8 -left-8 bg-white rounded-2xl shadow-xl p-6 border border-slate-100"
+                className={`absolute -bottom-8 -left-8 rounded-2xl shadow-xl p-6 border ${
+                  isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'
+                }`}
                 animate={{
                   y: [0, -10, 0],
                 }}
@@ -179,8 +208,8 @@ const Hero = () => {
                     <TrendingUp className="w-6 h-6 text-green-600" />
                   </div>
                   <div>
-                    <div className="text-2xl font-bold text-slate-900">+10K</div>
-                    <div className="text-xs text-slate-500">
+                    <div className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>+10K</div>
+                    <div className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                       {currentLanguage === 'ar' ? 'عميل راضٍ' : 'Happy Clients'}
                     </div>
                   </div>
