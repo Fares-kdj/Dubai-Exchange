@@ -142,7 +142,7 @@ const LocalTransfer = () => {
       }
     } catch (err) {
       console.error('Error:', err);
-      alert(isArabic ? 'حدث خطأ. حاول مرة أخرى.' : 'An error occurred.');
+      alert(currentLanguage === 'ar' ? 'حدث خطأ. حاول مرة أخرى.' : 'An error occurred.');
     }
     
     setLoading(false);
