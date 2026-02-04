@@ -78,6 +78,19 @@ const CountryWizard = () => {
       'pk': [
         { id: 'jazzcash', nameAr: 'جاز كاش', nameEn: 'JazzCash', rate: 278, duration: 'Instant', badge: 'popular' },
         { id: 'bank', nameAr: 'تحويل بنكي', nameEn: 'Bank Transfer', rate: 276, duration: '2-3d' }
+      ],
+      'ae': [
+        { id: 'bank', nameAr: 'تحويل بنكي', nameEn: 'Bank Transfer', rate: 400, duration: '1-2d', badge: 'popular' }
+      ],
+      'sa': [
+        { id: 'stcpay', nameAr: 'STC Pay', nameEn: 'STC Pay', rate: 390, duration: 'Instant', badge: 'fastest' },
+        { id: 'bank', nameAr: 'تحويل بنكي', nameEn: 'Bank Transfer', rate: 388, duration: '1-2d' }
+      ],
+      'lb': [
+        { id: 'bank', nameAr: 'تحويل بنكي', nameEn: 'Bank Transfer', rate: 89000, duration: '2-3d' }
+      ],
+      'sy': [
+        { id: 'hawala', nameAr: 'حوالة', nameEn: 'Hawala', rate: 14000, duration: '1-2d', badge: 'popular' }
       ]
     };
     
