@@ -289,6 +289,59 @@ const TransferSuccess = () => {
                 </p>
               </motion.div>
 
+              {/* WhatsApp Contact Section */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.55 }}
+                className="bg-gradient-to-br from-green-500 to-green-600 rounded-3xl p-6 text-white shadow-xl"
+                data-testid="transfer-whatsapp-contact"
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                    <Phone className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-lg font-bold">
+                    {currentLanguage === 'ar' ? 'تواصل معنا عبر واتساب' : 'Contact us via WhatsApp'}
+                  </h3>
+                </div>
+                
+                <div className="bg-white/10 rounded-2xl p-4 mb-4">
+                  <p className="text-sm opacity-90 mb-2">
+                    {currentLanguage === 'ar' ? 'رقم الواتساب:' : 'WhatsApp Number:'}
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xl font-bold tracking-wider" dir="ltr">+964 750 123 4567</span>
+                    <motion.button
+                      onClick={async () => {
+                        try {
+                          await navigator.clipboard.writeText('+9647501234567');
+                          setCopied(true);
+                          setTimeout(() => setCopied(false), 2000);
+                        } catch (err) {
+                          console.warn('Copy failed:', err);
+                        }
+                      }}
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
+                      data-testid="copy-transfer-whatsapp"
+                    >
+                      {copied ? <CheckCircle className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
+                    </motion.button>
+                  </div>
+                </div>
+
+                <a 
+                  href="https://wa.me/9647501234567" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="block w-full py-3 bg-white text-green-600 font-bold rounded-xl text-center hover:bg-green-50 transition-colors"
+                >
+                  {currentLanguage === 'ar' ? 'فتح واتساب' : 'Open WhatsApp'}
+                </a>
+              </motion.div>
+
               {/* Payment Instructions */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
