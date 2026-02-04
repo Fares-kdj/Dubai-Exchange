@@ -1,10 +1,12 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '@/context/ThemeContext';
 import { motion } from 'framer-motion';
 import { Shield, Zap, HeadphonesIcon, Award } from 'lucide-react';
 
 const TrustSection = () => {
   const { t } = useTranslation();
+  const { isDark } = useTheme();
 
   const trustPoints = [
     {
@@ -12,33 +14,37 @@ const TrustSection = () => {
       titleKey: 'trust.licensed.title',
       descKey: 'trust.licensed.description',
       color: 'from-amber-500 to-orange-500',
-      bgColor: 'bg-amber-50'
+      bgColor: isDark ? 'bg-amber-900/30' : 'bg-amber-50'
     },
     {
       icon: Shield,
       titleKey: 'trust.secure.title',
       descKey: 'trust.secure.description',
       color: 'from-blue-500 to-cyan-500',
-      bgColor: 'bg-blue-50'
+      bgColor: isDark ? 'bg-blue-900/30' : 'bg-blue-50'
     },
     {
       icon: Zap,
       titleKey: 'trust.fast.title',
       descKey: 'trust.fast.description',
       color: 'from-purple-500 to-pink-500',
-      bgColor: 'bg-purple-50'
+      bgColor: isDark ? 'bg-purple-900/30' : 'bg-purple-50'
     },
     {
       icon: HeadphonesIcon,
       titleKey: 'trust.support.title',
       descKey: 'trust.support.description',
       color: 'from-emerald-500 to-teal-500',
-      bgColor: 'bg-emerald-50'
+      bgColor: isDark ? 'bg-emerald-900/30' : 'bg-emerald-50'
     }
   ];
 
   return (
-    <section className="py-20 md:py-32 bg-gradient-to-b from-slate-50 to-white relative overflow-hidden">
+    <section className={`py-20 md:py-32 relative overflow-hidden transition-colors duration-300 ${
+      isDark 
+        ? 'bg-gradient-to-b from-slate-800 to-slate-900'
+        : 'bg-gradient-to-b from-slate-50 to-white'
+    }`}>
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-30">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(212,175,55,0.1),transparent_70%)]" />
@@ -54,7 +60,7 @@ const TrustSection = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl sm:text-5xl font-bold mb-4 text-slate-900">
+          <h2 className={`text-3xl sm:text-5xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
             {t('trust.title')}
           </h2>
         </motion.div>
@@ -72,7 +78,11 @@ const TrustSection = () => {
               className="group"
               data-testid={`trust-point-${index}`}
             >
-              <div className="text-center bg-white rounded-3xl p-8 border-2 border-slate-100 hover:border-slate-200 hover:shadow-xl transition-all duration-300">
+              <div className={`text-center rounded-3xl p-8 border-2 hover:shadow-xl transition-all duration-300 ${
+                isDark 
+                  ? 'bg-slate-800 border-slate-700 hover:border-slate-600'
+                  : 'bg-white border-slate-100 hover:border-slate-200'
+              }`}>
                 {/* Animated Icon Container */}
                 <motion.div
                   whileHover={{ 
@@ -85,16 +95,16 @@ const TrustSection = () => {
                   {/* Gradient overlay on hover */}
                   <div className={`absolute inset-0 bg-gradient-to-br ${point.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
                   
-                  <point.icon className="w-10 h-10 relative z-10 text-slate-700" />
+                  <point.icon className={`w-10 h-10 relative z-10 ${isDark ? 'text-slate-200' : 'text-slate-700'}`} />
                 </motion.div>
 
                 {/* Title */}
-                <h3 className="text-xl font-bold text-slate-900 mb-3 group-hover:text-slate-800 transition-colors">
+                <h3 className={`text-xl font-bold mb-3 transition-colors ${isDark ? 'text-white' : 'text-slate-900'}`}>
                   {t(point.titleKey)}
                 </h3>
 
                 {/* Description */}
-                <p className="text-slate-600 text-sm leading-relaxed">
+                <p className={`text-sm leading-relaxed ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                   {t(point.descKey)}
                 </p>
               </div>
