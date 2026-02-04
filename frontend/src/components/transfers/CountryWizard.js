@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowRight, DollarSign, Globe, CreditCard, CheckCircle, AlertCircle, Search, Clock, User, Star } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import ReactCountryFlag from 'react-country-flag';
 import Header from '../home/Header';
 import Footer from '../home/Footer';
 
@@ -33,12 +34,16 @@ const CountryWizard = () => {
   // Load countries data on mount
   useEffect(() => {
     setCountries([
-      { code: 'dz', nameAr: 'الجزائر', nameEn: 'Algeria', flag: '🇩🇿' },
-      { code: 'eg', nameAr: 'مصر', nameEn: 'Egypt', flag: '🇪🇬' },
-      { code: 'tr', nameAr: 'تركيا', nameEn: 'Turkey', flag: '🇹🇷' },
-      { code: 'jo', nameAr: 'الأردن', nameEn: 'Jordan', flag: '🇯🇴' },
-      { code: 'in', nameAr: 'الهند', nameEn: 'India', flag: '🇮🇳' },
-      { code: 'pk', nameAr: 'باكستان', nameEn: 'Pakistan', flag: '🇵🇰' }
+      { code: 'dz', countryCode: 'DZ', nameAr: 'الجزائر', nameEn: 'Algeria' },
+      { code: 'eg', countryCode: 'EG', nameAr: 'مصر', nameEn: 'Egypt' },
+      { code: 'tr', countryCode: 'TR', nameAr: 'تركيا', nameEn: 'Turkey' },
+      { code: 'jo', countryCode: 'JO', nameAr: 'الأردن', nameEn: 'Jordan' },
+      { code: 'in', countryCode: 'IN', nameAr: 'الهند', nameEn: 'India' },
+      { code: 'pk', countryCode: 'PK', nameAr: 'باكستان', nameEn: 'Pakistan' },
+      { code: 'ae', countryCode: 'AE', nameAr: 'الإمارات', nameEn: 'UAE' },
+      { code: 'sa', countryCode: 'SA', nameAr: 'السعودية', nameEn: 'Saudi Arabia' },
+      { code: 'lb', countryCode: 'LB', nameAr: 'لبنان', nameEn: 'Lebanon' },
+      { code: 'sy', countryCode: 'SY', nameAr: 'سوريا', nameEn: 'Syria' }
     ]);
   }, []);
 
