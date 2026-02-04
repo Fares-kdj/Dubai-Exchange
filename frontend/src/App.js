@@ -2,6 +2,7 @@ import React from 'react';
 import "@/App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from '@/context/LanguageContext';
+import { ThemeProvider } from '@/context/ThemeContext';
 import HomePage from '@/components/home/HomePage';
 import TravelerBooking from '@/components/booking/TravelerBooking';
 // Transfers
@@ -29,38 +30,40 @@ import '@/i18n';
 
 function App() {
   return (
-    <LanguageProvider>
-      <div className="App">
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/traveler-booking" element={<TravelerBooking />} />
-            {/* Transfers Routes */}
-            <Route path="/transfers" element={<TransfersHub />} />
-            <Route path="/transfers/local" element={<LocalTransfer />} />
-            <Route path="/transfers/international" element={<InternationalSelector />} />
-            <Route path="/transfers/western-union" element={<WesternUnion />} />
-            <Route path="/transfers/moneygram" element={<MoneyGram />} />
-            <Route path="/transfers/country-wizard" element={<CountryWizard />} />
-            <Route path="/transfers/success" element={<TransferSuccess />} />
-            {/* Tracking */}
-            <Route path="/track-order" element={<TrackOrder />} />
-            {/* Admin Routes */}
-            <Route path="/admin/login" element={<AdminLogin />} />
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<AdminOverview />} />
-              <Route path="orders" element={<AdminOrders />} />
-              <Route path="services" element={<AdminServices />} />
-              <Route path="countries" element={<AdminCountries />} />
-              <Route path="rates" element={<AdminRates />} />
-              <Route path="cms" element={<AdminCMS />} />
-              <Route path="branding" element={<AdminBranding />} />
-              <Route path="users" element={<AdminUsers />} />
-            </Route>
-          </Routes>
-        </BrowserRouter>
-      </div>
-    </LanguageProvider>
+    <ThemeProvider>
+      <LanguageProvider>
+        <div className="App">
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/traveler-booking" element={<TravelerBooking />} />
+              {/* Transfers Routes */}
+              <Route path="/transfers" element={<TransfersHub />} />
+              <Route path="/transfers/local" element={<LocalTransfer />} />
+              <Route path="/transfers/international" element={<InternationalSelector />} />
+              <Route path="/transfers/western-union" element={<WesternUnion />} />
+              <Route path="/transfers/moneygram" element={<MoneyGram />} />
+              <Route path="/transfers/country-wizard" element={<CountryWizard />} />
+              <Route path="/transfers/success" element={<TransferSuccess />} />
+              {/* Tracking */}
+              <Route path="/track-order" element={<TrackOrder />} />
+              {/* Admin Routes */}
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<AdminOverview />} />
+                <Route path="orders" element={<AdminOrders />} />
+                <Route path="services" element={<AdminServices />} />
+                <Route path="countries" element={<AdminCountries />} />
+                <Route path="rates" element={<AdminRates />} />
+                <Route path="cms" element={<AdminCMS />} />
+                <Route path="branding" element={<AdminBranding />} />
+                <Route path="users" element={<AdminUsers />} />
+              </Route>
+            </Routes>
+          </BrowserRouter>
+        </div>
+      </LanguageProvider>
+    </ThemeProvider>
   );
 }
 
