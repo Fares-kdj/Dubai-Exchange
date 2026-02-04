@@ -327,7 +327,14 @@ const CountryWizard = () => {
                   <div className="bg-slate-50 rounded-2xl p-6 space-y-4">
                     <div className="flex justify-between pb-4 border-b">
                       <span>{isArabic ? 'الدولة' : 'Country'}</span>
-                      <span className="font-bold">{selectedCountry.flag} {isArabic ? selectedCountry.nameAr : selectedCountry.nameEn}</span>
+                      <span className="font-bold flex items-center gap-2">
+                        <ReactCountryFlag
+                          countryCode={selectedCountry.countryCode}
+                          svg
+                          style={{ width: '24px', height: '18px', borderRadius: '2px' }}
+                        />
+                        {isArabic ? selectedCountry.nameAr : selectedCountry.nameEn}
+                      </span>
                     </div>
                     <div className="flex justify-between pb-4 border-b">
                       <span>{isArabic ? 'الطريقة' : 'Method'}</span>
