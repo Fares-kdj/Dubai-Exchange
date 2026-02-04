@@ -74,27 +74,27 @@ html {
 }
 
 ::-webkit-scrollbar-track {
-  background: #F8FAFC;
+  background: var(--bg-secondary);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #D4AF37 0%, #FCD34D 100%);
+  background: linear-gradient(180deg, var(--gold-primary) 0%, var(--gold-secondary) 100%);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #FCD34D 0%, #D4AF37 100%);
+  background: linear-gradient(180deg, var(--gold-secondary) 0%, var(--gold-primary) 100%);
 }
 
 /* Selection Color */
 ::selection {
   background-color: rgba(212, 175, 55, 0.2);
-  color: #0F172A;
+  color: var(--text-primary);
 }
 
 ::-moz-selection {
   background-color: rgba(212, 175, 55, 0.2);
-  color: #0F172A;
+  color: var(--text-primary);
 }
 
 /* Remove default button styles */
