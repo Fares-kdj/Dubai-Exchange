@@ -1,6 +1,6 @@
 import React, { Suspense, useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { useGLTF, Float, Environment, Html, useProgress } from '@react-three/drei';
+import { Float, Environment, Html, useProgress } from '@react-three/drei';
 import { motion, useInView } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
@@ -16,32 +16,8 @@ const Loader = () => {
   );
 };
 
-// 3D USDT Token
-const USDTModel = () => {
-  const { scene } = useGLTF(ASSETS.usdt);
-  const ref = useRef();
-
-  useFrame((state) => {
-    if (ref.current) {
-      ref.current.rotation.y = state.clock.elapsedTime * 0.5;
-    }
-  });
-
-  return (
-    <Float speed={2} rotationIntensity={0.3} floatIntensity={0.5}>
-      <primitive 
-        ref={ref} 
-        object={scene} 
-        scale={3} 
-        position={[0, 0, 0]} 
-      />
-    </Float>
-  );
-};
-
-// 3D Credit Card
-const CardModel = () => {
-  const { scene } = useGLTF(ASSETS.creditCard);
+// Simple 3D Card Shape
+const Card3D = () => {
   const ref = useRef();
 
   useFrame((state) => {
@@ -53,12 +29,52 @@ const CardModel = () => {
 
   return (
     <Float speed={1.5} rotationIntensity={0.2} floatIntensity={0.3}>
-      <primitive 
-        ref={ref} 
-        object={scene} 
-        scale={2} 
-        position={[0, 0, 0]} 
-      />
+      <mesh ref={ref}>
+        <boxGeometry args={[3.5, 2.2, 0.1]} />
+        <meshStandardMaterial 
+          color="#8B5CF6" 
+          metalness={0.8} 
+          roughness={0.2}
+        />
+      </mesh>
+      {/* Card chip */}
+      <mesh position={[-0.8, 0.3, 0.06]}>
+        <boxGeometry args={[0.5, 0.4, 0.02]} />
+        <meshStandardMaterial color="#D4AF37" metalness={0.9} roughness={0.1} />
+      </mesh>
+    </Float>
+  );
+};
+
+// Simple 3D Coin Shape
+const Coin3D = () => {
+  const ref = useRef();
+
+  useFrame((state) => {
+    if (ref.current) {
+      ref.current.rotation.y = state.clock.elapsedTime * 0.5;
+    }
+  });
+
+  return (
+    <Float speed={2} rotationIntensity={0.3} floatIntensity={0.5}>
+      <mesh ref={ref}>
+        <cylinderGeometry args={[1.5, 1.5, 0.3, 32]} />
+        <meshStandardMaterial 
+          color="#10B981" 
+          metalness={0.9} 
+          roughness={0.1}
+        />
+      </mesh>
+      {/* T symbol on coin */}
+      <mesh position={[0, 0.16, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <boxGeometry args={[0.6, 0.1, 0.1]} />
+        <meshStandardMaterial color="#ffffff" />
+      </mesh>
+      <mesh position={[0, 0.16, -0.2]} rotation={[-Math.PI / 2, 0, 0]}>
+        <boxGeometry args={[0.1, 0.5, 0.1]} />
+        <meshStandardMaterial color="#ffffff" />
+      </mesh>
     </Float>
   );
 };
@@ -82,7 +98,7 @@ const PaymentCardSection = ({ isArabic }) => {
           <directionalLight position={[10, 10, 5]} intensity={1} />
           <pointLight position={[-5, -5, -5]} intensity={0.3} color="#D4AF37" />
           <Suspense fallback={<Loader />}>
-            <CardModel />
+            <Card3D />
             <Environment preset="city" />
           </Suspense>
         </Canvas>
@@ -184,7 +200,7 @@ const USDTSection = ({ isArabic }) => {
           <directionalLight position={[10, 10, 5]} intensity={1} />
           <pointLight position={[-5, -5, -5]} intensity={0.5} color="#10B981" />
           <Suspense fallback={<Loader />}>
-            <USDTModel />
+            <Coin3D />
             <Environment preset="city" />
           </Suspense>
         </Canvas>
@@ -242,9 +258,5 @@ export const PaymentsSection3D = () => {
     </section>
   );
 };
-
-// Preload models
-useGLTF.preload(ASSETS.usdt);
-useGLTF.preload(ASSETS.creditCard);
 
 export default PaymentsSection3D;
