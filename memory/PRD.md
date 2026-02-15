@@ -1,64 +1,63 @@
-# Khair Baghdad for Exchange - PRD
+# Khair Baghdad / Dubai International Exchange - PRD
 
 ## المشروع
-موقع شركة **خير بغداد للصرافة** - منصة خدمات مالية متكاملة
+موقع **شركة دبي العالمية للصرافة** - منصة خدمات مالية متكاملة
 
 ---
 
 ## ما تم إنجازه ✅
 
+### الصفحة الرئيسية 3D (جديدة) ✨
+- ✅ **HeroSection3D** - قسم البطل مع عناصر 3D (طائرة + بطاقة ذهبية)
+- ✅ **ServicesSection3D** - بطاقات الخدمات 3D (حجز الدولار، التحويلات، تعبئة البطاقات، USDT)
+- ✅ **PartnersSection3D** - شعارات الشركاء (زين كاش، FIB، TBI، الطيف، الرشيد، الرافدين)
+- ✅ **TrustSection3D** - قسم الثقة مع شعار البنك المركزي العراقي + Parallax
+- ✅ **PaymentsSection3D** - بطاقة 3D + USDT Token 3D
+- ✅ **Header3D** - رأس الصفحة الجديد مع الشعار الجديد
+- ✅ **Footer3D** - تذييل جديد مع معلومات الاتصال
+
+### الهوية الجديدة
+- ✅ اسم الشركة: **شركة دبي العالمية للصرافة**
+- ✅ شعارات جديدة (logo_color, logo_white, logo_black, iconmark)
+- ✅ شعارات الشركاء الحقيقية
+- ✅ شعار وصور البنك المركزي العراقي
+
 ### Frontend
-- ✅ الصفحة الرئيسية (Hero, Services, Trust, Contact, Footer)
 - ✅ حجز الدولار للمسافرين (الشروط، الاستمارة، النجاح)
 - ✅ التحويلات المالية (محلي، WU، MG، Country-based)
 - ✅ صفحة تتبع الطلب
-- ✅ **الوضع الداكن/الفاتح** (زر تبديل في Header)
-- ✅ **أعلام الدول** في صفحة التحويل حسب الدولة
-- ✅ **قسم واتساب** في صفحة النجاح
+- ✅ الوضع الداكن/الفاتح
+- ✅ قسم واتساب في صفحات النجاح
+- ✅ أعلام الدول في التحويل حسب الدولة
 
 ### Backend API
 - ✅ نظام الطلبات (CRUD + Stats)
 - ✅ نظام المصادقة JWT (Developer + Admin)
-- ✅ نظام الصلاحيات (11 صلاحية)
-- ✅ إدارة الخدمات (CMS)
-- ✅ إدارة الدول وطرق التحويل
-- ✅ أسعار الصرف (8 عملات)
-- ✅ إدارة المحتوى (CMS للنصوص)
-- ✅ الهوية البصرية (الشعار + الألوان)
-
-### لوحة التحكم (Admin)
-| الصفحة | الوظيفة |
-|--------|---------|
-| /admin | لوحة التحكم الرئيسية + إحصائيات |
-| /admin/orders | إدارة الطلبات (فلاتر + حالات) |
-| /admin/services | إضافة/تعديل/حذف الخدمات |
-| /admin/countries | إدارة دول التحويل + طرق التحويل |
-| /admin/rates | أسعار الصرف (8 عملات) |
-| /admin/cms | إدارة المحتوى النصي |
-| /admin/branding | الهوية البصرية (الشعار + الألوان) |
-| /admin/users | إدارة المستخدمين + الصلاحيات |
+- ✅ إدارة الخدمات والدول وأسعار الصرف
+- ✅ لوحة تحكم الأدمن كاملة
 
 ---
 
-## التحديثات الأخيرة (ديسمبر 2025) ✅
+## ملفات Assets الجديدة
 
-### 1. إصلاح خطأ محول العملات
-- تم إصلاح مشكلة تبديل العملات (swap)
-- المحول يعمل بشكل صحيح الآن
+### نماذج 3D
+- airplane.glb
+- credit_card.glb
+- usdt.glb
 
-### 2. الوضع الداكن/الفاتح
-- زر تبديل في Header
-- يُحفظ في localStorage
-- يدعم الصفحة الرئيسية بالكامل (Header, Hero, CurrencyConverter, Services, Footer)
+### شعارات الشركة
+- logo_color.svg, logo_white.svg, logo_black.svg
+- iconmark_white.svg, iconmark_black.svg
 
-### 3. أعلام الدول
-- 10 دول مع أعلام حقيقية في /transfers/country-wizard
-- الجزائر، مصر، تركيا، الأردن، الهند، باكستان، الإمارات، السعودية، لبنان، سوريا
+### شعارات الشركاء
+- zaincash.jpg, fib.png, tbi.png, altayf.png, rasheed.png, rafidain.svg
 
-### 4. قسم واتساب
-- مضاف في صفحة النجاح (SuccessPage.js)
-- رقم واتساب مع زر نسخ
-- رابط مباشر لفتح واتساب
+### البنك المركزي
+- cbi_logo.png
+- cbi_building_01.webp, cbi_building_02.webp, cbi_building_03.jpg
+
+### البطاقة
+- card.svg, card_texture.png
 
 ---
 
@@ -73,33 +72,40 @@
 ## المهام القادمة 📋
 
 ### P0 - أولوية قصوى
-- [ ] إعادة تصميم الصفحة الرئيسية (تحسين الألوان والرسوم المتحركة)
 - [ ] تجديد صفحة الشروط والأحكام (تصميم ومحتوى جديد + CMS)
+- [ ] ربط محتوى CMS بالصفحات (الشروط، الواتساب، إلخ)
 
 ### P1 - متوسط الأولوية
 - [ ] PDF Generator للإيصالات
 - [ ] Form Builder ديناميكي
-- [ ] ربط محتوى CMS بالـ Frontend
+- [ ] صفحات تعبئة البطاقات و USDT
 
 ### P2 - منخفض الأولوية
 - [ ] نظام إشعارات SMS
-- [ ] أختام رقمية للإيصالات
-- [ ] إشعارات WebSocket
+- [ ] تحسين أداء نماذج 3D (تحميل كسول)
 
 ---
 
 ## البنية التقنية
 
-### ملفات جديدة/محدثة
+### مكتبات جديدة
+- @react-three/fiber
+- @react-three/drei
+- three
+- gsap
+
+### ملفات جديدة
 ```
-/app/frontend/src/context/ThemeContext.js (جديد)
-/app/frontend/src/App.css (محدث - CSS variables للوضع الداكن)
-/app/frontend/src/components/home/Header.js (محدث - زر تبديل الوضع)
-/app/frontend/src/components/home/Hero.js (محدث - دعم الوضع الداكن)
-/app/frontend/src/components/home/CurrencyConverter.js (محدث - إصلاح + وضع داكن)
-/app/frontend/src/components/home/Services.js (محدث - دعم الوضع الداكن)
-/app/frontend/src/components/transfers/CountryWizard.js (محدث - أعلام الدول)
-/app/frontend/src/components/booking/SuccessPage.js (محدث - قسم واتساب)
+/app/frontend/src/config/assets.js
+/app/frontend/src/components/landing/
+├── LandingPage3D.js
+├── HeroSection3D.js
+├── ServicesSection3D.js
+├── PartnersSection3D.js
+├── TrustSection3D.js
+├── PaymentsSection3D.js
+├── Header3D.js
+└── Footer3D.js
 ```
 
 ---
