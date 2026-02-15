@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
 import { motion } from 'framer-motion';
 import { Globe, ArrowLeft, ArrowRight, Zap, Building2 } from 'lucide-react';
-import Header from '../home/Header';
-import Footer from '../home/Footer';
+import Header3D from '../landing/Header3D';
+import Footer3D from '../landing/Footer3D';
 
 // Western Union Icon
 const WesternUnionIcon = () => (
@@ -66,7 +66,7 @@ const InternationalSelector = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
-      <Header />
+      <Header3D />
       
       <main className="pt-24 pb-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -180,7 +180,7 @@ const InternationalSelector = () => {
         </div>
       </main>
 
-      <Footer />
+      <Footer3D />
     </div>
   );
 };

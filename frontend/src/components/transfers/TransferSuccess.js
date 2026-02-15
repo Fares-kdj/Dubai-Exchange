@@ -4,8 +4,8 @@ import { useLanguage } from '@/context/LanguageContext';
 import { motion } from 'framer-motion';
 import { CheckCircle, Copy, Download, Upload, X, Clock, MapPin, DollarSign, CreditCard, Phone, User, Globe, ArrowRight } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
-import Header from '../home/Header';
-import Footer from '../home/Footer';
+import Header3D from '../landing/Header3D';
+import Footer3D from '../landing/Footer3D';
 
 const TransferSuccess = () => {
   const location = useLocation();
@@ -87,7 +87,7 @@ const TransferSuccess = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 via-white to-slate-50">
-      <Header />
+      <Header3D />
       
       <main className="pt-24 pb-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -448,7 +448,7 @@ const TransferSuccess = () => {
         </div>
       </main>
 
-      <Footer />
+      <Footer3D />
     </div>
   );
 };

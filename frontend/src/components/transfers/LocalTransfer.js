@@ -6,8 +6,8 @@ import { MapPin, User, Phone, DollarSign, CreditCard, CheckCircle, AlertCircle, 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import Header from '../home/Header';
-import Footer from '../home/Footer';
+import Header3D from '../landing/Header3D';
+import Footer3D from '../landing/Footer3D';
 
 const LocalTransfer = () => {
   const navigate = useNavigate();
@@ -155,7 +155,7 @@ const LocalTransfer = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
-      <Header />
+      <Header3D />
       
       <main className="pt-24 pb-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -430,7 +430,7 @@ const LocalTransfer = () => {
         </div>
       </main>
 
-      <Footer />
+      <Footer3D />
     </div>
   );
 };
