@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
 import { motion } from 'framer-motion';
 import { MapPin, Globe, ArrowRight, Building2, Sparkles } from 'lucide-react';
-import Header from '../home/Header';
-import Footer from '../home/Footer';
+import Header3D from '../landing/Header3D';
+import Footer3D from '../landing/Footer3D';
 
 const TransfersHub = () => {
   const navigate = useNavigate();
