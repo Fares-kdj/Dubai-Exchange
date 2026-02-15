@@ -3,7 +3,8 @@ import "@/App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from '@/context/LanguageContext';
 import { ThemeProvider } from '@/context/ThemeContext';
-import HomePage from '@/components/home/HomePage';
+// New 3D Landing Page
+import LandingPage3D from '@/components/landing/LandingPage3D';
 import TravelerBooking from '@/components/booking/TravelerBooking';
 // Transfers
 import TransfersHub from '@/components/transfers/TransfersHub';
@@ -35,7 +36,7 @@ function App() {
         <div className="App">
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<HomePage />} />
+              <Route path="/" element={<LandingPage3D />} />
               <Route path="/traveler-booking" element={<TravelerBooking />} />
               {/* Transfers Routes */}
               <Route path="/transfers" element={<TransfersHub />} />
