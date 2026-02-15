@@ -161,7 +161,7 @@ const TransfersHub = () => {
         </div>
       </main>
 
-      <Footer />
+      <Footer3D />
     </div>
   );
 };
