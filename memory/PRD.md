@@ -1,4 +1,4 @@
-# Khair Baghdad / Dubai International Exchange - PRD
+# Dubai International Exchange - PRD
 
 ## المشروع
 موقع **شركة دبي العالمية للصرافة** - منصة خدمات مالية متكاملة
@@ -7,26 +7,35 @@
 
 ## ما تم إنجازه ✅
 
-### الصفحة الرئيسية 3D (جديدة) ✨
-- ✅ **HeroSection3D** - قسم البطل مع عناصر 3D (طائرة + بطاقة ذهبية)
+### الصفحة الرئيسية 3D
+- ✅ **HeroSection3D** - قسم البطل مع عناصر 3D (طائرة + بطاقة ذهبية + كرة أرضية)
 - ✅ **ServicesSection3D** - بطاقات الخدمات 3D (حجز الدولار، التحويلات، تعبئة البطاقات، USDT)
-- ✅ **PartnersSection3D** - شعارات الشركاء (زين كاش، FIB، TBI، الطيف، الرشيد، الرافدين)
+- ✅ **PartnersSection3D** - شعارات الشركاء مع التمرير اللانهائي
 - ✅ **TrustSection3D** - قسم الثقة مع شعار البنك المركزي العراقي + Parallax
 - ✅ **PaymentsSection3D** - بطاقة 3D + USDT Token 3D
-- ✅ **Header3D** - رأس الصفحة الجديد مع الشعار الجديد
-- ✅ **Footer3D** - تذييل جديد مع معلومات الاتصال
+- ✅ **Header3D** - رأس الصفحة مع تبديل اللغة والسمة
+- ✅ **Footer3D** - تذييل مع معلومات الاتصال
 
-### الهوية الجديدة
+### دعم اللغات (Multilingual)
+- ✅ **العربية (RTL)** - اللغة الافتراضية
+- ✅ **الإنجليزية (LTR)** - دعم كامل
+- ✅ **الكردية (RTL)** - دعم كامل مع ترجمات جديدة
+
+### الوضع الداكن/الفاتح (Dark/Light Mode)
+- ✅ **ThemeContext** - إدارة السمة عبر التطبيق
+- ✅ تطبيق classList و data-theme على html element
+- ✅ جميع المكونات تدعم الوضعين
+
+### الهوية البصرية
 - ✅ اسم الشركة: **شركة دبي العالمية للصرافة**
-- ✅ شعارات جديدة (logo_color, logo_white, logo_black, iconmark)
-- ✅ شعارات الشركاء الحقيقية
+- ✅ شعارات جديدة (logo_color, logo_white, logo_black)
+- ✅ شعارات الشركاء الحقيقية (6 شركاء)
 - ✅ شعار وصور البنك المركزي العراقي
 
-### Frontend
+### الصفحات الداخلية
 - ✅ حجز الدولار للمسافرين (الشروط، الاستمارة، النجاح)
-- ✅ التحويلات المالية (محلي، WU، MG، Country-based)
+- ✅ التحويلات المالية (محلي، WU، MG، حسب الدولة)
 - ✅ صفحة تتبع الطلب
-- ✅ الوضع الداكن/الفاتح
 - ✅ قسم واتساب في صفحات النجاح
 - ✅ أعلام الدول في التحويل حسب الدولة
 
@@ -38,26 +47,65 @@
 
 ---
 
-## ملفات Assets الجديدة
+## الإصلاحات المنجزة (هذه الجلسة) 🔧
 
-### نماذج 3D
-- airplane.glb
-- credit_card.glb
-- usdt.glb
+### P0 - أولوية قصوى
+- ✅ **إصلاح الوضع الفاتح (Light Mode)** - كان لا يعمل بسبب عدم تطابق CSS selectors
+- ✅ **إصلاح اللغة الكردية** - كانت تظهر بالإنجليزية في Header
 
-### شعارات الشركة
-- logo_color.svg, logo_white.svg, logo_black.svg
-- iconmark_white.svg, iconmark_black.svg
+### P1 - أولوية متوسطة
+- ✅ **تحديث جميع المكونات لدعم الوضع الفاتح**
+- ✅ **إضافة ترجمات كردية لجميع الأقسام**
+- ✅ **إصلاح أسماء الشركاء بالكردية**
 
-### شعارات الشركاء
-- zaincash.jpg, fib.png, tbi.png, altayf.png, rasheed.png, rafidain.svg
+---
 
-### البنك المركزي
-- cbi_logo.png
-- cbi_building_01.webp, cbi_building_02.webp, cbi_building_03.jpg
+## المهام القادمة 📋
 
-### البطاقة
-- card.svg, card_texture.png
+### P0 - أولوية قصوى
+- [ ] إضافة محول العملات للصفحة الرئيسية
+- [ ] إضافة قسم "تواصل معنا" مع روابط التواصل الاجتماعي
+- [ ] تجديد صفحة الشروط والأحكام (تصميم ومحتوى جديد + CMS)
+
+### P1 - أولوية متوسطة
+- [ ] تحسين نماذج 3D للطائرة والبطاقة (البحث عن نماذج أفضل)
+- [ ] PDF Generator للإيصالات
+- [ ] Form Builder ديناميكي
+- [ ] صفحات تعبئة البطاقات و USDT
+
+### P2 - أولوية منخفضة
+- [ ] نظام إشعارات SMS
+- [ ] تحسين أداء نماذج 3D (تحميل كسول)
+
+---
+
+## البنية التقنية
+
+### Frontend
+- React 18
+- Tailwind CSS
+- React Three Fiber (@react-three/fiber, @react-three/drei)
+- GSAP للرسوم المتحركة
+- i18next للترجمة
+- Framer Motion للحركات
+
+### Backend
+- FastAPI
+- MongoDB (Motor)
+- JWT Authentication
+
+### ملفات المكونات
+```
+/app/frontend/src/components/landing/
+├── LandingPage3D.js
+├── Header3D.js
+├── HeroSection3D.js
+├── ServicesSection3D.js
+├── PartnersSection3D.js
+├── TrustSection3D.js
+├── PaymentsSection3D.js
+└── Footer3D.js
+```
 
 ---
 
@@ -69,45 +117,5 @@
 
 ---
 
-## المهام القادمة 📋
-
-### P0 - أولوية قصوى
-- [ ] تجديد صفحة الشروط والأحكام (تصميم ومحتوى جديد + CMS)
-- [ ] ربط محتوى CMS بالصفحات (الشروط، الواتساب، إلخ)
-
-### P1 - متوسط الأولوية
-- [ ] PDF Generator للإيصالات
-- [ ] Form Builder ديناميكي
-- [ ] صفحات تعبئة البطاقات و USDT
-
-### P2 - منخفض الأولوية
-- [ ] نظام إشعارات SMS
-- [ ] تحسين أداء نماذج 3D (تحميل كسول)
-
----
-
-## البنية التقنية
-
-### مكتبات جديدة
-- @react-three/fiber
-- @react-three/drei
-- three
-- gsap
-
-### ملفات جديدة
-```
-/app/frontend/src/config/assets.js
-/app/frontend/src/components/landing/
-├── LandingPage3D.js
-├── HeroSection3D.js
-├── ServicesSection3D.js
-├── PartnersSection3D.js
-├── TrustSection3D.js
-├── PaymentsSection3D.js
-├── Header3D.js
-└── Footer3D.js
-```
-
----
-
-آخر تحديث: ديسمبر 2025
+## آخر تحديث
+ديسمبر 2025 - إصلاح Light Mode واللغة الكردية
