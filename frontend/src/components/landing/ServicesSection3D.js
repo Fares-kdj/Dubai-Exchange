@@ -1,7 +1,8 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
+import { useTheme } from '@/context/ThemeContext';
 import { SERVICES } from '@/config/assets';
 import { Plane, Send, CreditCard, Coins, ArrowRight } from 'lucide-react';
 
@@ -12,7 +13,7 @@ const iconMap = {
   coins: Coins
 };
 
-const ServiceCard = ({ service, index, isArabic }) => {
+const ServiceCard = ({ service, index, isArabic, isKurdish, isDark }) => {
   const navigate = useNavigate();
   const Icon = iconMap[service.icon] || CreditCard;
 
@@ -22,6 +23,24 @@ const ServiceCard = ({ service, index, isArabic }) => {
     'from-purple-500 to-pink-500',
     'from-amber-500 to-orange-500'
   ];
+
+  const ctaText = {
+    ar: 'ابدأ الآن',
+    en: 'Start Now',
+    ku: 'دەست پێبکە'
+  };
+
+  const getTitle = () => {
+    if (isKurdish && service.titleKu) return service.titleKu;
+    if (isArabic) return service.titleAr;
+    return service.titleEn;
+  };
+
+  const getDesc = () => {
+    if (isKurdish && service.descKu) return service.descKu;
+    if (isArabic) return service.descAr;
+    return service.descEn;
+  };
 
   return (
     <motion.div
@@ -39,7 +58,11 @@ const ServiceCard = ({ service, index, isArabic }) => {
       onClick={() => navigate(service.link)}
       data-testid={`service-card-${service.id}`}
     >
-      <div className="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 h-full overflow-hidden transition-all duration-500 hover:bg-white/20 hover:border-white/30 hover:shadow-2xl hover:shadow-[#D4AF37]/20">
+      <div className={`relative backdrop-blur-xl border rounded-3xl p-8 h-full overflow-hidden transition-all duration-500 hover:shadow-2xl hover:shadow-[#D4AF37]/20 ${
+        isDark 
+          ? 'bg-white/10 border-white/20 hover:bg-white/20 hover:border-white/30'
+          : 'bg-white border-slate-200 hover:bg-slate-50 hover:border-[#D4AF37]/30 shadow-lg'
+      }`}>
         {/* Gradient Overlay */}
         <div className={`absolute inset-0 bg-gradient-to-br ${gradients[index % 4]} opacity-0 group-hover:opacity-10 transition-opacity duration-500`} />
         
@@ -56,18 +79,24 @@ const ServiceCard = ({ service, index, isArabic }) => {
         </motion.div>
 
         {/* Title */}
-        <h3 className="text-xl font-bold text-white mb-3 group-hover:text-[#FCD34D] transition-colors">
-          {isArabic ? service.titleAr : service.titleEn}
+        <h3 className={`text-xl font-bold mb-3 transition-colors ${
+          isDark 
+            ? 'text-white group-hover:text-[#FCD34D]'
+            : 'text-slate-900 group-hover:text-[#B8860B]'
+        }`}>
+          {getTitle()}
         </h3>
 
         {/* Description */}
-        <p className="text-slate-300 text-sm leading-relaxed mb-6">
-          {isArabic ? service.descAr : service.descEn}
+        <p className={`text-sm leading-relaxed mb-6 ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
+          {getDesc()}
         </p>
 
         {/* CTA */}
-        <div className="flex items-center gap-2 text-[#D4AF37] font-medium group-hover:gap-3 transition-all">
-          <span>{isArabic ? 'ابدأ الآن' : 'Start Now'}</span>
+        <div className={`flex items-center gap-2 font-medium group-hover:gap-3 transition-all ${
+          isDark ? 'text-[#D4AF37]' : 'text-[#B8860B]'
+        }`}>
+          <span>{isKurdish ? ctaText.ku : isArabic ? ctaText.ar : ctaText.en}</span>
           <ArrowRight className="w-4 h-4" />
         </div>
       </div>
@@ -77,20 +106,46 @@ const ServiceCard = ({ service, index, isArabic }) => {
 
 export const ServicesSection3D = () => {
   const { currentLanguage } = useLanguage();
+  const { isDark } = useTheme();
   const isArabic = currentLanguage === 'ar';
+  const isKurdish = currentLanguage === 'ku';
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
+
+  const text = {
+    ar: {
+      badge: 'خدماتنا',
+      title: 'خدمات مالية متكاملة',
+      subtitle: 'نقدم مجموعة شاملة من الخدمات المالية لتلبية جميع احتياجاتك'
+    },
+    en: {
+      badge: 'Our Services',
+      title: 'Complete Financial Services',
+      subtitle: 'We offer a comprehensive range of financial services to meet all your needs'
+    },
+    ku: {
+      badge: 'خزمەتگوزاریەکانمان',
+      title: 'خزمەتگوزارییە دارایییە تەواوەکان',
+      subtitle: 'کۆمەڵێک تەواوی خزمەتگوزارییە دارایییەکان پێشکەش دەکەین بۆ دابینکردنی هەموو پێداویستییەکانت'
+    }
+  };
+
+  const t = text[currentLanguage] || text.ar;
 
   return (
     <section 
       ref={sectionRef}
-      className="relative py-24 md:py-32 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 overflow-hidden"
+      className={`relative py-24 md:py-32 overflow-hidden transition-colors duration-500 ${
+        isDark 
+          ? 'bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900'
+          : 'bg-gradient-to-b from-slate-50 via-white to-slate-50'
+      }`}
       id="services"
     >
       {/* Background Effects */}
       <div className="absolute inset-0">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#D4AF37]/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
+        <div className={`absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl ${isDark ? 'bg-[#D4AF37]/10' : 'bg-[#D4AF37]/5'}`} />
+        <div className={`absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full blur-3xl ${isDark ? 'bg-blue-500/10' : 'bg-blue-500/5'}`} />
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -105,20 +160,21 @@ export const ServicesSection3D = () => {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={isInView ? { opacity: 1, scale: 1 } : {}}
             transition={{ delay: 0.2 }}
-            className="inline-block px-4 py-2 mb-6 bg-[#D4AF37]/20 border border-[#D4AF37]/30 rounded-full text-[#FCD34D] text-sm font-medium"
+            className={`inline-block px-4 py-2 mb-6 rounded-full text-sm font-medium ${
+              isDark 
+                ? 'bg-[#D4AF37]/20 border border-[#D4AF37]/30 text-[#FCD34D]'
+                : 'bg-[#D4AF37]/10 border border-[#D4AF37]/20 text-[#B8860B]'
+            }`}
           >
-            {isArabic ? 'خدماتنا' : 'Our Services'}
+            {t.badge}
           </motion.span>
           
-          <h2 className="text-3xl sm:text-5xl font-bold text-white mb-4">
-            {isArabic ? 'خدمات مالية متكاملة' : 'Complete Financial Services'}
+          <h2 className={`text-3xl sm:text-5xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+            {t.title}
           </h2>
           
-          <p className="text-lg text-slate-400 max-w-2xl mx-auto">
-            {isArabic 
-              ? 'نقدم مجموعة شاملة من الخدمات المالية لتلبية جميع احتياجاتك'
-              : 'We offer a comprehensive range of financial services to meet all your needs'
-            }
+          <p className={`text-lg max-w-2xl mx-auto ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+            {t.subtitle}
           </p>
         </motion.div>
 
@@ -130,6 +186,8 @@ export const ServicesSection3D = () => {
               service={service} 
               index={index}
               isArabic={isArabic}
+              isKurdish={isKurdish}
+              isDark={isDark}
             />
           ))}
         </div>
