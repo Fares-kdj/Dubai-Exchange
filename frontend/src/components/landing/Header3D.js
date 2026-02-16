@@ -16,6 +16,8 @@ const Header3D = () => {
   const [scrolled, setScrolled] = useState(false);
 
   const isArabic = currentLanguage === 'ar';
+  const isKurdish = currentLanguage === 'ku';
+  const isRTL = isArabic || isKurdish;
   const isLandingPage = location.pathname === '/';
 
   useEffect(() => {
@@ -27,12 +29,20 @@ const Header3D = () => {
   }, []);
 
   const navItems = [
-    { key: 'home', href: '/', labelAr: 'الرئيسية', labelEn: 'Home' },
-    { key: 'services', href: '/#services', labelAr: 'الخدمات', labelEn: 'Services' },
-    { key: 'partners', href: '/#partners', labelAr: 'الشركاء', labelEn: 'Partners' },
-    { key: 'track', href: '/track-order', labelAr: 'تتبع الطلب', labelEn: 'Track Order' },
-    { key: 'contact', href: '/#contact', labelAr: 'اتصل بنا', labelEn: 'Contact' }
+    { key: 'home', href: '/', labelAr: 'الرئيسية', labelEn: 'Home', labelKu: 'سەرەکی' },
+    { key: 'services', href: '/#services', labelAr: 'الخدمات', labelEn: 'Services', labelKu: 'خزمەتگوزاریەکان' },
+    { key: 'partners', href: '/#partners', labelAr: 'الشركاء', labelEn: 'Partners', labelKu: 'هاوبەشەکان' },
+    { key: 'track', href: '/track-order', labelAr: 'تتبع الطلب', labelEn: 'Track Order', labelKu: 'بەدواداچوونی داواکاری' },
+    { key: 'contact', href: '/#contact', labelAr: 'اتصل بنا', labelEn: 'Contact', labelKu: 'پەیوەندی' }
   ];
+
+  const getNavLabel = (item) => {
+    if (isKurdish) return item.labelKu;
+    if (isArabic) return item.labelAr;
+    return item.labelEn;
+  };
+
+  const ctaText = isKurdish ? 'دەست پێبکە' : isArabic ? 'ابدأ الآن' : 'Get Started';
 
   const languages = [
     { code: 'ar', name: 'العربية' },
@@ -92,9 +102,13 @@ const Header3D = () => {
                 key={item.key}
                 onClick={() => handleNavClick(item.href)}
                 data-testid={`nav-${item.key}`}
-                className="text-slate-300 hover:text-white transition-colors duration-300 text-sm font-medium relative group"
+                className={`transition-colors duration-300 text-sm font-medium relative group ${
+                  isDark 
+                    ? 'text-slate-300 hover:text-white'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
               >
-                {isArabic ? item.labelAr : item.labelEn}
+                {getNavLabel(item)}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-[#D4AF37] to-[#FCD34D] group-hover:w-full transition-all duration-300"></span>
               </button>
             ))}
@@ -166,7 +180,7 @@ const Header3D = () => {
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
             >
-              {isArabic ? 'ابدأ الآن' : 'Get Started'}
+              {ctaText}
             </motion.button>
           </div>
 
@@ -174,7 +188,7 @@ const Header3D = () => {
           <div className="lg:hidden flex items-center gap-2">
             <motion.button
               onClick={toggleTheme}
-              className="p-2 rounded-lg text-white hover:bg-white/10"
+              className={`p-2 rounded-lg hover:bg-white/10 ${isDark ? 'text-white' : 'text-slate-900'}`}
               whileTap={{ scale: 0.9 }}
             >
               {isDark ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5" />}
@@ -183,7 +197,9 @@ const Header3D = () => {
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               data-testid="mobile-menu-button"
-              className="p-2 text-white hover:bg-white/10 transition-colors rounded-lg"
+              className={`p-2 transition-colors rounded-lg ${
+                isDark ? 'text-white hover:bg-white/10' : 'text-slate-900 hover:bg-slate-100'
+              }`}
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -197,20 +213,22 @@ const Header3D = () => {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="lg:hidden border-t border-slate-700 py-4"
+              className={`lg:hidden border-t py-4 ${isDark ? 'border-slate-700' : 'border-slate-200'}`}
             >
               <div className="flex flex-col gap-4">
                 {navItems.map((item) => (
                   <button
                     key={item.key}
                     onClick={() => handleNavClick(item.href)}
-                    className="text-slate-300 hover:text-white transition-colors py-2 text-sm font-medium text-left"
+                    className={`transition-colors py-2 text-sm font-medium text-left ${
+                      isDark ? 'text-slate-300 hover:text-white' : 'text-slate-600 hover:text-slate-900'
+                    }`}
                   >
-                    {isArabic ? item.labelAr : item.labelEn}
+                    {getNavLabel(item)}
                   </button>
                 ))}
                 
-                <div className="flex flex-col gap-2 pt-2 border-t border-slate-700">
+                <div className={`flex flex-col gap-2 pt-2 border-t ${isDark ? 'border-slate-700' : 'border-slate-200'}`}>
                   {languages.map((lang) => (
                     <button
                       key={lang.code}
@@ -219,7 +237,9 @@ const Header3D = () => {
                         setMobileMenuOpen(false);
                       }}
                       className={`text-left py-2 text-sm ${
-                        currentLanguage === lang.code ? 'text-[#D4AF37] font-medium' : 'text-slate-400'
+                        currentLanguage === lang.code 
+                          ? isDark ? 'text-[#D4AF37] font-medium' : 'text-[#B8860B] font-medium'
+                          : isDark ? 'text-slate-400' : 'text-slate-500'
                       }`}
                     >
                       {lang.name}
@@ -231,7 +251,7 @@ const Header3D = () => {
                   onClick={() => { navigate('/traveler-booking'); setMobileMenuOpen(false); }}
                   className="w-full mt-2 px-6 py-2.5 bg-gradient-to-r from-[#D4AF37] to-[#FCD34D] text-slate-900 font-bold rounded-full shadow-lg"
                 >
-                  {isArabic ? 'ابدأ الآن' : 'Get Started'}
+                  {ctaText}
                 </button>
               </div>
             </motion.div>
