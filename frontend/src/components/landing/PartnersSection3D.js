@@ -128,7 +128,7 @@ export const PartnersSection3D = () => {
                     : 'text-slate-500 group-hover:text-[#B8860B]'
                 }`}
               >
-                {isArabic ? partner.nameAr : isKurdish ? partner.nameAr : partner.nameEn}
+                {isKurdish ? partner.nameKu : isArabic ? partner.nameAr : partner.nameEn}
               </motion.p>
             </motion.div>
           ))}
