@@ -46,7 +46,11 @@ const LandingPage3D = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white overflow-x-hidden">
+    <div className={`min-h-screen overflow-x-hidden transition-colors duration-300 ${
+      isDark 
+        ? 'bg-slate-900 text-white' 
+        : 'bg-slate-50 text-slate-900'
+    }`}>
       <Header3D />
       <main>
         <HeroSection3D />

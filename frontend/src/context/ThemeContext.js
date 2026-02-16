@@ -3,33 +3,40 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
-  const [theme, setTheme] = useState('light');
+  const [theme, setTheme] = useState(() => {
+    // Initialize from localStorage or default to dark
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('theme') || 'dark';
+    }
+    return 'dark';
+  });
 
   useEffect(() => {
-    // Check localStorage first, then system preference
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      setTheme(savedTheme);
-      applyTheme(savedTheme);
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      setTheme('dark');
-      applyTheme('dark');
-    }
-  }, []);
+    // Apply theme on mount and when theme changes
+    applyTheme(theme);
+  }, [theme]);
 
   const applyTheme = (newTheme) => {
     const root = document.documentElement;
+    // Remove both classes first
+    root.classList.remove('dark', 'light');
+    // Add the appropriate class
+    root.classList.add(newTheme);
+    // Also set data-theme for CSS variable support
+    root.setAttribute('data-theme', newTheme);
+    // Update body background directly for immediate effect
     if (newTheme === 'dark') {
-      root.classList.add('dark');
+      document.body.style.backgroundColor = '#0f172a';
+      document.body.style.color = '#f1f5f9';
     } else {
-      root.classList.remove('dark');
+      document.body.style.backgroundColor = '#f8fafc';
+      document.body.style.color = '#0f172a';
     }
   };
 
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(newTheme);
-    applyTheme(newTheme);
     localStorage.setItem('theme', newTheme);
   };
 
