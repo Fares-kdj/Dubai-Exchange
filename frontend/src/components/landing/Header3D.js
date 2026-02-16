@@ -74,7 +74,9 @@ const Header3D = () => {
       animate={{ y: 0 }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled || !isLandingPage
-          ? 'bg-slate-900/95 backdrop-blur-xl border-b border-slate-800 shadow-lg'
+          ? isDark 
+            ? 'bg-slate-900/95 backdrop-blur-xl border-b border-slate-800 shadow-lg'
+            : 'bg-white/95 backdrop-blur-xl border-b border-slate-200 shadow-lg'
           : 'bg-transparent'
       }`}
     >
@@ -120,7 +122,11 @@ const Header3D = () => {
             <motion.button
               onClick={toggleTheme}
               data-testid="theme-toggle"
-              className="p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-all duration-300"
+              className={`p-2.5 rounded-full transition-all duration-300 ${
+                isDark 
+                  ? 'bg-white/10 hover:bg-white/20 text-white'
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+              }`}
               whileHover={{ scale: 1.1, rotate: 15 }}
               whileTap={{ scale: 0.9 }}
             >
@@ -132,12 +138,16 @@ const Header3D = () => {
               <motion.button
                 onClick={() => setLangDropdownOpen(!langDropdownOpen)}
                 data-testid="language-switcher"
-                className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 transition-all duration-300"
+                className={`flex items-center gap-2 px-4 py-2 rounded-full border transition-all duration-300 ${
+                  isDark 
+                    ? 'bg-white/10 hover:bg-white/20 border-white/20'
+                    : 'bg-slate-100 hover:bg-slate-200 border-slate-200'
+                }`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <Globe className="w-4 h-4 text-[#D4AF37]" />
-                <span className="text-sm text-white font-medium">
+                <Globe className={`w-4 h-4 ${isDark ? 'text-[#D4AF37]' : 'text-[#B8860B]'}`} />
+                <span className={`text-sm font-medium ${isDark ? 'text-white' : 'text-slate-700'}`}>
                   {languages.find(l => l.code === currentLanguage)?.name}
                 </span>
               </motion.button>
@@ -148,7 +158,11 @@ const Header3D = () => {
                     initial={{ opacity: 0, y: -10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                    className="absolute top-full mt-2 right-0 bg-slate-800 backdrop-blur-xl border border-slate-700 rounded-2xl overflow-hidden shadow-xl min-w-[140px]"
+                    className={`absolute top-full mt-2 right-0 backdrop-blur-xl border rounded-2xl overflow-hidden shadow-xl min-w-[140px] ${
+                      isDark 
+                        ? 'bg-slate-800 border-slate-700'
+                        : 'bg-white border-slate-200'
+                    }`}
                   >
                     {languages.map((lang) => (
                       <button
@@ -160,8 +174,12 @@ const Header3D = () => {
                         data-testid={`lang-${lang.code}`}
                         className={`w-full px-4 py-3 text-left text-sm transition-colors ${
                           currentLanguage === lang.code 
-                            ? 'text-[#D4AF37] bg-slate-700 font-medium' 
-                            : 'text-slate-200 hover:bg-slate-700'
+                            ? isDark 
+                              ? 'text-[#D4AF37] bg-slate-700 font-medium'
+                              : 'text-[#B8860B] bg-slate-100 font-medium'
+                            : isDark 
+                              ? 'text-slate-200 hover:bg-slate-700'
+                              : 'text-slate-600 hover:bg-slate-100'
                         }`}
                       >
                         {lang.name}
