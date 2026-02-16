@@ -37,18 +37,20 @@ export const ASSETS = {
 export const COMPANY = {
   nameAr: 'شركة دبي العالمية للصرافة',
   nameEn: 'Dubai International for Exchange',
+  nameKu: 'کۆمپانیای دوبەی نێودەوڵەتی بۆ ئاڵوگۆڕی دراو',
   sloganAr: 'خدمات مالية آمنة وسريعة للمسافرين والشركات',
-  sloganEn: 'Secure and Fast Financial Services for Travelers and Businesses'
+  sloganEn: 'Secure and Fast Financial Services for Travelers and Businesses',
+  sloganKu: 'خزمەتگوزارییە دارایییە پارێزراو و خێراکان بۆ گەشتیاران و کۆمپانیاکان'
 };
 
 // Partners list
 export const PARTNERS = [
-  { id: 'zaincash', nameAr: 'زين كاش', nameEn: 'Zain Cash', logo: ASSETS.partners.zaincash },
-  { id: 'fib', nameAr: 'المصرف العراقي الأول', nameEn: 'First Iraqi Bank', logo: ASSETS.partners.fib },
-  { id: 'tbi', nameAr: 'المصرف العراقي للتجارة', nameEn: 'Trade Bank of Iraq', logo: ASSETS.partners.tbi },
-  { id: 'altayf', nameAr: 'مصرف الطيف الإسلامي', nameEn: 'Al-Tayf Islamic Bank', logo: ASSETS.partners.altayf },
-  { id: 'rasheed', nameAr: 'مصرف الرشيد', nameEn: 'Rasheed Bank', logo: ASSETS.partners.rasheed },
-  { id: 'rafidain', nameAr: 'مصرف الرافدين', nameEn: 'Rafidain Bank', logo: ASSETS.partners.rafidain }
+  { id: 'zaincash', nameAr: 'زين كاش', nameEn: 'Zain Cash', nameKu: 'زین کاش', logo: ASSETS.partners.zaincash },
+  { id: 'fib', nameAr: 'المصرف العراقي الأول', nameEn: 'First Iraqi Bank', nameKu: 'بانکی یەکەمی عێراق', logo: ASSETS.partners.fib },
+  { id: 'tbi', nameAr: 'المصرف العراقي للتجارة', nameEn: 'Trade Bank of Iraq', nameKu: 'بانکی بازرگانیی عێراق', logo: ASSETS.partners.tbi },
+  { id: 'altayf', nameAr: 'مصرف الطيف الإسلامي', nameEn: 'Al-Tayf Islamic Bank', nameKu: 'بانکی ئیسلامیی ئەلتەیف', logo: ASSETS.partners.altayf },
+  { id: 'rasheed', nameAr: 'مصرف الرشيد', nameEn: 'Rasheed Bank', nameKu: 'بانکی ڕەشید', logo: ASSETS.partners.rasheed },
+  { id: 'rafidain', nameAr: 'مصرف الرافدين', nameEn: 'Rafidain Bank', nameKu: 'بانکی ڕافیدەین', logo: ASSETS.partners.rafidain }
 ];
 
 // Services
@@ -57,8 +59,10 @@ export const SERVICES = [
     id: 'usd-booking',
     titleAr: 'حجز الدولار للمسافرين',
     titleEn: 'USD Booking for Travelers',
+    titleKu: 'نۆرەکردنی دۆلار بۆ گەشتیاران',
     descAr: 'احجز دولاراتك بسهولة قبل السفر',
     descEn: 'Book your dollars easily before traveling',
+    descKu: 'بە ئاسانی دۆلارەکانت نۆرە بکە پێش گەشتکردن',
     icon: 'plane',
     link: '/traveler-booking'
   },
@@ -66,8 +70,10 @@ export const SERVICES = [
     id: 'transfers',
     titleAr: 'التحويلات المالية',
     titleEn: 'Money Transfers',
+    titleKu: 'گواستنەوەی پارە',
     descAr: 'تحويلات محلية ودولية سريعة وآمنة',
     descEn: 'Fast and secure local and international transfers',
+    descKu: 'گواستنەوەی خێرا و پارێزراو لە ناوخۆ و نێودەوڵەتی',
     icon: 'send',
     link: '/transfers'
   },
@@ -75,8 +81,10 @@ export const SERVICES = [
     id: 'card-topup',
     titleAr: 'تعبئة البطاقات',
     titleEn: 'Card Top-up',
+    titleKu: 'پڕکردنەوەی کارت',
     descAr: 'اشحن بطاقاتك المصرفية بسهولة',
     descEn: 'Top up your bank cards easily',
+    descKu: 'بە ئاسانی کارتە بانکییەکانت پڕبکەوە',
     icon: 'credit-card',
     link: '/card-topup'
   },
@@ -84,8 +92,10 @@ export const SERVICES = [
     id: 'usdt',
     titleAr: 'شحن USDT',
     titleEn: 'USDT Recharge',
+    titleKu: 'پڕکردنەوەی USDT',
     descAr: 'خدمات العملات الرقمية',
     descEn: 'Digital currency services',
+    descKu: 'خزمەتگوزارییەکانی دراوی دیجیتاڵ',
     icon: 'coins',
     link: '/usdt'
   }
