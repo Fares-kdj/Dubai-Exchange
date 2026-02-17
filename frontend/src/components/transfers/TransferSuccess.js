@@ -369,13 +369,15 @@ const TransferSuccess = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
-                className="bg-blue-50 border-2 border-blue-200 rounded-3xl p-6"
+                className={`rounded-3xl p-6 border-2 ${
+                  isDark ? 'bg-blue-900/20 border-blue-700/50' : 'bg-blue-50 border-blue-200'
+                }`}
               >
-                <h3 className="text-lg font-bold text-blue-900 mb-4">
+                <h3 className={`text-lg font-bold mb-4 ${isDark ? 'text-blue-400' : 'text-blue-900'}`}>
                   {currentLanguage === 'ar' ? 'تعليمات الدفع' : 'Payment Instructions'}
                 </h3>
                 
-                <div className="space-y-3 text-sm text-blue-800">
+                <div className={`space-y-3 text-sm ${isDark ? 'text-blue-300' : 'text-blue-800'}`}>
                   <p className="flex items-start gap-2">
                     <span className="font-bold">1.</span>
                     {currentLanguage === 'ar' ? 'قم بالدفع في أحد فروعنا' : 'Pay at our branch'}
@@ -390,8 +392,8 @@ const TransferSuccess = () => {
                   </p>
                 </div>
 
-                <div className="mt-4 p-3 bg-blue-100 rounded-xl">
-                  <p className="text-xs text-blue-700">
+                <div className={`mt-4 p-3 rounded-xl ${isDark ? 'bg-blue-800/30' : 'bg-blue-100'}`}>
+                  <p className={`text-xs ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>
                     📱 {currentLanguage === 'ar' ? 'سيصلك إشعار عند تغيير الحالة' : 'You will be notified when status changes'}
                   </p>
                 </div>
