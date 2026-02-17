@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
+import { useTheme } from '@/context/ThemeContext';
 import { motion } from 'framer-motion';
 import { CheckCircle, Copy, Download, Upload, X, Clock, MapPin, DollarSign, CreditCard, Phone, User, Globe, ArrowRight } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
@@ -11,6 +12,7 @@ const TransferSuccess = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { currentLanguage } = useLanguage();
+  const { isDark } = useTheme();
   const [copied, setCopied] = useState(false);
   const [paymentProofs, setPaymentProofs] = useState([]);
   const [uploading, setUploading] = useState(false);
