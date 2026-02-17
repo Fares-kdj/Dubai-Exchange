@@ -18,10 +18,10 @@ export const DevicesSection = () => {
       badge: 'متاح على جميع الأجهزة',
       title: 'خدماتنا معك أينما كنت',
       subtitle: 'استمتع بتجربة سلسة على الهاتف، الآيباد، أو الكمبيوتر. خدماتنا متوفرة على جميع الأجهزة.',
-      features: [
-        { icon: Smartphone, title: 'الهاتف الذكي', desc: 'تطبيق سهل وسريع' },
-        { icon: Tablet, title: 'الآيباد', desc: 'واجهة محسنة للأجهزة اللوحية' },
-        { icon: Monitor, title: 'الكمبيوتر', desc: 'تجربة كاملة على الويب' }
+      devices: [
+        { icon: Smartphone, title: 'iPhone', desc: 'تطبيق سهل وسريع على هاتفك' },
+        { icon: Tablet, title: 'iPad', desc: 'واجهة محسنة للأجهزة اللوحية' },
+        { icon: Monitor, title: 'MacBook', desc: 'تجربة كاملة على الويب' }
       ],
       benefits: ['واجهة سهلة الاستخدام', 'تصميم متجاوب', 'أمان عالي', 'دعم 24/7']
     },
@@ -29,10 +29,10 @@ export const DevicesSection = () => {
       badge: 'Available on All Devices',
       title: 'Our Services Wherever You Are',
       subtitle: 'Enjoy a seamless experience on phone, iPad, or computer. Our services are available on all devices.',
-      features: [
-        { icon: Smartphone, title: 'Smartphone', desc: 'Easy and fast app' },
+      devices: [
+        { icon: Smartphone, title: 'iPhone', desc: 'Easy and fast app on your phone' },
         { icon: Tablet, title: 'iPad', desc: 'Optimized tablet interface' },
-        { icon: Monitor, title: 'Computer', desc: 'Full web experience' }
+        { icon: Monitor, title: 'MacBook', desc: 'Full web experience' }
       ],
       benefits: ['User-friendly interface', 'Responsive design', 'High security', '24/7 support']
     },
@@ -40,16 +40,29 @@ export const DevicesSection = () => {
       badge: 'بەردەستە لە هەموو ئامێرەکان',
       title: 'خزمەتگوزاریەکانمان لەگەڵت هەر لە کوێ بیت',
       subtitle: 'چێژ لە ئەزموونێکی ئاسان وەربگرە لەسەر مۆبایل، ئایپاد، یان کۆمپیوتەر.',
-      features: [
-        { icon: Smartphone, title: 'مۆبایلی زیرەک', desc: 'ئەپلیکەیشنێکی ئاسان و خێرا' },
-        { icon: Tablet, title: 'ئایپاد', desc: 'ڕووکارێکی باشتر بۆ تابلێت' },
-        { icon: Monitor, title: 'کۆمپیوتەر', desc: 'ئەزموونی تەواو لەسەر وێب' }
+      devices: [
+        { icon: Smartphone, title: 'iPhone', desc: 'ئەپلیکەیشنێکی ئاسان و خێرا' },
+        { icon: Tablet, title: 'iPad', desc: 'ڕووکارێکی باشتر بۆ تابلێت' },
+        { icon: Monitor, title: 'MacBook', desc: 'ئەزموونی تەواو لەسەر وێب' }
       ],
       benefits: ['ڕووکاری ئاسان', 'دیزاینی گونجاو', 'ئاسایشی بەرز', 'پشتگیری ٢٤/٧']
     }
   };
 
   const t = text[currentLanguage] || text.ar;
+
+  // Get device images based on theme
+  const deviceImages = isDark 
+    ? {
+        phone: ASSETS.devicePhoneDark,
+        tablet: ASSETS.deviceTabletDark,
+        laptop: ASSETS.deviceLaptopDark
+      }
+    : {
+        phone: ASSETS.devicePhoneLight,
+        tablet: ASSETS.deviceTabletLight,
+        laptop: ASSETS.deviceLaptopLight
+      };
 
   return (
     <section 
@@ -110,110 +123,172 @@ export const DevicesSection = () => {
           </p>
         </motion.div>
 
-        {/* Devices Display */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Device Images */}
+        {/* Real Device Screenshots */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
+          {/* iPhone */}
           <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.8 }}
-            className="relative h-[400px] md:h-[500px]"
+            initial={{ opacity: 0, y: 50 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="flex flex-col items-center"
           >
-            {/* Phone */}
             <motion.div
-              className="absolute left-0 bottom-0 w-[40%] z-30"
               animate={{ y: [0, -10, 0] }}
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              className="relative mb-6"
             >
               <img 
-                src={ASSETS.devicePhone}
-                alt="Phone App"
-                className={`w-full h-auto drop-shadow-2xl ${!isDark ? 'ring-4 ring-amber-100/50 rounded-3xl' : ''}`}
+                src={deviceImages.phone}
+                alt="iPhone App"
+                className="h-[350px] md:h-[400px] w-auto object-contain drop-shadow-2xl"
               />
+              {/* Glow */}
+              <div className={`absolute inset-0 rounded-3xl blur-2xl -z-10 ${
+                isDark ? 'bg-purple-500/20' : 'bg-amber-300/30'
+              }`} style={{ transform: 'scale(0.8)' }} />
             </motion.div>
-
-            {/* Laptop & Tablet */}
-            <motion.div
-              className="absolute right-0 top-0 w-[75%] z-20"
-              animate={{ y: [0, 10, 0] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-            >
-              <img 
-                src={ASSETS.deviceLaptopTablet}
-                alt="Laptop and Tablet"
-                className={`w-full h-auto drop-shadow-2xl ${!isDark ? 'ring-4 ring-yellow-100/50 rounded-3xl' : ''}`}
-              />
-            </motion.div>
-
-            {/* Glow Effect */}
-            <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full blur-3xl -z-10 ${
-              isDark ? 'bg-purple-500/20' : 'bg-amber-300/30'
-            }`} />
+            
+            <div className={`flex items-center gap-3 p-4 rounded-2xl w-full max-w-xs ${
+              isDark 
+                ? 'bg-white/5 border border-white/10'
+                : 'bg-white border border-amber-100 shadow-lg'
+            }`}>
+              <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                isDark 
+                  ? 'bg-gradient-to-br from-purple-500/30 to-pink-500/30'
+                  : 'bg-gradient-to-br from-amber-100 to-yellow-100'
+              }`}>
+                <Smartphone className={`w-6 h-6 ${isDark ? 'text-purple-400' : 'text-amber-700'}`} />
+              </div>
+              <div>
+                <h4 className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                  {t.devices[0].title}
+                </h4>
+                <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                  {t.devices[0].desc}
+                </p>
+              </div>
+            </div>
           </motion.div>
 
-          {/* Features */}
+          {/* iPad */}
           <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.8 }}
+            initial={{ opacity: 0, y: 50 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="flex flex-col items-center"
           >
-            {/* Device Types */}
-            <div className="space-y-4 mb-8">
-              {t.features.map((feature, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: 30 }}
-                  animate={isInView ? { opacity: 1, x: 0 } : {}}
-                  transition={{ delay: 0.3 + index * 0.1 }}
-                  className={`flex items-center gap-4 p-5 rounded-2xl transition-all ${
-                    isDark 
-                      ? 'bg-white/5 border border-white/10 hover:bg-white/10'
-                      : 'bg-white border border-amber-100 shadow-lg hover:shadow-xl hover:border-amber-200'
-                  }`}
-                >
-                  <div className={`w-14 h-14 rounded-xl flex items-center justify-center ${
-                    isDark 
-                      ? 'bg-gradient-to-br from-purple-500/30 to-pink-500/30'
-                      : 'bg-gradient-to-br from-amber-100 to-yellow-100'
-                  }`}>
-                    <feature.icon className={`w-7 h-7 ${
-                      isDark ? 'text-purple-400' : 'text-amber-700'
-                    }`} />
-                  </div>
-                  <div>
-                    <h4 className={`font-bold mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                      {feature.title}
-                    </h4>
-                    <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-                      {feature.desc}
-                    </p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-
-            {/* Benefits */}
-            <div className={`p-6 rounded-2xl ${
+            <motion.div
+              animate={{ y: [0, -15, 0] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+              className="relative mb-6"
+            >
+              <img 
+                src={deviceImages.tablet}
+                alt="iPad App"
+                className="h-[300px] md:h-[350px] w-auto object-contain drop-shadow-2xl"
+              />
+              {/* Glow */}
+              <div className={`absolute inset-0 rounded-3xl blur-2xl -z-10 ${
+                isDark ? 'bg-blue-500/20' : 'bg-yellow-300/30'
+              }`} style={{ transform: 'scale(0.8)' }} />
+            </motion.div>
+            
+            <div className={`flex items-center gap-3 p-4 rounded-2xl w-full max-w-xs ${
               isDark 
-                ? 'bg-gradient-to-r from-[#D4AF37]/10 to-amber-500/5 border border-[#D4AF37]/20'
-                : 'bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200'
+                ? 'bg-white/5 border border-white/10'
+                : 'bg-white border border-amber-100 shadow-lg'
             }`}>
-              <h4 className={`font-bold mb-4 ${isDark ? 'text-[#D4AF37]' : 'text-amber-800'}`}>
-                {isKurdish ? 'تایبەتمەندییەکان' : isArabic ? 'المميزات' : 'Features'}
-              </h4>
-              <div className="grid grid-cols-2 gap-3">
-                {t.benefits.map((benefit, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <Check className={`w-5 h-5 ${isDark ? 'text-green-400' : 'text-green-600'}`} />
-                    <span className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-                      {benefit}
-                    </span>
-                  </div>
-                ))}
+              <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                isDark 
+                  ? 'bg-gradient-to-br from-blue-500/30 to-cyan-500/30'
+                  : 'bg-gradient-to-br from-yellow-100 to-amber-100'
+              }`}>
+                <Tablet className={`w-6 h-6 ${isDark ? 'text-blue-400' : 'text-amber-700'}`} />
+              </div>
+              <div>
+                <h4 className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                  {t.devices[1].title}
+                </h4>
+                <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                  {t.devices[1].desc}
+                </p>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* MacBook */}
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="flex flex-col items-center"
+          >
+            <motion.div
+              animate={{ y: [0, -8, 0] }}
+              transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+              className="relative mb-6"
+            >
+              <img 
+                src={deviceImages.laptop}
+                alt="MacBook App"
+                className="h-[280px] md:h-[320px] w-auto object-contain drop-shadow-2xl"
+              />
+              {/* Glow */}
+              <div className={`absolute inset-0 rounded-3xl blur-2xl -z-10 ${
+                isDark ? 'bg-emerald-500/20' : 'bg-amber-200/40'
+              }`} style={{ transform: 'scale(0.8)' }} />
+            </motion.div>
+            
+            <div className={`flex items-center gap-3 p-4 rounded-2xl w-full max-w-xs ${
+              isDark 
+                ? 'bg-white/5 border border-white/10'
+                : 'bg-white border border-amber-100 shadow-lg'
+            }`}>
+              <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                isDark 
+                  ? 'bg-gradient-to-br from-emerald-500/30 to-teal-500/30'
+                  : 'bg-gradient-to-br from-amber-100 to-orange-100'
+              }`}>
+                <Monitor className={`w-6 h-6 ${isDark ? 'text-emerald-400' : 'text-amber-700'}`} />
+              </div>
+              <div>
+                <h4 className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                  {t.devices[2].title}
+                </h4>
+                <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                  {t.devices[2].desc}
+                </p>
               </div>
             </div>
           </motion.div>
         </div>
+
+        {/* Benefits */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.5 }}
+          className={`max-w-2xl mx-auto p-6 rounded-2xl ${
+            isDark 
+              ? 'bg-gradient-to-r from-[#D4AF37]/10 to-amber-500/5 border border-[#D4AF37]/20'
+              : 'bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200'
+          }`}
+        >
+          <h4 className={`font-bold mb-4 text-center ${isDark ? 'text-[#D4AF37]' : 'text-amber-800'}`}>
+            {isKurdish ? 'تایبەتمەندییەکان' : isArabic ? 'المميزات' : 'Features'}
+          </h4>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {t.benefits.map((benefit, index) => (
+              <div key={index} className="flex items-center gap-2 justify-center">
+                <Check className={`w-5 h-5 ${isDark ? 'text-green-400' : 'text-green-600'}`} />
+                <span className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                  {benefit}
+                </span>
+              </div>
+            ))}
+          </div>
+        </motion.div>
       </div>
     </section>
   );
