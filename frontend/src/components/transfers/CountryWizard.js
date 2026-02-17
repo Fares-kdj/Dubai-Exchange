@@ -135,6 +135,7 @@ const CountryWizard = () => {
 
   const handleSubmit = async () => {
     const newErrors = {};
+    if (!wizardData.amount || parseFloat(wizardData.amount) <= 0) newErrors.amount = isArabic ? 'أدخل المبلغ' : 'Enter amount';
     if (!wizardData.senderName.trim()) newErrors.senderName = isArabic ? 'مطلوب' : 'Required';
     if (!wizardData.receiverName.trim()) newErrors.receiverName = isArabic ? 'مطلوب' : 'Required';
     if (!wizardData.phone.trim()) newErrors.phone = isArabic ? 'مطلوب' : 'Required';
