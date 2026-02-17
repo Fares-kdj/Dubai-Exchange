@@ -16,6 +16,10 @@ import WesternUnion from '@/components/transfers/WesternUnion';
 import MoneyGram from '@/components/transfers/MoneyGram';
 import CountryWizard from '@/components/transfers/CountryWizard';
 import TransferSuccess from '@/components/transfers/TransferSuccess';
+// Services
+import CardRecharge from '@/components/services/CardRecharge';
+import USDTRecharge from '@/components/services/USDTRecharge';
+import ServiceSuccess from '@/components/services/ServiceSuccess';
 // Tracking
 import TrackOrder from '@/components/tracking/TrackOrder';
 // Admin
