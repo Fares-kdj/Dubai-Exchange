@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
 import { useTheme } from '@/context/ThemeContext';
 import { ASSETS, COMPANY } from '@/config/assets';
-import { Shield, Zap, Globe } from 'lucide-react';
+import { Shield, Zap, Globe, MapPin } from 'lucide-react';
 
 export const HeroSection3D = () => {
   const navigate = useNavigate();
@@ -58,37 +58,60 @@ export const HeroSection3D = () => {
   return (
     <section className={`relative min-h-screen overflow-hidden transition-colors duration-500 ${
       isDark 
-        ? 'bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900'
-        : 'bg-gradient-to-br from-slate-50 via-white to-blue-50'
+        ? 'bg-slate-900'
+        : 'bg-gradient-to-br from-amber-50 via-white to-yellow-50'
     }`}>
-      {/* Background with CBI Building */}
+      {/* Background with CBI Building - More Visible */}
       <div className="absolute inset-0 z-0">
+        {/* CBI Building Image - More Prominent */}
         <div className="absolute inset-0">
           <img 
             src={ASSETS.cbiBuilding1}
             alt="Central Bank of Iraq"
-            className={`w-full h-full object-cover ${isDark ? 'opacity-20' : 'opacity-10'}`}
+            className={`w-full h-full object-cover transition-opacity duration-500 ${
+              isDark ? 'opacity-40' : 'opacity-30'
+            }`}
           />
+          {/* Gradient Overlay - Adjusted for better visibility */}
           <div className={`absolute inset-0 ${
             isDark 
-              ? 'bg-gradient-to-b from-slate-900/80 via-slate-900/60 to-slate-900'
-              : 'bg-gradient-to-b from-white/90 via-white/70 to-white'
+              ? 'bg-gradient-to-b from-slate-900/60 via-slate-900/40 to-slate-900/90'
+              : 'bg-gradient-to-b from-amber-50/80 via-white/60 to-yellow-50/90'
           }`} />
         </div>
+
+        {/* Golden Decorative Elements for Light Mode */}
+        {!isDark && (
+          <>
+            <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-bl from-amber-200/40 to-transparent rounded-full blur-3xl" />
+            <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-tr from-yellow-200/30 to-transparent rounded-full blur-3xl" />
+            <div className="absolute top-1/2 left-1/4 w-[300px] h-[300px] bg-gradient-to-br from-[#D4AF37]/20 to-transparent rounded-full blur-2xl" />
+          </>
+        )}
       </div>
 
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 z-5 overflow-hidden">
-        <motion.div
-          className={`absolute top-20 right-20 w-96 h-96 rounded-full blur-3xl ${isDark ? 'bg-[#D4AF37]/10' : 'bg-[#D4AF37]/20'}`}
-          animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
-          transition={{ duration: 4, repeat: Infinity }}
-        />
-        <motion.div
-          className={`absolute bottom-20 left-20 w-80 h-80 rounded-full blur-3xl ${isDark ? 'bg-blue-500/10' : 'bg-blue-500/15'}`}
-          animate={{ scale: [1, 1.3, 1], opacity: [0.2, 0.4, 0.2] }}
-          transition={{ duration: 5, repeat: Infinity }}
-        />
+      {/* Animated Golden Particles */}
+      <div className="absolute inset-0 z-5 overflow-hidden pointer-events-none">
+        {[...Array(6)].map((_, i) => (
+          <motion.div
+            key={i}
+            className={`absolute w-2 h-2 rounded-full ${isDark ? 'bg-[#D4AF37]/60' : 'bg-[#D4AF37]/80'}`}
+            style={{
+              left: `${15 + i * 15}%`,
+              top: `${20 + (i % 3) * 25}%`,
+            }}
+            animate={{
+              y: [0, -30, 0],
+              opacity: [0.3, 0.8, 0.3],
+              scale: [1, 1.5, 1],
+            }}
+            transition={{
+              duration: 3 + i * 0.5,
+              repeat: Infinity,
+              delay: i * 0.3,
+            }}
+          />
+        ))}
       </div>
 
       {/* Content */}
@@ -106,10 +129,10 @@ export const HeroSection3D = () => {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className={`inline-flex items-center gap-3 px-4 py-2 rounded-full mb-6 ${
+              className={`inline-flex items-center gap-3 px-4 py-2 rounded-full mb-6 backdrop-blur-sm ${
                 isDark 
                   ? 'bg-green-500/20 border border-green-500/30'
-                  : 'bg-green-500/10 border border-green-500/20'
+                  : 'bg-green-600/10 border border-green-600/30 shadow-lg shadow-green-500/10'
               }`}
             >
               <img 
@@ -117,21 +140,26 @@ export const HeroSection3D = () => {
                 alt="CBI"
                 className="w-8 h-8 object-contain"
               />
-              <span className={`text-sm font-medium ${isDark ? 'text-green-400' : 'text-green-600'}`}>
+              <span className={`text-sm font-bold ${isDark ? 'text-green-400' : 'text-green-700'}`}>
                 {t.cbiTitle}
               </span>
             </motion.div>
 
-            {/* Logo */}
-            <motion.img
-              src={isDark ? ASSETS.logoWhite : ASSETS.logoColor}
-              alt="Dubai International Exchange"
-              className="h-14 md:h-16 mb-6"
+            {/* Logo - Using logoBlack for light mode with golden tint */}
+            <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              data-testid="hero-logo"
-            />
+              className="mb-6"
+            >
+              <img
+                src={isDark ? ASSETS.logoWhite : ASSETS.logoBlack}
+                alt="Dubai International Exchange"
+                className={`h-14 md:h-16 ${!isDark ? 'drop-shadow-lg' : ''}`}
+                style={!isDark ? { filter: 'sepia(30%) saturate(150%)' } : {}}
+                data-testid="hero-logo"
+              />
+            </motion.div>
 
             {/* Title */}
             <motion.h1
@@ -139,7 +167,7 @@ export const HeroSection3D = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
               className={`text-3xl md:text-4xl lg:text-5xl font-bold mb-4 leading-tight ${
-                isDark ? 'text-white' : 'text-slate-900'
+                isDark ? 'text-white' : 'text-slate-800'
               }`}
               data-testid="hero-title"
             >
@@ -151,7 +179,7 @@ export const HeroSection3D = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className={`text-base md:text-lg mb-6 max-w-xl ${isDark ? 'text-slate-300' : 'text-slate-600'}`}
+              className={`text-base md:text-lg mb-6 max-w-xl ${isDark ? 'text-slate-300' : 'text-slate-700'}`}
               data-testid="hero-subtitle"
             >
               {t.slogan}
@@ -164,17 +192,21 @@ export const HeroSection3D = () => {
               transition={{ delay: 0.55 }}
               className="flex flex-wrap gap-3 mb-8"
             >
-              <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm ${
-                isDark ? 'bg-[#D4AF37]/20 text-[#FCD34D]' : 'bg-[#D4AF37]/10 text-[#B8860B]'
+              <div className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium shadow-lg ${
+                isDark 
+                  ? 'bg-[#D4AF37]/20 text-[#FCD34D] border border-[#D4AF37]/30'
+                  : 'bg-gradient-to-r from-amber-100 to-yellow-100 text-amber-800 border border-amber-200'
               }`}>
                 <Globe className="w-4 h-4" />
-                <span className="font-medium">{t.feature1}</span>
+                <span>{t.feature1}</span>
               </div>
-              <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm ${
-                isDark ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-500/10 text-blue-600'
+              <div className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium shadow-lg ${
+                isDark 
+                  ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                  : 'bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 border border-blue-200'
               }`}>
                 <Zap className="w-4 h-4" />
-                <span className="font-medium">{t.feature2}</span>
+                <span>{t.feature2}</span>
               </div>
             </motion.div>
 
@@ -202,7 +234,7 @@ export const HeroSection3D = () => {
                 className={`px-6 py-3 backdrop-blur-sm border-2 font-bold rounded-full transition-all ${
                   isDark 
                     ? 'bg-white/10 border-white/30 text-white hover:bg-white/20'
-                    : 'bg-slate-900/10 border-slate-900/30 text-slate-900 hover:bg-slate-900/20'
+                    : 'bg-slate-800/90 border-slate-800 text-white hover:bg-slate-900'
                 }`}
                 data-testid="cta-transfers"
               >
@@ -217,24 +249,36 @@ export const HeroSection3D = () => {
               transition={{ delay: 0.8 }}
               className="flex flex-wrap items-center gap-6 mt-8"
             >
-              <div className="flex items-center gap-2">
-                <div className={`w-9 h-9 rounded-full flex items-center justify-center ${isDark ? 'bg-green-500/20' : 'bg-green-500/10'}`}>
-                  <Shield className="w-4 h-4 text-green-500" />
+              {[
+                { icon: Shield, text: t.licensed, color: 'green' },
+                { icon: Zap, text: t.instant, color: 'blue' },
+                { icon: Globe, text: t.countries, color: 'purple' }
+              ].map((badge, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  <div className={`w-9 h-9 rounded-full flex items-center justify-center ${
+                    isDark 
+                      ? `bg-${badge.color}-500/20`
+                      : `bg-${badge.color}-100 border border-${badge.color}-200`
+                  }`} style={{
+                    backgroundColor: isDark 
+                      ? badge.color === 'green' ? 'rgba(34,197,94,0.2)' 
+                        : badge.color === 'blue' ? 'rgba(59,130,246,0.2)' 
+                        : 'rgba(168,85,247,0.2)'
+                      : badge.color === 'green' ? 'rgba(34,197,94,0.1)' 
+                        : badge.color === 'blue' ? 'rgba(59,130,246,0.1)' 
+                        : 'rgba(168,85,247,0.1)'
+                  }}>
+                    <badge.icon className={`w-4 h-4 ${
+                      badge.color === 'green' ? 'text-green-500' 
+                        : badge.color === 'blue' ? 'text-blue-500' 
+                        : 'text-purple-500'
+                    }`} />
+                  </div>
+                  <span className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                    {badge.text}
+                  </span>
                 </div>
-                <span className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>{t.licensed}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className={`w-9 h-9 rounded-full flex items-center justify-center ${isDark ? 'bg-blue-500/20' : 'bg-blue-500/10'}`}>
-                  <Zap className="w-4 h-4 text-blue-500" />
-                </div>
-                <span className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>{t.instant}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className={`w-9 h-9 rounded-full flex items-center justify-center ${isDark ? 'bg-purple-500/20' : 'bg-purple-500/10'}`}>
-                  <Globe className="w-4 h-4 text-purple-500" />
-                </div>
-                <span className={`text-sm ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>{t.countries}</span>
-              </div>
+              ))}
             </motion.div>
           </motion.div>
 
@@ -245,7 +289,12 @@ export const HeroSection3D = () => {
             transition={{ duration: 0.8, delay: 0.3 }}
             className={`relative ${isRTL ? 'lg:order-1' : 'lg:order-2'}`}
           >
-            <div className="relative w-full h-[400px] lg:h-[500px]">
+            <div className="relative w-full h-[450px] lg:h-[550px]">
+              {/* Golden Glow Behind Images */}
+              <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full blur-3xl ${
+                isDark ? 'bg-[#D4AF37]/20' : 'bg-[#D4AF37]/30'
+              }`} />
+
               {/* Airplane Image */}
               <motion.div
                 className="absolute top-0 right-0 w-[70%] z-10"
@@ -256,9 +305,9 @@ export const HeroSection3D = () => {
                   <img 
                     src={ASSETS.heroAirplane}
                     alt="Travel"
-                    className="w-full h-auto rounded-3xl shadow-2xl"
+                    className={`w-full h-auto rounded-3xl shadow-2xl ${!isDark ? 'ring-4 ring-amber-100' : ''}`}
                   />
-                  <div className="absolute inset-0 rounded-3xl bg-gradient-to-t from-black/30 to-transparent" />
+                  <div className="absolute inset-0 rounded-3xl bg-gradient-to-t from-black/20 to-transparent" />
                 </div>
               </motion.div>
 
@@ -272,7 +321,7 @@ export const HeroSection3D = () => {
                   <img 
                     src={ASSETS.heroCardHand}
                     alt="Payment Card"
-                    className="w-full h-auto rounded-3xl shadow-2xl"
+                    className={`w-full h-auto rounded-3xl shadow-2xl ${!isDark ? 'ring-4 ring-yellow-100' : ''}`}
                   />
                   <div className="absolute inset-0 rounded-3xl bg-gradient-to-t from-black/20 to-transparent" />
                 </div>
@@ -280,15 +329,13 @@ export const HeroSection3D = () => {
 
               {/* Floating CBI Logo */}
               <motion.div
-                className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full flex items-center justify-center shadow-2xl z-30 ${
-                  isDark ? 'bg-white' : 'bg-white'
-                }`}
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full flex items-center justify-center shadow-2xl z-30 bg-white"
                 animate={{ 
                   scale: [1, 1.05, 1],
                   boxShadow: [
-                    '0 0 30px rgba(212,175,55,0.3)',
-                    '0 0 50px rgba(212,175,55,0.5)',
-                    '0 0 30px rgba(212,175,55,0.3)'
+                    '0 0 30px rgba(212,175,55,0.4)',
+                    '0 0 60px rgba(212,175,55,0.6)',
+                    '0 0 30px rgba(212,175,55,0.4)'
                   ]
                 }}
                 transition={{ duration: 2, repeat: Infinity }}
@@ -315,10 +362,10 @@ export const HeroSection3D = () => {
           animate={{ y: [0, 10, 0] }}
           transition={{ duration: 1.5, repeat: Infinity }}
           className={`w-6 h-10 rounded-full border-2 flex items-start justify-center p-2 ${
-            isDark ? 'border-white/30' : 'border-slate-900/30'
+            isDark ? 'border-white/30' : 'border-amber-600/50'
           }`}
         >
-          <motion.div className={`w-1.5 h-1.5 rounded-full ${isDark ? 'bg-white' : 'bg-slate-900'}`} />
+          <motion.div className={`w-1.5 h-1.5 rounded-full ${isDark ? 'bg-white' : 'bg-amber-600'}`} />
         </motion.div>
       </motion.div>
     </section>
