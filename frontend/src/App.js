@@ -6,6 +6,8 @@ import { ThemeProvider } from '@/context/ThemeContext';
 // New 3D Landing Page
 import LandingPage3D from '@/components/landing/LandingPage3D';
 import TravelerBooking from '@/components/booking/TravelerBooking';
+// Pages
+import TermsPage from '@/components/pages/TermsPage';
 // Transfers
 import TransfersHub from '@/components/transfers/TransfersHub';
 import LocalTransfer from '@/components/transfers/LocalTransfer';
@@ -38,6 +40,7 @@ function App() {
             <Routes>
               <Route path="/" element={<LandingPage3D />} />
               <Route path="/traveler-booking" element={<TravelerBooking />} />
+              <Route path="/terms" element={<TermsPage />} />
               {/* Transfers Routes */}
               <Route path="/transfers" element={<TransfersHub />} />
               <Route path="/transfers/local" element={<LocalTransfer />} />
