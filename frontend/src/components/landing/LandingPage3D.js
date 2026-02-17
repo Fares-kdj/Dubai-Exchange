@@ -2,8 +2,10 @@ import React, { useEffect } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import Header3D from './Header3D';
 import { HeroSection3D } from './HeroSection3D';
+import { GlobalSection } from './GlobalSection';
 import { ServicesSection3D } from './ServicesSection3D';
 import { CurrencyConverterSection } from './CurrencyConverterSection';
+import { DevicesSection } from './DevicesSection';
 import { PartnersSection3D } from './PartnersSection3D';
 import { TrustSection3D } from './TrustSection3D';
 import { PaymentsSection3D } from './PaymentsSection3D';
@@ -55,25 +57,31 @@ const LandingPage3D = () => {
     }`}>
       <Header3D />
       <main>
-        {/* Hero - Gradient Dark/Light based on theme */}
+        {/* Hero - With CBI Building Background */}
         <HeroSection3D />
         
-        {/* Services - Opposite contrast */}
+        {/* Global - International Transfers */}
+        <GlobalSection />
+        
+        {/* Services - Service Cards */}
         <ServicesSection3D />
         
-        {/* Currency Converter - Different shade */}
+        {/* Currency Converter */}
         <CurrencyConverterSection />
         
-        {/* Partners - Back to main theme */}
+        {/* Devices - Phone, iPad, Computer */}
+        <DevicesSection />
+        
+        {/* Partners - Partner Logos */}
         <PartnersSection3D />
         
-        {/* Trust (CBI) - Contrasting section */}
+        {/* Trust (CBI) */}
         <TrustSection3D />
         
-        {/* Payments - Different shade */}
+        {/* Payments - Card & USDT */}
         <PaymentsSection3D />
         
-        {/* Contact - Back to main theme */}
+        {/* Contact */}
         <ContactSection />
       </main>
       <Footer3D />
