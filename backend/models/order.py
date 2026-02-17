@@ -18,6 +18,8 @@ class OrderType(str, Enum):
     WESTERN_UNION = "western_union"
     MONEYGRAM = "moneygram"
     COUNTRY_BASED = "country_based"
+    CARD_RECHARGE = "card_recharge"
+    USDT_RECHARGE = "usdt_recharge"
 
 
 def generate_order_id(order_type: OrderType) -> str:
@@ -27,7 +29,9 @@ def generate_order_id(order_type: OrderType) -> str:
         OrderType.LOCAL: "LOC",
         OrderType.WESTERN_UNION: "WU",
         OrderType.MONEYGRAM: "MG",
-        OrderType.COUNTRY_BASED: "CTR"
+        OrderType.COUNTRY_BASED: "CTR",
+        OrderType.CARD_RECHARGE: "CRD",
+        OrderType.USDT_RECHARGE: "USD"
     }
     prefix = prefixes.get(order_type, "ORD")
     unique_id = str(uuid.uuid4().hex)[:8].upper()
