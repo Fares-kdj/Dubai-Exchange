@@ -1,0 +1,133 @@
+{
+  "summary": "Frontend testing of new Card Recharge and USDT Recharge pages. All UI elements load correctly, theme toggle works on both pages, form validation works. CRITICAL: Backend API returns 422 error because OrderType enum doesn't include 'card_recharge' or 'usdt_recharge' types.",
+  "backend_issues": {
+    "critical": [
+      {
+        "endpoint": "POST /api/orders",
+        "issue": "OrderType enum in /app/backend/models/order.py doesn't include 'card_recharge' or 'usdt_recharge'. API returns 422 validation error when submitting card/USDT recharge forms.",
+        "priority": "CRITICAL",
+        "fix_required": "Add CARD_RECHARGE = 'card_recharge' and USDT_RECHARGE = 'usdt_recharge' to OrderType enum in /app/backend/models/order.py, and update generate_order_id() function with prefixes"
+      }
+    ],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "Card Recharge form submission",
+        "issue": "Form submission fails with 422 error due to backend not supporting 'card_recharge' order type",
+        "affected_selectors": ["[data-testid='submit-card-recharge']"]
+      },
+      {
+        "flow": "USDT Recharge form submission",
+        "issue": "Form submission fails with 422 error due to backend not supporting 'usdt_recharge' order type",
+        "affected_selectors": ["[data-testid='submit-usdt-recharge']"]
+      }
+    ],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/test_reports/iteration_10.json"
+  ],
+  "action_items": [
+    "CRITICAL: Update /app/backend/models/order.py - Add CARD_RECHARGE = 'card_recharge' and USDT_RECHARGE = 'usdt_recharge' to OrderType enum",
+    "Update generate_order_id() function in /app/backend/models/order.py to include prefixes for new order types (e.g., 'CRD' for card_recharge, 'USD' for usdt_recharge)"
+  ],
+  "critical_code_review_comments": [
+    "CardRecharge.js properly implements isDark theme with conditional classes",
+    "USDTRecharge.js properly implements isDark theme with conditional classes",
+    "All card types present: Zain, Asiacell, Korek, Internet, Gaming, Mastercard, Visa",
+    "All USDT networks present: TRC20, ERC20, BEP20, Polygon, Solana, Arbitrum",
+    "Network fee display working correctly for each network",
+    "Wallet address validation implemented (checks prefix based on network)",
+    "Form validation working - shows Arabic error messages",
+    "ServiceSuccess.js properly handles both card_recharge and usdt_recharge types",
+    "All data-testid attributes present for testing"
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "N/A (frontend only testing, but backend issue found)",
+    "frontend": "90% (UI works, form submission blocked by backend)"
+  },
+  "test_credentials": {},
+  "seed_data_creation": "",
+  "retest_needed": true,
+  "main_agent_can_self_test": false,
+  "context_for_next_testing_agent": "Card Recharge and USDT Recharge pages fully tested. UI elements all working. Theme toggle works on both pages. Form validation works. Backend needs to add 'card_recharge' and 'usdt_recharge' to OrderType enum before form submission will work.",
+  "features_tested": {
+    "card_recharge_page_loads": {
+      "status": "PASS",
+      "details": "Page loads with all elements including form, card type buttons, amount grid"
+    },
+    "card_recharge_card_types": {
+      "status": "PASS",
+      "details": "All card types present: Zain, Asiacell, Korek, Internet, Gaming, Mastercard, Visa"
+    },
+    "card_recharge_amount_grid": {
+      "status": "PASS",
+      "details": "6 amount buttons displayed: 5000, 10000, 15000, 25000, 50000, 100000 IQD"
+    },
+    "card_recharge_form_validation": {
+      "status": "PASS",
+      "details": "Validation errors shown in Arabic when submitting empty form"
+    },
+    "card_recharge_theme_toggle": {
+      "status": "PASS",
+      "details": "Theme toggle changes background from dark (rgb(15, 23, 42)) to light (rgb(248, 250, 252))"
+    },
+    "card_recharge_form_submission": {
+      "status": "FAIL",
+      "details": "Backend returns 422 - OrderType enum doesn't include 'card_recharge'"
+    },
+    "usdt_recharge_page_loads": {
+      "status": "PASS",
+      "details": "Page loads with all elements including form, network buttons, wallet input"
+    },
+    "usdt_recharge_networks": {
+      "status": "PASS",
+      "details": "All 6 networks present: TRC20, ERC20, BEP20, Polygon, Solana, Arbitrum"
+    },
+    "usdt_recharge_network_fees": {
+      "status": "PASS",
+      "details": "Each network shows fee info (e.g., TRC20: 1 USDT, ERC20: 5-20 USDT)"
+    },
+    "usdt_recharge_wallet_input": {
+      "status": "PASS",
+      "details": "Wallet address input field present with data-testid"
+    },
+    "usdt_recharge_theme_toggle": {
+      "status": "PASS",
+      "details": "Theme toggle changes background from dark to light mode"
+    },
+    "usdt_recharge_form_submission": {
+      "status": "FAIL",
+      "details": "Backend returns 422 - OrderType enum doesn't include 'usdt_recharge'"
+    },
+    "local_transfer_theme_toggle": {
+      "status": "PASS",
+      "details": "Theme toggle works - background changes from dark to light mode"
+    }
+  },
+  "screenshots_taken": [
+    "homepage_initial.jpg - Homepage in dark mode",
+    "card_recharge_page.jpg - Card Recharge page in dark mode",
+    "card_recharge_light.jpg - Card Recharge page in light mode",
+    "card_recharge_filled_final.jpg - Card Recharge form filled",
+    "usdt_recharge_page.jpg - USDT Recharge page in dark mode",
+    "usdt_recharge_light.jpg - USDT Recharge page in light mode",
+    "usdt_recharge_filled.jpg - USDT Recharge form filled",
+    "local_transfer_dark.jpg - Local Transfer in dark mode",
+    "local_transfer_light.jpg - Local Transfer in light mode"
+  ],
+  "rca_of_the_issue": {
+    "root_cause": "Backend OrderType enum in /app/backend/models/order.py only includes: TRAVELER, LOCAL, WESTERN_UNION, MONEYGRAM, COUNTRY_BASED. The new frontend pages send 'card_recharge' and 'usdt_recharge' order types which are not recognized by the backend.",
+    "reproduction_steps": [
+      "1. Navigate to /services/card-recharge",
+      "2. Fill all form fields",
+      "3. Click submit button",
+      "4. Backend returns 422 error: 'Input should be traveler, local, western_union, moneygram or country_based'"
+    ],
+    "mitigation": "Add CARD_RECHARGE = 'card_recharge' and USDT_RECHARGE = 'usdt_recharge' to OrderType enum in /app/backend/models/order.py. Also update generate_order_id() function to include prefixes for these new types."
+  }
+}
