@@ -165,24 +165,28 @@ const CountryWizard = () => {
     });
   };
 
-  // Step indicator
+  // Step indicator - Now 4 steps: Country -> Method -> Summary -> Amount & Info
   const StepIndicator = () => (
     <div className="flex items-center justify-center gap-2 mb-8">
-      {[1, 2, 3, 4, 5].map(s => (
+      {[1, 2, 3, 4].map(s => (
         <React.Fragment key={s}>
-          <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${
-            s < step ? 'bg-green-500 text-white' : s === step ? 'bg-[#D4AF37] text-white shadow-lg' : 'bg-slate-200 text-slate-500'
+          <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-colors ${
+            s < step ? 'bg-green-500 text-white' : s === step ? 'bg-[#D4AF37] text-white shadow-lg' : isDark ? 'bg-slate-700 text-slate-400' : 'bg-slate-200 text-slate-500'
           }`}>
             {s < step ? <CheckCircle className="w-5 h-5" /> : s}
           </div>
-          {s < 5 && <div className={`w-8 h-1 rounded ${s < step ? 'bg-green-500' : 'bg-slate-200'}`} />}
+          {s < 4 && <div className={`w-8 h-1 rounded ${s < step ? 'bg-green-500' : isDark ? 'bg-slate-700' : 'bg-slate-200'}`} />}
         </React.Fragment>
       ))}
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
+    <div className={`min-h-screen transition-colors duration-300 ${
+      isDark 
+        ? 'bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900' 
+        : 'bg-gradient-to-b from-slate-50 via-white to-slate-50'
+    }`}>
       <Header3D />
       
       <main className="pt-24 pb-20">
@@ -191,7 +195,7 @@ const CountryWizard = () => {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             onClick={() => step === 1 ? navigate('/transfers/international') : handleBack()}
-            className="flex items-center gap-2 text-slate-600 hover:text-slate-900 mb-8 group"
+            className={`flex items-center gap-2 mb-8 group ${isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'}`}
           >
             <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
             {isArabic ? 'رجوع' : 'Back'}
@@ -201,7 +205,7 @@ const CountryWizard = () => {
             <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl">
               <Globe className="w-10 h-10 text-white" />
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-3">
+            <h1 className={`text-3xl md:text-4xl font-bold mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
               {isArabic ? 'تحويل حسب الدولة' : 'Country-based Transfer'}
             </h1>
           </motion.div>
@@ -210,50 +214,33 @@ const CountryWizard = () => {
 
           <div className="max-w-2xl mx-auto">
             <AnimatePresence mode="wait">
-              {/* Step 1 */}
+              {/* Step 1: Select Country */}
               {step === 1 && (
                 <motion.div key="s1" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }}
-                  className="bg-white rounded-3xl border-2 border-slate-200 shadow-xl p-8">
+                  className={`rounded-3xl border-2 shadow-xl p-8 ${
+                    isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'
+                  }`}>
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center">
-                      <DollarSign className="w-6 h-6 text-emerald-600" />
-                    </div>
-                    <h2 className="text-2xl font-bold text-slate-900">{isArabic ? 'أدخل المبلغ' : 'Enter Amount'}</h2>
-                  </div>
-                  <div className="space-y-4">
-                    <Label className="text-lg">{isArabic ? 'المبلغ ($)' : 'Amount ($)'}</Label>
-                    <Input type="number" value={wizardData.amount}
-                      onChange={e => setWizardData(p => ({ ...p, amount: e.target.value }))}
-                      className="h-16 text-3xl font-bold" placeholder="100" min="1" />
-                    {errors.amount && <p className="text-red-600"><AlertCircle className="w-4 h-4 inline" /> {errors.amount}</p>}
-                  </div>
-                  <motion.button onClick={handleNext} whileHover={{ scale: 1.02 }}
-                    className="w-full mt-8 py-4 bg-slate-900 text-white font-bold rounded-2xl flex items-center justify-center gap-2">
-                    {isArabic ? 'التالي' : 'Next'} <ArrowRight className="w-5 h-5" />
-                  </motion.button>
-                </motion.div>
-              )}
-
-              {/* Step 2 */}
-              {step === 2 && (
-                <motion.div key="s2" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }}
-                  className="bg-white rounded-3xl border-2 border-slate-200 shadow-xl p-8">
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center">
+                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${isDark ? 'bg-blue-500/20' : 'bg-blue-100'}`}>
                       <Globe className="w-6 h-6 text-blue-600" />
                     </div>
-                    <h2 className="text-2xl font-bold text-slate-900">{isArabic ? 'اختر الدولة' : 'Select Country'}</h2>
+                    <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{isArabic ? 'اختر الدولة' : 'Select Country'}</h2>
                   </div>
                   <div className="relative mb-6">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                     <Input value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-                      className="h-12 pl-12" placeholder={isArabic ? 'ابحث...' : 'Search...'} />
+                      className={`h-12 pl-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : ''}`} 
+                      placeholder={isArabic ? 'ابحث...' : 'Search...'} />
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                     {filteredCountries.map(c => (
                       <motion.button key={c.code} type="button" whileHover={{ scale: 1.05 }}
                         onClick={() => setWizardData(p => ({ ...p, country: c.code, method: null }))}
-                        className={`p-4 rounded-2xl border-2 text-center ${wizardData.country === c.code ? 'border-[#D4AF37] bg-[#D4AF37]/10' : 'border-slate-200'}`}>
+                        className={`p-4 rounded-2xl border-2 text-center transition-colors ${
+                          wizardData.country === c.code 
+                            ? 'border-[#D4AF37] bg-[#D4AF37]/10' 
+                            : isDark ? 'border-slate-600 hover:border-slate-500' : 'border-slate-200 hover:border-slate-300'
+                        }`}>
                         <div className="flex justify-center mb-2">
                           <ReactCountryFlag
                             countryCode={c.countryCode}
@@ -267,69 +254,81 @@ const CountryWizard = () => {
                             }}
                           />
                         </div>
-                        <span className="text-sm font-medium">{isArabic ? c.nameAr : c.nameEn}</span>
+                        <span className={`text-sm font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{isArabic ? c.nameAr : c.nameEn}</span>
                       </motion.button>
                     ))}
                   </div>
-                  {errors.country && <p className="text-red-600 mt-4"><AlertCircle className="w-4 h-4 inline" /> {errors.country}</p>}
+                  {errors.country && <p className="text-red-500 mt-4"><AlertCircle className="w-4 h-4 inline" /> {errors.country}</p>}
                   <motion.button onClick={handleNext} whileHover={{ scale: 1.02 }}
-                    className="w-full mt-8 py-4 bg-slate-900 text-white font-bold rounded-2xl flex items-center justify-center gap-2">
+                    className={`w-full mt-8 py-4 font-bold rounded-2xl flex items-center justify-center gap-2 ${
+                      isDark ? 'bg-[#D4AF37] text-slate-900 hover:bg-[#FCD34D]' : 'bg-slate-900 text-white hover:bg-slate-800'
+                    }`}>
                     {isArabic ? 'التالي' : 'Next'} <ArrowRight className="w-5 h-5" />
                   </motion.button>
                 </motion.div>
               )}
 
-              {/* Step 3 */}
-              {step === 3 && (
-                <motion.div key="s3" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }}
-                  className="bg-white rounded-3xl border-2 border-slate-200 shadow-xl p-8">
+              {/* Step 2: Select Method */}
+              {step === 2 && (
+                <motion.div key="s2" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }}
+                  className={`rounded-3xl border-2 shadow-xl p-8 ${
+                    isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'
+                  }`}>
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center">
+                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${isDark ? 'bg-purple-500/20' : 'bg-purple-100'}`}>
                       <CreditCard className="w-6 h-6 text-purple-600" />
                     </div>
-                    <h2 className="text-2xl font-bold text-slate-900">{isArabic ? 'اختر الطريقة' : 'Select Method'}</h2>
+                    <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{isArabic ? 'اختر طريقة التحويل' : 'Select Method'}</h2>
                   </div>
                   <div className="space-y-4">
                     {methods.map(m => (
                       <motion.button key={m.id} type="button" whileHover={{ scale: 1.02 }}
                         onClick={() => setWizardData(p => ({ ...p, method: m.id }))}
-                        className={`w-full p-6 rounded-2xl border-2 text-left relative ${wizardData.method === m.id ? 'border-[#D4AF37] bg-[#D4AF37]/5' : 'border-slate-200'}`}>
-                        {m.badge && <span className="absolute -top-2 right-4 px-3 py-1 bg-[#D4AF37] rounded-full text-xs font-bold">{m.badge === 'fastest' ? (isArabic ? 'الأسرع' : 'Fastest') : (isArabic ? 'شائع' : 'Popular')}</span>}
+                        className={`w-full p-6 rounded-2xl border-2 text-left relative transition-colors ${
+                          wizardData.method === m.id 
+                            ? 'border-[#D4AF37] bg-[#D4AF37]/5' 
+                            : isDark ? 'border-slate-600 hover:border-slate-500' : 'border-slate-200 hover:border-slate-300'
+                        }`}>
+                        {m.badge && <span className="absolute -top-2 right-4 px-3 py-1 bg-[#D4AF37] rounded-full text-xs font-bold text-slate-900">{m.badge === 'fastest' ? (isArabic ? 'الأسرع' : 'Fastest') : (isArabic ? 'شائع' : 'Popular')}</span>}
                         <div className="flex items-center justify-between">
                           <div>
-                            <h3 className="font-bold text-lg">{isArabic ? m.nameAr : m.nameEn}</h3>
-                            <p className="text-sm text-slate-600 flex items-center gap-1 mt-1"><Clock className="w-4 h-4" />{m.duration}</p>
+                            <h3 className={`font-bold text-lg ${isDark ? 'text-white' : 'text-slate-900'}`}>{isArabic ? m.nameAr : m.nameEn}</h3>
+                            <p className={`text-sm flex items-center gap-1 mt-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}><Clock className="w-4 h-4" />{m.duration}</p>
                           </div>
                           <div className="text-right">
-                            <p className="text-xs text-slate-500">{isArabic ? 'السعر' : 'Rate'}</p>
-                            <p className="font-bold text-emerald-600">{m.rate}</p>
+                            <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{isArabic ? 'السعر' : 'Rate'}</p>
+                            <p className="font-bold text-emerald-500">{m.rate}</p>
                           </div>
                         </div>
                       </motion.button>
                     ))}
                   </div>
-                  {errors.method && <p className="text-red-600 mt-4"><AlertCircle className="w-4 h-4 inline" /> {errors.method}</p>}
+                  {errors.method && <p className="text-red-500 mt-4"><AlertCircle className="w-4 h-4 inline" /> {errors.method}</p>}
                   <motion.button onClick={handleNext} whileHover={{ scale: 1.02 }}
-                    className="w-full mt-8 py-4 bg-slate-900 text-white font-bold rounded-2xl flex items-center justify-center gap-2">
+                    className={`w-full mt-8 py-4 font-bold rounded-2xl flex items-center justify-center gap-2 ${
+                      isDark ? 'bg-[#D4AF37] text-slate-900 hover:bg-[#FCD34D]' : 'bg-slate-900 text-white hover:bg-slate-800'
+                    }`}>
                     {isArabic ? 'التالي' : 'Next'} <ArrowRight className="w-5 h-5" />
                   </motion.button>
                 </motion.div>
               )}
 
-              {/* Step 4 */}
-              {step === 4 && selectedCountry && selectedMethod && (
-                <motion.div key="s4" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }}
-                  className="bg-white rounded-3xl border-2 border-slate-200 shadow-xl p-8">
+              {/* Step 3: Summary */}
+              {step === 3 && selectedCountry && selectedMethod && (
+                <motion.div key="s3" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }}
+                  className={`rounded-3xl border-2 shadow-xl p-8 ${
+                    isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'
+                  }`}>
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="w-12 h-12 bg-amber-100 rounded-2xl flex items-center justify-center">
+                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${isDark ? 'bg-amber-500/20' : 'bg-amber-100'}`}>
                       <Star className="w-6 h-6 text-amber-600" />
                     </div>
-                    <h2 className="text-2xl font-bold text-slate-900">{isArabic ? 'ملخص' : 'Summary'}</h2>
+                    <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{isArabic ? 'اختيارك' : 'Your Selection'}</h2>
                   </div>
-                  <div className="bg-slate-50 rounded-2xl p-6 space-y-4">
-                    <div className="flex justify-between pb-4 border-b">
-                      <span>{isArabic ? 'الدولة' : 'Country'}</span>
-                      <span className="font-bold flex items-center gap-2">
+                  <div className={`rounded-2xl p-6 space-y-4 ${isDark ? 'bg-slate-700/50' : 'bg-slate-50'}`}>
+                    <div className={`flex justify-between pb-4 border-b ${isDark ? 'border-slate-600' : 'border-slate-200'}`}>
+                      <span className={isDark ? 'text-slate-300' : 'text-slate-600'}>{isArabic ? 'الدولة' : 'Country'}</span>
+                      <span className={`font-bold flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                         <ReactCountryFlag
                           countryCode={selectedCountry.countryCode}
                           svg
@@ -338,60 +337,84 @@ const CountryWizard = () => {
                         {isArabic ? selectedCountry.nameAr : selectedCountry.nameEn}
                       </span>
                     </div>
-                    <div className="flex justify-between pb-4 border-b">
-                      <span>{isArabic ? 'الطريقة' : 'Method'}</span>
-                      <span className="font-bold">{isArabic ? selectedMethod.nameAr : selectedMethod.nameEn}</span>
-                    </div>
-                    <div className="flex justify-between pb-4 border-b">
-                      <span>{isArabic ? 'المبلغ' : 'Amount'}</span>
-                      <span className="font-bold">${wizardData.amount}</span>
+                    <div className={`flex justify-between pb-4 border-b ${isDark ? 'border-slate-600' : 'border-slate-200'}`}>
+                      <span className={isDark ? 'text-slate-300' : 'text-slate-600'}>{isArabic ? 'الطريقة' : 'Method'}</span>
+                      <span className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{isArabic ? selectedMethod.nameAr : selectedMethod.nameEn}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>{isArabic ? 'المستلم' : 'Receive'}</span>
-                      <span className="font-bold text-2xl text-emerald-600">{calculateReceiveAmount().toLocaleString()}</span>
+                      <span className={isDark ? 'text-slate-300' : 'text-slate-600'}>{isArabic ? 'سعر الصرف' : 'Exchange Rate'}</span>
+                      <span className="font-bold text-emerald-500">1$ = {selectedMethod.rate}</span>
                     </div>
                   </div>
                   <motion.button onClick={handleNext} whileHover={{ scale: 1.02 }}
-                    className="w-full mt-8 py-4 bg-slate-900 text-white font-bold rounded-2xl flex items-center justify-center gap-2">
+                    className={`w-full mt-8 py-4 font-bold rounded-2xl flex items-center justify-center gap-2 ${
+                      isDark ? 'bg-[#D4AF37] text-slate-900 hover:bg-[#FCD34D]' : 'bg-slate-900 text-white hover:bg-slate-800'
+                    }`}>
                     {isArabic ? 'المتابعة' : 'Continue'} <ArrowRight className="w-5 h-5" />
                   </motion.button>
                 </motion.div>
               )}
 
-              {/* Step 5 */}
-              {step === 5 && (
-                <motion.div key="s5" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }}
-                  className="bg-white rounded-3xl border-2 border-slate-200 shadow-xl p-8">
+              {/* Step 4: Amount and Transfer Info Combined */}
+              {step === 4 && (
+                <motion.div key="s4" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }}
+                  className={`rounded-3xl border-2 shadow-xl p-8 ${
+                    isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'
+                  }`}>
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center">
-                      <User className="w-6 h-6 text-blue-600" />
+                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${isDark ? 'bg-emerald-500/20' : 'bg-emerald-100'}`}>
+                      <DollarSign className="w-6 h-6 text-emerald-600" />
                     </div>
-                    <h2 className="text-2xl font-bold text-slate-900">{isArabic ? 'معلومات التحويل' : 'Transfer Info'}</h2>
+                    <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{isArabic ? 'المبلغ والمعلومات' : 'Amount & Info'}</h2>
                   </div>
-                  <div className="space-y-6">
+                  
+                  {/* Amount Section */}
+                  <div className={`rounded-2xl p-6 mb-6 ${isDark ? 'bg-emerald-900/20 border border-emerald-700/50' : 'bg-emerald-50 border border-emerald-200'}`}>
+                    <Label className={`text-lg font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>{isArabic ? 'المبلغ بالدولار ($)' : 'Amount in USD ($)'}</Label>
+                    <Input type="number" value={wizardData.amount}
+                      onChange={e => setWizardData(p => ({ ...p, amount: e.target.value }))}
+                      className={`h-16 text-3xl font-bold mt-2 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : ''}`} 
+                      placeholder="100" min="1" />
+                    {errors.amount && <p className="text-red-500 mt-2"><AlertCircle className="w-4 h-4 inline" /> {errors.amount}</p>}
+                    
+                    {wizardData.amount && selectedMethod && (
+                      <div className={`mt-4 p-4 rounded-xl ${isDark ? 'bg-slate-700/50' : 'bg-white'}`}>
+                        <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{isArabic ? 'المستلم سيحصل على' : 'Receiver will get'}</p>
+                        <p className="text-2xl font-bold text-emerald-500">{calculateReceiveAmount().toLocaleString()}</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Transfer Info */}
+                  <div className="space-y-5">
                     <div>
-                      <Label>{isArabic ? 'اسم المرسل' : 'Sender Name'} *</Label>
-                      <Input value={wizardData.senderName} onChange={e => setWizardData(p => ({ ...p, senderName: e.target.value }))} className="h-12 mt-2" />
-                      {errors.senderName && <p className="text-red-600 text-sm mt-1">{errors.senderName}</p>}
+                      <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{isArabic ? 'اسم المرسل' : 'Sender Name'} *</Label>
+                      <Input value={wizardData.senderName} onChange={e => setWizardData(p => ({ ...p, senderName: e.target.value }))} 
+                        className={`h-12 mt-2 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : ''}`} />
+                      {errors.senderName && <p className="text-red-500 text-sm mt-1">{errors.senderName}</p>}
                     </div>
                     <div>
-                      <Label>{isArabic ? 'اسم المستلم' : 'Receiver Name'} *</Label>
-                      <Input value={wizardData.receiverName} onChange={e => setWizardData(p => ({ ...p, receiverName: e.target.value }))} className="h-12 mt-2" />
-                      {errors.receiverName && <p className="text-red-600 text-sm mt-1">{errors.receiverName}</p>}
+                      <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{isArabic ? 'اسم المستلم' : 'Receiver Name'} *</Label>
+                      <Input value={wizardData.receiverName} onChange={e => setWizardData(p => ({ ...p, receiverName: e.target.value }))} 
+                        className={`h-12 mt-2 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : ''}`} />
+                      {errors.receiverName && <p className="text-red-500 text-sm mt-1">{errors.receiverName}</p>}
                     </div>
                     <div>
-                      <Label>{isArabic ? 'رقم الهاتف' : 'Phone'} *</Label>
-                      <Input value={wizardData.phone} onChange={e => setWizardData(p => ({ ...p, phone: e.target.value }))} className="h-12 mt-2" placeholder="+964" />
-                      {errors.phone && <p className="text-red-600 text-sm mt-1">{errors.phone}</p>}
+                      <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{isArabic ? 'رقم الهاتف' : 'Phone'} *</Label>
+                      <Input value={wizardData.phone} onChange={e => setWizardData(p => ({ ...p, phone: e.target.value }))} 
+                        className={`h-12 mt-2 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : ''}`} placeholder="+964" />
+                      {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
                     </div>
                     <div>
-                      <Label>{isArabic ? 'رقم الحساب (اختياري)' : 'Account (optional)'}</Label>
-                      <Input value={wizardData.accountNumber} onChange={e => setWizardData(p => ({ ...p, accountNumber: e.target.value }))} className="h-12 mt-2" />
+                      <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{isArabic ? 'رقم الحساب (اختياري)' : 'Account (optional)'}</Label>
+                      <Input value={wizardData.accountNumber} onChange={e => setWizardData(p => ({ ...p, accountNumber: e.target.value }))} 
+                        className={`h-12 mt-2 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : ''}`} />
                     </div>
                   </div>
+                  
                   <motion.button onClick={handleSubmit} disabled={loading} whileHover={{ scale: 1.02 }}
                     className="w-full mt-8 py-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold rounded-2xl flex items-center justify-center gap-2 disabled:opacity-50">
-                    {loading ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <><CheckCircle className="w-5 h-5" />{isArabic ? 'تسجيل الطلب' : 'Submit'}</>}
+                    {loading ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <><CheckCircle className="w-5 h-5" />{isArabic ? 'تسجيل الطلب' : 'Submit Order'}</>}
                   </motion.button>
                 </motion.div>
               )}
