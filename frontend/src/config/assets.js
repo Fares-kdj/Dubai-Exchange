@@ -7,9 +7,17 @@ export const ASSETS = {
   // USDT Image
   usdtCoin: 'https://customer-assets.emergentagent.com/job_money-transfer-149/artifacts/232ggie3_3D%20RENDER_.png',
 
-  // Device Mockups
-  devicePhone: 'https://static.prod-images.emergentagent.com/jobs/88687776-cef9-451a-ac8a-aacc94344da7/images/81a27fe7051dc469e180dc4a0d62ba40ec26532b6ce554b31b416a8c0a70fdbe.png',
-  deviceLaptopTablet: 'https://static.prod-images.emergentagent.com/jobs/88687776-cef9-451a-ac8a-aacc94344da7/images/ae7ae42ba1d65ac269e9ca6d1b0a70fff40bc72ae0965c0a8744803b13beaef9.png',
+  // Real Device Screenshots - Dark Mode
+  devicePhoneDark: 'https://customer-assets.emergentagent.com/job_money-transfer-149/artifacts/vckzqbjc_iPhone-13-PRO-MAX-dark%20mode.png',
+  deviceTabletDark: 'https://customer-assets.emergentagent.com/job_money-transfer-149/artifacts/y8fm1r2o_iPad-PRO-11-dark%20mode.png',
+  deviceLaptopDark: 'https://customer-assets.emergentagent.com/job_money-transfer-149/artifacts/0q0e7tyg_Macbook-Air-dark%20mode.png',
+  
+  // Real Device Screenshots - Light Mode
+  devicePhoneLight: 'https://customer-assets.emergentagent.com/job_money-transfer-149/artifacts/81kxgmk0_iPhone-13-PRO-MAX_light%20mode.com.png',
+  deviceTabletLight: 'https://customer-assets.emergentagent.com/job_money-transfer-149/artifacts/ug1z6ax7_iPad-PRO-11-light%20mode.png',
+  deviceLaptopLight: 'https://customer-assets.emergentagent.com/job_money-transfer-149/artifacts/lja9ijoi_Macbook-Air-light%20mode.png',
+
+  // Global Network
   globalNetwork: 'https://static.prod-images.emergentagent.com/jobs/88687776-cef9-451a-ac8a-aacc94344da7/images/8588801201918d16afc252b16c090fc0a22cdac37b289e2b9fcd4583ef8c5c64.png',
 
   // Company Logos
