@@ -112,18 +112,17 @@ const CountryWizard = () => {
   };
 
   const handleNext = () => {
-    if (step === 1 && (!wizardData.amount || parseFloat(wizardData.amount) <= 0)) {
-      setErrors({ amount: isArabic ? 'أدخل المبلغ' : 'Enter amount' });
-      return;
-    }
-    if (step === 2 && !wizardData.country) {
+    // Step 1: Select Country
+    if (step === 1 && !wizardData.country) {
       setErrors({ country: isArabic ? 'اختر الدولة' : 'Select country' });
       return;
     }
-    if (step === 3 && !wizardData.method) {
+    // Step 2: Select Method
+    if (step === 2 && !wizardData.method) {
       setErrors({ method: isArabic ? 'اختر الطريقة' : 'Select method' });
       return;
     }
+    // Step 3: Enter Amount and Info - validated in submit
     setErrors({});
     setStep(s => s + 1);
     window.scrollTo({ top: 0, behavior: 'smooth' });
