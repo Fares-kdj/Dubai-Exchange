@@ -1,382 +1,393 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import { useLanguage } from '@/context/LanguageContext';
 import { useTheme } from '@/context/ThemeContext';
-import { ArrowRightLeft, TrendingUp, RefreshCw, Sparkles } from 'lucide-react';
-import ReactCountryFlag from 'react-country-flag';
-import axios from 'axios';
+import { ArrowDownUp, RefreshCw } from 'lucide-react';
 
-const API = process.env.REACT_APP_BACKEND_URL;
-
-const currencies = [
-  { code: 'USD', name: 'دولار أمريكي', nameEn: 'US Dollar', nameKu: 'دۆلاری ئەمریکی', countryCode: 'US' },
-  { code: 'IQD', name: 'دينار عراقي', nameEn: 'Iraqi Dinar', nameKu: 'دینار عێراقی', countryCode: 'IQ' },
-  { code: 'EUR', name: 'يورو', nameEn: 'Euro', nameKu: 'یۆرۆ', countryCode: 'EU' },
-  { code: 'GBP', name: 'جنيه إسترليني', nameEn: 'British Pound', nameKu: 'پاوندی بەریتانی', countryCode: 'GB' },
-  { code: 'TRY', name: 'ليرة تركية', nameEn: 'Turkish Lira', nameKu: 'لیرەی تورکی', countryCode: 'TR' },
-  { code: 'AED', name: 'درهم إماراتي', nameEn: 'UAE Dirham', nameKu: 'درهمی ئیماراتی', countryCode: 'AE' },
-  { code: 'SAR', name: 'ريال سعودي', nameEn: 'Saudi Riyal', nameKu: 'ڕیالی سعودی', countryCode: 'SA' }
-];
+const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 export const CurrencyConverterSection = () => {
   const { currentLanguage } = useLanguage();
   const { isDark } = useTheme();
-  const [fromCurrency, setFromCurrency] = useState('USD');
-  const [toCurrency, setToCurrency] = useState('IQD');
-  const [amount, setAmount] = useState('100');
-  const [result, setResult] = useState('150,000');
-  const [loading, setLoading] = useState(false);
-  const [lastUpdated, setLastUpdated] = useState(new Date().toISOString());
-  const [showSparkle, setShowSparkle] = useState(false);
-  const inputRef = useRef(null);
-
   const isArabic = currentLanguage === 'ar';
   const isKurdish = currentLanguage === 'ku';
+  const sectionRef = useRef(null);
+  const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
+
+  const [rates, setRates] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [fromCurrency, setFromCurrency] = useState('USD');
+  const [toCurrency, setToCurrency] = useState('IQD');
+  const [amount, setAmount] = useState('1000');
+  const [result, setResult] = useState(null);
+  const [source, setSource] = useState('manual');
 
   const text = {
     ar: {
-      title: 'محول العملات',
-      subtitle: 'احسب قيمة عملتك بدقة وسرعة',
+      badge: 'محول العملات',
+      title: 'احسب سعر الصرف',
+      subtitle: 'أسعار صرف محدثة لجميع العملات',
       from: 'من',
       to: 'إلى',
-      convert: 'تحويل',
-      converting: 'جارٍ التحويل...',
+      amount: 'المبلغ',
+      result: 'النتيجة',
+      swap: 'تبديل',
+      rate: 'سعر الصرف',
+      iqd: 'دينار عراقي',
       lastUpdate: 'آخر تحديث',
-      note: 'الأسعار استرشادية وقابلة للتغيير حسب السوق'
+      live: 'أسعار حية',
+      manual: 'أسعار محدثة يدوياً'
     },
     en: {
-      title: 'Currency Converter',
-      subtitle: 'Calculate your currency value accurately and quickly',
+      badge: 'Currency Converter',
+      title: 'Calculate Exchange Rate',
+      subtitle: 'Updated exchange rates for all currencies',
       from: 'From',
       to: 'To',
-      convert: 'Convert',
-      converting: 'Converting...',
-      lastUpdate: 'Last update',
-      note: 'Rates are indicative and subject to market changes'
+      amount: 'Amount',
+      result: 'Result',
+      swap: 'Swap',
+      rate: 'Exchange Rate',
+      iqd: 'Iraqi Dinar',
+      lastUpdate: 'Last Update',
+      live: 'Live Rates',
+      manual: 'Manually Updated'
     },
     ku: {
-      title: 'گۆڕینەوەی دراو',
-      subtitle: 'بەهای دراوەکەت بە وردی و خێرایی حیساب بکە',
+      badge: 'گۆڕینەوەی دراو',
+      title: 'نرخی ئاڵوگۆڕ بژمێرە',
+      subtitle: 'نرخی ئاڵوگۆڕی نوێکراوە بۆ هەموو دراوەکان',
       from: 'لە',
       to: 'بۆ',
-      convert: 'گۆڕین',
-      converting: 'گۆڕین...',
-      lastUpdate: 'دوایین نوێکردنەوە',
-      note: 'نرخەکان ڕێنوێنن و دەگۆڕدرێن بەپێی بازاڕ'
+      amount: 'بڕ',
+      result: 'ئەنجام',
+      swap: 'ئاڵوگۆڕ',
+      rate: 'نرخی ئاڵوگۆڕ',
+      iqd: 'دیناری عێراقی',
+      lastUpdate: 'کۆتا نوێکردنەوە',
+      live: 'نرخە زیندووەکان',
+      manual: 'نوێکراوەتەوە بەدەستی'
     }
   };
 
   const t = text[currentLanguage] || text.ar;
 
-  const getCurrencyName = (currency) => {
-    if (isKurdish) return currency.nameKu;
-    if (isArabic) return currency.name;
-    return currency.nameEn;
-  };
-
-  const handleConvert = async (from = fromCurrency, to = toCurrency) => {
-    if (!amount || parseFloat(amount) <= 0) return;
-    
-    setLoading(true);
-    setShowSparkle(true);
-    
-    await new Promise(resolve => setTimeout(resolve, 800));
-    
-    try {
-      const response = await axios.post(`${API}/api/convert`, null, {
-        params: { from_currency: from, to_currency: to, amount: parseFloat(amount) }
-      });
-      setResult(response.data.result.toLocaleString());
-      setLastUpdated(response.data.last_updated);
-    } catch (error) {
-      const fallbackRates = {
-        'USD_IQD': 1500, 'IQD_USD': 0.00067,
-        'EUR_IQD': 1620, 'IQD_EUR': 0.00062,
-        'GBP_IQD': 1890, 'IQD_GBP': 0.00053,
-        'USD_EUR': 0.92, 'EUR_USD': 1.08,
-        'TRY_IQD': 45, 'IQD_TRY': 0.022,
-        'AED_IQD': 408, 'SAR_IQD': 400
-      };
-      const rateKey = `${from}_${to}`;
-      const rate = fallbackRates[rateKey] || 1;
-      const calculatedResult = parseFloat(amount) * rate;
-      setResult(calculatedResult.toLocaleString());
-    } finally {
-      setLoading(false);
-      setTimeout(() => setShowSparkle(false), 500);
-    }
-  };
+  useEffect(() => {
+    fetchRates();
+  }, []);
 
   useEffect(() => {
-    if (amount && parseFloat(amount) > 0) {
-      const timer = setTimeout(() => handleConvert(fromCurrency, toCurrency), 300);
-      return () => clearTimeout(timer);
-    }
-  }, [fromCurrency, toCurrency, amount]);
+    calculateResult();
+  }, [amount, fromCurrency, toCurrency, rates]);
 
-  const swapCurrencies = () => {
-    const newFrom = toCurrency;
-    const newTo = fromCurrency;
-    setFromCurrency(newFrom);
-    setToCurrency(newTo);
+  const fetchRates = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_URL}/api/rates/live/fetch`);
+      const data = await response.json();
+      setRates(data.rates || []);
+      setSource(data.source || 'manual');
+    } catch (error) {
+      console.error('Failed to fetch rates:', error);
+      // Fallback to stored rates
+      try {
+        const fallback = await fetch(`${API_URL}/api/rates`);
+        const fallbackData = await fallback.json();
+        setRates(fallbackData || []);
+        setSource('manual');
+      } catch (e) {
+        console.error('Fallback failed:', e);
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
+  const calculateResult = () => {
+    if (!amount || isNaN(parseFloat(amount))) {
+      setResult(null);
+      return;
+    }
+
+    const numAmount = parseFloat(amount);
+
+    if (fromCurrency === 'IQD' && toCurrency !== 'IQD') {
+      // Converting from IQD to foreign currency
+      const toRate = rates.find(r => r.currency_code === toCurrency);
+      if (toRate) {
+        // User buys foreign currency with IQD - use sell_rate
+        setResult((numAmount / toRate.sell_rate).toFixed(2));
+      }
+    } else if (fromCurrency !== 'IQD' && toCurrency === 'IQD') {
+      // Converting from foreign currency to IQD
+      const fromRate = rates.find(r => r.currency_code === fromCurrency);
+      if (fromRate) {
+        // User sells foreign currency for IQD - use buy_rate
+        setResult((numAmount * fromRate.buy_rate).toFixed(0));
+      }
+    } else if (fromCurrency !== 'IQD' && toCurrency !== 'IQD') {
+      // Cross currency conversion via IQD
+      const fromRate = rates.find(r => r.currency_code === fromCurrency);
+      const toRate = rates.find(r => r.currency_code === toCurrency);
+      if (fromRate && toRate) {
+        const iqd = numAmount * fromRate.buy_rate;
+        setResult((iqd / toRate.sell_rate).toFixed(2));
+      }
+    } else {
+      // Same currency
+      setResult(numAmount.toFixed(2));
+    }
+  };
+
+  const handleSwap = () => {
+    setFromCurrency(toCurrency);
+    setToCurrency(fromCurrency);
+  };
+
+  const getCurrencyName = (code) => {
+    if (code === 'IQD') return t.iqd;
+    const rate = rates.find(r => r.currency_code === code);
+    if (!rate) return code;
+    return isKurdish ? (rate.currency_name_ku || rate.currency_name_ar) 
+         : isArabic ? rate.currency_name_ar 
+         : rate.currency_name_en;
+  };
+
+  const getCurrencyFlag = (code) => {
+    if (code === 'IQD') return '🇮🇶';
+    const rate = rates.find(r => r.currency_code === code);
+    return rate?.flag || '💱';
+  };
+
+  const allCurrencies = [
+    { code: 'IQD', name: t.iqd, flag: '🇮🇶' },
+    ...rates.map(r => ({
+      code: r.currency_code,
+      name: isKurdish ? (r.currency_name_ku || r.currency_name_ar) : isArabic ? r.currency_name_ar : r.currency_name_en,
+      flag: r.flag
+    }))
+  ];
+
   return (
-    <section className={`py-20 md:py-32 relative overflow-hidden transition-colors duration-500 ${
-      isDark 
-        ? 'bg-gradient-to-b from-slate-800 via-slate-900 to-slate-800'
-        : 'bg-gradient-to-b from-slate-50 via-white to-slate-50'
-    }`} id="converter">
-      {/* Animated Background */}
+    <section 
+      ref={sectionRef}
+      className={`relative py-24 md:py-32 overflow-hidden transition-colors duration-500 ${
+        isDark 
+          ? 'bg-gradient-to-b from-slate-800 via-slate-900 to-slate-800'
+          : 'bg-gradient-to-b from-blue-50 via-white to-blue-50'
+      }`}
+      id="converter"
+    >
+      {/* Background Effects */}
       <div className="absolute inset-0">
-        <motion.div
-          className={`absolute top-20 right-10 w-64 h-64 rounded-full blur-3xl ${isDark ? 'bg-[#D4AF37]/10' : 'bg-[#D4AF37]/20'}`}
-          animate={{ scale: [1, 1.2, 1], x: [0, 20, 0] }}
-          transition={{ duration: 8, repeat: Infinity }}
-        />
-        <motion.div
-          className={`absolute bottom-20 left-10 w-80 h-80 rounded-full blur-3xl ${isDark ? 'bg-blue-500/10' : 'bg-blue-500/15'}`}
-          animate={{ scale: [1, 1.3, 1], y: [0, -30, 0] }}
-          transition={{ duration: 10, repeat: Infinity }}
-        />
+        <div className={`absolute top-20 right-20 w-80 h-80 rounded-full blur-3xl ${isDark ? 'bg-[#D4AF37]/10' : 'bg-[#D4AF37]/20'}`} />
+        <div className={`absolute bottom-20 left-20 w-80 h-80 rounded-full blur-3xl ${isDark ? 'bg-blue-500/10' : 'bg-blue-500/20'}`} />
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        {/* Header */}
+        {/* Section Header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          initial={{ opacity: 0, y: 30 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <motion.div
-            initial={{ scale: 0 }}
-            whileInView={{ scale: 1 }}
-            viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6"
-            style={{ background: isDark ? 'rgba(212,175,55,0.2)' : 'rgba(212,175,55,0.1)' }}
+          <motion.span 
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={isInView ? { opacity: 1, scale: 1 } : {}}
+            transition={{ delay: 0.2 }}
+            className={`inline-block px-4 py-2 mb-6 rounded-full text-sm font-medium ${
+              isDark 
+                ? 'bg-[#D4AF37]/20 border border-[#D4AF37]/30 text-[#FCD34D]'
+                : 'bg-[#D4AF37]/10 border border-[#D4AF37]/20 text-[#B8860B]'
+            }`}
           >
-            <Sparkles className="w-4 h-4 text-[#D4AF37]" />
-            <span className={`text-sm font-medium ${isDark ? 'text-[#FCD34D]' : 'text-[#B8860B]'}`}>
-              {t.title}
-            </span>
-          </motion.div>
+            {t.badge}
+          </motion.span>
           
-          <h2 className={`text-3xl sm:text-5xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+          <h2 className={`text-3xl sm:text-4xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
             {t.title}
           </h2>
-          <p className={`text-lg ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+          
+          <p className={`text-lg max-w-2xl mx-auto ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
             {t.subtitle}
           </p>
         </motion.div>
 
         {/* Converter Card */}
         <motion.div
-          initial={{ opacity: 0, y: 30, scale: 0.95 }}
-          whileInView={{ opacity: 1, y: 0, scale: 1 }}
-          viewport={{ once: true }}
-          className="max-w-4xl mx-auto"
+          initial={{ opacity: 0, y: 40 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="max-w-2xl mx-auto"
         >
-          <div className={`relative backdrop-blur-2xl rounded-3xl p-8 md:p-10 shadow-2xl overflow-hidden ${
+          <div className={`backdrop-blur-xl border rounded-3xl p-6 md:p-8 ${
             isDark 
-              ? 'bg-slate-800/70 border border-slate-700/60'
-              : 'bg-white/80 border border-slate-200/60'
+              ? 'bg-white/5 border-white/10'
+              : 'bg-white border-slate-200 shadow-xl'
           }`}>
-            {/* Sparkle Effect */}
-            <AnimatePresence>
-              {showSparkle && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="absolute inset-0 pointer-events-none"
-                >
-                  {[...Array(20)].map((_, i) => (
-                    <motion.div
-                      key={i}
-                      className="absolute w-1 h-1 bg-[#D4AF37] rounded-full"
-                      initial={{ 
-                        x: '50%', 
-                        y: '50%',
-                        scale: 0 
-                      }}
-                      animate={{ 
-                        x: `${Math.random() * 100}%`, 
-                        y: `${Math.random() * 100}%`,
-                        scale: [0, 1, 0]
-                      }}
-                      transition={{ duration: 1, delay: i * 0.05 }}
-                    />
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <div className="relative z-10">
-              {/* Currency Inputs */}
-              <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-6 mb-8">
-                {/* From Currency */}
-                <motion.div 
-                  className="space-y-3"
-                  whileHover={{ scale: 1.01 }}
-                >
-                  <label className={`text-sm font-semibold ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-                    {t.from}
-                  </label>
-                  <div className={`rounded-2xl p-5 border-2 transition-all ${
-                    isDark 
-                      ? 'bg-slate-700 border-slate-600 hover:border-[#D4AF37]/50'
-                      : 'bg-white border-slate-200 hover:border-[#D4AF37]/50'
-                  }`}>
-                    <div className="flex items-center gap-3 mb-4">
-                      <motion.div
-                        key={fromCurrency}
-                        initial={{ scale: 0, rotate: -180 }}
-                        animate={{ scale: 1, rotate: 0 }}
-                        transition={{ type: "spring", duration: 0.5 }}
-                      >
-                        <ReactCountryFlag
-                          countryCode={currencies.find(c => c.code === fromCurrency)?.countryCode || 'US'}
-                          svg
-                          style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}
-                        />
-                      </motion.div>
-                      <select 
-                        value={fromCurrency}
-                        onChange={(e) => setFromCurrency(e.target.value)}
-                        className={`flex-1 bg-transparent font-medium text-lg border-0 outline-none ${isDark ? 'text-white' : 'text-slate-900'}`}
-                      >
-                        {currencies.map((c) => (
-                          <option key={c.code} value={c.code} className="bg-slate-800 text-white">
-                            {c.code} - {getCurrencyName(c)}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <input
-                      ref={inputRef}
-                      type="number"
-                      value={amount}
-                      onChange={(e) => setAmount(e.target.value)}
-                      className={`w-full bg-transparent text-3xl font-bold border-0 outline-none ${isDark ? 'text-white' : 'text-slate-900'}`}
-                      placeholder="0.00"
-                    />
-                  </div>
-                </motion.div>
-
-                {/* Swap Button */}
-                <div className="flex items-center justify-center">
-                  <motion.button
-                    onClick={swapCurrencies}
-                    whileHover={{ scale: 1.15, rotate: 180 }}
-                    whileTap={{ scale: 0.9 }}
-                    className="p-4 bg-gradient-to-br from-[#D4AF37] to-[#FCD34D] rounded-full shadow-xl hover:shadow-2xl transition-shadow"
-                  >
-                    <ArrowRightLeft className="w-6 h-6 text-white" />
-                  </motion.button>
-                </div>
-
-                {/* To Currency */}
-                <motion.div 
-                  className="space-y-3"
-                  whileHover={{ scale: 1.01 }}
-                >
-                  <label className={`text-sm font-semibold ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-                    {t.to}
-                  </label>
-                  <div className={`rounded-2xl p-5 border-2 transition-all ${
-                    isDark 
-                      ? 'bg-gradient-to-br from-slate-700 to-slate-800 border-slate-600'
-                      : 'bg-gradient-to-br from-slate-50 to-white border-slate-200'
-                  }`}>
-                    <div className="flex items-center gap-3 mb-4">
-                      <motion.div
-                        key={toCurrency}
-                        initial={{ scale: 0, rotate: 180 }}
-                        animate={{ scale: 1, rotate: 0 }}
-                        transition={{ type: "spring", duration: 0.5 }}
-                      >
-                        <ReactCountryFlag
-                          countryCode={currencies.find(c => c.code === toCurrency)?.countryCode || 'IQ'}
-                          svg
-                          style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}
-                        />
-                      </motion.div>
-                      <select 
-                        value={toCurrency}
-                        onChange={(e) => setToCurrency(e.target.value)}
-                        className={`flex-1 bg-transparent font-medium text-lg border-0 outline-none ${isDark ? 'text-white' : 'text-slate-900'}`}
-                      >
-                        {currencies.map((c) => (
-                          <option key={c.code} value={c.code} className="bg-slate-800 text-white">
-                            {c.code} - {getCurrencyName(c)}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <AnimatePresence mode="wait">
-                      <motion.div
-                        key={result}
-                        initial={{ opacity: 0, y: 10, scale: 0.9 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: -10, scale: 0.9 }}
-                        className="text-3xl font-bold bg-gradient-to-r from-[#D4AF37] to-[#FCD34D] bg-clip-text text-transparent"
-                      >
-                        {result}
-                      </motion.div>
-                    </AnimatePresence>
-                  </div>
-                </motion.div>
+            {/* Source Badge */}
+            <div className="flex justify-between items-center mb-6">
+              <div className={`flex items-center gap-2 text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                <div className={`w-2 h-2 rounded-full ${source === 'live' ? 'bg-green-500' : 'bg-yellow-500'}`} />
+                <span>{source === 'live' ? t.live : t.manual}</span>
               </div>
-
-              {/* Convert Button */}
-              <motion.button
-                onClick={() => handleConvert()}
+              <button
+                onClick={fetchRates}
                 disabled={loading}
-                whileHover={{ scale: 1.02, y: -2 }}
-                whileTap={{ scale: 0.98 }}
-                className={`w-full py-5 font-bold rounded-2xl shadow-xl transition-all flex items-center justify-center gap-3 ${
-                  isDark 
-                    ? 'bg-gradient-to-r from-[#D4AF37] to-[#FCD34D] text-slate-900'
-                    : 'bg-gradient-to-r from-slate-900 to-slate-700 text-white'
+                className={`p-2 rounded-lg transition-colors ${
+                  isDark ? 'hover:bg-white/10' : 'hover:bg-slate-100'
                 }`}
               >
-                {loading ? (
-                  <>
-                    <RefreshCw className="w-5 h-5 animate-spin" />
-                    {t.converting}
-                  </>
-                ) : (
-                  <>
-                    <TrendingUp className="w-5 h-5" />
-                    {t.convert}
-                  </>
-                )}
-              </motion.button>
+                <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''} ${isDark ? 'text-slate-400' : 'text-slate-500'}`} />
+              </button>
+            </div>
 
-              {/* Last Update */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className={`mt-6 text-center text-xs flex items-center justify-center gap-2 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}
-              >
-                <RefreshCw className="w-3 h-3" />
-                {t.lastUpdate}: {new Date(lastUpdated).toLocaleString(isArabic ? 'ar-IQ' : isKurdish ? 'ku' : 'en-US')}
-              </motion.div>
+            <div className="space-y-6">
+              {/* Amount Input */}
+              <div>
+                <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                  {t.amount}
+                </label>
+                <input
+                  type="number"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  className={`w-full px-4 py-3 rounded-xl border text-lg font-semibold transition-colors ${
+                    isDark 
+                      ? 'bg-white/5 border-white/20 text-white focus:border-[#D4AF37]'
+                      : 'bg-slate-50 border-slate-200 text-slate-900 focus:border-[#D4AF37]'
+                  } outline-none`}
+                  placeholder="1000"
+                  data-testid="converter-amount"
+                />
+              </div>
+
+              {/* Currency Selection */}
+              <div className="grid grid-cols-1 md:grid-cols-[1fr,auto,1fr] gap-4 items-end">
+                {/* From Currency */}
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                    {t.from}
+                  </label>
+                  <select
+                    value={fromCurrency}
+                    onChange={(e) => setFromCurrency(e.target.value)}
+                    className={`w-full px-4 py-3 rounded-xl border transition-colors cursor-pointer ${
+                      isDark 
+                        ? 'bg-white/5 border-white/20 text-white'
+                        : 'bg-slate-50 border-slate-200 text-slate-900'
+                    } outline-none`}
+                    data-testid="converter-from"
+                  >
+                    {allCurrencies.map((c) => (
+                      <option key={c.code} value={c.code} className="bg-slate-800 text-white">
+                        {c.flag} {c.code} - {c.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Swap Button */}
+                <motion.button
+                  onClick={handleSwap}
+                  whileHover={{ scale: 1.1, rotate: 180 }}
+                  whileTap={{ scale: 0.9 }}
+                  className={`w-12 h-12 rounded-full flex items-center justify-center mb-0 md:mb-0 mx-auto ${
+                    isDark 
+                      ? 'bg-[#D4AF37]/20 text-[#D4AF37] hover:bg-[#D4AF37]/30'
+                      : 'bg-[#D4AF37]/10 text-[#B8860B] hover:bg-[#D4AF37]/20'
+                  }`}
+                  data-testid="converter-swap"
+                >
+                  <ArrowDownUp className="w-5 h-5" />
+                </motion.button>
+
+                {/* To Currency */}
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                    {t.to}
+                  </label>
+                  <select
+                    value={toCurrency}
+                    onChange={(e) => setToCurrency(e.target.value)}
+                    className={`w-full px-4 py-3 rounded-xl border transition-colors cursor-pointer ${
+                      isDark 
+                        ? 'bg-white/5 border-white/20 text-white'
+                        : 'bg-slate-50 border-slate-200 text-slate-900'
+                    } outline-none`}
+                    data-testid="converter-to"
+                  >
+                    {allCurrencies.map((c) => (
+                      <option key={c.code} value={c.code} className="bg-slate-800 text-white">
+                        {c.flag} {c.code} - {c.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Result */}
+              {result && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={`p-6 rounded-2xl ${
+                    isDark ? 'bg-white/10' : 'bg-gradient-to-r from-[#D4AF37]/10 to-[#FCD34D]/10'
+                  }`}
+                >
+                  <div className={`text-sm mb-2 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                    {t.result}
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-3xl">{getCurrencyFlag(toCurrency)}</span>
+                    <div>
+                      <div className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`} data-testid="converter-result">
+                        {parseFloat(result).toLocaleString()} <span className="text-xl">{toCurrency}</span>
+                      </div>
+                      <div className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                        {parseFloat(amount).toLocaleString()} {fromCurrency} = {parseFloat(result).toLocaleString()} {toCurrency}
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
             </div>
           </div>
+        </motion.div>
 
-          {/* Note */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className={`mt-6 text-center text-sm rounded-xl p-4 ${
-              isDark ? 'bg-blue-900/30 border border-blue-800 text-blue-300' : 'bg-blue-50 border border-blue-100 text-slate-600'
-            }`}
-          >
-            💡 {t.note}
-          </motion.div>
+        {/* Rate Cards */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="mt-12 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"
+        >
+          {rates.slice(0, 6).map((rate, index) => (
+            <motion.div
+              key={rate.currency_code}
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: 0.1 * index }}
+              className={`p-4 rounded-2xl border text-center ${
+                isDark 
+                  ? 'bg-white/5 border-white/10 hover:bg-white/10'
+                  : 'bg-white border-slate-200 hover:shadow-lg'
+              } transition-all cursor-pointer`}
+              onClick={() => {
+                setFromCurrency(rate.currency_code);
+                setToCurrency('IQD');
+              }}
+            >
+              <div className="text-2xl mb-2">{rate.flag}</div>
+              <div className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                {rate.currency_code}
+              </div>
+              <div className={`text-sm ${isDark ? 'text-[#D4AF37]' : 'text-[#B8860B]'}`}>
+                {rate.buy_rate.toLocaleString()} IQD
+              </div>
+            </motion.div>
+          ))}
         </motion.div>
       </div>
     </section>
