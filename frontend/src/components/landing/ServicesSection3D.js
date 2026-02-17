@@ -138,14 +138,14 @@ export const ServicesSection3D = () => {
       className={`relative py-24 md:py-32 overflow-hidden transition-colors duration-500 ${
         isDark 
           ? 'bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900'
-          : 'bg-gradient-to-b from-slate-50 via-white to-slate-50'
+          : 'bg-gradient-to-b from-white via-amber-50/30 to-white'
       }`}
       id="services"
     >
       {/* Background Effects */}
       <div className="absolute inset-0">
-        <div className={`absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl ${isDark ? 'bg-[#D4AF37]/10' : 'bg-[#D4AF37]/5'}`} />
-        <div className={`absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full blur-3xl ${isDark ? 'bg-blue-500/10' : 'bg-blue-500/5'}`} />
+        <div className={`absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl ${isDark ? 'bg-[#D4AF37]/10' : 'bg-amber-200/40'}`} />
+        <div className={`absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full blur-3xl ${isDark ? 'bg-blue-500/10' : 'bg-yellow-200/30'}`} />
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
