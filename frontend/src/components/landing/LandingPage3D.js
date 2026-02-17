@@ -3,9 +3,11 @@ import { useTheme } from '@/context/ThemeContext';
 import Header3D from './Header3D';
 import { HeroSection3D } from './HeroSection3D';
 import { ServicesSection3D } from './ServicesSection3D';
+import { CurrencyConverterSection } from './CurrencyConverterSection';
 import { PartnersSection3D } from './PartnersSection3D';
 import { TrustSection3D } from './TrustSection3D';
 import { PaymentsSection3D } from './PaymentsSection3D';
+import { ContactSection } from './ContactSection';
 import Footer3D from './Footer3D';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -53,11 +55,26 @@ const LandingPage3D = () => {
     }`}>
       <Header3D />
       <main>
+        {/* Hero - Gradient Dark/Light based on theme */}
         <HeroSection3D />
+        
+        {/* Services - Opposite contrast */}
         <ServicesSection3D />
+        
+        {/* Currency Converter - Different shade */}
+        <CurrencyConverterSection />
+        
+        {/* Partners - Back to main theme */}
         <PartnersSection3D />
+        
+        {/* Trust (CBI) - Contrasting section */}
         <TrustSection3D />
+        
+        {/* Payments - Different shade */}
         <PaymentsSection3D />
+        
+        {/* Contact - Back to main theme */}
+        <ContactSection />
       </main>
       <Footer3D />
     </div>
