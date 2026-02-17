@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
+import { useTheme } from '@/context/ThemeContext';
 import { motion } from 'framer-motion';
 import { User, Phone, DollarSign, CheckCircle, AlertCircle, ArrowLeft, Upload, X, FileText } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -12,6 +13,7 @@ import Footer3D from '../landing/Footer3D';
 const MoneyGram = () => {
   const navigate = useNavigate();
   const { currentLanguage } = useLanguage();
+  const { isDark } = useTheme();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [idImage, setIdImage] = useState(null);
