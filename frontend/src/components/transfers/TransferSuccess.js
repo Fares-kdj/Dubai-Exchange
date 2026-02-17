@@ -404,26 +404,34 @@ const TransferSuccess = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7 }}
-                className="bg-white rounded-3xl border-2 border-slate-200 shadow-xl p-6"
+                className={`rounded-3xl border-2 shadow-xl p-6 ${
+                  isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'
+                }`}
                 data-testid="transfer-payment-proof"
               >
-                <h3 className="text-lg font-bold text-slate-900 mb-4">
+                <h3 className={`text-lg font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                   {currentLanguage === 'ar' ? 'إثبات الدفع' : 'Payment Proof'}
                 </h3>
 
                 {paymentProofs.length === 0 ? (
-                  <label className="block border-2 border-dashed border-slate-300 rounded-2xl p-6 hover:border-[#D4AF37] hover:bg-slate-50 transition-all cursor-pointer text-center">
+                  <label className={`block border-2 border-dashed rounded-2xl p-6 transition-all cursor-pointer text-center ${
+                    isDark 
+                      ? 'border-slate-600 hover:border-[#D4AF37] hover:bg-slate-700/50' 
+                      : 'border-slate-300 hover:border-[#D4AF37] hover:bg-slate-50'
+                  }`}>
                     <input type="file" accept="image/*" multiple onChange={handleFileUpload} className="hidden" />
-                    <Upload className="w-10 h-10 text-slate-400 mx-auto mb-2" />
-                    <p className="text-sm text-slate-600">{currentLanguage === 'ar' ? 'رفع صورة' : 'Upload image'}</p>
+                    <Upload className={`w-10 h-10 mx-auto mb-2 ${isDark ? 'text-slate-500' : 'text-slate-400'}`} />
+                    <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{currentLanguage === 'ar' ? 'رفع صورة' : 'Upload image'}</p>
                   </label>
                 ) : (
                   <div className="space-y-3">
                     {paymentProofs.map((proof) => (
-                      <div key={proof.id} className="flex items-center gap-3 bg-green-50 border border-green-200 rounded-xl p-3">
+                      <div key={proof.id} className={`flex items-center gap-3 rounded-xl p-3 ${
+                        isDark ? 'bg-green-900/30 border border-green-700/50' : 'bg-green-50 border border-green-200'
+                      }`}>
                         <img src={proof.preview} alt="proof" className="w-12 h-12 rounded-lg object-cover" />
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate">{proof.name}</p>
+                          <p className={`text-sm font-medium truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>{proof.name}</p>
                         </div>
                         <button onClick={() => removeProof(proof.id)} className="p-2 hover:bg-red-100 rounded-lg">
                           <X className="w-4 h-4 text-red-600" />
