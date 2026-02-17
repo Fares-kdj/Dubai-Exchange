@@ -156,7 +156,11 @@ const LocalTransfer = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
+    <div className={`min-h-screen transition-colors duration-300 ${
+      isDark 
+        ? 'bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900' 
+        : 'bg-gradient-to-b from-slate-50 via-white to-slate-50'
+    }`}>
       <Header3D />
       
       <main className="pt-24 pb-20">
@@ -166,7 +170,7 @@ const LocalTransfer = () => {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             onClick={() => navigate('/transfers')}
-            className="flex items-center gap-2 text-slate-600 hover:text-slate-900 mb-8 group"
+            className={`flex items-center gap-2 mb-8 group ${isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'}`}
           >
             <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
             {currentLanguage === 'ar' ? 'العودة للتحويلات' : 'Back to Transfers'}
@@ -181,10 +185,10 @@ const LocalTransfer = () => {
             <div className="w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl">
               <MapPin className="w-10 h-10 text-white" />
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-3">
+            <h1 className={`text-3xl md:text-4xl font-bold mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
               {currentLanguage === 'ar' ? 'تحويل محلي' : 'Local Transfer'}
             </h1>
-            <p className="text-slate-600">
+            <p className={isDark ? 'text-slate-400' : 'text-slate-600'}>
               {currentLanguage === 'ar' ? 'تحويل أموال داخل العراق' : 'Transfer money within Iraq'}
             </p>
           </motion.div>
@@ -199,12 +203,14 @@ const LocalTransfer = () => {
             data-testid="local-transfer-form"
           >
             {/* Sender & Receiver Info */}
-            <div className="bg-white rounded-3xl border-2 border-slate-200 shadow-xl p-8 mb-6">
+            <div className={`rounded-3xl border-2 shadow-xl p-8 mb-6 ${
+              isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'
+            }`}>
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center">
-                  <User className="w-6 h-6 text-blue-600" />
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${isDark ? 'bg-blue-500/20' : 'bg-blue-100'}`}>
+                  <User className="w-6 h-6 text-blue-500" />
                 </div>
-                <h2 className="text-2xl font-bold text-slate-900">
+                <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                   {currentLanguage === 'ar' ? 'بيانات التحويل' : 'Transfer Details'}
                 </h2>
               </div>
@@ -212,18 +218,18 @@ const LocalTransfer = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Sender Name */}
                 <div className="space-y-2">
-                  <Label className="text-slate-700 font-medium">
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                     {currentLanguage === 'ar' ? 'اسم المرسل' : 'Sender Name'} *
                   </Label>
                   <Input
                     value={formData.senderName}
                     onChange={(e) => handleInputChange('senderName', e.target.value)}
-                    className="h-12 border-slate-300"
+                    className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`}
                     placeholder={currentLanguage === 'ar' ? 'أدخل اسم المرسل' : 'Enter sender name'}
                     data-testid="sender-name-input"
                   />
                   {errors.senderName && (
-                    <p className="text-sm text-red-600 flex items-center gap-1">
+                    <p className="text-sm text-red-500 flex items-center gap-1">
                       <AlertCircle className="w-4 h-4" />{errors.senderName}
                     </p>
                   )}
@@ -231,18 +237,18 @@ const LocalTransfer = () => {
 
                 {/* Receiver Name */}
                 <div className="space-y-2">
-                  <Label className="text-slate-700 font-medium">
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                     {currentLanguage === 'ar' ? 'اسم المستلم' : 'Receiver Name'} *
                   </Label>
                   <Input
                     value={formData.receiverName}
                     onChange={(e) => handleInputChange('receiverName', e.target.value)}
-                    className="h-12 border-slate-300"
+                    className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`}
                     placeholder={currentLanguage === 'ar' ? 'أدخل اسم المستلم' : 'Enter receiver name'}
                     data-testid="receiver-name-input"
                   />
                   {errors.receiverName && (
-                    <p className="text-sm text-red-600 flex items-center gap-1">
+                    <p className="text-sm text-red-500 flex items-center gap-1">
                       <AlertCircle className="w-4 h-4" />{errors.receiverName}
                     </p>
                   )}
@@ -250,11 +256,11 @@ const LocalTransfer = () => {
 
                 {/* Sender Province */}
                 <div className="space-y-2">
-                  <Label className="text-slate-700 font-medium">
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                     {currentLanguage === 'ar' ? 'محافظة المرسل' : 'Sender Province'} *
                   </Label>
                   <Select value={formData.senderProvince} onValueChange={(v) => handleInputChange('senderProvince', v)}>
-                    <SelectTrigger className="h-12 border-slate-300" data-testid="sender-province-select">
+                    <SelectTrigger className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} data-testid="sender-province-select">
                       <SelectValue placeholder={currentLanguage === 'ar' ? 'اختر المحافظة' : 'Select province'} />
                     </SelectTrigger>
                     <SelectContent>
@@ -266,7 +272,7 @@ const LocalTransfer = () => {
                     </SelectContent>
                   </Select>
                   {errors.senderProvince && (
-                    <p className="text-sm text-red-600 flex items-center gap-1">
+                    <p className="text-sm text-red-500 flex items-center gap-1">
                       <AlertCircle className="w-4 h-4" />{errors.senderProvince}
                     </p>
                   )}
@@ -274,11 +280,11 @@ const LocalTransfer = () => {
 
                 {/* Receiver Province */}
                 <div className="space-y-2">
-                  <Label className="text-slate-700 font-medium">
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                     {currentLanguage === 'ar' ? 'محافظة المستلم' : 'Receiver Province'} *
                   </Label>
                   <Select value={formData.receiverProvince} onValueChange={(v) => handleInputChange('receiverProvince', v)}>
-                    <SelectTrigger className="h-12 border-slate-300" data-testid="receiver-province-select">
+                    <SelectTrigger className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} data-testid="receiver-province-select">
                       <SelectValue placeholder={currentLanguage === 'ar' ? 'اختر المحافظة' : 'Select province'} />
                     </SelectTrigger>
                     <SelectContent>
@@ -290,7 +296,7 @@ const LocalTransfer = () => {
                     </SelectContent>
                   </Select>
                   {errors.receiverProvince && (
-                    <p className="text-sm text-red-600 flex items-center gap-1">
+                    <p className="text-sm text-red-500 flex items-center gap-1">
                       <AlertCircle className="w-4 h-4" />{errors.receiverProvince}
                     </p>
                   )}
@@ -298,19 +304,19 @@ const LocalTransfer = () => {
 
                 {/* Phone */}
                 <div className="space-y-2 md:col-span-2">
-                  <Label className="text-slate-700 font-medium">
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                     {currentLanguage === 'ar' ? 'رقم الهاتف' : 'Phone Number'} *
                   </Label>
                   <Input
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => handleInputChange('phone', e.target.value)}
-                    className="h-12 border-slate-300"
+                    className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`}
                     placeholder="+964 7XX XXX XXXX"
                     data-testid="phone-input"
                   />
                   {errors.phone && (
-                    <p className="text-sm text-red-600 flex items-center gap-1">
+                    <p className="text-sm text-red-500 flex items-center gap-1">
                       <AlertCircle className="w-4 h-4" />{errors.phone}
                     </p>
                   )}
@@ -319,12 +325,14 @@ const LocalTransfer = () => {
             </div>
 
             {/* Amount & Payment */}
-            <div className="bg-white rounded-3xl border-2 border-slate-200 shadow-xl p-8 mb-6">
+            <div className={`rounded-3xl border-2 shadow-xl p-8 mb-6 ${
+              isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'
+            }`}>
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center">
-                  <DollarSign className="w-6 h-6 text-emerald-600" />
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${isDark ? 'bg-emerald-500/20' : 'bg-emerald-100'}`}>
+                  <DollarSign className="w-6 h-6 text-emerald-500" />
                 </div>
-                <h2 className="text-2xl font-bold text-slate-900">
+                <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                   {currentLanguage === 'ar' ? 'المبلغ والدفع' : 'Amount & Payment'}
                 </h2>
               </div>
@@ -332,20 +340,20 @@ const LocalTransfer = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Amount */}
                 <div className="space-y-2">
-                  <Label className="text-slate-700 font-medium">
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                     {currentLanguage === 'ar' ? 'المبلغ (دينار عراقي)' : 'Amount (IQD)'} *
                   </Label>
                   <Input
                     type="number"
                     value={formData.amount}
                     onChange={(e) => handleInputChange('amount', e.target.value)}
-                    className="h-12 border-slate-300"
+                    className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`}
                     placeholder="1,000,000"
                     min="1"
                     data-testid="amount-input"
                   />
                   {errors.amount && (
-                    <p className="text-sm text-red-600 flex items-center gap-1">
+                    <p className="text-sm text-red-500 flex items-center gap-1">
                       <AlertCircle className="w-4 h-4" />{errors.amount}
                     </p>
                   )}
@@ -353,11 +361,11 @@ const LocalTransfer = () => {
 
                 {/* Payment Method */}
                 <div className="space-y-2">
-                  <Label className="text-slate-700 font-medium">
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                     {currentLanguage === 'ar' ? 'طريقة الدفع' : 'Payment Method'} *
                   </Label>
                   <Select value={formData.paymentMethod} onValueChange={(v) => handleInputChange('paymentMethod', v)}>
-                    <SelectTrigger className="h-12 border-slate-300" data-testid="payment-method-select">
+                    <SelectTrigger className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} data-testid="payment-method-select">
                       <SelectValue placeholder={currentLanguage === 'ar' ? 'اختر طريقة الدفع' : 'Select payment method'} />
                     </SelectTrigger>
                     <SelectContent>
@@ -369,7 +377,7 @@ const LocalTransfer = () => {
                     </SelectContent>
                   </Select>
                   {errors.paymentMethod && (
-                    <p className="text-sm text-red-600 flex items-center gap-1">
+                    <p className="text-sm text-red-500 flex items-center gap-1">
                       <AlertCircle className="w-4 h-4" />{errors.paymentMethod}
                     </p>
                   )}
@@ -381,26 +389,26 @@ const LocalTransfer = () => {
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
-                  className="mt-6 p-4 bg-slate-50 rounded-2xl"
+                  className={`mt-6 p-4 rounded-2xl ${isDark ? 'bg-slate-700/50' : 'bg-slate-50'}`}
                 >
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-slate-600">
+                    <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>
                       {currentLanguage === 'ar' ? 'المبلغ' : 'Amount'}
                     </span>
-                    <span className="font-semibold">{Number(formData.amount).toLocaleString()} {currentLanguage === 'ar' ? 'د.ع' : 'IQD'}</span>
+                    <span className={`font-semibold ${isDark ? 'text-white' : ''}`}>{Number(formData.amount).toLocaleString()} {currentLanguage === 'ar' ? 'د.ع' : 'IQD'}</span>
                   </div>
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-slate-600">
+                    <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>
                       {currentLanguage === 'ar' ? `رسوم الخدمة (${serviceFeePercent}%)` : `Service Fee (${serviceFeePercent}%)`}
                     </span>
-                    <span className="font-semibold text-amber-600">{Number(calculateFee()).toLocaleString()} {currentLanguage === 'ar' ? 'د.ع' : 'IQD'}</span>
+                    <span className="font-semibold text-amber-500">{Number(calculateFee()).toLocaleString()} {currentLanguage === 'ar' ? 'د.ع' : 'IQD'}</span>
                   </div>
-                  <div className="border-t border-slate-200 pt-2 mt-2">
+                  <div className={`border-t pt-2 mt-2 ${isDark ? 'border-slate-600' : 'border-slate-200'}`}>
                     <div className="flex justify-between items-center">
-                      <span className="font-bold text-slate-900">
+                      <span className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                         {currentLanguage === 'ar' ? 'الإجمالي' : 'Total'}
                       </span>
-                      <span className="font-bold text-lg text-emerald-600">{Number(calculateTotal()).toLocaleString()} {currentLanguage === 'ar' ? 'د.ع' : 'IQD'}</span>
+                      <span className="font-bold text-lg text-emerald-500">{Number(calculateTotal()).toLocaleString()} {currentLanguage === 'ar' ? 'د.ع' : 'IQD'}</span>
                     </div>
                   </div>
                 </motion.div>
