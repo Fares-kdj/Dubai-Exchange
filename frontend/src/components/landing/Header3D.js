@@ -91,9 +91,10 @@ const Header3D = () => {
             data-testid="header-logo"
           >
             <img 
-              src={ASSETS.logoWhite}
+              src={isDark ? ASSETS.logoWhite : ASSETS.logoBlack}
               alt="Dubai International Exchange" 
-              className="h-10 md:h-12 object-contain"
+              className={`h-10 md:h-12 object-contain ${!isDark ? 'drop-shadow-sm' : ''}`}
+              style={!isDark ? { filter: 'sepia(30%) saturate(150%)' } : {}}
             />
           </motion.div>
 
