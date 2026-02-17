@@ -465,14 +465,22 @@ const TransferSuccess = () => {
           >
             <button 
               onClick={() => navigate('/track-order')}
-              className="flex-1 py-4 bg-slate-900 text-white font-bold rounded-2xl hover:bg-slate-800 transition-colors flex items-center justify-center gap-2"
+              className={`flex-1 py-4 font-bold rounded-2xl transition-colors flex items-center justify-center gap-2 ${
+                isDark 
+                  ? 'bg-[#D4AF37] text-slate-900 hover:bg-[#FCD34D]' 
+                  : 'bg-slate-900 text-white hover:bg-slate-800'
+              }`}
             >
               {currentLanguage === 'ar' ? 'تتبع طلبي' : 'Track My Order'}
               <ArrowRight className="w-5 h-5" />
             </button>
             <button 
               onClick={() => navigate('/')}
-              className="flex-1 py-4 bg-white border-2 border-slate-200 text-slate-900 font-bold rounded-2xl hover:border-slate-300 transition-colors"
+              className={`flex-1 py-4 border-2 font-bold rounded-2xl transition-colors ${
+                isDark 
+                  ? 'bg-transparent border-slate-600 text-white hover:border-slate-500' 
+                  : 'bg-white border-slate-200 text-slate-900 hover:border-slate-300'
+              }`}
             >
               {currentLanguage === 'ar' ? 'العودة للرئيسية' : 'Back to Home'}
             </button>
