@@ -38,7 +38,11 @@ const TransfersHub = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
+    <div className={`min-h-screen transition-colors duration-300 ${
+      isDark 
+        ? 'bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900' 
+        : 'bg-gradient-to-b from-slate-50 via-white to-slate-50'
+    }`}>
       <Header3D />
       
       <main className="pt-24 pb-20">
@@ -53,18 +57,22 @@ const TransfersHub = () => {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#D4AF37]/10 to-[#FCD34D]/10 border border-[#D4AF37]/20 rounded-full mb-6"
+              className={`inline-flex items-center gap-2 px-4 py-2 border rounded-full mb-6 ${
+                isDark 
+                  ? 'bg-[#D4AF37]/10 border-[#D4AF37]/30' 
+                  : 'bg-gradient-to-r from-[#D4AF37]/10 to-[#FCD34D]/10 border-[#D4AF37]/20'
+              }`}
             >
               <Sparkles className="w-4 h-4 text-[#D4AF37]" />
-              <span className="text-sm font-medium text-slate-700">
+              <span className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
                 {currentLanguage === 'ar' ? 'خدمات التحويل' : 'Transfer Services'}
               </span>
             </motion.div>
 
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 mb-6">
+            <h1 className={`text-4xl md:text-5xl lg:text-6xl font-bold mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>
               {currentLanguage === 'ar' ? 'التحويلات المالية' : 'Money Transfers'}
             </h1>
-            <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto">
+            <p className={`text-lg md:text-xl max-w-2xl mx-auto ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
               {currentLanguage === 'ar' 
                 ? 'اختر نوع التحويل المناسب لك - محلي داخل العراق أو دولي لجميع أنحاء العالم'
                 : 'Choose the transfer type that suits you - local within Iraq or international worldwide'}
