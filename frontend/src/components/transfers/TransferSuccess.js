@@ -294,17 +294,19 @@ const TransferSuccess = () => {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.5 }}
-                className="bg-white rounded-3xl border-2 border-slate-200 shadow-xl p-8 text-center"
+                className={`rounded-3xl border-2 shadow-xl p-8 text-center ${
+                  isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'
+                }`}
               >
-                <h3 className="text-lg font-bold text-slate-900 mb-6">
+                <h3 className={`text-lg font-bold mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                   {currentLanguage === 'ar' ? 'رمز QR' : 'QR Code'}
                 </h3>
                 
-                <div className="bg-slate-50 p-6 rounded-2xl mb-4 inline-block">
+                <div className={`p-6 rounded-2xl mb-4 inline-block ${isDark ? 'bg-white' : 'bg-slate-50'}`}>
                   <QRCodeSVG value={orderId} size={160} level="H" includeMargin={true} />
                 </div>
 
-                <p className="text-xs text-slate-500 mb-4">
+                <p className={`text-xs mb-4 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                   {currentLanguage === 'ar' ? 'للتحقق عند الاستلام' : 'For verification'}
                 </p>
               </motion.div>
