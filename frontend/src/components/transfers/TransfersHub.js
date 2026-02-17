@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
+import { useTheme } from '@/context/ThemeContext';
 import { motion } from 'framer-motion';
 import { MapPin, Globe, ArrowRight, Building2, Sparkles } from 'lucide-react';
 import Header3D from '../landing/Header3D';
@@ -9,6 +10,7 @@ import Footer3D from '../landing/Footer3D';
 const TransfersHub = () => {
   const navigate = useNavigate();
   const { currentLanguage } = useLanguage();
+  const { isDark } = useTheme();
 
   const transferTypes = [
     {
