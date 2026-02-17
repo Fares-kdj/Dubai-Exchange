@@ -125,7 +125,7 @@
 
 | الدور | البريد | كلمة المرور |
 |-------|--------|-------------|
-| المطور | developer@khairbaghdad.com | developer |
+| المطور | developer@khairbaghdad.com | dev@123456 |
 
 ---
 
