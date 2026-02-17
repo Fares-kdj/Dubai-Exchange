@@ -114,7 +114,39 @@ export const ContactSection = () => {
     fetchContact();
   }, []);
 
-  const info = contactInfo || defaultContact;
+  // Helper to get localized data from CMS format or default format
+  const getLocalizedField = (data, field) => {
+    if (!data) return '';
+    
+    // CMS format: { ar: { address: "..." }, en: { address: "..." } }
+    const lang = isKurdish ? 'ku' : isArabic ? 'ar' : 'en';
+    if (data[lang] && data[lang][field]) {
+      return data[lang][field];
+    }
+    
+    // Fallback to ar if current lang not available
+    if (data.ar && data.ar[field]) {
+      return data.ar[field];
+    }
+    
+    // Default format: { field: { ar: "...", en: "..." } }
+    if (data[field]) {
+      if (typeof data[field] === 'string') return data[field];
+      return isKurdish ? data[field].ku : isArabic ? data[field].ar : data[field].en;
+    }
+    
+    return '';
+  };
+
+  // Merge CMS data with defaults
+  const info = contactInfo ? {
+    phone: getLocalizedField(contactInfo, 'phone') || defaultContact.phone,
+    whatsapp: getLocalizedField(contactInfo, 'phone') || defaultContact.whatsapp,
+    email: getLocalizedField(contactInfo, 'email') || defaultContact.email,
+    address: getLocalizedField(contactInfo, 'address') || (isKurdish ? defaultContact.address.ku : isArabic ? defaultContact.address.ar : defaultContact.address.en),
+    hours: getLocalizedField(contactInfo, 'working_hours') || (isKurdish ? defaultContact.hours.ku : isArabic ? defaultContact.hours.ar : defaultContact.hours.en),
+    social: defaultContact.social
+  } : defaultContact;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -128,11 +160,13 @@ export const ContactSection = () => {
   };
 
   const getAddress = () => {
+    if (!info.address) return '';
     if (typeof info.address === 'string') return info.address;
     return isKurdish ? info.address.ku : isArabic ? info.address.ar : info.address.en;
   };
 
   const getHours = () => {
+    if (!info.hours) return '';
     if (typeof info.hours === 'string') return info.hours;
     return isKurdish ? info.hours.ku : isArabic ? info.hours.ar : info.hours.en;
   };
