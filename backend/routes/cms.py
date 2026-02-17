@@ -288,6 +288,72 @@ async def upload_file(
     return {"url": f"/uploads/{filename}", "filename": filename}
 
 
+# ============ Terms and Conditions ============
+
+@router.get("/terms")
+async def get_terms():
+    """Get terms and conditions content (public)"""
+    terms = await settings_collection.find_one({"type": "terms"}, {"_id": 0})
+    if not terms:
+        return None
+    return terms.get("content", {})
+
+
+@router.put("/terms")
+async def update_terms(
+    content: dict,
+    current_user: UserInDB = Depends(require_permission(Permission.EDIT_CONTENT))
+):
+    """Update terms and conditions"""
+    settings_doc = {
+        "type": "terms",
+        "content": content,
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "updated_by": current_user.name
+    }
+    
+    await settings_collection.update_one(
+        {"type": "terms"},
+        {"$set": settings_doc},
+        upsert=True
+    )
+    
+    return {"message": "Terms updated", "content": content}
+
+
+# ============ Contact Information ============
+
+@router.get("/contact")
+async def get_contact():
+    """Get contact information (public)"""
+    contact = await settings_collection.find_one({"type": "contact"}, {"_id": 0})
+    if not contact:
+        return None
+    return contact.get("content", {})
+
+
+@router.put("/contact")
+async def update_contact(
+    content: dict,
+    current_user: UserInDB = Depends(require_permission(Permission.EDIT_CONTENT))
+):
+    """Update contact information"""
+    settings_doc = {
+        "type": "contact",
+        "content": content,
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "updated_by": current_user.name
+    }
+    
+    await settings_collection.update_one(
+        {"type": "contact"},
+        {"$set": settings_doc},
+        upsert=True
+    )
+    
+    return {"message": "Contact info updated", "content": content}
+
+
 # ============ Initialize Default Data ============
 
 async def init_default_services():
