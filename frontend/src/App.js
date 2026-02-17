@@ -53,6 +53,11 @@ function App() {
               <Route path="/transfers/moneygram" element={<MoneyGram />} />
               <Route path="/transfers/country-wizard" element={<CountryWizard />} />
               <Route path="/transfers/success" element={<TransferSuccess />} />
+              {/* Services Routes */}
+              <Route path="/services/card-recharge" element={<CardRecharge />} />
+              <Route path="/services/card-recharge/success" element={<ServiceSuccess />} />
+              <Route path="/services/usdt" element={<USDTRecharge />} />
+              <Route path="/services/usdt/success" element={<ServiceSuccess />} />
               {/* Tracking */}
               <Route path="/track-order" element={<TrackOrder />} />
               {/* Admin Routes */}
