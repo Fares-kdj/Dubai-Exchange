@@ -170,9 +170,13 @@ const TransferSuccess = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="bg-white rounded-3xl border-2 border-slate-200 shadow-xl p-8"
+                className={`rounded-3xl border-2 shadow-xl p-8 ${
+                  isDark 
+                    ? 'bg-slate-800/50 border-slate-700' 
+                    : 'bg-white border-slate-200'
+                }`}
               >
-                <h3 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+                <h3 className={`text-2xl font-bold mb-6 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                   <User className="w-6 h-6 text-blue-600" />
                   {currentLanguage === 'ar' ? 'تفاصيل التحويل' : 'Transfer Details'}
                 </h3>
@@ -180,48 +184,48 @@ const TransferSuccess = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {orderData.senderName && (
                     <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-blue-500/20' : 'bg-blue-100'}`}>
                         <User className="w-5 h-5 text-blue-600" />
                       </div>
                       <div>
-                        <p className="text-xs text-slate-500">{currentLanguage === 'ar' ? 'المرسل' : 'Sender'}</p>
-                        <p className="font-medium">{orderData.senderName}</p>
+                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{currentLanguage === 'ar' ? 'المرسل' : 'Sender'}</p>
+                        <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{orderData.senderName}</p>
                       </div>
                     </div>
                   )}
                   
                   {orderData.receiverName && (
                     <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-green-500/20' : 'bg-green-100'}`}>
                         <User className="w-5 h-5 text-green-600" />
                       </div>
                       <div>
-                        <p className="text-xs text-slate-500">{currentLanguage === 'ar' ? 'المستلم' : 'Receiver'}</p>
-                        <p className="font-medium">{orderData.receiverName}</p>
+                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{currentLanguage === 'ar' ? 'المستلم' : 'Receiver'}</p>
+                        <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{orderData.receiverName}</p>
                       </div>
                     </div>
                   )}
 
                   {orderData.phone && (
                     <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-purple-500/20' : 'bg-purple-100'}`}>
                         <Phone className="w-5 h-5 text-purple-600" />
                       </div>
                       <div>
-                        <p className="text-xs text-slate-500">{currentLanguage === 'ar' ? 'الهاتف' : 'Phone'}</p>
-                        <p className="font-medium">{orderData.phone}</p>
+                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{currentLanguage === 'ar' ? 'الهاتف' : 'Phone'}</p>
+                        <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{orderData.phone}</p>
                       </div>
                     </div>
                   )}
 
                   {(orderData.receiverCountry || orderData.countryName) && (
                     <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-indigo-500/20' : 'bg-indigo-100'}`}>
                         <Globe className="w-5 h-5 text-indigo-600" />
                       </div>
                       <div>
-                        <p className="text-xs text-slate-500">{currentLanguage === 'ar' ? 'الدولة' : 'Country'}</p>
-                        <p className="font-medium">{orderData.countryName || orderData.receiverCountry}</p>
+                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{currentLanguage === 'ar' ? 'الدولة' : 'Country'}</p>
+                        <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{orderData.countryName || orderData.receiverCountry}</p>
                       </div>
                     </div>
                   )}
