@@ -33,26 +33,28 @@ import AdminUsers from '@/components/admin/AdminUsers';
 import AdminRates from '@/components/admin/AdminRates';
 import AdminCMS from '@/components/admin/AdminCMS';
 import AdminBranding from '@/components/admin/AdminBranding';
+import { LoadingProvider } from '@/context/LoadingContext';
 import '@/i18n';
 
 function App() {
   return (
     <ThemeProvider>
       <LanguageProvider>
-        <div className="App">
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<LandingPage3D />} />
-              <Route path="/traveler-booking" element={<TravelerBooking />} />
-              <Route path="/terms" element={<TermsPage />} />
-              {/* Transfers Routes */}
-              <Route path="/transfers" element={<TransfersHub />} />
-              <Route path="/transfers/local" element={<LocalTransfer />} />
-              <Route path="/transfers/international" element={<InternationalSelector />} />
-              <Route path="/transfers/western-union" element={<WesternUnion />} />
-              <Route path="/transfers/moneygram" element={<MoneyGram />} />
-              <Route path="/transfers/country-wizard" element={<CountryWizard />} />
-              <Route path="/transfers/success" element={<TransferSuccess />} />
+        <LoadingProvider>
+          <div className="App">
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<LandingPage3D />} />
+                <Route path="/traveler-booking" element={<TravelerBooking />} />
+                <Route path="/terms" element={<TermsPage />} />
+                {/* Transfers Routes */}
+                <Route path="/transfers" element={<TransfersHub />} />
+                <Route path="/transfers/local" element={<LocalTransfer />} />
+                <Route path="/transfers/international" element={<InternationalSelector />} />
+                <Route path="/transfers/western-union" element={<WesternUnion />} />
+                <Route path="/transfers/moneygram" element={<MoneyGram />} />
+                <Route path="/transfers/country-wizard" element={<CountryWizard />} />
+                <Route path="/transfers/success" element={<TransferSuccess />} />
               {/* Services Routes */}
               <Route path="/services/card-recharge" element={<CardRecharge />} />
               <Route path="/services/card-recharge/success" element={<ServiceSuccess />} />
