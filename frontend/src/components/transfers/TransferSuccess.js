@@ -237,17 +237,23 @@ const TransferSuccess = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
-                className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-3xl border-2 border-emerald-200 shadow-xl p-8"
+                className={`rounded-3xl border-2 shadow-xl p-8 ${
+                  isDark 
+                    ? 'bg-emerald-900/20 border-emerald-700/50' 
+                    : 'bg-gradient-to-br from-emerald-50 to-teal-50 border-emerald-200'
+                }`}
               >
-                <h3 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+                <h3 className={`text-2xl font-bold mb-6 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                   <DollarSign className="w-6 h-6 text-emerald-600" />
                   {currentLanguage === 'ar' ? 'تفاصيل المبلغ' : 'Amount Details'}
                 </h3>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {orderData.amount && (
-                    <div className="bg-white rounded-2xl p-6 border-2 border-emerald-200">
-                      <p className="text-sm text-slate-500 mb-1">
+                    <div className={`rounded-2xl p-6 border-2 ${
+                      isDark ? 'bg-slate-800/50 border-emerald-700/50' : 'bg-white border-emerald-200'
+                    }`}>
+                      <p className={`text-sm mb-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                         {currentLanguage === 'ar' ? 'المبلغ' : 'Amount'}
                       </p>
                       <p className="text-3xl font-bold text-emerald-600">
@@ -257,8 +263,10 @@ const TransferSuccess = () => {
                   )}
                   
                   {(orderData.total || orderData.iqdAmount) && (
-                    <div className="bg-white rounded-2xl p-6 border-2 border-teal-200">
-                      <p className="text-sm text-slate-500 mb-1">
+                    <div className={`rounded-2xl p-6 border-2 ${
+                      isDark ? 'bg-slate-800/50 border-teal-700/50' : 'bg-white border-teal-200'
+                    }`}>
+                      <p className={`text-sm mb-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                         {currentLanguage === 'ar' ? 'الإجمالي للدفع' : 'Total to Pay'}
                       </p>
                       <p className="text-3xl font-bold text-teal-600">
@@ -269,9 +277,9 @@ const TransferSuccess = () => {
                 </div>
 
                 {orderData.serviceFee && (
-                  <div className="mt-4 p-4 bg-white/50 rounded-xl">
+                  <div className={`mt-4 p-4 rounded-xl ${isDark ? 'bg-slate-800/30' : 'bg-white/50'}`}>
                     <div className="flex justify-between items-center text-sm">
-                      <span className="text-slate-600">{currentLanguage === 'ar' ? 'رسوم الخدمة' : 'Service Fee'}</span>
+                      <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>{currentLanguage === 'ar' ? 'رسوم الخدمة' : 'Service Fee'}</span>
                       <span className="font-semibold text-amber-600">{Number(orderData.serviceFee).toLocaleString()} {currentLanguage === 'ar' ? 'د.ع' : 'IQD'}</span>
                     </div>
                   </div>
