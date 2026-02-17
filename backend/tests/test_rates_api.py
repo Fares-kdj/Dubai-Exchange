@@ -6,7 +6,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://money-transfer-149.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://dubai-exchange.preview.emergentagent.com').rstrip('/')
 
 
 class TestRatesAPI:
