@@ -77,6 +77,7 @@ function App() {
             </Routes>
           </BrowserRouter>
         </div>
+        </LoadingProvider>
       </LanguageProvider>
     </ThemeProvider>
   );
