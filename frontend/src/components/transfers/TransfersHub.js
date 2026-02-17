@@ -97,7 +97,11 @@ const TransfersHub = () => {
                 className="cursor-pointer group perspective-1000"
                 data-testid={`transfer-card-${type.id}`}
               >
-                <div className="relative bg-white rounded-3xl p-8 md:p-10 border-2 border-slate-100 shadow-xl hover:shadow-2xl hover:border-slate-200 transition-all duration-500 overflow-hidden">
+                <div className={`relative rounded-3xl p-8 md:p-10 border-2 shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden ${
+                  isDark 
+                    ? 'bg-slate-800/50 border-slate-700 hover:border-slate-600' 
+                    : 'bg-white border-slate-100 hover:border-slate-200'
+                }`}>
                   {/* Background Glow */}
                   <div className={`absolute -top-20 -right-20 w-40 h-40 ${type.bgGlow} rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
                   
@@ -114,17 +118,19 @@ const TransfersHub = () => {
                     </motion.div>
 
                     {/* Title */}
-                    <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-3 group-hover:text-slate-800">
+                    <h2 className={`text-2xl md:text-3xl font-bold mb-3 ${isDark ? 'text-white' : 'text-slate-900 group-hover:text-slate-800'}`}>
                       {currentLanguage === 'ar' ? type.titleAr : type.titleEn}
                     </h2>
 
                     {/* Description */}
-                    <p className="text-slate-600 mb-6 leading-relaxed">
+                    <p className={`mb-6 leading-relaxed ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                       {currentLanguage === 'ar' ? type.descAr : type.descEn}
                     </p>
 
                     {/* CTA */}
-                    <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 group-hover:text-slate-900 group-hover:gap-3 transition-all">
+                    <div className={`flex items-center gap-2 text-sm font-semibold group-hover:gap-3 transition-all ${
+                      isDark ? 'text-slate-300 group-hover:text-white' : 'text-slate-700 group-hover:text-slate-900'
+                    }`}>
                       {currentLanguage === 'ar' ? 'ابدأ التحويل' : 'Start Transfer'}
                       <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                     </div>
@@ -141,12 +147,12 @@ const TransfersHub = () => {
             transition={{ delay: 0.6 }}
             className="flex flex-wrap items-center justify-center gap-8 mt-16"
           >
-            <div className="flex items-center gap-3 text-slate-600">
-              <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
-                <Building2 className="w-6 h-6 text-green-600" />
+            <div className={`flex items-center gap-3 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center ${isDark ? 'bg-green-500/20' : 'bg-green-100'}`}>
+                <Building2 className="w-6 h-6 text-green-500" />
               </div>
               <div>
-                <p className="font-semibold text-slate-900">
+                <p className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                   {currentLanguage === 'ar' ? 'شركة مرخصة' : 'Licensed Company'}
                 </p>
                 <p className="text-sm">
@@ -154,12 +160,12 @@ const TransfersHub = () => {
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-3 text-slate-600">
-              <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
-                <Globe className="w-6 h-6 text-blue-600" />
+            <div className={`flex items-center gap-3 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center ${isDark ? 'bg-blue-500/20' : 'bg-blue-100'}`}>
+                <Globe className="w-6 h-6 text-blue-500" />
               </div>
               <div>
-                <p className="font-semibold text-slate-900">
+                <p className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                   {currentLanguage === 'ar' ? '+50 دولة' : '50+ Countries'}
                 </p>
                 <p className="text-sm">
