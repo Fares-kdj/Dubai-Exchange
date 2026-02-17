@@ -204,7 +204,11 @@ const WesternUnion = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
+    <div className={`min-h-screen transition-colors duration-300 ${
+      isDark 
+        ? 'bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900' 
+        : 'bg-gradient-to-b from-slate-50 via-white to-slate-50'
+    }`}>
       <Header3D />
       
       <main className="pt-24 pb-20">
@@ -214,7 +218,7 @@ const WesternUnion = () => {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             onClick={() => navigate('/transfers/international')}
-            className="flex items-center gap-2 text-slate-600 hover:text-slate-900 mb-8 group"
+            className={`flex items-center gap-2 mb-8 group ${isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'}`}
           >
             <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
             {currentLanguage === 'ar' ? 'العودة للتحويل الدولي' : 'Back to International'}
@@ -229,10 +233,10 @@ const WesternUnion = () => {
             <div className="w-24 h-24 bg-yellow-400 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl">
               <span className="text-3xl font-black text-black">WU</span>
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-3">
+            <h1 className={`text-3xl md:text-4xl font-bold mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
               {currentLanguage === 'ar' ? 'ويسترن يونيون' : 'Western Union'}
             </h1>
-            <p className="text-slate-600">
+            <p className={isDark ? 'text-slate-400' : 'text-slate-600'}>
               {currentLanguage === 'ar' ? 'تحويل دولي سريع وموثوق' : 'Fast and reliable international transfer'}
             </p>
           </motion.div>
@@ -247,12 +251,14 @@ const WesternUnion = () => {
             data-testid="western-union-form"
           >
             {/* Sender & Receiver Info */}
-            <div className="bg-white rounded-3xl border-2 border-slate-200 shadow-xl p-8 mb-6">
+            <div className={`rounded-3xl border-2 shadow-xl p-8 mb-6 ${
+              isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'
+            }`}>
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center">
-                  <User className="w-6 h-6 text-blue-600" />
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${isDark ? 'bg-blue-500/20' : 'bg-blue-100'}`}>
+                  <User className="w-6 h-6 text-blue-500" />
                 </div>
-                <h2 className="text-2xl font-bold text-slate-900">
+                <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                   {currentLanguage === 'ar' ? 'بيانات المرسل والمستلم' : 'Sender & Receiver Details'}
                 </h2>
               </div>
