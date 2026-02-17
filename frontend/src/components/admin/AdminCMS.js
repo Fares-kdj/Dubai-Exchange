@@ -1,97 +1,227 @@
 import React, { useState, useEffect } from 'react';
-import { Save, RefreshCw, ChevronDown, ChevronUp, Edit2, Check, X, Globe, Type } from 'lucide-react';
+import { 
+  Save, RefreshCw, ChevronDown, ChevronUp, Edit2, Check, X, 
+  Globe, Type, FileText, Phone, Mail, MapPin, Settings, 
+  Zap, Clock, AlertCircle
+} from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 
 const AdminCMS = () => {
-  const [content, setContent] = useState([]);
+  const [activeTab, setActiveTab] = useState('terms');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [expandedSection, setExpandedSection] = useState(null);
-  const [editingBlock, setEditingBlock] = useState(null);
+  const [message, setMessage] = useState({ type: '', text: '' });
   const API_URL = process.env.REACT_APP_BACKEND_URL;
 
-  const contentStructure = [
-    {
-      page: 'home',
-      title: 'الصفحة الرئيسية',
-      sections: [
-        { block_id: 'home_hero', title: 'Hero Section', fields: ['title', 'subtitle', 'cta_text'] },
-        { block_id: 'home_services_title', title: 'عنوان الخدمات', fields: ['title', 'subtitle'] },
-        { block_id: 'home_trust', title: 'قسم الثقة', fields: ['title', 'subtitle'] },
-        { block_id: 'home_contact', title: 'التواصل', fields: ['title', 'phone', 'email', 'address'] }
-      ]
-    },
-    {
-      page: 'footer',
-      title: 'Footer',
-      sections: [
-        { block_id: 'footer_about', title: 'عن الشركة', fields: ['text'] },
-        { block_id: 'footer_social', title: 'روابط التواصل', fields: ['facebook', 'instagram', 'whatsapp'] }
-      ]
-    }
-  ];
+  // Terms State
+  const [terms, setTerms] = useState({
+    ar: { title: '', sections: [] },
+    en: { title: '', sections: [] },
+    ku: { title: '', sections: [] }
+  });
 
-  const [formData, setFormData] = useState({ content_ar: {}, content_en: {} });
+  // Contact State
+  const [contact, setContact] = useState({
+    ar: { address: '', phone: '', email: '', working_hours: '' },
+    en: { address: '', phone: '', email: '', working_hours: '' },
+    ku: { address: '', phone: '', email: '', working_hours: '' }
+  });
 
-  const loadContent = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch(API_URL + '/api/cms/content');
-      const data = await res.json();
-      setContent(data);
-    } catch (err) {
-      console.error('Error:', err);
-    }
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    loadContent();
-    // eslint-disable-next-line
-  }, []);
+  // Rate Mode State
+  const [rateMode, setRateMode] = useState({
+    mode: 'manual',
+    api_source: 'exchangerate-api',
+    update_interval_minutes: 60
+  });
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem('adminToken');
     return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token };
   };
 
-  const getBlockContent = (blockId) => {
-    const block = content.find(function(c) { return c.block_id === blockId; });
-    return block || { block_id: blockId, content_ar: {}, content_en: {} };
+  // Load all data
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const [termsRes, contactRes, rateModeRes] = await Promise.all([
+        fetch(API_URL + '/api/cms/terms'),
+        fetch(API_URL + '/api/cms/contact'),
+        fetch(API_URL + '/api/rates/settings/mode')
+      ]);
+
+      const termsData = await termsRes.json();
+      const contactData = await contactRes.json();
+      const rateModeData = await rateModeRes.json();
+
+      if (termsData) {
+        setTerms({
+          ar: termsData.ar || { title: 'الشروط والأحكام', sections: [] },
+          en: termsData.en || { title: 'Terms and Conditions', sections: [] },
+          ku: termsData.ku || { title: 'مەرج و رێساکان', sections: [] }
+        });
+      }
+
+      if (contactData) {
+        setContact({
+          ar: contactData.ar || { address: '', phone: '', email: '', working_hours: '' },
+          en: contactData.en || { address: '', phone: '', email: '', working_hours: '' },
+          ku: contactData.ku || { address: '', phone: '', email: '', working_hours: '' }
+        });
+      }
+
+      if (rateModeData) {
+        setRateMode({
+          mode: rateModeData.mode || 'manual',
+          api_source: rateModeData.api_source || 'exchangerate-api',
+          update_interval_minutes: rateModeData.update_interval_minutes || 60
+        });
+      }
+    } catch (err) {
+      console.error('Error loading data:', err);
+      showMessage('error', 'حدث خطأ في تحميل البيانات');
+    }
+    setLoading(false);
   };
 
-  const handleEdit = (blockId) => {
-    const block = getBlockContent(blockId);
-    setFormData({ content_ar: block.content_ar || {}, content_en: block.content_en || {} });
-    setEditingBlock(blockId);
+  useEffect(() => {
+    loadData();
+    // eslint-disable-next-line
+  }, []);
+
+  const showMessage = (type, text) => {
+    setMessage({ type, text });
+    setTimeout(() => setMessage({ type: '', text: '' }), 3000);
   };
 
-  const handleSave = async (blockId) => {
+  // Save Terms
+  const saveTerms = async () => {
     setSaving(true);
     try {
-      await fetch(API_URL + '/api/cms/content/' + blockId, {
+      const res = await fetch(API_URL + '/api/cms/terms', {
         method: 'PUT',
         headers: getAuthHeaders(),
-        body: JSON.stringify(formData)
+        body: JSON.stringify(terms)
       });
-      setEditingBlock(null);
-      loadContent();
+      if (res.ok) {
+        showMessage('success', 'تم حفظ الشروط والأحكام بنجاح');
+      } else {
+        showMessage('error', 'حدث خطأ في الحفظ');
+      }
     } catch (err) {
-      console.error('Error:', err);
+      showMessage('error', 'حدث خطأ في الاتصال');
     }
     setSaving(false);
   };
 
-  const handleCancel = () => {
-    setEditingBlock(null);
-    setFormData({ content_ar: {}, content_en: {} });
+  // Save Contact
+  const saveContact = async () => {
+    setSaving(true);
+    try {
+      const res = await fetch(API_URL + '/api/cms/contact', {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(contact)
+      });
+      if (res.ok) {
+        showMessage('success', 'تم حفظ معلومات الاتصال بنجاح');
+      } else {
+        showMessage('error', 'حدث خطأ في الحفظ');
+      }
+    } catch (err) {
+      showMessage('error', 'حدث خطأ في الاتصال');
+    }
+    setSaving(false);
   };
 
-  const updateField = (lang, field, value) => {
-    const key = 'content_' + lang;
-    setFormData(Object.assign({}, formData, { [key]: Object.assign({}, formData[key], { [field]: value }) }));
+  // Save Rate Mode
+  const saveRateMode = async () => {
+    setSaving(true);
+    try {
+      const res = await fetch(API_URL + '/api/rates/settings/mode', {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(rateMode)
+      });
+      if (res.ok) {
+        showMessage('success', 'تم حفظ إعدادات الأسعار بنجاح');
+      } else {
+        showMessage('error', 'حدث خطأ في الحفظ');
+      }
+    } catch (err) {
+      showMessage('error', 'حدث خطأ في الاتصال');
+    }
+    setSaving(false);
   };
+
+  // Sync Live Rates
+  const syncLiveRates = async () => {
+    setSaving(true);
+    try {
+      const res = await fetch(API_URL + '/api/rates/live/sync', {
+        method: 'POST',
+        headers: getAuthHeaders()
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showMessage('success', `تم مزامنة ${data.synced} سعر من API`);
+      } else {
+        showMessage('error', 'حدث خطأ في المزامنة');
+      }
+    } catch (err) {
+      showMessage('error', 'حدث خطأ في الاتصال');
+    }
+    setSaving(false);
+  };
+
+  // Add section to terms
+  const addTermsSection = (lang) => {
+    setTerms(prev => ({
+      ...prev,
+      [lang]: {
+        ...prev[lang],
+        sections: [...(prev[lang].sections || []), { title: '', content: '' }]
+      }
+    }));
+  };
+
+  // Update terms section
+  const updateTermsSection = (lang, index, field, value) => {
+    setTerms(prev => {
+      const newSections = [...(prev[lang].sections || [])];
+      newSections[index] = { ...newSections[index], [field]: value };
+      return {
+        ...prev,
+        [lang]: { ...prev[lang], sections: newSections }
+      };
+    });
+  };
+
+  // Remove terms section
+  const removeTermsSection = (lang, index) => {
+    setTerms(prev => ({
+      ...prev,
+      [lang]: {
+        ...prev[lang],
+        sections: prev[lang].sections.filter((_, i) => i !== index)
+      }
+    }));
+  };
+
+  // Update contact field
+  const updateContact = (lang, field, value) => {
+    setContact(prev => ({
+      ...prev,
+      [lang]: { ...prev[lang], [field]: value }
+    }));
+  };
+
+  const tabs = [
+    { id: 'terms', label: 'الشروط والأحكام', icon: FileText },
+    { id: 'contact', label: 'معلومات الاتصال', icon: Phone },
+    { id: 'rates', label: 'إعدادات الأسعار', icon: Settings }
+  ];
 
   if (loading) {
     return (
@@ -102,115 +232,338 @@ const AdminCMS = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-testid="admin-cms-page">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">إدارة المحتوى</h1>
-          <p className="text-slate-600">تعديل نصوص الموقع</p>
+          <p className="text-slate-600">تعديل محتوى الموقع والإعدادات</p>
         </div>
-        <button onClick={loadContent} className="px-4 py-2 border border-slate-300 text-slate-700 rounded-xl flex items-center gap-2 hover:bg-slate-50">
+        <button 
+          onClick={loadData} 
+          className="px-4 py-2 border border-slate-300 text-slate-700 rounded-xl flex items-center gap-2 hover:bg-slate-50"
+          data-testid="refresh-btn"
+        >
           <RefreshCw className="w-4 h-4" />تحديث
         </button>
       </div>
 
-      <div className="space-y-4">
-        {contentStructure.map(function(page) {
-          const isExpanded = expandedSection === page.page;
-          return (
-            <div key={page.page} className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-              <button
-                onClick={function() { setExpandedSection(isExpanded ? null : page.page); }}
-                className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50"
-              >
-                <div className="flex items-center gap-3">
-                  <Globe className="w-5 h-5 text-amber-500" />
-                  <span className="font-bold text-slate-900">{page.title}</span>
+      {/* Message */}
+      {message.text && (
+        <div className={`p-4 rounded-xl flex items-center gap-3 ${
+          message.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 
+          'bg-red-50 text-red-700 border border-red-200'
+        }`}>
+          {message.type === 'success' ? <Check className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
+          {message.text}
+        </div>
+      )}
+
+      {/* Tabs */}
+      <div className="flex gap-2 border-b border-slate-200 pb-2">
+        {tabs.map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            data-testid={`tab-${tab.id}`}
+            className={`px-4 py-2 rounded-t-lg flex items-center gap-2 transition-colors ${
+              activeTab === tab.id 
+                ? 'bg-amber-500 text-white' 
+                : 'text-slate-600 hover:bg-slate-100'
+            }`}
+          >
+            <tab.icon className="w-4 h-4" />
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Terms Tab */}
+      {activeTab === 'terms' && (
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-6" data-testid="terms-section">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+              <FileText className="w-5 h-5 text-amber-500" />
+              الشروط والأحكام
+            </h2>
+            <button 
+              onClick={saveTerms} 
+              disabled={saving}
+              data-testid="save-terms-btn"
+              className="px-4 py-2 bg-amber-500 text-white font-medium rounded-xl flex items-center gap-2 disabled:opacity-50 hover:bg-amber-600"
+            >
+              <Save className="w-4 h-4" />
+              {saving ? 'جاري الحفظ...' : 'حفظ التغييرات'}
+            </button>
+          </div>
+
+          {/* Language Sections */}
+          {['ar', 'en', 'ku'].map(lang => (
+            <div key={lang} className="border border-slate-200 rounded-xl p-4 space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className={`font-bold flex items-center gap-2 ${
+                  lang === 'ar' ? 'text-amber-600' : lang === 'en' ? 'text-blue-600' : 'text-green-600'
+                }`}>
+                  <Globe className="w-4 h-4" />
+                  {lang === 'ar' ? 'العربية' : lang === 'en' ? 'English' : 'کوردی'}
+                </h3>
+                <button 
+                  onClick={() => addTermsSection(lang)}
+                  className="px-3 py-1 text-sm bg-slate-100 hover:bg-slate-200 rounded-lg"
+                >
+                  + إضافة قسم
+                </button>
+              </div>
+
+              {/* Title */}
+              <div className="space-y-1">
+                <Label className="text-sm text-slate-500">العنوان الرئيسي</Label>
+                <Input 
+                  value={terms[lang]?.title || ''} 
+                  onChange={e => setTerms(prev => ({
+                    ...prev,
+                    [lang]: { ...prev[lang], title: e.target.value }
+                  }))}
+                  dir={lang === 'en' ? 'ltr' : 'rtl'}
+                  data-testid={`terms-title-${lang}`}
+                />
+              </div>
+
+              {/* Sections */}
+              {(terms[lang]?.sections || []).map((section, idx) => (
+                <div key={idx} className="bg-slate-50 rounded-lg p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-slate-600">القسم {idx + 1}</span>
+                    <button 
+                      onClick={() => removeTermsSection(lang, idx)}
+                      className="p-1 text-red-500 hover:bg-red-100 rounded"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <Input 
+                    placeholder="عنوان القسم"
+                    value={section.title || ''} 
+                    onChange={e => updateTermsSection(lang, idx, 'title', e.target.value)}
+                    dir={lang === 'en' ? 'ltr' : 'rtl'}
+                  />
+                  <Textarea 
+                    placeholder="محتوى القسم"
+                    value={section.content || ''} 
+                    onChange={e => updateTermsSection(lang, idx, 'content', e.target.value)}
+                    dir={lang === 'en' ? 'ltr' : 'rtl'}
+                    rows={4}
+                  />
                 </div>
-                {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-              </button>
-              
-              {isExpanded && (
-                <div className="border-t border-slate-200 divide-y divide-slate-100">
-                  {page.sections.map(function(section) {
-                    const isEditing = editingBlock === section.block_id;
-                    const blockContent = getBlockContent(section.block_id);
-                    
-                    return (
-                      <div key={section.block_id} className="p-6">
-                        <div className="flex items-center justify-between mb-4">
-                          <div className="flex items-center gap-2">
-                            <Type className="w-4 h-4 text-slate-400" />
-                            <span className="font-medium text-slate-700">{section.title}</span>
-                          </div>
-                          {!isEditing && (
-                            <button onClick={function() { handleEdit(section.block_id); }} className="px-3 py-1 text-sm text-blue-600 hover:bg-blue-50 rounded-lg flex items-center gap-1">
-                              <Edit2 className="w-3 h-3" />تعديل
-                            </button>
-                          )}
-                        </div>
-                        
-                        {isEditing ? (
-                          <div className="space-y-4">
-                            <div className="grid grid-cols-2 gap-6">
-                              <div className="space-y-3">
-                                <Label className="text-amber-600 font-bold">العربية</Label>
-                                {section.fields.map(function(field) {
-                                  return (
-                                    <div key={field} className="space-y-1">
-                                      <Label className="text-sm text-slate-500">{field}</Label>
-                                      <Input value={formData.content_ar[field] || ''} onChange={function(e) { updateField('ar', field, e.target.value); }} dir="rtl" />
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                              <div className="space-y-3">
-                                <Label className="text-blue-600 font-bold">English</Label>
-                                {section.fields.map(function(field) {
-                                  return (
-                                    <div key={field} className="space-y-1">
-                                      <Label className="text-sm text-slate-500">{field}</Label>
-                                      <Input value={formData.content_en[field] || ''} onChange={function(e) { updateField('en', field, e.target.value); }} dir="ltr" />
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            </div>
-                            <div className="flex justify-end gap-2 pt-4 border-t">
-                              <button onClick={handleCancel} className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg flex items-center gap-1">
-                                <X className="w-4 h-4" />إلغاء
-                              </button>
-                              <button onClick={function() { handleSave(section.block_id); }} disabled={saving} className="px-4 py-2 bg-amber-500 text-white rounded-lg flex items-center gap-1 disabled:opacity-50">
-                                <Check className="w-4 h-4" />{saving ? 'جاري...' : 'حفظ'}
-                              </button>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="grid grid-cols-2 gap-4 text-sm">
-                            <div className="bg-slate-50 rounded-lg p-3">
-                              <p className="text-xs text-amber-600 font-bold mb-1">العربية</p>
-                              {section.fields.map(function(field) {
-                                const val = blockContent.content_ar ? blockContent.content_ar[field] : '';
-                                return <p key={field} className="text-slate-600 truncate"><span className="text-slate-400">{field}:</span> {val || '-'}</p>;
-                              })}
-                            </div>
-                            <div className="bg-slate-50 rounded-lg p-3">
-                              <p className="text-xs text-blue-600 font-bold mb-1">English</p>
-                              {section.fields.map(function(field) {
-                                const val = blockContent.content_en ? blockContent.content_en[field] : '';
-                                return <p key={field} className="text-slate-600 truncate"><span className="text-slate-400">{field}:</span> {val || '-'}</p>;
-                              })}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
+              ))}
+
+              {(!terms[lang]?.sections || terms[lang].sections.length === 0) && (
+                <p className="text-center text-slate-400 py-4">لا توجد أقسام. انقر "إضافة قسم" لإضافة قسم جديد.</p>
               )}
             </div>
-          );
-        })}
-      </div>
+          ))}
+        </div>
+      )}
+
+      {/* Contact Tab */}
+      {activeTab === 'contact' && (
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-6" data-testid="contact-section">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+              <Phone className="w-5 h-5 text-amber-500" />
+              معلومات الاتصال
+            </h2>
+            <button 
+              onClick={saveContact} 
+              disabled={saving}
+              data-testid="save-contact-btn"
+              className="px-4 py-2 bg-amber-500 text-white font-medium rounded-xl flex items-center gap-2 disabled:opacity-50 hover:bg-amber-600"
+            >
+              <Save className="w-4 h-4" />
+              {saving ? 'جاري الحفظ...' : 'حفظ التغييرات'}
+            </button>
+          </div>
+
+          {/* Language Sections */}
+          {['ar', 'en', 'ku'].map(lang => (
+            <div key={lang} className="border border-slate-200 rounded-xl p-4 space-y-4">
+              <h3 className={`font-bold flex items-center gap-2 ${
+                lang === 'ar' ? 'text-amber-600' : lang === 'en' ? 'text-blue-600' : 'text-green-600'
+              }`}>
+                <Globe className="w-4 h-4" />
+                {lang === 'ar' ? 'العربية' : lang === 'en' ? 'English' : 'کوردی'}
+              </h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <Label className="text-sm text-slate-500 flex items-center gap-1">
+                    <MapPin className="w-3 h-3" /> العنوان
+                  </Label>
+                  <Input 
+                    value={contact[lang]?.address || ''} 
+                    onChange={e => updateContact(lang, 'address', e.target.value)}
+                    dir={lang === 'en' ? 'ltr' : 'rtl'}
+                    data-testid={`contact-address-${lang}`}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-sm text-slate-500 flex items-center gap-1">
+                    <Phone className="w-3 h-3" /> الهاتف
+                  </Label>
+                  <Input 
+                    value={contact[lang]?.phone || ''} 
+                    onChange={e => updateContact(lang, 'phone', e.target.value)}
+                    dir="ltr"
+                    data-testid={`contact-phone-${lang}`}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-sm text-slate-500 flex items-center gap-1">
+                    <Mail className="w-3 h-3" /> البريد الإلكتروني
+                  </Label>
+                  <Input 
+                    value={contact[lang]?.email || ''} 
+                    onChange={e => updateContact(lang, 'email', e.target.value)}
+                    dir="ltr"
+                    data-testid={`contact-email-${lang}`}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-sm text-slate-500 flex items-center gap-1">
+                    <Clock className="w-3 h-3" /> ساعات العمل
+                  </Label>
+                  <Input 
+                    value={contact[lang]?.working_hours || ''} 
+                    onChange={e => updateContact(lang, 'working_hours', e.target.value)}
+                    dir={lang === 'en' ? 'ltr' : 'rtl'}
+                    data-testid={`contact-hours-${lang}`}
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Rate Settings Tab */}
+      {activeTab === 'rates' && (
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-6" data-testid="rates-section">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+              <Settings className="w-5 h-5 text-amber-500" />
+              إعدادات أسعار الصرف
+            </h2>
+            <button 
+              onClick={saveRateMode} 
+              disabled={saving}
+              data-testid="save-rates-btn"
+              className="px-4 py-2 bg-amber-500 text-white font-medium rounded-xl flex items-center gap-2 disabled:opacity-50 hover:bg-amber-600"
+            >
+              <Save className="w-4 h-4" />
+              {saving ? 'جاري الحفظ...' : 'حفظ الإعدادات'}
+            </button>
+          </div>
+
+          {/* Mode Selection */}
+          <div className="space-y-4">
+            <Label className="text-sm font-medium text-slate-700">وضع تحديث الأسعار</Label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <button
+                onClick={() => setRateMode(prev => ({ ...prev, mode: 'manual' }))}
+                data-testid="mode-manual"
+                className={`p-4 rounded-xl border-2 text-right transition-all ${
+                  rateMode.mode === 'manual' 
+                    ? 'border-amber-500 bg-amber-50' 
+                    : 'border-slate-200 hover:border-slate-300'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                    rateMode.mode === 'manual' ? 'bg-amber-500 text-white' : 'bg-slate-100 text-slate-500'
+                  }`}>
+                    <Edit2 className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="font-bold text-slate-900">يدوي</p>
+                    <p className="text-sm text-slate-500">تحديث الأسعار يدوياً من صفحة الأسعار</p>
+                  </div>
+                </div>
+              </button>
+
+              <button
+                onClick={() => setRateMode(prev => ({ ...prev, mode: 'auto' }))}
+                data-testid="mode-auto"
+                className={`p-4 rounded-xl border-2 text-right transition-all ${
+                  rateMode.mode === 'auto' 
+                    ? 'border-amber-500 bg-amber-50' 
+                    : 'border-slate-200 hover:border-slate-300'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                    rateMode.mode === 'auto' ? 'bg-amber-500 text-white' : 'bg-slate-100 text-slate-500'
+                  }`}>
+                    <Zap className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="font-bold text-slate-900">تلقائي (API)</p>
+                    <p className="text-sm text-slate-500">جلب الأسعار من مصدر خارجي</p>
+                  </div>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          {/* Auto Mode Settings */}
+          {rateMode.mode === 'auto' && (
+            <div className="space-y-4 p-4 bg-blue-50 rounded-xl border border-blue-200">
+              <h3 className="font-bold text-blue-800 flex items-center gap-2">
+                <Zap className="w-4 h-4" /> إعدادات الوضع التلقائي
+              </h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <Label className="text-sm text-blue-700">مصدر API</Label>
+                  <Input 
+                    value={rateMode.api_source} 
+                    onChange={e => setRateMode(prev => ({ ...prev, api_source: e.target.value }))}
+                    className="bg-white"
+                    data-testid="api-source"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-sm text-blue-700">فترة التحديث (دقائق)</Label>
+                  <Input 
+                    type="number"
+                    value={rateMode.update_interval_minutes} 
+                    onChange={e => setRateMode(prev => ({ ...prev, update_interval_minutes: parseInt(e.target.value) || 60 }))}
+                    className="bg-white"
+                    data-testid="update-interval"
+                  />
+                </div>
+              </div>
+
+              <button
+                onClick={syncLiveRates}
+                disabled={saving}
+                data-testid="sync-rates-btn"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg flex items-center gap-2 hover:bg-blue-700 disabled:opacity-50"
+              >
+                <RefreshCw className={`w-4 h-4 ${saving ? 'animate-spin' : ''}`} />
+                مزامنة الأسعار الآن
+              </button>
+            </div>
+          )}
+
+          {/* Info Card */}
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+            <p className="text-sm text-amber-800">
+              <strong>ملاحظة:</strong> في الوضع اليدوي، يتم عرض الأسعار التي تدخلها يدوياً من صفحة "أسعار الصرف". 
+              في الوضع التلقائي، يتم جلب الأسعار الحية من API خارجي (exchangerate-api.com).
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
