@@ -162,6 +162,156 @@ async def delete_rate(
     return {"message": "Rate deleted"}
 
 
+# Rate Mode Settings
+class RateModeSettings(BaseModel):
+    mode: str = "manual"  # "manual" or "auto"
+    api_source: str = "exchangerate-api"  # API source for auto mode
+    update_interval_minutes: int = 60
+
+
+@router.get("/settings/mode")
+async def get_rate_mode():
+    """Get current rate mode settings (public)"""
+    settings = await settings_collection.find_one(
+        {"type": "rate_mode"},
+        {"_id": 0}
+    )
+    if not settings:
+        return {"mode": "manual", "api_source": "exchangerate-api", "update_interval_minutes": 60}
+    return settings
+
+
+@router.put("/settings/mode")
+async def update_rate_mode(
+    settings: RateModeSettings,
+    current_user: UserInDB = Depends(require_permission(Permission.MANAGE_RATES))
+):
+    """Update rate mode settings (admin only)"""
+    settings_doc = settings.model_dump()
+    settings_doc["type"] = "rate_mode"
+    settings_doc["updated_at"] = datetime.now(timezone.utc).isoformat()
+    settings_doc["updated_by"] = current_user.name
+    
+    await settings_collection.update_one(
+        {"type": "rate_mode"},
+        {"$set": settings_doc},
+        upsert=True
+    )
+    return {"message": "Rate mode updated", "settings": settings_doc}
+
+
+@router.get("/live/fetch")
+async def fetch_live_rates():
+    """Fetch live exchange rates from API (public - uses cached IQD rates)"""
+    try:
+        # Get current mode
+        mode_settings = await settings_collection.find_one({"type": "rate_mode"}, {"_id": 0})
+        mode = mode_settings.get("mode", "manual") if mode_settings else "manual"
+        
+        if mode == "manual":
+            # Return stored rates
+            cursor = rates_collection.find({"is_active": True}, {"_id": 0}).sort("order", 1)
+            rates = await cursor.to_list(length=100)
+            return {"source": "manual", "rates": rates}
+        
+        # Auto mode - fetch from free API
+        # Using exchangerate-api.com free tier (IQD base)
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            # Fetch USD-based rates and convert to IQD
+            response = await client.get("https://api.exchangerate-api.com/v4/latest/USD")
+            if response.status_code == 200:
+                data = response.json()
+                usd_rates = data.get("rates", {})
+                
+                # IQD rate per 1 USD (approximate)
+                iqd_per_usd = usd_rates.get("IQD", 1460)
+                
+                # Calculate rates for common currencies
+                live_rates = []
+                currency_map = {
+                    "USD": {"ar": "دولار أمريكي", "en": "US Dollar", "flag": "🇺🇸"},
+                    "EUR": {"ar": "يورو", "en": "Euro", "flag": "🇪🇺"},
+                    "GBP": {"ar": "جنيه إسترليني", "en": "British Pound", "flag": "🇬🇧"},
+                    "TRY": {"ar": "ليرة تركية", "en": "Turkish Lira", "flag": "🇹🇷"},
+                    "AED": {"ar": "درهم إماراتي", "en": "UAE Dirham", "flag": "🇦🇪"},
+                    "SAR": {"ar": "ريال سعودي", "en": "Saudi Riyal", "flag": "🇸🇦"},
+                    "JOD": {"ar": "دينار أردني", "en": "Jordanian Dinar", "flag": "🇯🇴"},
+                    "EGP": {"ar": "جنيه مصري", "en": "Egyptian Pound", "flag": "🇪🇬"},
+                    "KWD": {"ar": "دينار كويتي", "en": "Kuwaiti Dinar", "flag": "🇰🇼"},
+                    "IRR": {"ar": "ريال إيراني", "en": "Iranian Rial", "flag": "🇮🇷"}
+                }
+                
+                for code, info in currency_map.items():
+                    if code in usd_rates:
+                        # Calculate IQD per 1 unit of currency
+                        rate_to_usd = usd_rates[code]
+                        iqd_rate = round(iqd_per_usd / rate_to_usd, 2)
+                        
+                        live_rates.append({
+                            "currency_code": code,
+                            "currency_name_ar": info["ar"],
+                            "currency_name_en": info["en"],
+                            "flag": info["flag"],
+                            "buy_rate": round(iqd_rate * 0.995, 2),  # 0.5% spread
+                            "sell_rate": round(iqd_rate * 1.005, 2),
+                            "updated_at": datetime.now(timezone.utc).isoformat()
+                        })
+                    elif code == "USD":
+                        live_rates.append({
+                            "currency_code": "USD",
+                            "currency_name_ar": info["ar"],
+                            "currency_name_en": info["en"],
+                            "flag": info["flag"],
+                            "buy_rate": round(iqd_per_usd * 0.995, 2),
+                            "sell_rate": round(iqd_per_usd * 1.005, 2),
+                            "updated_at": datetime.now(timezone.utc).isoformat()
+                        })
+                
+                return {"source": "live", "rates": live_rates, "timestamp": data.get("time_last_updated")}
+        
+        # Fallback to stored rates
+        cursor = rates_collection.find({"is_active": True}, {"_id": 0}).sort("order", 1)
+        rates = await cursor.to_list(length=100)
+        return {"source": "fallback", "rates": rates}
+        
+    except Exception as e:
+        # Return stored rates on error
+        cursor = rates_collection.find({"is_active": True}, {"_id": 0}).sort("order", 1)
+        rates = await cursor.to_list(length=100)
+        return {"source": "fallback", "error": str(e), "rates": rates}
+
+
+@router.post("/live/sync")
+async def sync_live_rates(
+    current_user: UserInDB = Depends(require_permission(Permission.MANAGE_RATES))
+):
+    """Sync live rates to database (admin only)"""
+    try:
+        live_data = await fetch_live_rates()
+        if live_data.get("source") != "live":
+            return {"message": "Could not fetch live rates", "synced": 0}
+        
+        synced = 0
+        now = datetime.now(timezone.utc).isoformat()
+        
+        for rate in live_data.get("rates", []):
+            await rates_collection.update_one(
+                {"currency_code": rate["currency_code"]},
+                {"$set": {
+                    **rate,
+                    "updated_at": now,
+                    "updated_by": "Live Sync",
+                    "is_active": True
+                }},
+                upsert=True
+            )
+            synced += 1
+        
+        return {"message": f"Synced {synced} rates from live API", "synced": synced}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Sync failed: {str(e)}")
+
+
 # Initialize default rates
 async def init_default_rates():
     """Initialize default exchange rates"""
