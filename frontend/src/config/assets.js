@@ -1,9 +1,11 @@
-// Asset URLs for the 3D Landing Page
+// Asset URLs for the Landing Page
 export const ASSETS = {
-  // 3D Models
-  airplane: 'https://customer-assets.emergentagent.com/job_28ffec3b-f08f-4672-88c0-712bcb54d2bb/artifacts/jvef3c12_airplane.glb',
-  creditCard: 'https://customer-assets.emergentagent.com/job_28ffec3b-f08f-4672-88c0-712bcb54d2bb/artifacts/wcblo2y6_credit_card.glb',
-  usdt: 'https://customer-assets.emergentagent.com/job_28ffec3b-f08f-4672-88c0-712bcb54d2bb/artifacts/5ctlcnq1_usdt.glb',
+  // Hero Images
+  heroAirplane: 'https://static.prod-images.emergentagent.com/jobs/88687776-cef9-451a-ac8a-aacc94344da7/images/7314ba8b91b5f4b4836cf6ff75f48969acd464ef67f61e137f36d941651eee88.png',
+  heroCardHand: 'https://static.prod-images.emergentagent.com/jobs/88687776-cef9-451a-ac8a-aacc94344da7/images/87915492b24dcf06c1d9cce0bde468a26f3dba1bd4fcd125f9595931f35b209c.png',
+  
+  // USDT Image
+  usdtCoin: 'https://customer-assets.emergentagent.com/job_money-transfer-149/artifacts/232ggie3_3D%20RENDER_.png',
 
   // Company Logos
   logoColor: 'https://customer-assets.emergentagent.com/job_28ffec3b-f08f-4672-88c0-712bcb54d2bb/artifacts/hhjmh7ag_logo_color.svg',
