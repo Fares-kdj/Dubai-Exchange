@@ -7,6 +7,11 @@ export const ASSETS = {
   // USDT Image
   usdtCoin: 'https://customer-assets.emergentagent.com/job_money-transfer-149/artifacts/232ggie3_3D%20RENDER_.png',
 
+  // Device Mockups
+  devicePhone: 'https://static.prod-images.emergentagent.com/jobs/88687776-cef9-451a-ac8a-aacc94344da7/images/81a27fe7051dc469e180dc4a0d62ba40ec26532b6ce554b31b416a8c0a70fdbe.png',
+  deviceLaptopTablet: 'https://static.prod-images.emergentagent.com/jobs/88687776-cef9-451a-ac8a-aacc94344da7/images/ae7ae42ba1d65ac269e9ca6d1b0a70fff40bc72ae0965c0a8744803b13beaef9.png',
+  globalNetwork: 'https://static.prod-images.emergentagent.com/jobs/88687776-cef9-451a-ac8a-aacc94344da7/images/8588801201918d16afc252b16c090fc0a22cdac37b289e2b9fcd4583ef8c5c64.png',
+
   // Company Logos
   // Note: logoColor SVG was broken (referenced local file path), using logoBlack for light mode
   logoColor: 'https://customer-assets.emergentagent.com/job_28ffec3b-f08f-4672-88c0-712bcb54d2bb/artifacts/13lpi34u_logo_black.svg',
