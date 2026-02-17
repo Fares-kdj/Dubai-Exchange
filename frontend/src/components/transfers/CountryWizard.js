@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
+import { useTheme } from '@/context/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowRight, DollarSign, Globe, CreditCard, CheckCircle, AlertCircle, Search, Clock, User, Star } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -12,6 +13,7 @@ import Footer3D from '../landing/Footer3D';
 const CountryWizard = () => {
   const navigate = useNavigate();
   const { currentLanguage } = useLanguage();
+  const { isDark } = useTheme();
   const isArabic = currentLanguage === 'ar';
   
   const [step, setStep] = useState(1);
