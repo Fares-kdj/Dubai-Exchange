@@ -88,7 +88,11 @@ const TransferSuccess = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-50 via-white to-slate-50">
+    <div className={`min-h-screen transition-colors duration-300 ${
+      isDark 
+        ? 'bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900' 
+        : 'bg-gradient-to-b from-green-50 via-white to-slate-50'
+    }`}>
       <Header3D />
       
       <main className="pt-24 pb-20">
@@ -100,13 +104,15 @@ const TransferSuccess = () => {
             transition={{ type: "spring", duration: 0.6 }}
             className="text-center mb-12"
           >
-            <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl">
+            <div className={`w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl ${
+              isDark ? 'bg-green-600' : 'bg-green-500'
+            }`}>
               <CheckCircle className="w-14 h-14 text-white" />
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-3">
+            <h1 className={`text-4xl md:text-5xl font-bold mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
               {currentLanguage === 'ar' ? 'تم تسجيل طلبك بنجاح!' : 'Order Created Successfully!'}
             </h1>
-            <p className="text-lg text-slate-600">
+            <p className={`text-lg ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
               {currentLanguage === 'ar' ? 'احتفظ برقم الطلب لتتبع حالته' : 'Keep your order ID to track status'}
             </p>
           </motion.div>
