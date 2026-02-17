@@ -38,7 +38,7 @@ export const PartnersSection3D = () => {
       className={`relative py-24 md:py-32 overflow-hidden transition-colors duration-500 ${
         isDark 
           ? 'bg-gradient-to-b from-slate-900 to-slate-800'
-          : 'bg-gradient-to-b from-white to-slate-50'
+          : 'bg-gradient-to-b from-slate-50 via-slate-100 to-slate-50'
       }`}
       id="partners"
     >
