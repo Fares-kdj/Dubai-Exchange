@@ -215,90 +215,143 @@ export const HeroSection3D = () => {
                 {t.slogan}
               </motion.p>
 
-              {/* 4 Main Service Buttons with Enhanced Micro-animations */}
+              {/* 5 Main Service Buttons with Floating Animation */}
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
-                className="grid grid-cols-2 gap-4 mb-10"
+                className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-10"
               >
                 {mainServices.map((service, index) => (
                   <motion.button
                     key={service.id}
                     onClick={() => navigate(service.link)}
-                    initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    initial={{ opacity: 0, y: 30, scale: 0.9 }}
+                    animate={{ 
+                      opacity: 1, 
+                      y: [0, -8, 0],
+                      scale: 1
+                    }}
                     transition={{ 
-                      delay: 0.7 + index * 0.1,
-                      type: "spring",
-                      stiffness: 200,
-                      damping: 15
+                      opacity: { delay: 0.7 + index * 0.1, duration: 0.5 },
+                      scale: { delay: 0.7 + index * 0.1, duration: 0.5 },
+                      y: {
+                        delay: service.floatDelay,
+                        duration: service.floatDuration,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }
                     }}
                     whileHover={{ 
-                      scale: 1.05, 
-                      y: -8,
-                      transition: { type: "spring", stiffness: 400, damping: 10 }
+                      scale: 1.08, 
+                      y: -15,
+                      rotateX: 5,
+                      rotateY: index % 2 === 0 ? 5 : -5,
+                      transition: { type: "spring", stiffness: 400, damping: 15 }
                     }}
-                    whileTap={{ scale: 0.95 }}
-                    className={`group relative flex items-center gap-3 px-5 py-4 rounded-2xl font-bold transition-all duration-300 overflow-hidden ${
+                    whileTap={{ scale: 0.92, rotateX: 0, rotateY: 0 }}
+                    className={`group relative flex flex-col items-center gap-3 px-4 py-5 rounded-2xl font-bold transition-all duration-300 overflow-hidden ${
                       isDark 
-                        ? 'bg-slate-800/80 hover:bg-slate-700/90 text-white border border-slate-700/50' 
-                        : 'bg-white/80 hover:bg-white text-slate-900 border border-slate-200/50'
-                    } backdrop-blur-sm shadow-lg hover:shadow-2xl ${service.hoverGlow}`}
+                        ? 'bg-slate-800/90 hover:bg-slate-700 text-white border border-slate-700/50' 
+                        : 'bg-white/90 hover:bg-white text-slate-900 border border-slate-200'
+                    } backdrop-blur-md shadow-xl hover:shadow-2xl ${service.hoverGlow}`}
+                    style={{ 
+                      transformStyle: 'preserve-3d',
+                      perspective: '1000px'
+                    }}
                     data-testid={`hero-service-${service.id}`}
                   >
-                    {/* Icon Container with Pulse Animation */}
+                    {/* Floating Particles Effect */}
+                    <motion.div
+                      className="absolute inset-0 pointer-events-none"
+                      initial={{ opacity: 0 }}
+                      whileHover={{ opacity: 1 }}
+                    >
+                      {[...Array(5)].map((_, i) => (
+                        <motion.div
+                          key={i}
+                          className={`absolute w-1 h-1 rounded-full bg-gradient-to-r ${service.gradient}`}
+                          style={{
+                            left: `${20 + i * 15}%`,
+                            top: `${30 + (i % 3) * 20}%`
+                          }}
+                          animate={{
+                            y: [-10, -30, -10],
+                            opacity: [0, 1, 0],
+                            scale: [0.5, 1, 0.5]
+                          }}
+                          transition={{
+                            duration: 2,
+                            delay: i * 0.2,
+                            repeat: Infinity
+                          }}
+                        />
+                      ))}
+                    </motion.div>
+
+                    {/* Icon Container with Enhanced Animation */}
                     <motion.div
                       animate={{ 
                         boxShadow: [
                           '0 0 0 0 rgba(212, 175, 55, 0)',
-                          '0 0 0 8px rgba(212, 175, 55, 0.1)',
+                          '0 0 20px 5px rgba(212, 175, 55, 0.15)',
                           '0 0 0 0 rgba(212, 175, 55, 0)'
-                        ]
+                        ],
+                        rotate: [0, 2, -2, 0]
                       }}
                       transition={{ 
-                        duration: 2, 
-                        repeat: Infinity, 
-                        delay: index * 0.3 
+                        boxShadow: { duration: 2.5, repeat: Infinity, delay: index * 0.3 },
+                        rotate: { duration: 4, repeat: Infinity, ease: "easeInOut" }
                       }}
-                      whileHover={service.animation}
-                      className={`w-12 h-12 rounded-xl bg-gradient-to-br ${service.gradient} flex items-center justify-center shadow-lg flex-shrink-0`}
+                      whileHover={{ 
+                        scale: 1.15,
+                        rotate: [0, -10, 10, 0],
+                        transition: { duration: 0.4 }
+                      }}
+                      className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${service.gradient} flex items-center justify-center shadow-lg flex-shrink-0 relative`}
                     >
+                      {/* Inner Glow */}
+                      <div className="absolute inset-0 rounded-2xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       <motion.div
-                        whileHover={{ rotate: 360 }}
+                        whileHover={{ rotate: 360, scale: 1.1 }}
                         transition={{ duration: 0.5 }}
                       >
-                        <service.icon className="w-6 h-6 text-white" />
+                        <service.icon className="w-7 h-7 text-white relative z-10" />
                       </motion.div>
                     </motion.div>
                     
-                    {/* Label with Slide Animation */}
+                    {/* Label with Bounce Effect */}
                     <motion.span 
-                      className="text-sm md:text-base relative z-10"
-                      whileHover={{ x: 3 }}
-                      transition={{ type: "spring", stiffness: 300 }}
+                      className="text-sm font-bold relative z-10 text-center"
+                      whileHover={{ scale: 1.05 }}
+                      transition={{ type: "spring", stiffness: 400 }}
                     >
                       {getLabel(service)}
                     </motion.span>
 
                     {/* Shimmer Effect on Hover */}
                     <motion.div 
-                      className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12"
+                      className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12"
                     />
 
-                    {/* Hover Glow Effect */}
+                    {/* Gradient Overlay on Hover */}
                     <motion.div 
-                      className={`absolute inset-0 bg-gradient-to-r ${service.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300 rounded-2xl`}
-                      whileHover={{ opacity: 0.15 }}
+                      className={`absolute inset-0 bg-gradient-to-br ${service.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300 rounded-2xl`}
                     />
                     
-                    {/* Bottom Border Glow */}
+                    {/* Bottom Border with Animation */}
                     <motion.div 
-                      className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${service.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-b-2xl`}
-                      initial={{ scaleX: 0 }}
-                      whileHover={{ scaleX: 1 }}
+                      className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${service.gradient} rounded-b-2xl`}
+                      initial={{ scaleX: 0, opacity: 0 }}
+                      whileHover={{ scaleX: 1, opacity: 1 }}
                       transition={{ duration: 0.3 }}
                     />
+
+                    {/* Corner Accents */}
+                    <div className={`absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 rounded-tl-lg opacity-0 group-hover:opacity-100 transition-opacity border-current`} 
+                         style={{ borderColor: service.gradient.includes('amber') ? '#F59E0B' : service.gradient.includes('blue') ? '#3B82F6' : service.gradient.includes('teal') ? '#14B8A6' : service.gradient.includes('purple') ? '#8B5CF6' : '#F43F5E' }} />
+                    <div className={`absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 rounded-br-lg opacity-0 group-hover:opacity-100 transition-opacity`}
+                         style={{ borderColor: service.gradient.includes('amber') ? '#F59E0B' : service.gradient.includes('blue') ? '#3B82F6' : service.gradient.includes('teal') ? '#14B8A6' : service.gradient.includes('purple') ? '#8B5CF6' : '#F43F5E' }} />
                   </motion.button>
                 ))}
               </motion.div>
