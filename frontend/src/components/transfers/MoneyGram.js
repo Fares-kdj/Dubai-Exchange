@@ -217,73 +217,77 @@ const MoneyGram = () => {
             data-testid="moneygram-form"
           >
             {/* Sender & Receiver */}
-            <div className="bg-white rounded-3xl border-2 border-slate-200 shadow-xl p-8 mb-6">
+            <div className={`rounded-3xl border-2 shadow-xl p-8 mb-6 ${
+              isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'
+            }`}>
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 bg-orange-100 rounded-2xl flex items-center justify-center">
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${isDark ? 'bg-orange-500/20' : 'bg-orange-100'}`}>
                   <User className="w-6 h-6 text-orange-600" />
                 </div>
-                <h2 className="text-2xl font-bold text-slate-900">
+                <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                   {currentLanguage === 'ar' ? 'بيانات التحويل' : 'Transfer Details'}
                 </h2>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label>{currentLanguage === 'ar' ? 'اسم المرسل' : 'Sender Name'} *</Label>
-                  <Input value={formData.senderName} onChange={(e) => handleInputChange('senderName', e.target.value)} className="h-12" data-testid="mg-sender-name" />
-                  {errors.senderName && <p className="text-sm text-red-600 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.senderName}</p>}
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{currentLanguage === 'ar' ? 'اسم المرسل' : 'Sender Name'} *</Label>
+                  <Input value={formData.senderName} onChange={(e) => handleInputChange('senderName', e.target.value)} className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} data-testid="mg-sender-name" />
+                  {errors.senderName && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.senderName}</p>}
                 </div>
 
                 <div className="space-y-2">
-                  <Label>{currentLanguage === 'ar' ? 'اسم المستلم' : 'Receiver Name'} *</Label>
-                  <Input value={formData.receiverName} onChange={(e) => handleInputChange('receiverName', e.target.value)} className="h-12" data-testid="mg-receiver-name" />
-                  {errors.receiverName && <p className="text-sm text-red-600 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.receiverName}</p>}
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{currentLanguage === 'ar' ? 'اسم المستلم' : 'Receiver Name'} *</Label>
+                  <Input value={formData.receiverName} onChange={(e) => handleInputChange('receiverName', e.target.value)} className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} data-testid="mg-receiver-name" />
+                  {errors.receiverName && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.receiverName}</p>}
                 </div>
 
                 <div className="space-y-2">
-                  <Label>{currentLanguage === 'ar' ? 'دولة المرسل' : 'Sender Country'}</Label>
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{currentLanguage === 'ar' ? 'دولة المرسل' : 'Sender Country'}</Label>
                   <Select value="iraq" disabled>
-                    <SelectTrigger className="h-12 bg-slate-50"><SelectValue /></SelectTrigger>
+                    <SelectTrigger className={`h-12 ${isDark ? 'bg-slate-600 border-slate-500 text-white' : 'bg-slate-50 border-slate-300'}`}><SelectValue /></SelectTrigger>
                     <SelectContent><SelectItem value="iraq">{currentLanguage === 'ar' ? 'العراق' : 'Iraq'}</SelectItem></SelectContent>
                   </Select>
                 </div>
 
                 <div className="space-y-2">
-                  <Label>{currentLanguage === 'ar' ? 'دولة المستلم' : 'Receiver Country'} *</Label>
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{currentLanguage === 'ar' ? 'دولة المستلم' : 'Receiver Country'} *</Label>
                   <Select value={formData.receiverCountry} onValueChange={(v) => handleInputChange('receiverCountry', v)}>
-                    <SelectTrigger className="h-12" data-testid="mg-receiver-country"><SelectValue placeholder={currentLanguage === 'ar' ? 'اختر' : 'Select'} /></SelectTrigger>
+                    <SelectTrigger className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} data-testid="mg-receiver-country"><SelectValue placeholder={currentLanguage === 'ar' ? 'اختر' : 'Select'} /></SelectTrigger>
                     <SelectContent>
                       {countries.filter(c => c.value !== 'iraq').map(c => (
                         <SelectItem key={c.value} value={c.value}>{currentLanguage === 'ar' ? c.labelAr : c.labelEn}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
-                  {errors.receiverCountry && <p className="text-sm text-red-600 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.receiverCountry}</p>}
+                  {errors.receiverCountry && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.receiverCountry}</p>}
                 </div>
 
                 <div className="space-y-2 md:col-span-2">
-                  <Label>{currentLanguage === 'ar' ? 'رقم الهاتف' : 'Phone'} *</Label>
-                  <Input type="tel" value={formData.phone} onChange={(e) => handleInputChange('phone', e.target.value)} className="h-12" placeholder="+964 7XX XXX XXXX" data-testid="mg-phone" />
-                  {errors.phone && <p className="text-sm text-red-600 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.phone}</p>}
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{currentLanguage === 'ar' ? 'رقم الهاتف' : 'Phone'} *</Label>
+                  <Input type="tel" value={formData.phone} onChange={(e) => handleInputChange('phone', e.target.value)} className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} placeholder="+964 7XX XXX XXXX" data-testid="mg-phone" />
+                  {errors.phone && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.phone}</p>}
                 </div>
               </div>
             </div>
 
             {/* ID Upload */}
-            <div className="bg-white rounded-3xl border-2 border-slate-200 shadow-xl p-8 mb-6">
+            <div className={`rounded-3xl border-2 shadow-xl p-8 mb-6 ${
+              isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'
+            }`}>
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center">
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${isDark ? 'bg-purple-500/20' : 'bg-purple-100'}`}>
                   <FileText className="w-6 h-6 text-purple-600" />
                 </div>
-                <h2 className="text-2xl font-bold text-slate-900">{currentLanguage === 'ar' ? 'صورة الهوية' : 'ID Image'}</h2>
+                <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{currentLanguage === 'ar' ? 'صورة الهوية' : 'ID Image'}</h2>
               </div>
 
               {!idImage ? (
-                <label className="block border-2 border-dashed border-slate-300 rounded-2xl p-8 hover:border-orange-400 hover:bg-orange-50/50 transition-all cursor-pointer">
+                <label className={`block border-2 border-dashed rounded-2xl p-8 hover:border-orange-400 transition-all cursor-pointer ${isDark ? 'border-slate-600 hover:bg-orange-500/10' : 'border-slate-300 hover:bg-orange-50/50'}`}>
                   <input type="file" accept="image/*" onChange={handleIdUpload} className="hidden" data-testid="mg-id-upload" />
                   <div className="text-center">
-                    <Upload className="w-12 h-12 text-slate-400 mx-auto mb-3" />
-                    <p className="text-sm text-slate-600">{currentLanguage === 'ar' ? 'اضغط للرفع' : 'Click to upload'}</p>
+                    <Upload className={`w-12 h-12 mx-auto mb-3 ${isDark ? 'text-slate-500' : 'text-slate-400'}`} />
+                    <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{currentLanguage === 'ar' ? 'اضغط للرفع' : 'Click to upload'}</p>
                   </div>
                 </label>
               ) : (
@@ -291,7 +295,7 @@ const MoneyGram = () => {
                   <div className="flex items-center gap-3">
                     <img src={idImage.preview} alt="ID" className="w-16 h-16 rounded-lg object-cover" />
                     <div>
-                      <p className="text-sm font-medium">{idImage.name}</p>
+                      <p className="text-sm font-medium text-slate-900">{idImage.name}</p>
                       <p className="text-xs text-green-600 flex items-center gap-1"><CheckCircle className="w-3 h-3" />{currentLanguage === 'ar' ? 'تم' : 'Done'}</p>
                     </div>
                   </div>
@@ -300,56 +304,58 @@ const MoneyGram = () => {
                   </button>
                 </div>
               )}
-              {errors.idImage && <p className="text-sm text-red-600 flex items-center gap-1 mt-2"><AlertCircle className="w-4 h-4" />{errors.idImage}</p>}
+              {errors.idImage && <p className="text-sm text-red-500 flex items-center gap-1 mt-2"><AlertCircle className="w-4 h-4" />{errors.idImage}</p>}
             </div>
 
             {/* Amount */}
-            <div className="bg-white rounded-3xl border-2 border-slate-200 shadow-xl p-8 mb-6">
+            <div className={`rounded-3xl border-2 shadow-xl p-8 mb-6 ${
+              isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'
+            }`}>
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center">
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${isDark ? 'bg-emerald-500/20' : 'bg-emerald-100'}`}>
                   <DollarSign className="w-6 h-6 text-emerald-600" />
                 </div>
-                <h2 className="text-2xl font-bold text-slate-900">{currentLanguage === 'ar' ? 'المبلغ' : 'Amount'}</h2>
+                <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{currentLanguage === 'ar' ? 'المبلغ' : 'Amount'}</h2>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label>{currentLanguage === 'ar' ? 'العملة' : 'Currency'} *</Label>
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{currentLanguage === 'ar' ? 'العملة' : 'Currency'} *</Label>
                   <Select value={formData.currency} onValueChange={(v) => handleInputChange('currency', v)}>
-                    <SelectTrigger className="h-12" data-testid="mg-currency"><SelectValue placeholder={currentLanguage === 'ar' ? 'اختر' : 'Select'} /></SelectTrigger>
+                    <SelectTrigger className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} data-testid="mg-currency"><SelectValue placeholder={currentLanguage === 'ar' ? 'اختر' : 'Select'} /></SelectTrigger>
                     <SelectContent>
                       {currencies.map(c => (<SelectItem key={c.value} value={c.value}>{c.symbol} {currentLanguage === 'ar' ? c.labelAr : c.labelEn}</SelectItem>))}
                     </SelectContent>
                   </Select>
-                  {errors.currency && <p className="text-sm text-red-600"><AlertCircle className="w-4 h-4 inline" /> {errors.currency}</p>}
+                  {errors.currency && <p className="text-sm text-red-500"><AlertCircle className="w-4 h-4 inline" /> {errors.currency}</p>}
                 </div>
 
                 <div className="space-y-2">
-                  <Label>{currentLanguage === 'ar' ? 'المبلغ' : 'Amount'} *</Label>
-                  <Input type="number" value={formData.amount} onChange={(e) => handleInputChange('amount', e.target.value)} className="h-12" min="1" data-testid="mg-amount" />
-                  {errors.amount && <p className="text-sm text-red-600"><AlertCircle className="w-4 h-4 inline" /> {errors.amount}</p>}
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{currentLanguage === 'ar' ? 'المبلغ' : 'Amount'} *</Label>
+                  <Input type="number" value={formData.amount} onChange={(e) => handleInputChange('amount', e.target.value)} className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} min="1" data-testid="mg-amount" />
+                  {errors.amount && <p className="text-sm text-red-500"><AlertCircle className="w-4 h-4 inline" /> {errors.amount}</p>}
                 </div>
 
                 <div className="space-y-2 md:col-span-2">
-                  <Label>{currentLanguage === 'ar' ? 'طريقة الدفع' : 'Payment Method'} *</Label>
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{currentLanguage === 'ar' ? 'طريقة الدفع' : 'Payment Method'} *</Label>
                   <Select value={formData.paymentMethod} onValueChange={(v) => handleInputChange('paymentMethod', v)}>
-                    <SelectTrigger className="h-12" data-testid="mg-payment"><SelectValue placeholder={currentLanguage === 'ar' ? 'اختر' : 'Select'} /></SelectTrigger>
+                    <SelectTrigger className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} data-testid="mg-payment"><SelectValue placeholder={currentLanguage === 'ar' ? 'اختر' : 'Select'} /></SelectTrigger>
                     <SelectContent>
                       {paymentMethods.map(m => (<SelectItem key={m.value} value={m.value}>{currentLanguage === 'ar' ? m.labelAr : m.labelEn}</SelectItem>))}
                     </SelectContent>
                   </Select>
-                  {errors.paymentMethod && <p className="text-sm text-red-600"><AlertCircle className="w-4 h-4 inline" /> {errors.paymentMethod}</p>}
+                  {errors.paymentMethod && <p className="text-sm text-red-500"><AlertCircle className="w-4 h-4 inline" /> {errors.paymentMethod}</p>}
                 </div>
               </div>
 
               {formData.amount && formData.currency && parseFloat(formData.amount) > 0 && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-6 p-4 bg-orange-50 border border-orange-200 rounded-2xl">
-                  <h4 className="font-bold text-orange-900 mb-3">{currentLanguage === 'ar' ? 'ملخص' : 'Summary'}</h4>
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={`mt-6 p-4 rounded-2xl ${isDark ? 'bg-orange-900/30 border border-orange-700/50' : 'bg-orange-50 border border-orange-200'}`}>
+                  <h4 className={`font-bold mb-3 ${isDark ? 'text-orange-300' : 'text-orange-900'}`}>{currentLanguage === 'ar' ? 'ملخص' : 'Summary'}</h4>
                   <div className="space-y-2 text-sm">
-                    <div className="flex justify-between"><span>{currentLanguage === 'ar' ? 'المبلغ' : 'Amount'}</span><span className="font-semibold">{formData.amount} {formData.currency}</span></div>
-                    <div className="flex justify-between"><span>{currentLanguage === 'ar' ? 'بالدينار' : 'In IQD'}</span><span className="font-semibold">{calculateIQD().toLocaleString()}</span></div>
-                    <div className="flex justify-between"><span>{currentLanguage === 'ar' ? 'الرسوم' : 'Fee'}</span><span className="text-amber-600 font-semibold">{calculateFee().toLocaleString()}</span></div>
-                    <div className="border-t pt-2"><div className="flex justify-between font-bold"><span>{currentLanguage === 'ar' ? 'الإجمالي' : 'Total'}</span><span className="text-orange-600">{calculateTotal().toLocaleString()} IQD</span></div></div>
+                    <div className="flex justify-between"><span className={isDark ? 'text-orange-200' : 'text-orange-800'}>{currentLanguage === 'ar' ? 'المبلغ' : 'Amount'}</span><span className={`font-semibold ${isDark ? 'text-white' : ''}`}>{formData.amount} {formData.currency}</span></div>
+                    <div className="flex justify-between"><span className={isDark ? 'text-orange-200' : 'text-orange-800'}>{currentLanguage === 'ar' ? 'بالدينار' : 'In IQD'}</span><span className={`font-semibold ${isDark ? 'text-white' : ''}`}>{calculateIQD().toLocaleString()}</span></div>
+                    <div className="flex justify-between"><span className={isDark ? 'text-orange-200' : 'text-orange-800'}>{currentLanguage === 'ar' ? `الرسوم (${serviceFeePercent}%)` : `Fee (${serviceFeePercent}%)`}</span><span className="text-amber-500 font-semibold">{calculateFee().toLocaleString()}</span></div>
+                    <div className={`border-t pt-2 ${isDark ? 'border-orange-700/50' : 'border-orange-200'}`}><div className="flex justify-between font-bold"><span className={isDark ? 'text-white' : 'text-orange-900'}>{currentLanguage === 'ar' ? 'الإجمالي' : 'Total'}</span><span className="text-orange-500">{calculateTotal().toLocaleString()} {currentLanguage === 'ar' ? 'د.ع' : 'IQD'}</span></div></div>
                   </div>
                 </motion.div>
               )}
