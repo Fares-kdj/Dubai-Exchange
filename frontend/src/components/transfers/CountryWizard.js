@@ -188,6 +188,7 @@ const CountryWizard = () => {
     if (!wizardData.senderName.trim()) newErrors.senderName = isArabic ? 'مطلوب' : 'Required';
     if (!wizardData.receiverName.trim()) newErrors.receiverName = isArabic ? 'مطلوب' : 'Required';
     if (!wizardData.phone.trim()) newErrors.phone = isArabic ? 'مطلوب' : 'Required';
+    if (isBankTransfer && !wizardData.receiverCurrency) newErrors.receiverCurrency = isArabic ? 'اختر عملة المستلم' : 'Select receiver currency';
     
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -196,6 +197,9 @@ const CountryWizard = () => {
     
     setLoading(true);
     await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    // Get the currency name for display
+    const selectedCurrency = getAvailableCurrencies().find(c => c.code === wizardData.receiverCurrency);
     
     navigate('/transfers/success', { 
       state: { 
@@ -207,6 +211,8 @@ const CountryWizard = () => {
           type: 'country_based',
           countryName: selectedCountry ? (isArabic ? selectedCountry.nameAr : selectedCountry.nameEn) : '',
           methodName: selectedMethod ? (isArabic ? selectedMethod.nameAr : selectedMethod.nameEn) : '',
+          receiverCurrency: wizardData.receiverCurrency,
+          receiverCurrencyName: selectedCurrency ? (isArabic ? selectedCurrency.nameAr : selectedCurrency.nameEn) : '',
           receiveAmount: calculateReceiveAmount(),
           orderId: 'CB-' + Date.now().toString().slice(-8)
         }
