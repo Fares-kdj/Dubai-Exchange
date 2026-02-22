@@ -9,11 +9,13 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Header3D from '../landing/Header3D';
 import Footer3D from '../landing/Footer3D';
+import { PAYMENT_METHODS, SERVICE_FEES } from '@/config/payments';
 
 const USDTRecharge = () => {
   const navigate = useNavigate();
   const { currentLanguage } = useLanguage();
   const { isDark } = useTheme();
+  const isArabic = currentLanguage === 'ar';
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [copied, setCopied] = useState(false);
@@ -34,7 +36,7 @@ const USDTRecharge = () => {
       labelAr: 'TRC20 (ترون)', 
       labelEn: 'TRC20 (Tron)', 
       icon: '🔵',
-      description: currentLanguage === 'ar' ? 'الأسرع والأرخص' : 'Fastest & Cheapest',
+      description: isArabic ? 'الأسرع والأرخص' : 'Fastest & Cheapest',
       fee: '1 USDT',
       color: 'from-red-500 to-red-600'
     },
@@ -43,7 +45,7 @@ const USDTRecharge = () => {
       labelAr: 'ERC20 (إيثريوم)', 
       labelEn: 'ERC20 (Ethereum)', 
       icon: '🔷',
-      description: currentLanguage === 'ar' ? 'الأكثر استخداماً' : 'Most Used',
+      description: isArabic ? 'الأكثر استخداماً' : 'Most Used',
       fee: '5-20 USDT',
       color: 'from-blue-500 to-blue-600'
     },
@@ -52,7 +54,7 @@ const USDTRecharge = () => {
       labelAr: 'BEP20 (بينانس)', 
       labelEn: 'BEP20 (BSC)', 
       icon: '🟡',
-      description: currentLanguage === 'ar' ? 'شبكة بينانس' : 'Binance Smart Chain',
+      description: isArabic ? 'شبكة بينانس' : 'Binance Smart Chain',
       fee: '0.5 USDT',
       color: 'from-yellow-500 to-yellow-600'
     },
