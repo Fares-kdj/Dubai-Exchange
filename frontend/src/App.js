@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import "@/App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from '@/context/LanguageContext';
 import { ThemeProvider } from '@/context/ThemeContext';
+import SplashScreen from '@/components/ui/SplashScreen';
 // New 3D Landing Page
 import LandingPage3D from '@/components/landing/LandingPage3D';
 import TravelerBooking from '@/components/booking/TravelerBooking';
@@ -37,11 +38,29 @@ import { LoadingProvider } from '@/context/LoadingContext';
 import '@/i18n';
 
 function App() {
+  const [showSplash, setShowSplash] = useState(true);
+  const [appReady, setAppReady] = useState(false);
+
+  useEffect(() => {
+    // Mark app as ready after initial load
+    setAppReady(true);
+  }, []);
+
+  const handleSplashComplete = () => {
+    setShowSplash(false);
+  };
+
   return (
     <ThemeProvider>
       <LanguageProvider>
         <LoadingProvider>
-          <div className="App">
+          {showSplash && (
+            <SplashScreen 
+              onComplete={handleSplashComplete} 
+              minDuration={1200} 
+            />
+          )}
+          <div className="App" style={{ opacity: showSplash ? 0 : 1, transition: 'opacity 0.3s ease' }}>
             <BrowserRouter>
               <Routes>
                 <Route path="/" element={<LandingPage3D />} />
