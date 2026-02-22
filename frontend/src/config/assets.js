@@ -8,14 +8,14 @@ export const ASSETS = {
   usdtCoin: 'https://customer-assets.emergentagent.com/job_money-transfer-149/artifacts/232ggie3_3D%20RENDER_.png',
 
   // Real Device Screenshots - Dark Mode
-  devicePhoneDark: 'https://customer-assets.emergentagent.com/job_money-transfer-149/artifacts/vckzqbjc_iPhone-13-PRO-MAX-dark%20mode.png',
-  deviceTabletDark: 'https://customer-assets.emergentagent.com/job_money-transfer-149/artifacts/y8fm1r2o_iPad-PRO-11-dark%20mode.png',
-  deviceLaptopDark: 'https://customer-assets.emergentagent.com/job_money-transfer-149/artifacts/0q0e7tyg_Macbook-Air-dark%20mode.png',
+  devicePhoneDark: 'https://customer-assets.emergentagent.com/job_fintech-transfer-6/artifacts/csf0nqk6_iPhone-13-PRO-MAX-dark%20mode.png',
+  deviceTabletDark: 'https://customer-assets.emergentagent.com/job_fintech-transfer-6/artifacts/bqpzlif9_iPad-PRO-11-dark%20mode.png',
+  deviceLaptopDark: 'https://customer-assets.emergentagent.com/job_fintech-transfer-6/artifacts/4hnxtdl8_Macbook-Air-dark%20mode.png',
   
   // Real Device Screenshots - Light Mode
-  devicePhoneLight: 'https://customer-assets.emergentagent.com/job_money-transfer-149/artifacts/81kxgmk0_iPhone-13-PRO-MAX_light%20mode.com.png',
-  deviceTabletLight: 'https://customer-assets.emergentagent.com/job_money-transfer-149/artifacts/ug1z6ax7_iPad-PRO-11-light%20mode.png',
-  deviceLaptopLight: 'https://customer-assets.emergentagent.com/job_money-transfer-149/artifacts/lja9ijoi_Macbook-Air-light%20mode.png',
+  devicePhoneLight: 'https://customer-assets.emergentagent.com/job_fintech-transfer-6/artifacts/ojqu42vk_iPhone-13-PRO-MAX_light%20mode.png',
+  deviceTabletLight: 'https://customer-assets.emergentagent.com/job_fintech-transfer-6/artifacts/5g3hmpj9_iPad-PRO-11-light%20mode.png',
+  deviceLaptopLight: 'https://customer-assets.emergentagent.com/job_fintech-transfer-6/artifacts/7y3o53ob_Macbook-Air-light%20mode.png',
 
   // Global Network
   globalNetwork: 'https://static.prod-images.emergentagent.com/jobs/88687776-cef9-451a-ac8a-aacc94344da7/images/8588801201918d16afc252b16c090fc0a22cdac37b289e2b9fcd4583ef8c5c64.png',
