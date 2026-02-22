@@ -127,18 +127,49 @@ async def list_orders(
 @router.put("/{order_id}", response_model=OrderResponse)
 async def update_order(order_id: str, update: OrderUpdate):
     """Update order status or details (Admin)"""
-    update_doc = {"updated_at": datetime.now(timezone.utc).isoformat()}
+    now = datetime.now(timezone.utc).isoformat()
+    update_doc = {"updated_at": now}
     
-    if update.status:
+    # Get current order to track status changes
+    current_order = await orders_collection.find_one({"order_id": order_id.upper()}, {"_id": 0})
+    if not current_order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    # Track status change in history
+    if update.status and update.status.value != current_order.get("status"):
+        status_entry = {
+            "status": update.status.value,
+            "changed_by": "Admin",  # TODO: Get from auth
+            "changed_at": now,
+            "reason": update.rejection_reason if update.status.value == "rejected" else None
+        }
+        update_doc["$push"] = {"status_history": status_entry}
         update_doc["status"] = update.status.value
+    
     if update.admin_notes is not None:
         update_doc["admin_notes"] = update.admin_notes
+    
     if update.details:
-        update_doc["details"] = update.details
+        # Merge with existing details
+        current_details = current_order.get("details", {})
+        current_details.update(update.details)
+        update_doc["details"] = current_details
+    
+    if update.rejection_reason:
+        update_doc["rejection_reason"] = update.rejection_reason
+    
+    # Admin-only data for traveler booking
+    if update.admin_data:
+        current_admin_data = current_order.get("admin_data", {}) or {}
+        current_admin_data.update(update.admin_data)
+        update_doc["admin_data"] = current_admin_data
+    
+    # Separate $push from $set
+    push_ops = update_doc.pop("$push", None)
     
     result = await orders_collection.find_one_and_update(
         {"order_id": order_id.upper()},
-        {"$set": update_doc},
+        {"$set": update_doc, "$push": push_ops} if push_ops else {"$set": update_doc},
         return_document=True,
         projection={"_id": 0}
     )
