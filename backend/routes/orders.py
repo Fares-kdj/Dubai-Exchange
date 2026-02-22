@@ -207,20 +207,11 @@ async def update_order(order_id: str, update: OrderUpdate, background_tasks: Bac
         phone = current_order.get("customer", {}).get("phone", "")
         
         if new_status == "approved":
-            background_tasks.add_task(
-                sms_service.send_order_approved,
-                phone,
-                order_id.upper()
-            )
+            background_tasks.add_task(sms_service.send_order_approved, phone)
             logger.info(f"Order {order_id} approved, SMS queued for {phone}")
         
         elif new_status == "rejected":
-            background_tasks.add_task(
-                sms_service.send_order_rejected,
-                phone,
-                order_id.upper(),
-                update.rejection_reason
-            )
+            background_tasks.add_task(sms_service.send_order_rejected, phone)
             logger.info(f"Order {order_id} rejected, SMS queued for {phone}")
     
     return OrderResponse(**result)
