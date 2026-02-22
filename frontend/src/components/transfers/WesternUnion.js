@@ -343,25 +343,27 @@ const WesternUnion = () => {
             </div>
 
             {/* ID Upload */}
-            <div className="bg-white rounded-3xl border-2 border-slate-200 shadow-xl p-8 mb-6">
+            <div className={`rounded-3xl border-2 shadow-xl p-8 mb-6 ${
+              isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'
+            }`}>
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center">
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${isDark ? 'bg-purple-500/20' : 'bg-purple-100'}`}>
                   <FileText className="w-6 h-6 text-purple-600" />
                 </div>
-                <h2 className="text-2xl font-bold text-slate-900">
+                <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                   {currentLanguage === 'ar' ? 'صورة الهوية' : 'ID Image'}
                 </h2>
               </div>
 
               {!idImage ? (
-                <label className="block border-2 border-dashed border-slate-300 rounded-2xl p-8 hover:border-yellow-400 hover:bg-yellow-50/50 transition-all cursor-pointer">
+                <label className={`block border-2 border-dashed rounded-2xl p-8 transition-all cursor-pointer ${isDark ? 'border-slate-600 hover:border-yellow-400 hover:bg-yellow-500/10' : 'border-slate-300 hover:border-yellow-400 hover:bg-yellow-50/50'}`}>
                   <input type="file" accept="image/*" onChange={handleIdUpload} className="hidden" data-testid="id-upload" />
                   <div className="text-center">
-                    <Upload className="w-12 h-12 text-slate-400 mx-auto mb-3" />
-                    <p className="text-sm text-slate-600 mb-1">
+                    <Upload className={`w-12 h-12 mx-auto mb-3 ${isDark ? 'text-slate-500' : 'text-slate-400'}`} />
+                    <p className={`text-sm mb-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
                       {currentLanguage === 'ar' ? 'اضغط لرفع صورة الهوية' : 'Click to upload ID image'}
                     </p>
-                    <p className="text-xs text-slate-400">PNG, JPG (max 5MB)</p>
+                    <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>PNG, JPG (max 5MB)</p>
                   </div>
                 </label>
               ) : (
@@ -381,27 +383,29 @@ const WesternUnion = () => {
                   </button>
                 </div>
               )}
-              {errors.idImage && <p className="text-sm text-red-600 flex items-center gap-1 mt-2"><AlertCircle className="w-4 h-4" />{errors.idImage}</p>}
+              {errors.idImage && <p className="text-sm text-red-500 flex items-center gap-1 mt-2"><AlertCircle className="w-4 h-4" />{errors.idImage}</p>}
             </div>
 
             {/* Amount & Currency */}
-            <div className="bg-white rounded-3xl border-2 border-slate-200 shadow-xl p-8 mb-6">
+            <div className={`rounded-3xl border-2 shadow-xl p-8 mb-6 ${
+              isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'
+            }`}>
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center">
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${isDark ? 'bg-emerald-500/20' : 'bg-emerald-100'}`}>
                   <DollarSign className="w-6 h-6 text-emerald-600" />
                 </div>
-                <h2 className="text-2xl font-bold text-slate-900">
+                <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                   {currentLanguage === 'ar' ? 'المبلغ والعملة' : 'Amount & Currency'}
                 </h2>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label className="text-slate-700 font-medium">
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                     {currentLanguage === 'ar' ? 'العملة' : 'Currency'} *
                   </Label>
                   <Select value={formData.currency} onValueChange={(v) => handleInputChange('currency', v)}>
-                    <SelectTrigger className="h-12 border-slate-300" data-testid="currency-select">
+                    <SelectTrigger className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} data-testid="currency-select">
                       <SelectValue placeholder={currentLanguage === 'ar' ? 'اختر العملة' : 'Select currency'} />
                     </SelectTrigger>
                     <SelectContent>
@@ -412,31 +416,31 @@ const WesternUnion = () => {
                       ))}
                     </SelectContent>
                   </Select>
-                  {errors.currency && <p className="text-sm text-red-600 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.currency}</p>}
+                  {errors.currency && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.currency}</p>}
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-slate-700 font-medium">
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                     {currentLanguage === 'ar' ? 'المبلغ' : 'Amount'} *
                   </Label>
                   <Input
                     type="number"
                     value={formData.amount}
                     onChange={(e) => handleInputChange('amount', e.target.value)}
-                    className="h-12 border-slate-300"
+                    className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`}
                     placeholder="1000"
                     min="1"
                     data-testid="amount"
                   />
-                  {errors.amount && <p className="text-sm text-red-600 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.amount}</p>}
+                  {errors.amount && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.amount}</p>}
                 </div>
 
                 <div className="space-y-2 md:col-span-2">
-                  <Label className="text-slate-700 font-medium">
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                     {currentLanguage === 'ar' ? 'طريقة الدفع' : 'Payment Method'} *
                   </Label>
                   <Select value={formData.paymentMethod} onValueChange={(v) => handleInputChange('paymentMethod', v)}>
-                    <SelectTrigger className="h-12 border-slate-300" data-testid="payment-method">
+                    <SelectTrigger className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} data-testid="payment-method">
                       <SelectValue placeholder={currentLanguage === 'ar' ? 'اختر طريقة الدفع' : 'Select payment method'} />
                     </SelectTrigger>
                     <SelectContent>
@@ -447,7 +451,7 @@ const WesternUnion = () => {
                       ))}
                     </SelectContent>
                   </Select>
-                  {errors.paymentMethod && <p className="text-sm text-red-600 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.paymentMethod}</p>}
+                  {errors.paymentMethod && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.paymentMethod}</p>}
                 </div>
               </div>
 
@@ -456,28 +460,28 @@ const WesternUnion = () => {
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
-                  className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-2xl"
+                  className={`mt-6 p-4 rounded-2xl ${isDark ? 'bg-yellow-900/30 border border-yellow-700/50' : 'bg-yellow-50 border border-yellow-200'}`}
                 >
-                  <h4 className="font-bold text-yellow-900 mb-3">
+                  <h4 className={`font-bold mb-3 ${isDark ? 'text-yellow-300' : 'text-yellow-900'}`}>
                     {currentLanguage === 'ar' ? 'ملخص التحويل' : 'Transfer Summary'}
                   </h4>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-yellow-800">{currentLanguage === 'ar' ? 'المبلغ المرسل' : 'Amount to Send'}</span>
-                      <span className="font-semibold">{formData.amount} {formData.currency}</span>
+                      <span className={isDark ? 'text-yellow-200' : 'text-yellow-800'}>{currentLanguage === 'ar' ? 'المبلغ المرسل' : 'Amount to Send'}</span>
+                      <span className={`font-semibold ${isDark ? 'text-white' : ''}`}>{formData.amount} {formData.currency}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-yellow-800">{currentLanguage === 'ar' ? 'المقابل بالدينار' : 'Amount in IQD'}</span>
-                      <span className="font-semibold">{calculateIQD().toLocaleString()} {currentLanguage === 'ar' ? 'د.ع' : 'IQD'}</span>
+                      <span className={isDark ? 'text-yellow-200' : 'text-yellow-800'}>{currentLanguage === 'ar' ? 'المقابل بالدينار' : 'Amount in IQD'}</span>
+                      <span className={`font-semibold ${isDark ? 'text-white' : ''}`}>{calculateIQD().toLocaleString()} {currentLanguage === 'ar' ? 'د.ع' : 'IQD'}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-yellow-800">{currentLanguage === 'ar' ? `رسوم الخدمة (${serviceFeePercent}%)` : `Service Fee (${serviceFeePercent}%)`}</span>
-                      <span className="font-semibold text-amber-600">{calculateFee().toLocaleString()} {currentLanguage === 'ar' ? 'د.ع' : 'IQD'}</span>
+                      <span className={isDark ? 'text-yellow-200' : 'text-yellow-800'}>{currentLanguage === 'ar' ? `رسوم الخدمة (${serviceFeePercent}%)` : `Service Fee (${serviceFeePercent}%)`}</span>
+                      <span className="font-semibold text-amber-500">{calculateFee().toLocaleString()} {currentLanguage === 'ar' ? 'د.ع' : 'IQD'}</span>
                     </div>
-                    <div className="border-t border-yellow-300 pt-2 mt-2">
+                    <div className={`border-t pt-2 mt-2 ${isDark ? 'border-yellow-700/50' : 'border-yellow-300'}`}>
                       <div className="flex justify-between">
-                        <span className="font-bold text-yellow-900">{currentLanguage === 'ar' ? 'الإجمالي للدفع' : 'Total to Pay'}</span>
-                        <span className="font-bold text-lg text-yellow-700">{calculateTotal().toLocaleString()} {currentLanguage === 'ar' ? 'د.ع' : 'IQD'}</span>
+                        <span className={`font-bold ${isDark ? 'text-white' : 'text-yellow-900'}`}>{currentLanguage === 'ar' ? 'الإجمالي للدفع' : 'Total to Pay'}</span>
+                        <span className="font-bold text-lg text-yellow-500">{calculateTotal().toLocaleString()} {currentLanguage === 'ar' ? 'د.ع' : 'IQD'}</span>
                       </div>
                     </div>
                   </div>
