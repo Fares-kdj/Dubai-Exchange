@@ -83,6 +83,26 @@ const OrderDetailModal = ({ order, isOpen, onClose, onStatusChange, onBlock }) =
     setLoading(false);
   };
 
+  const handleSaveAdminData = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/api/orders/${order.order_id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ admin_data: adminData })
+      });
+      
+      if (res.ok) {
+        alert('تم حفظ البيانات بنجاح');
+        setShowEditForm(false);
+        onStatusChange();
+      }
+    } catch (err) {
+      console.error('Error:', err);
+    }
+    setLoading(false);
+  };
+
   const handleBlock = async () => {
     if (!window.confirm('هل أنت متأكد من حظر هذا العميل؟')) return;
     setLoading(true);
