@@ -87,24 +87,35 @@ const TransfersHub = () => {
                 initial={{ opacity: 0, y: 40, scale: 0.9 }}
                 animate={{ 
                   opacity: 1, 
-                  y: [0, -10, 0],
-                  scale: 1
+                  y: [0, -18, 0, -12, 0],
+                  scale: [1, 1.02, 1, 1.01, 1],
+                  rotate: [0, 1.5, 0, -1, 0]
                 }}
                 transition={{ 
                   opacity: { delay: 0.3 + index * 0.15, duration: 0.6 },
-                  scale: { delay: 0.3 + index * 0.15, duration: 0.6 },
                   y: {
-                    delay: index * 0.8,
-                    duration: 3 + index * 0.5,
+                    delay: index * 0.5,
+                    duration: 2.8 + index * 0.3,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  },
+                  scale: {
+                    delay: index * 0.5,
+                    duration: 2.8 + index * 0.3,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  },
+                  rotate: {
+                    delay: index * 0.5,
+                    duration: 3.5 + index * 0.2,
                     repeat: Infinity,
                     ease: "easeInOut"
                   }
                 }}
                 whileHover={{ 
-                  y: -20, 
-                  scale: 1.05,
-                  rotateX: 5,
-                  rotateY: index === 0 ? 3 : -3,
+                  y: -25, 
+                  scale: 1.06,
+                  rotate: 0,
                   transition: { type: "spring", stiffness: 400, damping: 15 }
                 }}
                 whileTap={{ scale: 0.96 }}
