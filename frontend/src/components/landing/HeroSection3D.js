@@ -298,7 +298,7 @@ export const HeroSection3D = () => {
                 </motion.div>
               </motion.button>
 
-              {/* 4 Main Service Buttons */}
+              {/* 4 Main Service Buttons with Strong Floating Effect */}
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -312,27 +312,38 @@ export const HeroSection3D = () => {
                     initial={{ opacity: 0, y: 30, scale: 0.9 }}
                     animate={{ 
                       opacity: 1, 
-                      y: [0, -8, 0],
-                      scale: 1
+                      y: [0, -12, 0, -8, 0],
+                      scale: [1, 1.02, 1, 1.01, 1],
+                      rotate: [0, 1, 0, -1, 0]
                     }}
                     transition={{ 
                       opacity: { delay: 0.8 + index * 0.1, duration: 0.5 },
-                      scale: { delay: 0.8 + index * 0.1, duration: 0.5 },
                       y: {
-                        delay: service.floatDelay,
-                        duration: service.floatDuration,
+                        delay: index * 0.3,
+                        duration: 2.5 + index * 0.3,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      },
+                      scale: {
+                        delay: index * 0.3,
+                        duration: 2.5 + index * 0.3,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      },
+                      rotate: {
+                        delay: index * 0.3,
+                        duration: 3 + index * 0.2,
                         repeat: Infinity,
                         ease: "easeInOut"
                       }
                     }}
                     whileHover={{ 
-                      scale: 1.08, 
-                      y: -15,
-                      rotateX: 5,
-                      rotateY: index % 2 === 0 ? 5 : -5,
+                      scale: 1.1, 
+                      y: -20,
+                      rotate: 0,
                       transition: { type: "spring", stiffness: 400, damping: 15 }
                     }}
-                    whileTap={{ scale: 0.92, rotateX: 0, rotateY: 0 }}
+                    whileTap={{ scale: 0.92 }}
                     className={`group relative flex flex-col items-center gap-3 px-4 py-5 rounded-2xl font-bold transition-all duration-300 overflow-hidden ${
                       isDark 
                         ? 'bg-slate-800/90 hover:bg-slate-700 text-white border border-slate-700/50' 
