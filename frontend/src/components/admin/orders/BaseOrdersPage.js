@@ -4,7 +4,7 @@ import {
   Search, Filter, Eye, Edit, Trash2, CheckCircle, XCircle, Clock, 
   MoreVertical, Download, ChevronLeft, ChevronRight, RefreshCw,
   User, Phone, DollarSign, Calendar, FileText, Ban, Printer, X,
-  MapPin, Plane, CreditCard, AlertCircle
+  MapPin, Plane, CreditCard, AlertCircle, Edit2
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
