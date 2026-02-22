@@ -177,7 +177,11 @@ const MoneyGram = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
+    <div className={`min-h-screen transition-colors duration-300 ${
+      isDark 
+        ? 'bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900' 
+        : 'bg-gradient-to-b from-slate-50 via-white to-slate-50'
+    }`}>
       <Header3D />
       
       <main className="pt-24 pb-20">
@@ -186,7 +190,7 @@ const MoneyGram = () => {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             onClick={() => navigate('/transfers/international')}
-            className="flex items-center gap-2 text-slate-600 hover:text-slate-900 mb-8 group"
+            className={`flex items-center gap-2 mb-8 group ${isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'}`}
           >
             <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
             {currentLanguage === 'ar' ? 'العودة' : 'Back'}
@@ -196,10 +200,10 @@ const MoneyGram = () => {
             <div className="w-24 h-24 bg-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl">
               <span className="text-2xl font-black text-white">MG</span>
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-3">
+            <h1 className={`text-3xl md:text-4xl font-bold mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
               {currentLanguage === 'ar' ? 'موني جرام' : 'MoneyGram'}
             </h1>
-            <p className="text-slate-600">
+            <p className={isDark ? 'text-slate-400' : 'text-slate-600'}>
               {currentLanguage === 'ar' ? 'تحويل دولي سريع وآمن' : 'Fast and secure international transfer'}
             </p>
           </motion.div>
