@@ -270,11 +270,12 @@ export const HeroSection3D = () => {
                   <span className="text-sm font-medium">{t.countries}</span>
                 </div>
               </motion.div>
+              </div>
             </div>
+            
+            {/* Right column - Empty space for hero visual (the background image) */}
+            <div className="hidden lg:block" aria-hidden="true" />
           </div>
-          
-          {/* Right column - Empty space for hero visual (the background image) */}
-          <div className="hidden lg:block" aria-hidden="true" />
         </div>
       </div>
 
