@@ -334,36 +334,36 @@ const TrackOrder = () => {
                   {/* Left Column - Details */}
                   <div className="lg:col-span-2 space-y-6">
                     {/* Customer Info */}
-                    <div className="bg-white rounded-3xl p-8 shadow-xl">
-                      <h3 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+                    <div className={`rounded-3xl border-2 p-8 shadow-xl ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'}`}>
+                      <h3 className={`text-xl font-bold mb-6 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                         <User className="w-6 h-6 text-blue-600" />
                         {isArabic ? 'بيانات العميل' : 'Customer Information'}
                       </h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="flex items-start gap-3">
-                          <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-blue-500/20' : 'bg-blue-100'}`}>
                             <User className="w-5 h-5 text-blue-600" />
                           </div>
                           <div>
-                            <p className="text-xs text-slate-500">{isArabic ? 'الاسم' : 'Name'}</p>
-                            <p className="font-medium text-slate-900">{orderResult.customer.fullName}</p>
+                            <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{isArabic ? 'الاسم' : 'Name'}</p>
+                            <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{orderResult.customer.fullName}</p>
                           </div>
                         </div>
                         <div className="flex items-start gap-3">
-                          <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-green-500/20' : 'bg-green-100'}`}>
                             <Phone className="w-5 h-5 text-green-600" />
                           </div>
                           <div>
-                            <p className="text-xs text-slate-500">{isArabic ? 'الهاتف' : 'Phone'}</p>
-                            <p className="font-medium text-slate-900">{orderResult.customer.phone}</p>
+                            <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{isArabic ? 'الهاتف' : 'Phone'}</p>
+                            <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{orderResult.customer.phone}</p>
                           </div>
                         </div>
                       </div>
                     </div>
 
                     {/* Service Details */}
-                    <div className="bg-white rounded-3xl p-8 shadow-xl">
-                      <h3 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+                    <div className={`rounded-3xl border-2 p-8 shadow-xl ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'}`}>
+                      <h3 className={`text-xl font-bold mb-6 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                         <FileText className="w-6 h-6 text-purple-600" />
                         {isArabic ? 'تفاصيل الطلب' : 'Order Details'}
                       </h3>
@@ -390,9 +390,9 @@ const TrackOrder = () => {
                           const label = labels[key] || { ar: key, en: key };
                           
                           return (
-                            <div key={key} className="p-4 bg-slate-50 rounded-xl">
-                              <p className="text-xs text-slate-500 mb-1">{isArabic ? label.ar : label.en}</p>
-                              <p className="font-medium text-slate-900">{value}</p>
+                            <div key={key} className={`p-4 rounded-xl ${isDark ? 'bg-slate-700/50' : 'bg-slate-50'}`}>
+                              <p className={`text-xs mb-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{isArabic ? label.ar : label.en}</p>
+                              <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{value}</p>
                             </div>
                           );
                         })}
@@ -400,34 +400,34 @@ const TrackOrder = () => {
                     </div>
 
                     {/* Documents */}
-                    <div className="bg-white rounded-3xl p-8 shadow-xl">
-                      <h3 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+                    <div className={`rounded-3xl border-2 p-8 shadow-xl ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'}`}>
+                      <h3 className={`text-xl font-bold mb-6 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                         <Eye className="w-6 h-6 text-amber-600" />
                         {isArabic ? 'الوثائق المرفوعة' : 'Uploaded Documents'}
                       </h3>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         {orderResult.documents.passport && (
-                          <div className="p-4 bg-green-50 border border-green-200 rounded-xl text-center">
-                            <FileText className="w-8 h-8 text-green-600 mx-auto mb-2" />
-                            <p className="text-sm font-medium text-green-800">{isArabic ? 'جواز السفر' : 'Passport'}</p>
+                          <div className={`p-4 rounded-xl text-center ${isDark ? 'bg-green-500/20 border border-green-500/30' : 'bg-green-50 border border-green-200'}`}>
+                            <FileText className={`w-8 h-8 mx-auto mb-2 ${isDark ? 'text-green-400' : 'text-green-600'}`} />
+                            <p className={`text-sm font-medium ${isDark ? 'text-green-300' : 'text-green-800'}`}>{isArabic ? 'جواز السفر' : 'Passport'}</p>
                           </div>
                         )}
                         {orderResult.documents.ticket && (
-                          <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl text-center">
-                            <FileText className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-                            <p className="text-sm font-medium text-blue-800">{isArabic ? 'التذكرة' : 'Ticket'}</p>
+                          <div className={`p-4 rounded-xl text-center ${isDark ? 'bg-blue-500/20 border border-blue-500/30' : 'bg-blue-50 border border-blue-200'}`}>
+                            <FileText className={`w-8 h-8 mx-auto mb-2 ${isDark ? 'text-blue-400' : 'text-blue-600'}`} />
+                            <p className={`text-sm font-medium ${isDark ? 'text-blue-300' : 'text-blue-800'}`}>{isArabic ? 'التذكرة' : 'Ticket'}</p>
                           </div>
                         )}
                         {orderResult.documents.senderId && (
-                          <div className="p-4 bg-purple-50 border border-purple-200 rounded-xl text-center">
-                            <FileText className="w-8 h-8 text-purple-600 mx-auto mb-2" />
-                            <p className="text-sm font-medium text-purple-800">{isArabic ? 'الهوية' : 'ID'}</p>
+                          <div className={`p-4 rounded-xl text-center ${isDark ? 'bg-purple-500/20 border border-purple-500/30' : 'bg-purple-50 border border-purple-200'}`}>
+                            <FileText className={`w-8 h-8 mx-auto mb-2 ${isDark ? 'text-purple-400' : 'text-purple-600'}`} />
+                            <p className={`text-sm font-medium ${isDark ? 'text-purple-300' : 'text-purple-800'}`}>{isArabic ? 'الهوية' : 'ID'}</p>
                           </div>
                         )}
                         {orderResult.documents.paymentProof && (
-                          <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl text-center">
-                            <FileText className="w-8 h-8 text-amber-600 mx-auto mb-2" />
-                            <p className="text-sm font-medium text-amber-800">{isArabic ? 'إثبات الدفع' : 'Payment Proof'}</p>
+                          <div className={`p-4 rounded-xl text-center ${isDark ? 'bg-amber-500/20 border border-amber-500/30' : 'bg-amber-50 border border-amber-200'}`}>
+                            <FileText className={`w-8 h-8 mx-auto mb-2 ${isDark ? 'text-amber-400' : 'text-amber-600'}`} />
+                            <p className={`text-sm font-medium ${isDark ? 'text-amber-300' : 'text-amber-800'}`}>{isArabic ? 'إثبات الدفع' : 'Payment Proof'}</p>
                           </div>
                         )}
                       </div>
