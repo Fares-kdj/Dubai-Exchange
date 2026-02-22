@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
+import { useTheme } from '@/context/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Package, User, Phone, MapPin, Calendar, DollarSign, CreditCard, FileText, Upload, X, CheckCircle, Clock, AlertCircle, Copy, Eye, Globe } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -11,6 +12,7 @@ import Footer3D from '../landing/Footer3D';
 
 const TrackOrder = () => {
   const { currentLanguage } = useLanguage();
+  const { isDark } = useTheme();
   const isArabic = currentLanguage === 'ar';
   const API_URL = process.env.REACT_APP_BACKEND_URL;
   
@@ -161,7 +163,11 @@ const TrackOrder = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
+    <div className={`min-h-screen transition-colors duration-300 ${
+      isDark 
+        ? 'bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900' 
+        : 'bg-gradient-to-b from-slate-50 via-white to-slate-50'
+    }`}>
       <Header3D />
       
       <main className="pt-24 pb-20">
@@ -175,10 +181,10 @@ const TrackOrder = () => {
             <div className="w-20 h-20 bg-gradient-to-br from-[#D4AF37] to-[#FCD34D] rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl">
               <Package className="w-10 h-10 text-slate-900" />
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            <h1 className={`text-4xl md:text-5xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
               {isArabic ? 'تتبع طلبك' : 'Track Your Order'}
             </h1>
-            <p className="text-lg text-slate-400 max-w-xl mx-auto">
+            <p className={`text-lg max-w-xl mx-auto ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
               {isArabic 
                 ? 'أدخل رقم الطلب ونوعه لمعرفة حالته وتفاصيله الكاملة'
                 : 'Enter your order ID and type to check its status and full details'}
@@ -192,26 +198,30 @@ const TrackOrder = () => {
             transition={{ delay: 0.2 }}
             className="max-w-2xl mx-auto mb-12"
           >
-            <div className="bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 p-8 shadow-2xl">
+            <div className={`backdrop-blur-xl rounded-3xl border-2 p-8 shadow-2xl ${
+              isDark 
+                ? 'bg-slate-800/50 border-slate-700' 
+                : 'bg-white border-slate-200'
+            }`}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div className="space-y-2">
-                  <Label className="text-white font-medium">
+                  <Label className={`font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
                     {isArabic ? 'رقم الطلب' : 'Order ID'}
                   </Label>
                   <Input
                     value={searchData.orderId}
                     onChange={(e) => setSearchData(prev => ({ ...prev, orderId: e.target.value }))}
-                    className="h-12 bg-white/10 border-white/20 text-white placeholder:text-slate-400"
+                    className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white placeholder:text-slate-400' : 'bg-white border-slate-300 text-slate-900'}`}
                     placeholder={isArabic ? 'مثال: TRV-12345678' : 'e.g., TRV-12345678'}
                     data-testid="track-order-id"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-white font-medium">
+                  <Label className={`font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
                     {isArabic ? 'نوع الطلب' : 'Order Type'}
                   </Label>
                   <Select value={searchData.orderType} onValueChange={(v) => setSearchData(prev => ({ ...prev, orderType: v }))}>
-                    <SelectTrigger className="h-12 bg-white/10 border-white/20 text-white" data-testid="track-order-type">
+                    <SelectTrigger className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-slate-300'}`} data-testid="track-order-type">
                       <SelectValue placeholder={isArabic ? 'اختر نوع الطلب' : 'Select order type'} />
                     </SelectTrigger>
                     <SelectContent>
