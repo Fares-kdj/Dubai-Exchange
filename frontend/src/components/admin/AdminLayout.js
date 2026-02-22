@@ -183,24 +183,73 @@ const AdminLayout = () => {
 
         {/* Menu */}
         <nav className="flex-1 p-4 overflow-y-auto">
-          <ul className="space-y-2">
-            {menuItems.map(item => (
-              <li key={item.path}>
-                <Link
-                  to={item.path}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-                    isActive(item.path)
-                      ? 'bg-[#D4AF37] text-slate-900'
-                      : 'text-slate-400 hover:text-white hover:bg-slate-800'
-                  }`}
-                >
-                  <item.icon className="w-5 h-5 flex-shrink-0" />
-                  {sidebarOpen && (
-                    <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="font-medium">
-                      {item.label}
-                    </motion.span>
-                  )}
-                </Link>
+          <ul className="space-y-1">
+            {filteredMenu.map(item => (
+              <li key={item.id}>
+                {item.hasSubmenu ? (
+                  <>
+                    <button
+                      onClick={() => toggleMenu(item.id)}
+                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                        isSubmenuActive(item.submenu)
+                          ? 'bg-[#D4AF37]/20 text-[#D4AF37]'
+                          : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                      }`}
+                    >
+                      <item.icon className="w-5 h-5 flex-shrink-0" />
+                      {sidebarOpen && (
+                        <>
+                          <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="font-medium flex-1 text-right">
+                            {item.label}
+                          </motion.span>
+                          <ChevronDown className={`w-4 h-4 transition-transform ${expandedMenus.includes(item.id) ? 'rotate-180' : ''}`} />
+                        </>
+                      )}
+                    </button>
+                    <AnimatePresence>
+                      {sidebarOpen && expandedMenus.includes(item.id) && (
+                        <motion.ul
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="mt-1 mr-4 space-y-1 overflow-hidden"
+                        >
+                          {item.submenu.map(sub => (
+                            <li key={sub.path}>
+                              <Link
+                                to={sub.path}
+                                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all text-sm ${
+                                  isActive(sub.path)
+                                    ? 'bg-[#D4AF37] text-slate-900'
+                                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                                }`}
+                              >
+                                <sub.icon className="w-4 h-4 flex-shrink-0" />
+                                <span>{sub.label}</span>
+                              </Link>
+                            </li>
+                          ))}
+                        </motion.ul>
+                      )}
+                    </AnimatePresence>
+                  </>
+                ) : (
+                  <Link
+                    to={item.path}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                      isActive(item.path)
+                        ? 'bg-[#D4AF37] text-slate-900'
+                        : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                    }`}
+                  >
+                    <item.icon className="w-5 h-5 flex-shrink-0" />
+                    {sidebarOpen && (
+                      <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="font-medium">
+                        {item.label}
+                      </motion.span>
+                    )}
+                  </Link>
+                )}
               </li>
             ))}
           </ul>
