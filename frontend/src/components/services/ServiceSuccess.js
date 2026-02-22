@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
 import { useTheme } from '@/context/ThemeContext';
-import { motion } from 'framer-motion';
-import { CheckCircle, Copy, ArrowRight, CreditCard, Wallet, Phone, User, DollarSign, Network } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  CheckCircle, Copy, ArrowRight, CreditCard, Wallet, Phone, User, DollarSign, Network,
+  MessageCircle, Upload, X, Image, FileText, AlertCircle, ExternalLink, Send
+} from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import Header3D from '../landing/Header3D';
 import Footer3D from '../landing/Footer3D';
@@ -14,16 +17,70 @@ const ServiceSuccess = () => {
   const { currentLanguage } = useLanguage();
   const { isDark } = useTheme();
   const [copied, setCopied] = useState(false);
+  const [proofImage, setProofImage] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
+  const fileInputRef = useRef(null);
 
   const orderData = location.state?.orderData || {};
   const orderId = orderData.orderId || 'SVC-' + Date.now().toString().slice(-8);
   const isUSDT = orderData.type === 'usdt_recharge';
   const isCard = orderData.type === 'card_recharge';
 
+  // WhatsApp configuration
+  const whatsappNumber = '+9647800000000'; // Company WhatsApp
+  const whatsappMessage = encodeURIComponent(
+    currentLanguage === 'ar'
+      ? `مرحباً، رقم طلبي هو: ${orderId}\nالنوع: ${isUSDT ? 'شحن USDT' : isCard ? 'تعبئة بطاقة' : 'تحويل'}\nالمبلغ: ${orderData.total?.toLocaleString()} IQD`
+      : `Hello, my order ID is: ${orderId}\nType: ${isUSDT ? 'USDT Recharge' : isCard ? 'Card Recharge' : 'Transfer'}\nAmount: ${orderData.total?.toLocaleString()} IQD`
+  );
+
   const copyOrderId = () => {
     navigator.clipboard.writeText(orderId);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleFileSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert(currentLanguage === 'ar' ? 'حجم الملف كبير جداً (الحد الأقصى 5 ميجابايت)' : 'File too large (max 5MB)');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProofImage({
+          file,
+          preview: reader.result,
+          name: file.name
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleUploadProof = async () => {
+    if (!proofImage) return;
+    
+    setUploading(true);
+    try {
+      // Simulate upload - in production, this would be an actual API call
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      setUploadSuccess(true);
+    } catch (error) {
+      console.error('Upload failed:', error);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const removeProofImage = () => {
+    setProofImage(null);
+    setUploadSuccess(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   return (
@@ -43,11 +100,20 @@ const ServiceSuccess = () => {
             transition={{ type: "spring", duration: 0.6 }}
             className="text-center mb-12"
           >
-            <div className={`w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl ${
-              isDark ? 'bg-green-600' : 'bg-green-500'
-            }`}>
+            <motion.div 
+              className={`w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl ${
+                isDark ? 'bg-green-600' : 'bg-green-500'
+              }`}
+              animate={{ 
+                boxShadow: [
+                  '0 0 0 0 rgba(34, 197, 94, 0.4)',
+                  '0 0 0 20px rgba(34, 197, 94, 0)',
+                ]
+              }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            >
               <CheckCircle className="w-14 h-14 text-white" />
-            </div>
+            </motion.div>
             <h1 className={`text-4xl md:text-5xl font-bold mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
               {currentLanguage === 'ar' ? 'تم تسجيل طلبك بنجاح!' : 'Order Created Successfully!'}
             </h1>
@@ -56,35 +122,50 @@ const ServiceSuccess = () => {
             </p>
           </motion.div>
 
-          <div className="max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Main Content */}
+          <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Main Content - Left Column */}
             <div className="lg:col-span-2 space-y-6">
-              {/* Order ID Card */}
+              {/* Order ID Card - Premium Style */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className={`rounded-3xl border-2 shadow-xl p-8 ${
+                className={`relative rounded-3xl border-2 shadow-xl p-8 overflow-hidden ${
                   isDark 
                     ? 'bg-gradient-to-br from-[#D4AF37]/20 to-amber-900/20 border-[#D4AF37]/50' 
                     : 'bg-gradient-to-br from-[#D4AF37]/10 to-amber-100 border-[#D4AF37]'
                 }`}
               >
-                <p className={`text-sm mb-2 ${isDark ? 'text-amber-400' : 'text-amber-700'}`}>
-                  {currentLanguage === 'ar' ? 'رقم الطلب' : 'Order ID'}
-                </p>
-                <div className="flex items-center justify-between gap-4">
-                  <code className={`text-2xl md:text-3xl font-bold font-mono ${isDark ? 'text-[#D4AF37]' : 'text-amber-800'}`}>
-                    {orderId}
-                  </code>
-                  <button
-                    onClick={copyOrderId}
-                    className={`p-3 rounded-xl transition-colors ${
-                      isDark ? 'bg-slate-700 hover:bg-slate-600' : 'bg-white hover:bg-slate-100'
-                    }`}
-                  >
-                    <Copy className={`w-5 h-5 ${copied ? 'text-green-500' : isDark ? 'text-slate-300' : 'text-slate-600'}`} />
-                  </button>
+                {/* Animated Background */}
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                  className="absolute -top-20 -right-20 w-40 h-40 bg-[#D4AF37]/10 rounded-full blur-2xl"
+                />
+                
+                <div className="relative z-10">
+                  <p className={`text-sm mb-2 ${isDark ? 'text-amber-400' : 'text-amber-700'}`}>
+                    {currentLanguage === 'ar' ? 'رقم الطلب' : 'Order ID'}
+                  </p>
+                  <div className="flex items-center justify-between gap-4">
+                    <code className={`text-2xl md:text-3xl font-bold font-mono ${isDark ? 'text-[#D4AF37]' : 'text-amber-800'}`}>
+                      {orderId}
+                    </code>
+                    <motion.button
+                      onClick={copyOrderId}
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      className={`p-3 rounded-xl transition-all ${
+                        copied 
+                          ? 'bg-green-500 text-white' 
+                          : isDark 
+                            ? 'bg-slate-700 hover:bg-slate-600 text-slate-300' 
+                            : 'bg-white hover:bg-slate-100 text-slate-600'
+                      }`}
+                    >
+                      {copied ? <CheckCircle className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
+                    </motion.button>
+                  </div>
                 </div>
               </motion.div>
 
@@ -201,7 +282,7 @@ const ServiceSuccess = () => {
                       {isUSDT ? 'USDT' : (currentLanguage === 'ar' ? 'المبلغ' : 'Amount')}
                     </p>
                     <p className="text-3xl font-bold text-emerald-500">
-                      {isUSDT ? `${orderData.amount} USDT` : `${Number(orderData.amount).toLocaleString()} IQD`}
+                      {isUSDT ? `${orderData.amount} USDT` : `${Number(orderData.amount || 0).toLocaleString()} IQD`}
                     </p>
                   </div>
 
@@ -212,7 +293,7 @@ const ServiceSuccess = () => {
                       {currentLanguage === 'ar' ? 'الإجمالي للدفع' : 'Total to Pay'}
                     </p>
                     <p className="text-3xl font-bold text-teal-500">
-                      {Number(orderData.total).toLocaleString()} IQD
+                      {Number(orderData.total || 0).toLocaleString()} IQD
                     </p>
                   </div>
                 </div>
@@ -220,15 +301,151 @@ const ServiceSuccess = () => {
                 {orderData.serviceFee && (
                   <div className={`mt-4 p-4 rounded-xl ${isDark ? 'bg-slate-800/30' : 'bg-white/50'}`}>
                     <div className="flex justify-between items-center text-sm">
-                      <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>{currentLanguage === 'ar' ? 'رسوم الخدمة' : 'Service Fee'}</span>
-                      <span className="font-semibold text-amber-500">{Number(orderData.serviceFee).toLocaleString()} IQD</span>
+                      <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>{currentLanguage === 'ar' ? 'رسوم الخدمة (2%)' : 'Service Fee (2%)'}</span>
+                      <span className="font-semibold text-amber-500">{Number(orderData.serviceFee || 0).toLocaleString()} IQD</span>
                     </div>
                   </div>
                 )}
               </motion.div>
+
+              {/* Payment Proof Upload Section */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className={`rounded-3xl border-2 shadow-xl p-8 ${
+                  isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'
+                }`}
+              >
+                <h3 className={`text-2xl font-bold mb-6 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                  <Upload className="w-6 h-6 text-blue-500" />
+                  {currentLanguage === 'ar' ? 'رفع إثبات الدفع' : 'Upload Payment Proof'}
+                </h3>
+
+                <p className={`text-sm mb-6 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                  {currentLanguage === 'ar' 
+                    ? 'بعد إتمام الدفع، قم برفع صورة إيصال الدفع لتسريع معالجة طلبك'
+                    : 'After completing payment, upload your payment receipt to speed up processing'}
+                </p>
+
+                <AnimatePresence mode="wait">
+                  {!proofImage ? (
+                    <motion.label
+                      key="upload-area"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className={`block border-2 border-dashed rounded-2xl p-8 cursor-pointer transition-all ${
+                        isDark 
+                          ? 'border-slate-600 hover:border-blue-500 hover:bg-blue-500/10' 
+                          : 'border-slate-300 hover:border-blue-400 hover:bg-blue-50'
+                      }`}
+                    >
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        accept="image/*"
+                        onChange={handleFileSelect}
+                        className="hidden"
+                        data-testid="proof-upload"
+                      />
+                      <div className="text-center">
+                        <motion.div
+                          animate={{ y: [0, -5, 0] }}
+                          transition={{ duration: 2, repeat: Infinity }}
+                        >
+                          <Image className={`w-12 h-12 mx-auto mb-4 ${isDark ? 'text-slate-500' : 'text-slate-400'}`} />
+                        </motion.div>
+                        <p className={`font-medium mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                          {currentLanguage === 'ar' ? 'اضغط لرفع الصورة' : 'Click to upload image'}
+                        </p>
+                        <p className={`text-sm ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+                          PNG, JPG {currentLanguage === 'ar' ? '(الحد الأقصى 5 ميجابايت)' : '(max 5MB)'}
+                        </p>
+                      </div>
+                    </motion.label>
+                  ) : (
+                    <motion.div
+                      key="preview"
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      className={`rounded-2xl border-2 p-4 ${
+                        uploadSuccess 
+                          ? 'border-green-500 bg-green-500/10' 
+                          : isDark 
+                            ? 'border-slate-600 bg-slate-700/50' 
+                            : 'border-slate-200 bg-slate-50'
+                      }`}
+                    >
+                      <div className="flex items-center gap-4">
+                        <img 
+                          src={proofImage.preview} 
+                          alt="Proof" 
+                          className="w-20 h-20 rounded-xl object-cover"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <p className={`font-medium truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                            {proofImage.name}
+                          </p>
+                          {uploadSuccess ? (
+                            <p className="text-sm text-green-500 flex items-center gap-1 mt-1">
+                              <CheckCircle className="w-4 h-4" />
+                              {currentLanguage === 'ar' ? 'تم الرفع بنجاح!' : 'Uploaded successfully!'}
+                            </p>
+                          ) : (
+                            <p className={`text-sm mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                              {currentLanguage === 'ar' ? 'جاهز للرفع' : 'Ready to upload'}
+                            </p>
+                          )}
+                        </div>
+                        <button
+                          onClick={removeProofImage}
+                          className={`p-2 rounded-lg transition-colors ${
+                            isDark ? 'hover:bg-red-500/20' : 'hover:bg-red-50'
+                          }`}
+                        >
+                          <X className="w-5 h-5 text-red-500" />
+                        </button>
+                      </div>
+
+                      {!uploadSuccess && (
+                        <motion.button
+                          onClick={handleUploadProof}
+                          disabled={uploading}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          className={`w-full mt-4 py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2 ${
+                            uploading
+                              ? 'bg-slate-500 cursor-not-allowed'
+                              : 'bg-blue-500 hover:bg-blue-600 text-white'
+                          }`}
+                        >
+                          {uploading ? (
+                            <>
+                              <motion.div
+                                animate={{ rotate: 360 }}
+                                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                              >
+                                <Upload className="w-5 h-5" />
+                              </motion.div>
+                              {currentLanguage === 'ar' ? 'جاري الرفع...' : 'Uploading...'}
+                            </>
+                          ) : (
+                            <>
+                              <Send className="w-5 h-5" />
+                              {currentLanguage === 'ar' ? 'رفع الإثبات' : 'Upload Proof'}
+                            </>
+                          )}
+                        </motion.button>
+                      )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
             </div>
 
-            {/* Sidebar */}
+            {/* Sidebar - Right Column */}
             <div className="lg:col-span-1 space-y-6">
               {/* QR Code */}
               <motion.div
@@ -243,13 +460,58 @@ const ServiceSuccess = () => {
                   {currentLanguage === 'ar' ? 'رمز QR' : 'QR Code'}
                 </h3>
 
-                <div className={`p-6 rounded-2xl mb-4 inline-block ${isDark ? 'bg-white' : 'bg-slate-50'}`}>
-                  <QRCodeSVG value={orderId} size={160} level="H" includeMargin={true} />
-                </div>
+                <motion.div 
+                  className={`p-6 rounded-2xl mb-4 inline-block ${isDark ? 'bg-white' : 'bg-slate-50'}`}
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ type: "spring" }}
+                >
+                  <QRCodeSVG 
+                    value={`DIE-ORDER:${orderId}`} 
+                    size={160} 
+                    level="H" 
+                    includeMargin={true}
+                    bgColor="transparent"
+                  />
+                </motion.div>
 
                 <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                  {currentLanguage === 'ar' ? 'للتحقق عند الدفع' : 'For verification'}
+                  {currentLanguage === 'ar' ? 'امسح للتحقق عند الدفع' : 'Scan to verify at payment'}
                 </p>
+              </motion.div>
+
+              {/* WhatsApp Contact Block */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.55 }}
+                className={`rounded-3xl border-2 shadow-xl p-6 ${
+                  isDark ? 'bg-green-900/20 border-green-700/50' : 'bg-green-50 border-green-200'
+                }`}
+              >
+                <h3 className={`text-lg font-bold mb-4 flex items-center gap-2 ${isDark ? 'text-green-400' : 'text-green-800'}`}>
+                  <MessageCircle className="w-5 h-5" />
+                  {currentLanguage === 'ar' ? 'تواصل عبر واتساب' : 'WhatsApp Support'}
+                </h3>
+
+                <p className={`text-sm mb-4 ${isDark ? 'text-green-300' : 'text-green-700'}`}>
+                  {currentLanguage === 'ar' 
+                    ? 'هل لديك استفسار؟ تواصل معنا مباشرة عبر واتساب'
+                    : 'Have a question? Contact us directly via WhatsApp'}
+                </p>
+
+                <motion.a
+                  href={`https://wa.me/${whatsappNumber.replace('+', '')}?text=${whatsappMessage}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="flex items-center justify-center gap-2 w-full py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl transition-colors"
+                  data-testid="whatsapp-link"
+                >
+                  <MessageCircle className="w-5 h-5" />
+                  {currentLanguage === 'ar' ? 'ابدأ المحادثة' : 'Start Chat'}
+                  <ExternalLink className="w-4 h-4" />
+                </motion.a>
               </motion.div>
 
               {/* Instructions */}
@@ -267,20 +529,37 @@ const ServiceSuccess = () => {
 
                 <div className={`space-y-3 text-sm ${isDark ? 'text-blue-300' : 'text-blue-800'}`}>
                   <p className="flex items-start gap-2">
-                    <span className="font-bold">1.</span>
-                    {currentLanguage === 'ar' ? 'قم بالدفع في أحد فروعنا' : 'Pay at our branch'}
+                    <span className="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">1</span>
+                    {currentLanguage === 'ar' ? 'قم بالدفع في أحد فروعنا أو عبر التحويل' : 'Pay at our branch or via transfer'}
                   </p>
                   <p className="flex items-start gap-2">
-                    <span className="font-bold">2.</span>
-                    {currentLanguage === 'ar' ? 'أظهر رقم الطلب أو رمز QR' : 'Show order ID or QR code'}
+                    <span className="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">2</span>
+                    {currentLanguage === 'ar' ? 'ارفع صورة إثبات الدفع' : 'Upload payment proof'}
                   </p>
                   <p className="flex items-start gap-2">
-                    <span className="font-bold">3.</span>
+                    <span className="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">3</span>
                     {isUSDT 
                       ? (currentLanguage === 'ar' ? 'ستصلك العملات خلال 15 دقيقة' : 'Receive crypto within 15 minutes')
-                      : (currentLanguage === 'ar' ? 'سيتم تعبئة الرصيد فوراً' : 'Balance recharged instantly')}
+                      : (currentLanguage === 'ar' ? 'سيتم تنفيذ الخدمة فوراً' : 'Service executed instantly')}
                   </p>
                 </div>
+              </motion.div>
+
+              {/* Important Notice */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.65 }}
+                className={`rounded-2xl p-4 flex items-start gap-3 ${
+                  isDark ? 'bg-amber-900/20 border border-amber-700/50' : 'bg-amber-50 border border-amber-200'
+                }`}
+              >
+                <AlertCircle className={`w-5 h-5 flex-shrink-0 mt-0.5 ${isDark ? 'text-amber-400' : 'text-amber-600'}`} />
+                <p className={`text-xs ${isDark ? 'text-amber-300' : 'text-amber-700'}`}>
+                  {currentLanguage === 'ar' 
+                    ? 'يرجى الاحتفاظ برقم الطلب. ستحتاجه عند التحقق من حالة طلبك.'
+                    : 'Please save your order ID. You will need it to check your order status.'}
+                </p>
               </motion.div>
             </div>
           </div>
@@ -290,29 +569,34 @@ const ServiceSuccess = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7 }}
-            className="max-w-4xl mx-auto mt-12 flex flex-col sm:flex-row gap-4"
+            className="max-w-5xl mx-auto mt-12 flex flex-col sm:flex-row gap-4"
           >
-            <button
+            <motion.button
               onClick={() => navigate('/track-order')}
-              className={`flex-1 py-4 font-bold rounded-2xl transition-colors flex items-center justify-center gap-2 ${
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className={`flex-1 py-4 font-bold rounded-2xl transition-all flex items-center justify-center gap-2 ${
                 isDark
                   ? 'bg-[#D4AF37] text-slate-900 hover:bg-[#FCD34D]'
                   : 'bg-slate-900 text-white hover:bg-slate-800'
               }`}
             >
+              <FileText className="w-5 h-5" />
               {currentLanguage === 'ar' ? 'تتبع طلبي' : 'Track My Order'}
               <ArrowRight className="w-5 h-5" />
-            </button>
-            <button
+            </motion.button>
+            <motion.button
               onClick={() => navigate('/')}
-              className={`flex-1 py-4 border-2 font-bold rounded-2xl transition-colors ${
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className={`flex-1 py-4 border-2 font-bold rounded-2xl transition-all ${
                 isDark
-                  ? 'bg-transparent border-slate-600 text-white hover:border-slate-500'
-                  : 'bg-white border-slate-200 text-slate-900 hover:border-slate-300'
+                  ? 'bg-transparent border-slate-600 text-white hover:border-slate-500 hover:bg-slate-800/50'
+                  : 'bg-white border-slate-200 text-slate-900 hover:border-slate-300 hover:bg-slate-50'
               }`}
             >
               {currentLanguage === 'ar' ? 'العودة للرئيسية' : 'Back to Home'}
-            </button>
+            </motion.button>
           </motion.div>
         </div>
       </main>
