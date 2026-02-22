@@ -108,14 +108,23 @@
 - ✅ ~~واجهة إدارة المحتوى (CMS) في لوحة التحكم~~ (تم إنجازه)
 - ✅ ~~صفحة تعبئة البطاقات~~ (تم إنجازه)
 - ✅ ~~صفحة شحن USDT~~ (تم إنجازه)
+- ✅ ~~إصلاح تخطيط Hero - المحتوى على اليسار للديسكتوب~~ (تم إنجازه)
+- ✅ ~~إصلاح الثيم في: TravelerBooking, LocalTransfer, WesternUnion, MoneyGram~~ (تم إنجازه)
+- ✅ ~~طرق الدفع الموحدة (Zain Cash, Mastercard Al-Rafidain, FIB)~~ (تم إنجازه)
+- ✅ ~~رسوم 2% على جميع الخدمات عدا Traveler Booking~~ (تم إنجازه)
 
 ### P1 - متوسطة
-- [ ] إصلاح الثيم المتبقي في: TravelerBooking, WesternUnion, MoneyGram
+- [ ] Micro-animations للأزرار في Hero وصفحات التحويلات
+- [ ] إعادة تصميم محول العملات بشكل أكثر فخامة
+- [ ] صفحة النجاح الموحدة (QR Code, WhatsApp, إثبات الدفع)
 - [ ] PDF Generator للإيصالات
-- [ ] قسم آراء العملاء (Testimonials)
 - [ ] Form Builder ديناميكي
 
 ### P2 - منخفضة
+- [ ] لوحة الإدارة: صفحات طلبات منفصلة لكل خدمة
+- [ ] إدارة قائمة الحظر (Blocklist)
+- [ ] إضافة الاسم القانوني للشركة في Footer
+- [ ] الصفحات القانونية (سياسة الخصوصية، شروط الاستخدام)
 - [ ] نظام إشعارات SMS
 - [ ] تحسين SEO
 - [ ] تحليلات Google Analytics
@@ -126,29 +135,47 @@
 
 | الدور | البريد | كلمة المرور |
 |-------|--------|-------------|
-| المطور | developer@khairbaghdad.com | dev@123456 |
+| المطور | developer@khairbaghdad.com | developer |
 
 ---
 
 ## البنية التقنية
 
 ```
-/app/frontend/src/components/landing/
-├── LandingPage3D.js
-├── Header3D.js
-├── HeroSection3D.js
-├── GlobalSection.js (جديد)
-├── ServicesSection3D.js
-├── CurrencyConverterSection.js
-├── DevicesSection.js (جديد)
-├── PartnersSection3D.js
-├── TrustSection3D.js
-├── PaymentsSection3D.js
-├── ContactSection.js
-└── Footer3D.js
+/app/frontend/src/components/
+├── landing/
+│   ├── LandingPage3D.js
+│   ├── Header3D.js
+│   ├── HeroSection3D.js (تم تعديله - تخطيط اليسار)
+│   ├── GlobalSection.js
+│   ├── ServicesSection3D.js
+│   ├── CurrencyConverterSection.js
+│   ├── DevicesSection.js
+│   ├── PartnersSection3D.js
+│   ├── TrustSection3D.js
+│   ├── PaymentsSection3D.js
+│   ├── ContactSection.js
+│   └── Footer3D.js
+├── booking/
+│   ├── TravelerBooking.js (تم تعديله - الثيم)
+│   ├── TermsAndConditions.js (تم تعديله - الثيم)
+│   └── BookingForm.js (تم تعديله - الثيم + طرق الدفع)
+├── transfers/
+│   ├── LocalTransfer.js (تم تعديله - طرق الدفع)
+│   ├── WesternUnion.js (تم تعديله - الثيم + طرق الدفع)
+│   ├── MoneyGram.js (تم تعديله - الثيم + طرق الدفع)
+│   ├── CountryWizard.js
+│   ├── TransfersHub.js
+│   └── TransferSuccess.js
+├── services/
+│   ├── CardRecharge.js
+│   ├── USDTRecharge.js
+│   └── ServiceSuccess.js
+└── config/
+    └── payments.js (طرق الدفع الموحدة + الرسوم)
 ```
 
 ---
 
 ## آخر تحديث
-فبراير 2026 - إنشاء صفحة تعبئة البطاقات وصفحة شحن USDT مع دعم الشبكات (TRC20, ERC20, BEP20, Polygon, Solana, Arbitrum) + إصلاح الثيم في صفحات التحويلات
+فبراير 2026 - إصلاح تخطيط Hero للديسكتوب (المحتوى على اليسار دائماً)، إصلاح الثيمات في جميع صفحات الحجز والتحويلات، تحديث طرق الدفع الموحدة (Zain Cash, Mastercard Al-Rafidain, FIB)، تطبيق رسوم 2% على الخدمات المحددة
