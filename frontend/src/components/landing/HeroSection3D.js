@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
 import { useTheme } from '@/context/ThemeContext';
 import { COMPANY } from '@/config/assets';
-import { Shield, Zap, Globe, Plane, ArrowLeftRight, Wallet, CreditCard } from 'lucide-react';
+import { Shield, Zap, Globe, Plane, ArrowLeftRight, Wallet, CreditCard, Search } from 'lucide-react';
 
 // Hero background images - easy to swap with videos later
 const HERO_ASSETS = {
