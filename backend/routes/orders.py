@@ -1,8 +1,9 @@
-from fastapi import APIRouter, HTTPException, UploadFile, File, Form, Query
+from fastapi import APIRouter, HTTPException, UploadFile, File, Form, Query, BackgroundTasks
 from typing import Optional, List
 from datetime import datetime, timezone
 import os
 import uuid
+import logging
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from models.order import (
@@ -10,6 +11,9 @@ from models.order import (
     OrderType, OrderStatus, OrderListResponse, OrderStatsResponse,
     Document, generate_order_id
 )
+from services.sms_service import sms_service
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/orders", tags=["Orders"])
 
