@@ -41,6 +41,7 @@ from routes.cms import router as cms_router, init_default_services, init_default
 from routes.rates import router as rates_router, init_default_rates
 from routes.pdf import router as pdf_router
 from routes.blocklist import router as blocklist_router
+from routes.stamps import router as stamps_router, init_default_stamps
 
 api_router.include_router(orders_router)
 api_router.include_router(auth_router)
@@ -48,6 +49,7 @@ api_router.include_router(cms_router)
 api_router.include_router(rates_router)
 api_router.include_router(pdf_router)
 api_router.include_router(blocklist_router)
+api_router.include_router(stamps_router)
 
 
 # ===== MODELS =====
