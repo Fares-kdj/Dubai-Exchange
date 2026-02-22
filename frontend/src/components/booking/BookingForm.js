@@ -489,11 +489,15 @@ const BookingForm = ({ onSubmit }) => {
             whileHover={{ scale: 1.02, y: -2 }}
             whileTap={{ scale: 0.98 }}
             data-testid="submit-booking-button"
-            className="w-full py-5 bg-slate-900 text-white font-bold rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+            className={`w-full py-5 font-bold rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed ${
+              isDark 
+                ? 'bg-gradient-to-r from-[#D4AF37] to-[#FCD34D] text-slate-900' 
+                : 'bg-slate-900 text-white'
+            }`}
           >
             {loading ? (
               <>
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
                 {currentLanguage === 'ar' ? 'جارٍ التسجيل...' : 'Submitting...'}
               </>
             ) : (
@@ -510,16 +514,20 @@ const BookingForm = ({ onSubmit }) => {
 };
 
 // File Upload Component
-const FileUploadField = ({ id, label, required, file, error, onUpload, onRemove, currentLanguage }) => (
+const FileUploadField = ({ id, label, required, file, error, onUpload, onRemove, currentLanguage, isDark }) => (
   <div className="space-y-2">
-    <Label htmlFor={id} className="text-slate-700 font-medium">
+    <Label htmlFor={id} className={isDark ? 'text-slate-300' : 'text-slate-700'}>
       {label} {required && '*'}
     </Label>
     
     {!file ? (
       <label 
         htmlFor={id}
-        className="block border-2 border-dashed border-slate-300 rounded-2xl p-8 hover:border-[#D4AF37] hover:bg-slate-50 transition-all cursor-pointer group"
+        className={`block border-2 border-dashed rounded-2xl p-8 transition-all cursor-pointer group ${
+          isDark 
+            ? 'border-slate-600 hover:border-[#D4AF37] hover:bg-slate-700/50' 
+            : 'border-slate-300 hover:border-[#D4AF37] hover:bg-slate-50'
+        }`}
         data-testid={`${id}-upload-area`}
       >
         <input
@@ -530,24 +538,28 @@ const FileUploadField = ({ id, label, required, file, error, onUpload, onRemove,
           className="hidden"
         />
         <div className="text-center">
-          <Upload className="w-12 h-12 text-slate-400 group-hover:text-[#D4AF37] mx-auto mb-3 transition-colors" />
-          <p className="text-sm text-slate-600 mb-1">
+          <Upload className={`w-12 h-12 mx-auto mb-3 transition-colors group-hover:text-[#D4AF37] ${isDark ? 'text-slate-500' : 'text-slate-400'}`} />
+          <p className={`text-sm mb-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
             {currentLanguage === 'ar' ? 'اضغط لرفع الملف' : 'Click to upload file'}
           </p>
-          <p className="text-xs text-slate-400">
+          <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
             {currentLanguage === 'ar' ? 'PNG, JPG أو JPEG (الحد الأقصى 5 ميجابايت)' : 'PNG, JPG or JPEG (max 5MB)'}
           </p>
         </div>
       </label>
     ) : (
-      <div className="border-2 border-green-200 bg-green-50 rounded-2xl p-4 flex items-center justify-between">
+      <div className={`border-2 rounded-2xl p-4 flex items-center justify-between ${
+        isDark 
+          ? 'border-green-500/30 bg-green-500/20' 
+          : 'border-green-200 bg-green-50'
+      }`}>
         <div className="flex items-center gap-3">
-          <div className="w-16 h-16 rounded-lg overflow-hidden bg-white border border-slate-200">
+          <div className={`w-16 h-16 rounded-lg overflow-hidden border ${isDark ? 'bg-slate-700 border-slate-600' : 'bg-white border-slate-200'}`}>
             <img src={file.preview} alt="Preview" className="w-full h-full object-cover" />
           </div>
           <div>
-            <p className="text-sm font-medium text-slate-900">{file.name}</p>
-            <p className="text-xs text-green-600 flex items-center gap-1 mt-1">
+            <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{file.name}</p>
+            <p className={`text-xs flex items-center gap-1 mt-1 ${isDark ? 'text-green-400' : 'text-green-600'}`}>
               <CheckCircle className="w-3 h-3" />
               {currentLanguage === 'ar' ? 'تم الرفع بنجاح' : 'Uploaded successfully'}
             </p>
@@ -556,7 +568,7 @@ const FileUploadField = ({ id, label, required, file, error, onUpload, onRemove,
         <button
           type="button"
           onClick={onRemove}
-          className="p-2 hover:bg-red-100 rounded-lg transition-colors"
+          className={`p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-red-500/20' : 'hover:bg-red-100'}`}
         >
           <X className="w-5 h-5 text-red-600" />
         </button>
