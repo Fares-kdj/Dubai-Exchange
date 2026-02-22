@@ -35,18 +35,6 @@ def serialize_order(order: dict) -> dict:
     return order
 
 
-# Order type labels for SMS
-ORDER_TYPE_LABELS = {
-    "traveler": "حجز دولار للمسافرين",
-    "local": "تحويل محلي",
-    "western_union": "ويسترن يونيون",
-    "moneygram": "موني جرام",
-    "country_based": "تحويل دولي",
-    "card_recharge": "شحن بطاقة",
-    "usdt_recharge": "شحن USDT"
-}
-
-
 @router.post("", response_model=OrderResponse)
 async def create_order(order: OrderCreate, background_tasks: BackgroundTasks):
     """Create a new order"""
