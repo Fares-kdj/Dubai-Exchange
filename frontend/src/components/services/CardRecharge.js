@@ -3,79 +3,94 @@ import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
 import { useTheme } from '@/context/ThemeContext';
 import { motion } from 'framer-motion';
-import { CreditCard, User, Phone, DollarSign, CheckCircle, AlertCircle, ArrowLeft, Smartphone, Wifi, Gamepad2 } from 'lucide-react';
+import { CreditCard, User, Phone, DollarSign, CheckCircle, AlertCircle, ArrowLeft } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Header3D from '../landing/Header3D';
 import Footer3D from '../landing/Footer3D';
+import { PAYMENT_METHODS, SERVICE_FEES, calculateFee, calculateTotal } from '@/config/payments';
 
 const CardRecharge = () => {
   const navigate = useNavigate();
   const { currentLanguage } = useLanguage();
   const { isDark } = useTheme();
+  const isArabic = currentLanguage === 'ar';
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
   const [formData, setFormData] = useState({
     fullName: '',
     phone: '',
+    cardName: '',
     cardType: '',
+    numberType: 'card', // 'card' (16 digits) or 'account' (10 digits)
     cardNumber: '',
+    accountNumber: '',
     amount: '',
     paymentMethod: ''
   });
 
-  const cardTypes = [
-    { value: 'zain', labelAr: 'زين', labelEn: 'Zain', icon: Smartphone, color: 'from-purple-500 to-purple-600' },
-    { value: 'asiacell', labelAr: 'آسياسيل', labelEn: 'Asiacell', icon: Smartphone, color: 'from-red-500 to-red-600' },
-    { value: 'korek', labelAr: 'كورك', labelEn: 'Korek', icon: Smartphone, color: 'from-orange-500 to-orange-600' },
-    { value: 'internet', labelAr: 'إنترنت', labelEn: 'Internet', icon: Wifi, color: 'from-blue-500 to-blue-600' },
-    { value: 'gaming', labelAr: 'ألعاب', labelEn: 'Gaming', icon: Gamepad2, color: 'from-green-500 to-green-600' },
-    { value: 'mastercard', labelAr: 'ماستركارد', labelEn: 'Mastercard', icon: CreditCard, color: 'from-amber-500 to-amber-600' },
-    { value: 'visa', labelAr: 'فيزا', labelEn: 'Visa', icon: CreditCard, color: 'from-indigo-500 to-indigo-600' }
-  ];
-
-  const amounts = [
-    { value: '5000', labelAr: '5,000 د.ع', labelEn: '5,000 IQD' },
-    { value: '10000', labelAr: '10,000 د.ع', labelEn: '10,000 IQD' },
-    { value: '15000', labelAr: '15,000 د.ع', labelEn: '15,000 IQD' },
-    { value: '25000', labelAr: '25,000 د.ع', labelEn: '25,000 IQD' },
-    { value: '50000', labelAr: '50,000 د.ع', labelEn: '50,000 IQD' },
-    { value: '100000', labelAr: '100,000 د.ع', labelEn: '100,000 IQD' }
-  ];
-
-  const paymentMethods = [
-    { value: 'cash', labelAr: 'نقداً', labelEn: 'Cash' },
-    { value: 'bank_transfer', labelAr: 'تحويل بنكي', labelEn: 'Bank Transfer' },
-    { value: 'card', labelAr: 'بطاقة', labelEn: 'Card' }
-  ];
-
-  const serviceFeePercent = 1;
+  // Exchange rate (USD to IQD)
+  const usdToIQD = 1480;
+  const serviceFee = SERVICE_FEES.card_recharge; // 2%
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     if (errors[field]) setErrors(prev => ({ ...prev, [field]: '' }));
   };
 
-  const calculateFee = () => {
+  const calculateIQD = () => {
     if (!formData.amount) return 0;
-    return Math.round(parseFloat(formData.amount) * serviceFeePercent / 100);
+    return Math.round(parseFloat(formData.amount) * usdToIQD);
   };
 
-  const calculateTotal = () => {
-    if (!formData.amount) return 0;
-    return parseFloat(formData.amount) + calculateFee();
+  const calculateFeeAmount = () => {
+    return calculateFee(calculateIQD(), 'card_recharge');
+  };
+
+  const calculateTotalAmount = () => {
+    return calculateTotal(calculateIQD(), 'card_recharge');
   };
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.fullName.trim()) newErrors.fullName = currentLanguage === 'ar' ? 'الاسم مطلوب' : 'Name required';
-    if (!formData.phone.trim()) newErrors.phone = currentLanguage === 'ar' ? 'الهاتف مطلوب' : 'Phone required';
-    if (!formData.cardType) newErrors.cardType = currentLanguage === 'ar' ? 'نوع البطاقة مطلوب' : 'Card type required';
-    if (!formData.cardNumber.trim()) newErrors.cardNumber = currentLanguage === 'ar' ? 'رقم البطاقة مطلوب' : 'Card number required';
-    if (!formData.amount) newErrors.amount = currentLanguage === 'ar' ? 'المبلغ مطلوب' : 'Amount required';
-    if (!formData.paymentMethod) newErrors.paymentMethod = currentLanguage === 'ar' ? 'طريقة الدفع مطلوبة' : 'Payment method required';
+    
+    if (!formData.fullName.trim()) {
+      newErrors.fullName = isArabic ? 'الاسم الكامل مطلوب' : 'Full name required';
+    }
+    if (!formData.phone.trim()) {
+      newErrors.phone = isArabic ? 'رقم الهاتف مطلوب' : 'Phone required';
+    }
+    if (!formData.cardName.trim()) {
+      newErrors.cardName = isArabic ? 'الاسم على البطاقة مطلوب' : 'Card name required';
+    }
+    if (!formData.cardType.trim()) {
+      newErrors.cardType = isArabic ? 'نوع البطاقة مطلوب' : 'Card type required';
+    }
+    
+    // Validate card number (16 digits) or account number (10 digits)
+    if (formData.numberType === 'card') {
+      if (!formData.cardNumber.trim()) {
+        newErrors.cardNumber = isArabic ? 'رقم البطاقة مطلوب' : 'Card number required';
+      } else if (!/^\d{16}$/.test(formData.cardNumber.replace(/\s/g, ''))) {
+        newErrors.cardNumber = isArabic ? 'رقم البطاقة يجب أن يكون 16 رقم' : 'Card number must be 16 digits';
+      }
+    } else {
+      if (!formData.accountNumber.trim()) {
+        newErrors.accountNumber = isArabic ? 'رقم الحساب مطلوب' : 'Account number required';
+      } else if (!/^\d{10}$/.test(formData.accountNumber.replace(/\s/g, ''))) {
+        newErrors.accountNumber = isArabic ? 'رقم الحساب يجب أن يكون 10 أرقام' : 'Account number must be 10 digits';
+      }
+    }
+    
+    if (!formData.amount || parseFloat(formData.amount) <= 0) {
+      newErrors.amount = isArabic ? 'المبلغ مطلوب' : 'Amount required';
+    }
+    if (!formData.paymentMethod) {
+      newErrors.paymentMethod = isArabic ? 'طريقة الدفع مطلوبة' : 'Payment method required';
+    }
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -93,13 +108,20 @@ const CardRecharge = () => {
     try {
       const orderData = {
         order_type: 'card_recharge',
-        customer: { full_name: formData.fullName, phone: formData.phone },
+        customer: { 
+          full_name: formData.fullName, 
+          phone: formData.phone 
+        },
         details: {
+          cardName: formData.cardName,
           cardType: formData.cardType,
-          cardNumber: formData.cardNumber,
-          amount: formData.amount,
-          serviceFee: calculateFee(),
-          total: calculateTotal(),
+          numberType: formData.numberType,
+          cardNumber: formData.numberType === 'card' ? formData.cardNumber : null,
+          accountNumber: formData.numberType === 'account' ? formData.accountNumber : null,
+          amountUSD: formData.amount,
+          amountIQD: calculateIQD(),
+          serviceFee: calculateFeeAmount(),
+          total: calculateTotalAmount(),
           paymentMethod: formData.paymentMethod
         }
       };
@@ -117,8 +139,9 @@ const CardRecharge = () => {
             orderData: {
               ...formData,
               type: 'card_recharge',
-              serviceFee: calculateFee(),
-              total: calculateTotal(),
+              amountIQD: calculateIQD(),
+              serviceFee: calculateFeeAmount(),
+              total: calculateTotalAmount(),
               orderId: order.order_id
             }
           }
@@ -128,13 +151,11 @@ const CardRecharge = () => {
       }
     } catch (err) {
       console.error('Error:', err);
-      alert(currentLanguage === 'ar' ? 'حدث خطأ' : 'Error occurred');
+      alert(isArabic ? 'حدث خطأ' : 'Error occurred');
     }
 
     setLoading(false);
   };
-
-  const selectedCard = cardTypes.find(c => c.value === formData.cardType);
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${
@@ -154,7 +175,7 @@ const CardRecharge = () => {
             className={`flex items-center gap-2 mb-8 group ${isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'}`}
           >
             <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-            {currentLanguage === 'ar' ? 'العودة للرئيسية' : 'Back to Home'}
+            {isArabic ? 'العودة للرئيسية' : 'Back to Home'}
           </motion.button>
 
           {/* Header */}
@@ -163,10 +184,10 @@ const CardRecharge = () => {
               <CreditCard className="w-10 h-10 text-white" />
             </div>
             <h1 className={`text-3xl md:text-4xl font-bold mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-              {currentLanguage === 'ar' ? 'تعبئة البطاقات' : 'Card Recharge'}
+              {isArabic ? 'تعبئة البطاقات' : 'Card Recharge'}
             </h1>
             <p className={isDark ? 'text-slate-400' : 'text-slate-600'}>
-              {currentLanguage === 'ar' ? 'تعبئة رصيد الهاتف والإنترنت والبطاقات' : 'Recharge phone, internet and cards'}
+              {isArabic ? 'تعبئة رصيد البطاقات المصرفية' : 'Recharge bank cards'}
             </p>
           </motion.div>
 
@@ -176,7 +197,7 @@ const CardRecharge = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             onSubmit={handleSubmit}
-            className="max-w-3xl mx-auto"
+            className="max-w-2xl mx-auto"
             data-testid="card-recharge-form"
           >
             {/* Personal Info */}
@@ -188,14 +209,15 @@ const CardRecharge = () => {
                   <User className="w-6 h-6 text-blue-500" />
                 </div>
                 <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                  {currentLanguage === 'ar' ? 'البيانات الشخصية' : 'Personal Info'}
+                  {isArabic ? 'البيانات الشخصية' : 'Personal Info'}
                 </h2>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Full Name */}
                 <div className="space-y-2">
                   <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
-                    {currentLanguage === 'ar' ? 'الاسم الكامل' : 'Full Name'} *
+                    {isArabic ? 'الاسم الكامل' : 'Full Name'} *
                   </Label>
                   <Input
                     value={formData.fullName}
@@ -206,9 +228,10 @@ const CardRecharge = () => {
                   {errors.fullName && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.fullName}</p>}
                 </div>
 
+                {/* Phone */}
                 <div className="space-y-2">
                   <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
-                    {currentLanguage === 'ar' ? 'رقم الهاتف' : 'Phone'} *
+                    {isArabic ? 'رقم الهاتف' : 'Phone'} *
                   </Label>
                   <Input
                     type="tel"
@@ -223,7 +246,7 @@ const CardRecharge = () => {
               </div>
             </div>
 
-            {/* Card Type Selection */}
+            {/* Card Info */}
             <div className={`rounded-3xl border-2 shadow-xl p-8 mb-6 ${
               isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'
             }`}>
@@ -232,52 +255,134 @@ const CardRecharge = () => {
                   <CreditCard className="w-6 h-6 text-purple-500" />
                 </div>
                 <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                  {currentLanguage === 'ar' ? 'نوع البطاقة' : 'Card Type'}
+                  {isArabic ? 'بيانات البطاقة' : 'Card Details'}
                 </h2>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mb-6">
-                {cardTypes.map(card => (
-                  <motion.button
-                    key={card.value}
-                    type="button"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => handleInputChange('cardType', card.value)}
-                    className={`p-4 rounded-2xl border-2 text-center transition-all ${
-                      formData.cardType === card.value
-                        ? 'border-[#D4AF37] bg-[#D4AF37]/10'
-                        : isDark ? 'border-slate-600 hover:border-slate-500' : 'border-slate-200 hover:border-slate-300'
-                    }`}
-                  >
-                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${card.color} flex items-center justify-center mx-auto mb-2`}>
-                      <card.icon className="w-6 h-6 text-white" />
-                    </div>
-                    <span className={`text-sm font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                      {currentLanguage === 'ar' ? card.labelAr : card.labelEn}
-                    </span>
-                  </motion.button>
-                ))}
-              </div>
-              {errors.cardType && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.cardType}</p>}
+              <div className="space-y-6">
+                {/* Card Name */}
+                <div className="space-y-2">
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
+                    {isArabic ? 'الاسم على البطاقة' : 'Name on Card'} *
+                  </Label>
+                  <Input
+                    value={formData.cardName}
+                    onChange={(e) => handleInputChange('cardName', e.target.value)}
+                    className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`}
+                    data-testid="card-name-input"
+                  />
+                  {errors.cardName && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.cardName}</p>}
+                </div>
 
-              {/* Card Number */}
-              <div className="space-y-2">
-                <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
-                  {currentLanguage === 'ar' ? 'رقم البطاقة / الهاتف' : 'Card / Phone Number'} *
-                </Label>
-                <Input
-                  value={formData.cardNumber}
-                  onChange={(e) => handleInputChange('cardNumber', e.target.value)}
-                  className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`}
-                  placeholder={currentLanguage === 'ar' ? 'أدخل الرقم' : 'Enter number'}
-                  data-testid="card-number-input"
-                />
-                {errors.cardNumber && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.cardNumber}</p>}
+                {/* Card Type */}
+                <div className="space-y-2">
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
+                    {isArabic ? 'نوع البطاقة' : 'Card Type'} *
+                  </Label>
+                  <Input
+                    value={formData.cardType}
+                    onChange={(e) => handleInputChange('cardType', e.target.value)}
+                    className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`}
+                    placeholder={isArabic ? 'مثال: ماستركارد، فيزا...' : 'e.g., Mastercard, Visa...'}
+                    data-testid="card-type-input"
+                  />
+                  {errors.cardType && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.cardType}</p>}
+                </div>
+
+                {/* Number Type Selection */}
+                <div className="space-y-3">
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
+                    {isArabic ? 'نوع الرقم' : 'Number Type'} *
+                  </Label>
+                  <div className="flex gap-4">
+                    <motion.button
+                      type="button"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => handleInputChange('numberType', 'card')}
+                      className={`flex-1 py-4 px-6 rounded-xl border-2 font-bold transition-all ${
+                        formData.numberType === 'card'
+                          ? 'border-purple-500 bg-purple-500/10 text-purple-500'
+                          : isDark ? 'border-slate-600 text-white hover:border-slate-500' : 'border-slate-200 hover:border-slate-300'
+                      }`}
+                    >
+                      {isArabic ? 'رقم البطاقة (16 رقم)' : 'Card Number (16 digits)'}
+                    </motion.button>
+                    <motion.button
+                      type="button"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => handleInputChange('numberType', 'account')}
+                      className={`flex-1 py-4 px-6 rounded-xl border-2 font-bold transition-all ${
+                        formData.numberType === 'account'
+                          ? 'border-purple-500 bg-purple-500/10 text-purple-500'
+                          : isDark ? 'border-slate-600 text-white hover:border-slate-500' : 'border-slate-200 hover:border-slate-300'
+                      }`}
+                    >
+                      {isArabic ? 'رقم الحساب (10 أرقام)' : 'Account Number (10 digits)'}
+                    </motion.button>
+                  </div>
+                </div>
+
+                {/* Card Number (16 digits) */}
+                {formData.numberType === 'card' && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="space-y-2"
+                  >
+                    <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
+                      {isArabic ? 'رقم البطاقة' : 'Card Number'} * (16 {isArabic ? 'رقم' : 'digits'})
+                    </Label>
+                    <Input
+                      value={formData.cardNumber}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, '').slice(0, 16);
+                        handleInputChange('cardNumber', value);
+                      }}
+                      className={`h-12 font-mono text-lg tracking-wider ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`}
+                      placeholder="XXXX XXXX XXXX XXXX"
+                      maxLength={16}
+                      data-testid="card-number-input"
+                    />
+                    <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                      {formData.cardNumber.length}/16 {isArabic ? 'رقم' : 'digits'}
+                    </p>
+                    {errors.cardNumber && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.cardNumber}</p>}
+                  </motion.div>
+                )}
+
+                {/* Account Number (10 digits) */}
+                {formData.numberType === 'account' && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="space-y-2"
+                  >
+                    <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
+                      {isArabic ? 'رقم الحساب' : 'Account Number'} * (10 {isArabic ? 'أرقام' : 'digits'})
+                    </Label>
+                    <Input
+                      value={formData.accountNumber}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, '').slice(0, 10);
+                        handleInputChange('accountNumber', value);
+                      }}
+                      className={`h-12 font-mono text-lg tracking-wider ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`}
+                      placeholder="XXXXXXXXXX"
+                      maxLength={10}
+                      data-testid="account-number-input"
+                    />
+                    <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                      {formData.accountNumber.length}/10 {isArabic ? 'أرقام' : 'digits'}
+                    </p>
+                    {errors.accountNumber && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.accountNumber}</p>}
+                  </motion.div>
+                )}
               </div>
             </div>
 
-            {/* Amount Selection */}
+            {/* Amount & Payment */}
             <div className={`rounded-3xl border-2 shadow-xl p-8 mb-6 ${
               isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'
             }`}>
@@ -286,69 +391,80 @@ const CardRecharge = () => {
                   <DollarSign className="w-6 h-6 text-emerald-500" />
                 </div>
                 <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                  {currentLanguage === 'ar' ? 'المبلغ والدفع' : 'Amount & Payment'}
+                  {isArabic ? 'المبلغ والدفع' : 'Amount & Payment'}
                 </h2>
               </div>
 
-              <div className="grid grid-cols-3 gap-3 mb-6">
-                {amounts.map(amt => (
-                  <motion.button
-                    key={amt.value}
-                    type="button"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => handleInputChange('amount', amt.value)}
-                    className={`p-4 rounded-xl border-2 font-bold transition-all ${
-                      formData.amount === amt.value
-                        ? 'border-emerald-500 bg-emerald-500/10 text-emerald-500'
-                        : isDark ? 'border-slate-600 text-white hover:border-slate-500' : 'border-slate-200 hover:border-slate-300'
-                    }`}
-                  >
-                    {currentLanguage === 'ar' ? amt.labelAr : amt.labelEn}
-                  </motion.button>
-                ))}
-              </div>
-              {errors.amount && <p className="text-sm text-red-500 flex items-center gap-1 mb-4"><AlertCircle className="w-4 h-4" />{errors.amount}</p>}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Amount in USD */}
+                <div className="space-y-2">
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
+                    {isArabic ? 'المبلغ بالدولار ($)' : 'Amount in USD ($)'} *
+                  </Label>
+                  <Input
+                    type="number"
+                    value={formData.amount}
+                    onChange={(e) => handleInputChange('amount', e.target.value)}
+                    className={`h-14 text-xl font-bold ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`}
+                    placeholder="100"
+                    min="1"
+                    data-testid="amount-input"
+                  />
+                  {errors.amount && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.amount}</p>}
+                </div>
 
-              {/* Payment Method */}
-              <div className="space-y-2">
-                <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
-                  {currentLanguage === 'ar' ? 'طريقة الدفع' : 'Payment Method'} *
-                </Label>
-                <Select value={formData.paymentMethod} onValueChange={(v) => handleInputChange('paymentMethod', v)}>
-                  <SelectTrigger className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} data-testid="payment-method-select">
-                    <SelectValue placeholder={currentLanguage === 'ar' ? 'اختر طريقة الدفع' : 'Select payment method'} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {paymentMethods.map(m => (
-                      <SelectItem key={m.value} value={m.value}>
-                        {currentLanguage === 'ar' ? m.labelAr : m.labelEn}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {errors.paymentMethod && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.paymentMethod}</p>}
+                {/* Payment Method Dropdown */}
+                <div className="space-y-2">
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
+                    {isArabic ? 'طريقة الدفع' : 'Payment Method'} *
+                  </Label>
+                  <Select value={formData.paymentMethod} onValueChange={(v) => handleInputChange('paymentMethod', v)}>
+                    <SelectTrigger className={`h-14 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} data-testid="payment-method-select">
+                      <SelectValue placeholder={isArabic ? 'اختر طريقة الدفع' : 'Select payment method'} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PAYMENT_METHODS.filter(m => m.active).map(m => (
+                        <SelectItem key={m.value} value={m.value}>
+                          <span className="flex items-center gap-2">
+                            <span>{m.icon}</span>
+                            <span>{currentLanguage === 'ar' ? m.labelAr : m.labelEn}</span>
+                          </span>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {errors.paymentMethod && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.paymentMethod}</p>}
+                </div>
               </div>
 
               {/* Summary */}
-              {formData.amount && (
+              {formData.amount && parseFloat(formData.amount) > 0 && (
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className={`mt-6 p-4 rounded-2xl ${isDark ? 'bg-slate-700/50' : 'bg-slate-50'}`}
+                  className={`mt-6 p-6 rounded-2xl ${isDark ? 'bg-emerald-900/20 border border-emerald-700/50' : 'bg-emerald-50 border border-emerald-200'}`}
                 >
-                  <div className="flex justify-between items-center mb-2">
-                    <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>{currentLanguage === 'ar' ? 'المبلغ' : 'Amount'}</span>
-                    <span className={`font-semibold ${isDark ? 'text-white' : ''}`}>{Number(formData.amount).toLocaleString()} {currentLanguage === 'ar' ? 'د.ع' : 'IQD'}</span>
-                  </div>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>{currentLanguage === 'ar' ? `رسوم (${serviceFeePercent}%)` : `Fee (${serviceFeePercent}%)`}</span>
-                    <span className="font-semibold text-amber-500">{Number(calculateFee()).toLocaleString()} {currentLanguage === 'ar' ? 'د.ع' : 'IQD'}</span>
-                  </div>
-                  <div className={`border-t pt-2 mt-2 ${isDark ? 'border-slate-600' : 'border-slate-200'}`}>
-                    <div className="flex justify-between items-center">
-                      <span className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{currentLanguage === 'ar' ? 'الإجمالي' : 'Total'}</span>
-                      <span className="font-bold text-lg text-emerald-500">{Number(calculateTotal()).toLocaleString()} {currentLanguage === 'ar' ? 'د.ع' : 'IQD'}</span>
+                  <h4 className={`font-bold mb-4 ${isDark ? 'text-emerald-400' : 'text-emerald-800'}`}>
+                    {isArabic ? 'ملخص الطلب' : 'Order Summary'}
+                  </h4>
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>{isArabic ? 'المبلغ USD' : 'Amount USD'}</span>
+                      <span className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>${formData.amount}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>{isArabic ? 'المقابل بالدينار' : 'Amount in IQD'}</span>
+                      <span className={`font-semibold ${isDark ? 'text-white' : ''}`}>{calculateIQD().toLocaleString()} IQD</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>{isArabic ? `رسوم الخدمة (${serviceFee}%)` : `Service Fee (${serviceFee}%)`}</span>
+                      <span className="font-semibold text-amber-500">{calculateFeeAmount().toLocaleString()} IQD</span>
+                    </div>
+                    <div className={`border-t pt-3 mt-3 ${isDark ? 'border-emerald-700/50' : 'border-emerald-200'}`}>
+                      <div className="flex justify-between items-center">
+                        <span className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{isArabic ? 'الإجمالي للدفع' : 'Total to Pay'}</span>
+                        <span className="font-bold text-2xl text-emerald-500">{calculateTotalAmount().toLocaleString()} IQD</span>
+                      </div>
                     </div>
                   </div>
                 </motion.div>
@@ -367,12 +483,12 @@ const CardRecharge = () => {
               {loading ? (
                 <>
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  {currentLanguage === 'ar' ? 'جارٍ التسجيل...' : 'Submitting...'}
+                  {isArabic ? 'جارٍ التسجيل...' : 'Submitting...'}
                 </>
               ) : (
                 <>
                   <CheckCircle className="w-5 h-5" />
-                  {currentLanguage === 'ar' ? 'تأكيد التعبئة' : 'Confirm Recharge'}
+                  {isArabic ? 'تأكيد التعبئة' : 'Confirm Recharge'}
                 </>
               )}
             </motion.button>
