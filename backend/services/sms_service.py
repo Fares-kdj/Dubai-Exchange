@@ -20,9 +20,9 @@ UNIMTX_ACCESS_KEY = os.environ.get("UNIMTX_ACCESS_KEY", "")
 UNIMTX_SENDER = os.environ.get("UNIMTX_SENDER", "DubaiExch")
 
 # Template IDs from UniMTX console
-TEMPLATE_ORDER_CREATED = "order_created"
-TEMPLATE_ORDER_APPROVED = "order_approved"
-TEMPLATE_ORDER_REJECTED = "order_rejected"
+TEMPLATE_ORDER_CREATED = "14f12ba9"
+TEMPLATE_ORDER_APPROVED = "6a418afa"
+TEMPLATE_ORDER_REJECTED = "cca9a942"
 
 # Default WhatsApp number (can be overridden from settings)
 DEFAULT_WHATSAPP = os.environ.get("COMPANY_WHATSAPP", "+964XXXXXXXXXX")
