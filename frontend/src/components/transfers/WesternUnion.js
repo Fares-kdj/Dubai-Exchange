@@ -265,39 +265,39 @@ const WesternUnion = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <Label className="text-slate-700 font-medium">
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                     {currentLanguage === 'ar' ? 'اسم المرسل' : 'Sender Name'} *
                   </Label>
                   <Input
                     value={formData.senderName}
                     onChange={(e) => handleInputChange('senderName', e.target.value)}
-                    className="h-12 border-slate-300"
+                    className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`}
                     placeholder={currentLanguage === 'ar' ? 'الاسم كما في الهوية' : 'Name as on ID'}
                     data-testid="sender-name"
                   />
-                  {errors.senderName && <p className="text-sm text-red-600 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.senderName}</p>}
+                  {errors.senderName && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.senderName}</p>}
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-slate-700 font-medium">
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                     {currentLanguage === 'ar' ? 'اسم المستلم' : 'Receiver Name'} *
                   </Label>
                   <Input
                     value={formData.receiverName}
                     onChange={(e) => handleInputChange('receiverName', e.target.value)}
-                    className="h-12 border-slate-300"
+                    className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`}
                     placeholder={currentLanguage === 'ar' ? 'الاسم كما في الهوية' : 'Name as on ID'}
                     data-testid="receiver-name"
                   />
-                  {errors.receiverName && <p className="text-sm text-red-600 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.receiverName}</p>}
+                  {errors.receiverName && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.receiverName}</p>}
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-slate-700 font-medium">
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                     {currentLanguage === 'ar' ? 'دولة المرسل' : 'Sender Country'}
                   </Label>
                   <Select value={formData.senderCountry} disabled>
-                    <SelectTrigger className="h-12 border-slate-300 bg-slate-50">
+                    <SelectTrigger className={`h-12 ${isDark ? 'bg-slate-600 border-slate-500 text-white' : 'bg-slate-50 border-slate-300'}`}>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -307,11 +307,11 @@ const WesternUnion = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-slate-700 font-medium">
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                     {currentLanguage === 'ar' ? 'دولة المستلم' : 'Receiver Country'} *
                   </Label>
                   <Select value={formData.receiverCountry} onValueChange={(v) => handleInputChange('receiverCountry', v)}>
-                    <SelectTrigger className="h-12 border-slate-300" data-testid="receiver-country">
+                    <SelectTrigger className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} data-testid="receiver-country">
                       <SelectValue placeholder={currentLanguage === 'ar' ? 'اختر الدولة' : 'Select country'} />
                     </SelectTrigger>
                     <SelectContent>
@@ -322,22 +322,22 @@ const WesternUnion = () => {
                       ))}
                     </SelectContent>
                   </Select>
-                  {errors.receiverCountry && <p className="text-sm text-red-600 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.receiverCountry}</p>}
+                  {errors.receiverCountry && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.receiverCountry}</p>}
                 </div>
 
                 <div className="space-y-2 md:col-span-2">
-                  <Label className="text-slate-700 font-medium">
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                     {currentLanguage === 'ar' ? 'رقم الهاتف' : 'Phone Number'} *
                   </Label>
                   <Input
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => handleInputChange('phone', e.target.value)}
-                    className="h-12 border-slate-300"
+                    className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`}
                     placeholder="+964 7XX XXX XXXX"
                     data-testid="phone"
                   />
-                  {errors.phone && <p className="text-sm text-red-600 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.phone}</p>}
+                  {errors.phone && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.phone}</p>}
                 </div>
               </div>
             </div>
