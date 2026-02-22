@@ -70,13 +70,7 @@ async def create_order(order: OrderCreate, background_tasks: BackgroundTasks):
     
     # Send SMS notification for order submission (in background)
     phone = order.customer.phone
-    order_type_label = ORDER_TYPE_LABELS.get(order.order_type.value, order.order_type.value)
-    background_tasks.add_task(
-        sms_service.send_order_submitted,
-        phone,
-        order_id,
-        order_type_label
-    )
+    background_tasks.add_task(sms_service.send_order_submitted, phone)
     logger.info(f"Order created: {order_id}, SMS queued for {phone}")
     
     return OrderResponse(**serialize_order(order_doc))
