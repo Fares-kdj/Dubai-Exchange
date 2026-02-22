@@ -120,20 +120,21 @@ const LocalTransfer = () => {
         order_type: 'local',
         customer: {
           full_name: formData.senderName,
-          phone: formData.senderPhone
+          phone: formData.phone
         },
         details: {
           senderName: formData.senderName,
-          senderPhone: formData.senderPhone,
           senderProvince: formData.senderProvince,
           receiverName: formData.receiverName,
-          receiverPhone: formData.receiverPhone,
           receiverProvince: formData.receiverProvince,
-          amount: formData.amount,
+          phone: formData.phone,
+          amountUSD: formData.amountUSD,
+          amountIQD: calculateAmountIQD(),
+          receiverCurrency: formData.receiverCurrency,
           serviceFee: calculateFee(),
           total: calculateTotal(),
           paymentMethod: formData.paymentMethod,
-          notes: formData.notes
+          exchangeRate: usdToIqdRate
         }
       };
       
@@ -150,6 +151,7 @@ const LocalTransfer = () => {
             orderData: {
               ...formData,
               type: 'local',
+              amountIQD: calculateAmountIQD(),
               serviceFee: calculateFee(),
               total: calculateTotal(),
               orderId: order.order_id
