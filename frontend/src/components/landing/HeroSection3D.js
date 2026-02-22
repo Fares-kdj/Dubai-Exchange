@@ -208,19 +208,97 @@ export const HeroSection3D = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className={`text-lg md:text-xl mb-10 ${
+                className={`text-lg md:text-xl mb-8 ${
                   isDark ? 'text-slate-300' : 'text-slate-600'
                 }`}
               >
                 {t.slogan}
               </motion.p>
 
-              {/* 5 Main Service Buttons with Floating Animation */}
+              {/* Track Order Button - Prominent at Top */}
+              <motion.button
+                onClick={() => navigate('/track-order')}
+                initial={{ opacity: 0, y: 20, scale: 0.9 }}
+                animate={{ 
+                  opacity: 1, 
+                  y: [0, -6, 0],
+                  scale: 1
+                }}
+                transition={{ 
+                  opacity: { delay: 0.6, duration: 0.5 },
+                  scale: { delay: 0.6, duration: 0.5 },
+                  y: {
+                    delay: 0,
+                    duration: 2.5,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }
+                }}
+                whileHover={{ 
+                  scale: 1.05, 
+                  y: -10,
+                  transition: { type: "spring", stiffness: 400, damping: 15 }
+                }}
+                whileTap={{ scale: 0.95 }}
+                className={`group relative w-full flex items-center justify-center gap-4 px-6 py-5 mb-6 rounded-2xl font-bold text-lg transition-all duration-300 overflow-hidden ${
+                  isDark 
+                    ? 'bg-gradient-to-r from-[#D4AF37] to-[#FCD34D] text-slate-900 hover:shadow-[#D4AF37]/50' 
+                    : 'bg-gradient-to-r from-[#D4AF37] to-[#FCD34D] text-slate-900 hover:shadow-amber-500/50'
+                } shadow-xl hover:shadow-2xl`}
+                data-testid="hero-track-order"
+              >
+                {/* Animated Background Pulse */}
+                <motion.div
+                  className="absolute inset-0 bg-white/20"
+                  animate={{ 
+                    opacity: [0, 0.3, 0]
+                  }}
+                  transition={{ 
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                />
+
+                {/* Icon */}
+                <motion.div
+                  animate={{ 
+                    scale: [1, 1.1, 1],
+                    rotate: [0, 5, -5, 0]
+                  }}
+                  transition={{ 
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                  className="w-12 h-12 rounded-xl bg-slate-900/20 flex items-center justify-center"
+                >
+                  <Search className="w-6 h-6" />
+                </motion.div>
+                
+                <span className="relative z-10">{t.trackOrder}</span>
+
+                {/* Shimmer Effect */}
+                <motion.div 
+                  className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-12"
+                />
+
+                {/* Arrow Animation */}
+                <motion.div
+                  animate={{ x: [0, 5, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                  className="text-slate-900"
+                >
+                  →
+                </motion.div>
+              </motion.button>
+
+              {/* 4 Main Service Buttons */}
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
-                className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-10"
+                transition={{ delay: 0.7 }}
+                className="grid grid-cols-2 gap-4 mb-10"
               >
                 {mainServices.map((service, index) => (
                   <motion.button
@@ -233,8 +311,8 @@ export const HeroSection3D = () => {
                       scale: 1
                     }}
                     transition={{ 
-                      opacity: { delay: 0.7 + index * 0.1, duration: 0.5 },
-                      scale: { delay: 0.7 + index * 0.1, duration: 0.5 },
+                      opacity: { delay: 0.8 + index * 0.1, duration: 0.5 },
+                      scale: { delay: 0.8 + index * 0.1, duration: 0.5 },
                       y: {
                         delay: service.floatDelay,
                         duration: service.floatDuration,
@@ -316,7 +394,11 @@ export const HeroSection3D = () => {
                         whileHover={{ rotate: 360, scale: 1.1 }}
                         transition={{ duration: 0.5 }}
                       >
-                        <service.icon className="w-7 h-7 text-white relative z-10" />
+                        {service.isCustomIcon ? (
+                          <service.icon className="w-7 h-7 text-white relative z-10" />
+                        ) : (
+                          <service.icon className="w-7 h-7 text-white relative z-10" />
+                        )}
                       </motion.div>
                     </motion.div>
                     
@@ -349,9 +431,9 @@ export const HeroSection3D = () => {
 
                     {/* Corner Accents */}
                     <div className={`absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 rounded-tl-lg opacity-0 group-hover:opacity-100 transition-opacity border-current`} 
-                         style={{ borderColor: service.gradient.includes('amber') ? '#F59E0B' : service.gradient.includes('blue') ? '#3B82F6' : service.gradient.includes('teal') ? '#14B8A6' : service.gradient.includes('purple') ? '#8B5CF6' : '#F43F5E' }} />
+                         style={{ borderColor: service.gradient.includes('amber') ? '#F59E0B' : service.gradient.includes('blue') ? '#3B82F6' : service.gradient.includes('teal') ? '#14B8A6' : '#8B5CF6' }} />
                     <div className={`absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 rounded-br-lg opacity-0 group-hover:opacity-100 transition-opacity`}
-                         style={{ borderColor: service.gradient.includes('amber') ? '#F59E0B' : service.gradient.includes('blue') ? '#3B82F6' : service.gradient.includes('teal') ? '#14B8A6' : service.gradient.includes('purple') ? '#8B5CF6' : '#F43F5E' }} />
+                         style={{ borderColor: service.gradient.includes('amber') ? '#F59E0B' : service.gradient.includes('blue') ? '#3B82F6' : service.gradient.includes('teal') ? '#14B8A6' : '#8B5CF6' }} />
                   </motion.button>
                 ))}
               </motion.div>
