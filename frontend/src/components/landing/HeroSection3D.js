@@ -134,16 +134,14 @@ export const HeroSection3D = () => {
       </div>
 
       {/* Content Container - Desktop: Two-column grid with content LEFT-aligned for ALL languages */}
-      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-16 min-h-screen">
-        {/* Desktop: Grid layout | Mobile: Flex centered */}
-        <div className="min-h-[calc(100vh-7rem)] lg:grid lg:grid-cols-[minmax(420px,520px)_1fr] lg:items-center">
-          {/* Content Column - Always on LEFT for desktop, regardless of RTL/LTR */}
-          <div 
-            className="flex flex-col justify-center max-w-2xl mx-auto lg:mx-0 lg:max-w-none"
-            style={{ direction: 'ltr' }} // Container position is LTR
-          >
-            {/* Inner content wrapper - respects text direction */}
-            <div style={{ direction: isArabic || isKurdish ? 'rtl' : 'ltr' }}>
+      <div className="relative z-10 min-h-screen" dir="ltr">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-16 min-h-screen">
+          {/* Desktop: Grid layout | Mobile: Flex centered */}
+          <div className="min-h-[calc(100vh-7rem)] flex items-center lg:grid lg:grid-cols-[minmax(420px,560px)_1fr]">
+            {/* Content Column - Always on LEFT for desktop, regardless of RTL/LTR */}
+            <div className="w-full lg:max-w-[560px]">
+              {/* Inner content wrapper - respects text direction for Arabic/Kurdish */}
+              <div className={isArabic || isKurdish ? 'text-right' : 'text-left'} dir={isArabic || isKurdish ? 'rtl' : 'ltr'}>
               {/* CBI Badge */}
               <motion.div
                 initial={{ opacity: 0, y: -20 }}
