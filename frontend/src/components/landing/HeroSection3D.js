@@ -4,13 +4,21 @@ import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
 import { useTheme } from '@/context/ThemeContext';
 import { COMPANY } from '@/config/assets';
-import { Shield, Zap, Globe, Plane, ArrowLeftRight, Wallet, CreditCard, Search } from 'lucide-react';
+import { Shield, Zap, Globe, Plane, CreditCard, Search, Send } from 'lucide-react';
 
 // Hero background images - easy to swap with videos later
 const HERO_ASSETS = {
   dark: 'https://customer-assets.emergentagent.com/job_dubai-exchange/artifacts/taky4fxl_hero-dark.png',
   light: 'https://customer-assets.emergentagent.com/job_dubai-exchange/artifacts/l2ellrq4_hero-light.png'
 };
+
+// USDT Icon Component
+const USDTIcon = ({ className }) => (
+  <svg viewBox="0 0 32 32" className={className} fill="currentColor">
+    <path d="M16 0c8.837 0 16 7.163 16 16s-7.163 16-16 16S0 24.837 0 16 7.163 0 16 0zm0 2C8.268 2 2 8.268 2 16s6.268 14 14 14 14-6.268 14-14S23.732 2 16 2z"/>
+    <path d="M17.922 17.383v-.002c-.11.008-.677.042-1.942.042-1.01 0-1.721-.03-1.971-.042v.003c-3.888-.171-6.79-.848-6.79-1.658 0-.809 2.902-1.486 6.79-1.66v2.644c.254.018.982.061 1.988.061 1.207 0 1.812-.05 1.925-.06v-2.643c3.88.173 6.775.85 6.775 1.658 0 .81-2.895 1.485-6.775 1.657m0-3.59v-2.366h5.414V7.819H8.595v3.608h5.414v2.365c-4.4.202-7.709 1.074-7.709 2.118 0 1.044 3.309 1.915 7.709 2.118v7.582h3.913v-7.584c4.393-.202 7.694-1.073 7.694-2.116 0-1.043-3.301-1.914-7.694-2.117"/>
+  </svg>
+);
 
 export const HeroSection3D = () => {
   const navigate = useNavigate();
@@ -26,7 +34,8 @@ export const HeroSection3D = () => {
       licensed: 'مرخصة رسمياً',
       instant: 'خدمة فورية',
       countries: '+50 دولة',
-      cbiTitle: 'مرخصة من البنك المركزي العراقي'
+      cbiTitle: 'مرخصة من البنك المركزي العراقي',
+      trackOrder: 'تتبع طلبك'
     },
     en: {
       name: COMPANY.nameEn,
@@ -34,7 +43,8 @@ export const HeroSection3D = () => {
       licensed: 'Licensed',
       instant: 'Instant Service',
       countries: '50+ Countries',
-      cbiTitle: 'Licensed by Central Bank of Iraq'
+      cbiTitle: 'Licensed by Central Bank of Iraq',
+      trackOrder: 'Track Your Order'
     },
     ku: {
       name: COMPANY.nameKu,
@@ -42,11 +52,12 @@ export const HeroSection3D = () => {
       licensed: 'مۆڵەتپێدراو',
       instant: 'خزمەتگوزاری یەکجار',
       countries: '+٥٠ وڵات',
-      cbiTitle: 'مۆڵەتدار لە بانکی ناوەندیی عێراق'
+      cbiTitle: 'مۆڵەتدار لە بانکی ناوەندیی عێراق',
+      trackOrder: 'بەدواداچوونی داواکاری'
     }
   };
 
-  // 4 Main Services with icons and animations + Track Order
+  // 4 Main Services with icons and animations
   const mainServices = [
     {
       id: 'traveler',
@@ -62,7 +73,7 @@ export const HeroSection3D = () => {
     },
     {
       id: 'transfers',
-      icon: ArrowLeftRight,
+      icon: Send,
       labelAr: 'التحويلات المالية',
       labelEn: 'Money Transfers',
       labelKu: 'گواستنەوەی پارە',
@@ -74,7 +85,7 @@ export const HeroSection3D = () => {
     },
     {
       id: 'usdt',
-      icon: Wallet,
+      icon: USDTIcon,
       labelAr: 'شحن USDT',
       labelEn: 'USDT Top-Up',
       labelKu: 'شحنی USDT',
@@ -82,7 +93,8 @@ export const HeroSection3D = () => {
       gradient: 'from-teal-500 to-emerald-600',
       hoverGlow: 'hover:shadow-teal-500/50',
       floatDelay: 1,
-      floatDuration: 4
+      floatDuration: 4,
+      isCustomIcon: true
     },
     {
       id: 'cards',
@@ -95,18 +107,6 @@ export const HeroSection3D = () => {
       hoverGlow: 'hover:shadow-purple-500/50',
       floatDelay: 1.5,
       floatDuration: 3.2
-    },
-    {
-      id: 'track',
-      icon: Search,
-      labelAr: 'تتبع الطلب',
-      labelEn: 'Track Order',
-      labelKu: 'بەدواداچوونی داواکاری',
-      link: '/track-order',
-      gradient: 'from-rose-500 to-pink-600',
-      hoverGlow: 'hover:shadow-rose-500/50',
-      floatDelay: 2,
-      floatDuration: 3.8
     }
   ];
 
