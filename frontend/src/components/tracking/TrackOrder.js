@@ -437,45 +437,49 @@ const TrackOrder = () => {
                   {/* Right Column - QR & Payment */}
                   <div className="space-y-6">
                     {/* QR Code */}
-                    <div className="bg-white rounded-3xl p-8 shadow-xl text-center">
-                      <h3 className="text-lg font-bold text-slate-900 mb-4">
+                    <div className={`rounded-3xl border-2 p-8 shadow-xl text-center ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'}`}>
+                      <h3 className={`text-lg font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                         {isArabic ? 'رمز QR للطلب' : 'Order QR Code'}
                       </h3>
-                      <div className="bg-slate-50 p-6 rounded-2xl inline-block">
+                      <div className={`p-6 rounded-2xl inline-block ${isDark ? 'bg-white' : 'bg-slate-50'}`}>
                         <QRCodeSVG value={orderResult.orderId} size={150} level="H" />
                       </div>
-                      <p className="text-xs text-slate-500 mt-4">
+                      <p className={`text-xs mt-4 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                         {isArabic ? 'للتحقق عند الاستلام' : 'For verification at pickup'}
                       </p>
                     </div>
 
                     {/* SMS Note */}
-                    <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6">
-                      <p className="text-sm text-blue-800">
+                    <div className={`rounded-2xl p-6 ${isDark ? 'bg-blue-500/20 border border-blue-500/30' : 'bg-blue-50 border border-blue-200'}`}>
+                      <p className={`text-sm ${isDark ? 'text-blue-300' : 'text-blue-800'}`}>
                         📱 {isArabic ? 'ستصلك رسالة SMS عند تحديث حالة طلبك' : 'You will receive an SMS when your order status updates'}
                       </p>
                     </div>
 
                     {/* Payment Proof Upload - Only if waiting */}
                     {orderResult.status === 'waiting_payment' && (
-                      <div className="bg-white rounded-3xl p-8 shadow-xl">
-                        <h3 className="text-lg font-bold text-slate-900 mb-4">
+                      <div className={`rounded-3xl border-2 p-8 shadow-xl ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'}`}>
+                        <h3 className={`text-lg font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                           {isArabic ? 'إرسال إثبات الدفع' : 'Submit Payment Proof'}
                         </h3>
                         
                         {paymentProofs.length === 0 ? (
-                          <label className="block border-2 border-dashed border-slate-300 rounded-2xl p-6 hover:border-[#D4AF37] cursor-pointer text-center">
+                          <label className={`block border-2 border-dashed rounded-2xl p-6 cursor-pointer text-center transition-colors ${
+                            isDark 
+                              ? 'border-slate-600 hover:border-[#D4AF37]' 
+                              : 'border-slate-300 hover:border-[#D4AF37] hover:bg-slate-50'
+                          }`}>
                             <input type="file" accept="image/*" multiple onChange={handleFileUpload} className="hidden" />
-                            <Upload className="w-10 h-10 text-slate-400 mx-auto mb-2" />
-                            <p className="text-sm text-slate-600">{isArabic ? 'رفع صورة' : 'Upload image'}</p>
+                            <Upload className={`w-10 h-10 mx-auto mb-2 ${isDark ? 'text-slate-400' : 'text-slate-400'}`} />
+                            <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{isArabic ? 'رفع صورة' : 'Upload image'}</p>
                           </label>
                         ) : (
                           <div className="space-y-3">
                             {paymentProofs.map(p => (
-                              <div key={p.id} className="flex items-center gap-3 bg-green-50 border border-green-200 rounded-xl p-3">
+                              <div key={p.id} className={`flex items-center gap-3 rounded-xl p-3 ${isDark ? 'bg-green-500/20 border border-green-500/30' : 'bg-green-50 border border-green-200'}`}>
                                 <img src={p.preview} alt="proof" className="w-12 h-12 rounded-lg object-cover" />
-                                <span className="flex-1 text-sm truncate">{p.name}</span>
-                                <button onClick={() => removeProof(p.id)} className="p-1 hover:bg-red-100 rounded">
+                                <span className={`flex-1 text-sm truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>{p.name}</span>
+                                <button onClick={() => removeProof(p.id)} className={`p-1 rounded ${isDark ? 'hover:bg-red-500/20' : 'hover:bg-red-100'}`}>
                                   <X className="w-4 h-4 text-red-600" />
                                 </button>
                               </div>
@@ -494,9 +498,9 @@ const TrackOrder = () => {
 
                     {/* Payment Received Notice */}
                     {orderResult.status !== 'waiting_payment' && orderResult.documents.paymentProof && (
-                      <div className="bg-green-50 border border-green-200 rounded-2xl p-6 text-center">
-                        <CheckCircle className="w-10 h-10 text-green-600 mx-auto mb-2" />
-                        <p className="font-medium text-green-800">
+                      <div className={`rounded-2xl p-6 text-center ${isDark ? 'bg-green-500/20 border border-green-500/30' : 'bg-green-50 border border-green-200'}`}>
+                        <CheckCircle className={`w-10 h-10 mx-auto mb-2 ${isDark ? 'text-green-400' : 'text-green-600'}`} />
+                        <p className={`font-medium ${isDark ? 'text-green-300' : 'text-green-800'}`}>
                           {isArabic ? 'تم استلام إثبات الدفع' : 'Payment proof received'}
                         </p>
                       </div>
