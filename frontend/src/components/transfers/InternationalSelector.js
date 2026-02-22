@@ -152,41 +152,86 @@ const InternationalSelector = () => {
             </p>
           </motion.div>
 
-          {/* Premium 3-Card Grid */}
+          {/* Premium 3-Card Grid with Floating Animation */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {options.map((option, index) => (
               <motion.div
                 key={option.id}
-                initial={{ opacity: 0, y: 40, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
+                initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                animate={{ 
+                  opacity: 1, 
+                  y: [0, -12, 0],
+                  scale: 1
+                }}
                 transition={{ 
-                  delay: 0.2 + index * 0.15,
-                  type: "spring",
-                  stiffness: 200,
-                  damping: 20
+                  opacity: { delay: 0.2 + index * 0.15, duration: 0.6 },
+                  scale: { delay: 0.2 + index * 0.15, duration: 0.6 },
+                  y: {
+                    delay: index * 0.6,
+                    duration: 3.5 + index * 0.4,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }
                 }}
                 whileHover={{ 
-                  y: -12, 
-                  scale: 1.03,
-                  transition: { type: "spring", stiffness: 400, damping: 10 }
+                  y: -20, 
+                  scale: 1.05,
+                  rotateX: 5,
+                  rotateY: index === 0 ? 5 : index === 2 ? -5 : 0,
+                  transition: { type: "spring", stiffness: 400, damping: 15 }
                 }}
-                whileTap={{ scale: 0.98 }}
+                whileTap={{ scale: 0.96 }}
                 onClick={() => navigate(option.link)}
                 className="cursor-pointer group"
+                style={{ 
+                  transformStyle: 'preserve-3d',
+                  perspective: '1000px'
+                }}
                 data-testid={`international-option-${option.id}`}
               >
                 <div className={`relative rounded-3xl p-8 border-2 h-full transition-all duration-500 overflow-hidden ${
                   isDark 
-                    ? 'bg-slate-800/50 border-slate-700 hover:border-slate-600' 
-                    : 'bg-white border-slate-200 hover:border-slate-300'
-                } shadow-xl hover:shadow-2xl ${option.hoverGlow}`}>
+                    ? 'bg-slate-800/70 border-slate-700 hover:border-slate-500' 
+                    : 'bg-white/90 border-slate-200 hover:border-slate-300'
+                } shadow-xl hover:shadow-2xl ${option.hoverGlow} backdrop-blur-sm`}>
                   
+                  {/* Floating Particles */}
+                  <motion.div className="absolute inset-0 pointer-events-none overflow-hidden">
+                    {[...Array(5)].map((_, i) => (
+                      <motion.div
+                        key={i}
+                        className={`absolute w-1.5 h-1.5 rounded-full bg-gradient-to-r ${option.gradient} opacity-40`}
+                        style={{
+                          left: `${15 + i * 18}%`,
+                          top: `${25 + (i % 3) * 20}%`
+                        }}
+                        animate={{
+                          y: [-15, -40, -15],
+                          opacity: [0.3, 0.7, 0.3],
+                          scale: [0.8, 1.3, 0.8]
+                        }}
+                        transition={{
+                          duration: 2.5 + i * 0.4,
+                          delay: i * 0.3,
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
+                      />
+                    ))}
+                  </motion.div>
+
                   {/* Badge */}
                   {option.badge && (
                     <motion.div 
                       initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.5 + index * 0.1 }}
+                      animate={{ 
+                        opacity: 1, 
+                        y: [0, -3, 0]
+                      }}
+                      transition={{ 
+                        opacity: { delay: 0.5 + index * 0.1 },
+                        y: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+                      }}
                       className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-gradient-to-r from-[#D4AF37] to-[#FCD34D] rounded-full text-xs font-bold text-slate-900 shadow-lg"
                     >
                       {currentLanguage === 'ar' ? option.badge.ar : option.badge.en}
@@ -195,37 +240,43 @@ const InternationalSelector = () => {
 
                   {/* Shimmer Effect */}
                   <motion.div 
-                    className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12"
+                    className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/15 to-transparent skew-x-12"
                   />
 
                   {/* Gold accent on hover */}
-                  <div className={`absolute inset-0 bg-gradient-to-br from-[#D4AF37]/0 to-[#D4AF37]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl`} />
+                  <div className={`absolute inset-0 bg-gradient-to-br from-[#D4AF37]/0 to-[#D4AF37]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl`} />
 
                   <div className="relative z-10">
-                    {/* Icon with Pulse Animation */}
+                    {/* Icon with Enhanced Floating Animation */}
                     <motion.div
                       animate={{ 
                         boxShadow: [
                           '0 0 0 0 rgba(212, 175, 55, 0)',
-                          '0 0 0 10px rgba(212, 175, 55, 0.1)',
+                          '0 0 20px 8px rgba(212, 175, 55, 0.15)',
                           '0 0 0 0 rgba(212, 175, 55, 0)'
-                        ]
+                        ],
+                        rotate: [0, 3, -3, 0]
                       }}
-                      transition={{ duration: 2.5, repeat: Infinity, delay: index * 0.3 }}
+                      transition={{ 
+                        boxShadow: { duration: 2.5, repeat: Infinity, delay: index * 0.3 },
+                        rotate: { duration: 4, repeat: Infinity, ease: "easeInOut" }
+                      }}
                       whileHover={{ 
-                        rotate: [0, -5, 5, -3, 3, 0],
-                        scale: 1.1,
+                        rotate: [0, -10, 10, -5, 5, 0],
+                        scale: 1.15,
                         transition: { duration: 0.5 }
                       }}
-                      className={`w-20 h-20 ${option.iconBg} rounded-2xl flex items-center justify-center mx-auto mb-6`}
+                      className={`w-20 h-20 ${option.iconBg} rounded-2xl flex items-center justify-center mx-auto mb-6 relative`}
                     >
+                      {/* Inner Glow */}
+                      <div className="absolute inset-0 rounded-2xl bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       <option.icon />
                     </motion.div>
 
                     {/* Title */}
                     <motion.h3 
                       className={`text-2xl font-bold text-center mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}
-                      whileHover={{ scale: 1.02 }}
+                      whileHover={{ scale: 1.05 }}
                     >
                       {currentLanguage === 'ar' ? option.titleAr : option.titleEn}
                     </motion.h3>
@@ -238,13 +289,20 @@ const InternationalSelector = () => {
                     {/* Features */}
                     <div className="space-y-2 mb-6">
                       {option.features.map((feature, fIndex) => (
-                        <div 
+                        <motion.div 
                           key={fIndex}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.5 + fIndex * 0.1 }}
                           className={`flex items-center gap-2 text-sm ${isDark ? 'text-slate-300' : 'text-slate-700'}`}
                         >
-                          <div className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${option.gradient}`} />
+                          <motion.div 
+                            className={`w-2 h-2 rounded-full bg-gradient-to-r ${option.gradient}`}
+                            animate={{ scale: [1, 1.3, 1] }}
+                            transition={{ duration: 2, repeat: Infinity, delay: fIndex * 0.3 }}
+                          />
                           {currentLanguage === 'ar' ? feature.ar : feature.en}
-                        </div>
+                        </motion.div>
                       ))}
                     </div>
 
@@ -255,12 +313,12 @@ const InternationalSelector = () => {
                           ? 'bg-slate-700/50 text-white group-hover:bg-[#D4AF37] group-hover:text-slate-900' 
                           : 'bg-slate-100 text-slate-700 group-hover:bg-[#D4AF37] group-hover:text-slate-900'
                       }`}
-                      whileHover={{ scale: 1.02 }}
+                      whileHover={{ scale: 1.05 }}
                     >
                       {currentLanguage === 'ar' ? 'اختيار' : 'Select'}
                       <motion.div
-                        animate={{ x: [0, 5, 0] }}
-                        transition={{ duration: 1.5, repeat: Infinity }}
+                        animate={{ x: [0, 8, 0] }}
+                        transition={{ duration: 1.2, repeat: Infinity }}
                       >
                         <ArrowRight className="w-5 h-5" />
                       </motion.div>
@@ -269,11 +327,19 @@ const InternationalSelector = () => {
                   
                   {/* Bottom Border Glow */}
                   <motion.div 
-                    className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${option.gradient}`}
+                    className={`absolute bottom-0 left-0 right-0 h-1.5 bg-gradient-to-r ${option.gradient}`}
                     initial={{ scaleX: 0, opacity: 0 }}
                     whileHover={{ scaleX: 1, opacity: 1 }}
                     transition={{ duration: 0.3 }}
                   />
+
+                  {/* Corner Decorations */}
+                  <div className={`absolute top-3 right-3 w-3 h-3 border-t-2 border-r-2 rounded-tr-lg opacity-0 group-hover:opacity-50 transition-opacity ${
+                    option.id === 'western-union' ? 'border-yellow-400' : option.id === 'moneygram' ? 'border-orange-400' : 'border-indigo-400'
+                  }`} />
+                  <div className={`absolute bottom-3 left-3 w-3 h-3 border-b-2 border-l-2 rounded-bl-lg opacity-0 group-hover:opacity-50 transition-opacity ${
+                    option.id === 'western-union' ? 'border-yellow-400' : option.id === 'moneygram' ? 'border-orange-400' : 'border-indigo-400'
+                  }`} />
                 </div>
               </motion.div>
             ))}
