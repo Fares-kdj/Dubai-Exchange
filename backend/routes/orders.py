@@ -35,8 +35,20 @@ def serialize_order(order: dict) -> dict:
     return order
 
 
+# Order type labels for SMS
+ORDER_TYPE_LABELS = {
+    "traveler": "حجز دولار للمسافرين",
+    "local": "تحويل محلي",
+    "western_union": "ويسترن يونيون",
+    "moneygram": "موني جرام",
+    "country_based": "تحويل دولي",
+    "card_recharge": "شحن بطاقة",
+    "usdt_recharge": "شحن USDT"
+}
+
+
 @router.post("", response_model=OrderResponse)
-async def create_order(order: OrderCreate):
+async def create_order(order: OrderCreate, background_tasks: BackgroundTasks):
     """Create a new order"""
     now = datetime.now(timezone.utc).isoformat()
     order_id = generate_order_id(order.order_type)
@@ -55,6 +67,18 @@ async def create_order(order: OrderCreate):
     }
     
     await orders_collection.insert_one(order_doc)
+    
+    # Send SMS notification for order submission (in background)
+    phone = order.customer.phone
+    order_type_label = ORDER_TYPE_LABELS.get(order.order_type.value, order.order_type.value)
+    background_tasks.add_task(
+        sms_service.send_order_submitted,
+        phone,
+        order_id,
+        order_type_label
+    )
+    logger.info(f"Order created: {order_id}, SMS queued for {phone}")
+    
     return OrderResponse(**serialize_order(order_doc))
 
 
