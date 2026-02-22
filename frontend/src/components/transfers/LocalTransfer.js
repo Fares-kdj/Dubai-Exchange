@@ -23,9 +23,16 @@ const LocalTransfer = () => {
     senderProvince: '',
     receiverProvince: '',
     phone: '',
-    amount: '',
+    amountUSD: '', // User enters amount in USD
+    receiverCurrency: '', // IQD or USD
     paymentMethod: ''
   });
+
+  // Recipient currency options for local transfer
+  const receiverCurrencies = [
+    { value: 'IQD', labelAr: 'دينار عراقي', labelEn: 'Iraqi Dinar (IQD)', symbol: 'د.ع' },
+    { value: 'USD', labelAr: 'دولار أمريكي', labelEn: 'US Dollar (USD)', symbol: '$' }
+  ];
 
   // Iraqi provinces
   const provinces = [
