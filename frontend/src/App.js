@@ -9,6 +9,9 @@ import LandingPage3D from '@/components/landing/LandingPage3D';
 import TravelerBooking from '@/components/booking/TravelerBooking';
 // Pages
 import TermsPage from '@/components/pages/TermsPage';
+import PrivacyPolicy from '@/components/pages/PrivacyPolicy';
+import TermsOfUse from '@/components/pages/TermsOfUse';
+import LegalNotice from '@/components/pages/LegalNotice';
 // Transfers
 import TransfersHub from '@/components/transfers/TransfersHub';
 import LocalTransfer from '@/components/transfers/LocalTransfer';
@@ -66,6 +69,9 @@ function App() {
                 <Route path="/" element={<LandingPage3D />} />
                 <Route path="/traveler-booking" element={<TravelerBooking />} />
                 <Route path="/terms" element={<TermsPage />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/terms-of-use" element={<TermsOfUse />} />
+                <Route path="/legal-notice" element={<LegalNotice />} />
                 {/* Transfers Routes */}
                 <Route path="/transfers" element={<TransfersHub />} />
                 <Route path="/transfers/local" element={<LocalTransfer />} />
