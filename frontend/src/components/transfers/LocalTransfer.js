@@ -357,16 +357,137 @@ const LocalTransfer = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Amount */}
+                {/* Amount in USD */}
                 <div className="space-y-2">
                   <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
-                    {currentLanguage === 'ar' ? 'المبلغ (دينار عراقي)' : 'Amount (IQD)'} *
+                    {currentLanguage === 'ar' ? 'المبلغ بالدولار (USD)' : 'Amount in USD'} *
                   </Label>
                   <Input
                     type="number"
-                    value={formData.amount}
-                    onChange={(e) => handleInputChange('amount', e.target.value)}
+                    value={formData.amountUSD}
+                    onChange={(e) => handleInputChange('amountUSD', e.target.value)}
                     className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`}
+                    placeholder="100"
+                    min="1"
+                    data-testid="amount-usd-input"
+                  />
+                  {errors.amountUSD && (
+                    <p className="text-sm text-red-500 flex items-center gap-1">
+                      <AlertCircle className="w-4 h-4" />{errors.amountUSD}
+                    </p>
+                  )}
+                </div>
+
+                {/* Receiver Currency - NEW FIELD */}
+                <div className="space-y-2">
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
+                    {currentLanguage === 'ar' ? 'عملة المستلم' : 'Receiver Currency'} *
+                  </Label>
+                  <Select value={formData.receiverCurrency} onValueChange={(v) => handleInputChange('receiverCurrency', v)}>
+                    <SelectTrigger className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} data-testid="receiver-currency-select">
+                      <SelectValue placeholder={currentLanguage === 'ar' ? 'اختر العملة' : 'Select currency'} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {receiverCurrencies.map(c => (
+                        <SelectItem key={c.value} value={c.value}>
+                          {c.symbol} {currentLanguage === 'ar' ? c.labelAr : c.labelEn}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {errors.receiverCurrency && (
+                    <p className="text-sm text-red-500 flex items-center gap-1">
+                      <AlertCircle className="w-4 h-4" />{errors.receiverCurrency}
+                    </p>
+                  )}
+                </div>
+
+                {/* Payment Method */}
+                <div className="space-y-2 md:col-span-2">
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
+                    {currentLanguage === 'ar' ? 'طريقة الدفع' : 'Payment Method'} *
+                  </Label>
+                  <Select value={formData.paymentMethod} onValueChange={(v) => handleInputChange('paymentMethod', v)}>
+                    <SelectTrigger className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} data-testid="payment-method-select">
+                      <SelectValue placeholder={currentLanguage === 'ar' ? 'اختر طريقة الدفع' : 'Select payment method'} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {paymentMethods.map(m => (
+                        <SelectItem key={m.value} value={m.value}>
+                          {currentLanguage === 'ar' ? m.labelAr : m.labelEn}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {errors.paymentMethod && (
+                    <p className="text-sm text-red-500 flex items-center gap-1">
+                      <AlertCircle className="w-4 h-4" />{errors.paymentMethod}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Summary with USD → IQD conversion */}
+              {formData.amountUSD && parseFloat(formData.amountUSD) > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  className={`mt-6 p-6 rounded-2xl ${
+                    isDark ? 'bg-emerald-900/30 border border-emerald-700/50' : 'bg-emerald-50 border border-emerald-200'
+                  }`}
+                >
+                  <h4 className={`font-bold mb-4 ${isDark ? 'text-emerald-300' : 'text-emerald-900'}`}>
+                    {currentLanguage === 'ar' ? 'ملخص التحويل' : 'Transfer Summary'}
+                  </h4>
+                  <div className="space-y-3 text-sm">
+                    <div className="flex justify-between">
+                      <span className={isDark ? 'text-emerald-200' : 'text-emerald-800'}>
+                        {currentLanguage === 'ar' ? 'المبلغ (USD)' : 'Amount (USD)'}
+                      </span>
+                      <span className={`font-semibold ${isDark ? 'text-white' : ''}`}>
+                        ${parseFloat(formData.amountUSD).toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className={isDark ? 'text-emerald-200' : 'text-emerald-800'}>
+                        {currentLanguage === 'ar' ? 'المقابل بالدينار' : 'Amount in IQD'}
+                      </span>
+                      <span className={`font-semibold ${isDark ? 'text-white' : ''}`}>
+                        {calculateAmountIQD().toLocaleString()} IQD
+                      </span>
+                    </div>
+                    {formData.receiverCurrency && (
+                      <div className="flex justify-between">
+                        <span className={isDark ? 'text-emerald-200' : 'text-emerald-800'}>
+                          {currentLanguage === 'ar' ? 'عملة المستلم' : 'Receiver Currency'}
+                        </span>
+                        <span className={`font-semibold ${isDark ? 'text-white' : ''}`}>
+                          {formData.receiverCurrency}
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex justify-between">
+                      <span className={isDark ? 'text-emerald-200' : 'text-emerald-800'}>
+                        {currentLanguage === 'ar' ? `رسوم الخدمة (${serviceFeePercent}%)` : `Service Fee (${serviceFeePercent}%)`}
+                      </span>
+                      <span className="font-semibold text-amber-500">
+                        {calculateFee().toLocaleString()} IQD
+                      </span>
+                    </div>
+                    <div className={`border-t pt-3 mt-3 ${isDark ? 'border-emerald-700/50' : 'border-emerald-300'}`}>
+                      <div className="flex justify-between">
+                        <span className={`font-bold ${isDark ? 'text-white' : 'text-emerald-900'}`}>
+                          {currentLanguage === 'ar' ? 'الإجمالي للدفع' : 'Total to Pay'}
+                        </span>
+                        <span className="font-bold text-lg text-emerald-500">
+                          {calculateTotal().toLocaleString()} IQD
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </div>
                     placeholder="1,000,000"
                     min="1"
                     data-testid="amount-input"
