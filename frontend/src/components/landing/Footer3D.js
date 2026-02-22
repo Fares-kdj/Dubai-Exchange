@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/context/LanguageContext';
 import { useTheme } from '@/context/ThemeContext';
@@ -10,29 +11,40 @@ const Footer3D = () => {
   const { isDark } = useTheme();
   const isArabic = currentLanguage === 'ar';
   const isKurdish = currentLanguage === 'ku';
-  const currentYear = new Date().getFullYear();
 
   const text = {
     ar: {
       quickLinks: 'روابط سريعة',
+      legalLinks: 'روابط قانونية',
       contactUs: 'اتصل بنا',
       rights: 'جميع الحقوق محفوظة.',
       cbiLicense: 'مرخص من البنك المركزي',
-      about: 'شركة دبي العالمية للصرافة - خدمات مالية موثوقة ومرخصة من البنك المركزي العراقي. نقدم أفضل خدمات الصرافة والتحويلات المالية.'
+      about: 'شركة دبي العالمية للصرافة - خدمات مالية موثوقة ومرخصة من البنك المركزي العراقي. نقدم أفضل خدمات الصرافة والتحويلات المالية.',
+      privacy: 'سياسة الخصوصية',
+      terms: 'شروط الاستخدام',
+      legal: 'إشعار قانوني'
     },
     en: {
       quickLinks: 'Quick Links',
+      legalLinks: 'Legal',
       contactUs: 'Contact Us',
       rights: 'All rights reserved.',
       cbiLicense: 'Licensed by CBI',
-      about: 'Dubai International Exchange - Trusted financial services licensed by the Central Bank of Iraq. We provide the best exchange and money transfer services.'
+      about: 'Dubai International Exchange - Trusted financial services licensed by the Central Bank of Iraq. We provide the best exchange and money transfer services.',
+      privacy: 'Privacy Policy',
+      terms: 'Terms of Use',
+      legal: 'Legal Notice'
     },
     ku: {
       quickLinks: 'بەستەرە خێراکان',
+      legalLinks: 'یاسایی',
       contactUs: 'پەیوەندیمان پێوە بکە',
       rights: 'هەموو مافەکان پارێزراون.',
       cbiLicense: 'مۆڵەتدار لە بانکی ناوەندی',
-      about: 'کۆمپانیای دوبەی نێودەوڵەتی بۆ ئاڵوگۆڕی دراو - خزمەتگوزارییە دارایییە متمانەپێکراوەکان مۆڵەتدارن لە بانکی ناوەندیی عێراق.'
+      about: 'کۆمپانیای دوبەی نێودەوڵەتی بۆ ئاڵوگۆڕی دراو - خزمەتگوزارییە دارایییە متمانەپێکراوەکان مۆڵەتدارن لە بانکی ناوەندیی عێراق.',
+      privacy: 'سیاسەتی تایبەتمەندی',
+      terms: 'مەرجەکانی بەکارهێنان',
+      legal: 'ئاگاداری یاسایی'
     }
   };
 
@@ -43,6 +55,12 @@ const Footer3D = () => {
     { labelAr: 'التحويلات', labelEn: 'Transfers', labelKu: 'گواستنەوەکان', href: '/transfers' },
     { labelAr: 'تتبع الطلب', labelEn: 'Track Order', labelKu: 'بەدواداچوونی داواکاری', href: '/track-order' },
     { labelAr: 'الشروط والأحكام', labelEn: 'Terms', labelKu: 'مەرج و ڕێککەوتن', href: '/terms' }
+  ];
+
+  const legalLinks = [
+    { label: t.privacy, href: '/privacy-policy' },
+    { label: t.terms, href: '/terms-of-use' },
+    { label: t.legal, href: '/legal-notice' }
   ];
 
   const getLabel = (link) => isKurdish ? link.labelKu : isArabic ? link.labelAr : link.labelEn;
@@ -70,18 +88,18 @@ const Footer3D = () => {
         {/* Main Footer Content */}
         <div className="py-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Company Info */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-1">
             <img 
               src={isDark ? ASSETS.logoWhite : ASSETS.logoColor}
               alt="Dubai International Exchange"
               className="h-12 mb-6"
             />
-            <p className={`mb-6 max-w-md ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+            <p className={`mb-6 text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
               {t.about}
             </p>
 
             {/* Social Links */}
-            <div className="flex gap-4">
+            <div className="flex gap-3">
               {socialLinks.map((social, index) => (
                 <motion.a
                   key={index}
@@ -111,8 +129,8 @@ const Footer3D = () => {
             <ul className="space-y-3">
               {quickLinks.map((link, index) => (
                 <li key={index}>
-                  <a 
-                    href={link.href}
+                  <Link 
+                    to={link.href}
                     className={`text-sm transition-colors ${
                       isDark 
                         ? 'text-slate-400 hover:text-[#D4AF37]'
@@ -120,7 +138,30 @@ const Footer3D = () => {
                     }`}
                   >
                     {getLabel(link)}
-                  </a>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Legal Links */}
+          <div>
+            <h4 className={`font-bold mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+              {t.legalLinks}
+            </h4>
+            <ul className="space-y-3">
+              {legalLinks.map((link, index) => (
+                <li key={index}>
+                  <Link 
+                    to={link.href}
+                    className={`text-sm transition-colors ${
+                      isDark 
+                        ? 'text-slate-400 hover:text-[#D4AF37]'
+                        : 'text-slate-600 hover:text-[#B8860B]'
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -161,13 +202,38 @@ const Footer3D = () => {
           </div>
         </div>
 
-        {/* Bottom Bar */}
+        {/* Legal Links Row (Mobile-friendly) */}
+        <div className={`py-4 border-t flex flex-wrap justify-center gap-x-6 gap-y-2 ${
+          isDark ? 'border-slate-800' : 'border-slate-200'
+        }`}>
+          <Link 
+            to="/privacy-policy" 
+            className={`text-sm transition-colors ${isDark ? 'text-slate-400 hover:text-[#D4AF37]' : 'text-slate-500 hover:text-[#B8860B]'}`}
+          >
+            {t.privacy}
+          </Link>
+          <span className={isDark ? 'text-slate-700' : 'text-slate-300'}>|</span>
+          <Link 
+            to="/terms-of-use" 
+            className={`text-sm transition-colors ${isDark ? 'text-slate-400 hover:text-[#D4AF37]' : 'text-slate-500 hover:text-[#B8860B]'}`}
+          >
+            {t.terms}
+          </Link>
+          <span className={isDark ? 'text-slate-700' : 'text-slate-300'}>|</span>
+          <Link 
+            to="/legal-notice" 
+            className={`text-sm transition-colors ${isDark ? 'text-slate-400 hover:text-[#D4AF37]' : 'text-slate-500 hover:text-[#B8860B]'}`}
+          >
+            {t.legal}
+          </Link>
+        </div>
+
+        {/* Bottom Bar - Copyright */}
         <div className={`py-6 border-t flex flex-col sm:flex-row items-center justify-between gap-4 ${
           isDark ? 'border-slate-800' : 'border-slate-200'
         }`}>
           <p className={`text-sm text-center sm:text-left ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>
-            © {currentYear} {isKurdish ? COMPANY.nameKu || COMPANY.nameAr : isArabic ? COMPANY.nameAr : COMPANY.nameEn}. 
-            {' '}{t.rights}
+            © 2026 Dubai International Company LLC. {t.rights}
           </p>
           
           <div className="flex items-center gap-4">
