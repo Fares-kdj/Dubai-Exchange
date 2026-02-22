@@ -138,11 +138,14 @@ const CountryWizard = () => {
   // Set default receiver currency when method changes
   useEffect(() => {
     if (wizardData.method && wizardData.country) {
-      const availableCurrencies = getAvailableCurrencies();
-      // For non-bank, auto-set to local currency; for bank, default to first option (USD)
-      if (!isBankTransfer && availableCurrencies.length === 1) {
-        setWizardData(p => ({ ...p, receiverCurrency: availableCurrencies[0].code }));
-      } else if (isBankTransfer && !wizardData.receiverCurrency) {
+      const isBank = wizardData.method === 'bank';
+      const localCurrency = countryCurrencies[wizardData.country];
+      
+      if (!isBank && localCurrency) {
+        // For non-bank, auto-set to local currency
+        setWizardData(p => ({ ...p, receiverCurrency: localCurrency.code }));
+      } else if (isBank && !wizardData.receiverCurrency) {
+        // For bank, default to USD
         setWizardData(p => ({ ...p, receiverCurrency: 'USD' }));
       }
     }
