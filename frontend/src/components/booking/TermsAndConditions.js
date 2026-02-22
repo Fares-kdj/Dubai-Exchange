@@ -82,7 +82,7 @@ const TermsAndConditions = ({ onAccept }) => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white pt-20">
+    <div className="min-h-screen pt-20">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Progress Indicator */}
         <motion.div
@@ -95,25 +95,25 @@ const TermsAndConditions = ({ onAccept }) => {
               <div className="w-8 h-8 rounded-full bg-[#D4AF37] text-white flex items-center justify-center text-sm font-bold">
                 1
               </div>
-              <span className="text-sm font-medium text-slate-900">
+              <span className={`text-sm font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 {currentLanguage === 'ar' ? 'الشروط والأحكام' : 'Terms & Conditions'}
               </span>
             </div>
-            <div className="w-16 h-1 bg-slate-200 rounded"></div>
+            <div className={`w-16 h-1 rounded ${isDark ? 'bg-slate-700' : 'bg-slate-200'}`}></div>
             <div className="flex items-center gap-2 opacity-40">
-              <div className="w-8 h-8 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-sm font-bold">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${isDark ? 'bg-slate-700 text-slate-400' : 'bg-slate-200 text-slate-500'}`}>
                 2
               </div>
-              <span className="text-sm font-medium text-slate-500">
+              <span className={`text-sm font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                 {currentLanguage === 'ar' ? 'معلومات الحجز' : 'Booking Details'}
               </span>
             </div>
-            <div className="w-16 h-1 bg-slate-200 rounded"></div>
+            <div className={`w-16 h-1 rounded ${isDark ? 'bg-slate-700' : 'bg-slate-200'}`}></div>
             <div className="flex items-center gap-2 opacity-40">
-              <div className="w-8 h-8 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-sm font-bold">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${isDark ? 'bg-slate-700 text-slate-400' : 'bg-slate-200 text-slate-500'}`}>
                 3
               </div>
-              <span className="text-sm font-medium text-slate-500">
+              <span className={`text-sm font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                 {currentLanguage === 'ar' ? 'التأكيد' : 'Confirmation'}
               </span>
             </div>
@@ -125,7 +125,9 @@ const TermsAndConditions = ({ onAccept }) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="max-w-4xl mx-auto bg-white rounded-3xl border-2 border-slate-200 shadow-xl overflow-hidden"
+          className={`max-w-4xl mx-auto rounded-3xl border-2 shadow-xl overflow-hidden ${
+            isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'
+          }`}
           data-testid="terms-card"
         >
           {/* Header */}
@@ -153,13 +155,13 @@ const TermsAndConditions = ({ onAccept }) => {
                 transition={{ delay: 0.1 * index }}
                 className="mb-8 last:mb-0"
               >
-                <h3 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-green-600" />
+                <h3 className={`text-xl font-bold mb-4 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                  <CheckCircle className="w-5 h-5 text-green-500" />
                   {currentLanguage === 'ar' ? section.titleAr : section.titleEn}
                 </h3>
                 <ul className="space-y-3">
                   {(currentLanguage === 'ar' ? section.pointsAr : section.pointsEn).map((point, idx) => (
-                    <li key={idx} className="flex items-start gap-3 text-slate-600">
+                    <li key={idx} className={`flex items-start gap-3 ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
                       <span className="w-2 h-2 rounded-full bg-[#D4AF37] mt-2 flex-shrink-0"></span>
                       <span className="text-sm leading-relaxed">{point}</span>
                     </li>
@@ -170,7 +172,7 @@ const TermsAndConditions = ({ onAccept }) => {
           </div>
 
           {/* Acceptance Section */}
-          <div className="border-t-2 border-slate-100 p-8 bg-slate-50">
+          <div className={`border-t-2 p-8 ${isDark ? 'border-slate-700 bg-slate-800/80' : 'border-slate-100 bg-slate-50'}`}>
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
