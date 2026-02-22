@@ -239,7 +239,11 @@ const TrackOrder = () => {
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="mb-6 p-4 bg-red-500/20 border border-red-500/30 rounded-xl text-red-300 flex items-center gap-2"
+                  className={`mb-6 p-4 rounded-xl flex items-center gap-2 ${
+                    isDark 
+                      ? 'bg-red-500/20 border border-red-500/30 text-red-300' 
+                      : 'bg-red-50 border border-red-200 text-red-600'
+                  }`}
                 >
                   <AlertCircle className="w-5 h-5" />
                   {error}
@@ -273,21 +277,25 @@ const TrackOrder = () => {
                 className="max-w-5xl mx-auto"
               >
                 {/* Order Header Card */}
-                <div className="bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 p-8 mb-6">
+                <div className={`backdrop-blur-xl rounded-3xl border-2 p-8 mb-6 ${
+                  isDark 
+                    ? 'bg-slate-800/50 border-slate-700' 
+                    : 'bg-white border-slate-200'
+                }`}>
                   <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                     <div>
-                      <p className="text-slate-400 text-sm mb-1">{isArabic ? 'رقم الطلب' : 'Order ID'}</p>
+                      <p className={`text-sm mb-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{isArabic ? 'رقم الطلب' : 'Order ID'}</p>
                       <div className="flex items-center gap-3">
-                        <h2 className="text-3xl font-bold text-white">{orderResult.orderId}</h2>
-                        <button onClick={copyOrderId} className="p-2 hover:bg-white/10 rounded-lg transition-colors">
-                          {copied ? <CheckCircle className="w-5 h-5 text-green-400" /> : <Copy className="w-5 h-5 text-slate-400" />}
+                        <h2 className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{orderResult.orderId}</h2>
+                        <button onClick={copyOrderId} className={`p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}>
+                          {copied ? <CheckCircle className="w-5 h-5 text-green-400" /> : <Copy className={`w-5 h-5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`} />}
                         </button>
                       </div>
                       <div className="flex items-center gap-4 mt-3">
-                        <span className="px-3 py-1 bg-white/10 rounded-full text-sm text-slate-300">
+                        <span className={`px-3 py-1 rounded-full text-sm ${isDark ? 'bg-white/10 text-slate-300' : 'bg-slate-100 text-slate-600'}`}>
                           {getOrderTypeLabel(orderResult.type)}
                         </span>
-                        <span className="text-sm text-slate-400">
+                        <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                           {formatDate(orderResult.createdAt)}
                         </span>
                       </div>
@@ -311,11 +319,11 @@ const TrackOrder = () => {
                       return (
                         <React.Fragment key={s}>
                           <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                            isRejected ? 'bg-red-500/30' : isActive ? 'bg-[#D4AF37]' : 'bg-white/20'
+                            isRejected ? 'bg-red-500/30' : isActive ? 'bg-[#D4AF37]' : (isDark ? 'bg-slate-700' : 'bg-slate-200')
                           }`}>
                             {isActive && !isRejected && <CheckCircle className="w-4 h-4 text-white" />}
                           </div>
-                          {i < 2 && <div className={`flex-1 h-1 mx-2 rounded ${isActive && statuses.indexOf(s) < currentIdx ? 'bg-[#D4AF37]' : 'bg-white/20'}`} />}
+                          {i < 2 && <div className={`flex-1 h-1 mx-2 rounded ${isActive && statuses.indexOf(s) < currentIdx ? 'bg-[#D4AF37]' : (isDark ? 'bg-slate-700' : 'bg-slate-200')}`} />}
                         </React.Fragment>
                       );
                     })}
