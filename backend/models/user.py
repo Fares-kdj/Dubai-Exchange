@@ -11,41 +11,101 @@ class UserRole(str, Enum):
 
 
 class Permission(str, Enum):
-    # Orders
-    VIEW_ORDERS = "view_orders"
-    MANAGE_ORDERS = "manage_orders"
+    # Dashboard
+    VIEW_DASHBOARD = "view_dashboard"
+    
+    # Orders - Per Service Type
+    VIEW_ORDERS_TRAVELER = "view_orders_traveler"
+    VIEW_ORDERS_LOCAL = "view_orders_local"
+    VIEW_ORDERS_INTERNATIONAL = "view_orders_international"
+    VIEW_ORDERS_USDT = "view_orders_usdt"
+    VIEW_ORDERS_CARD = "view_orders_card"
+    
+    # Order Actions
+    APPROVE_ORDERS = "approve_orders"
+    REJECT_ORDERS = "reject_orders"
+    EDIT_ORDERS = "edit_orders"
     DELETE_ORDERS = "delete_orders"
+    PRINT_RECEIPTS = "print_receipts"
+    
+    # Blocklist
+    VIEW_BLOCKLIST = "view_blocklist"
+    MANAGE_BLOCKLIST = "manage_blocklist"
     
     # Services
     VIEW_SERVICES = "view_services"
     MANAGE_SERVICES = "manage_services"
     
-    # CMS
+    # Countries & Payout Methods
+    VIEW_COUNTRIES = "view_countries"
+    MANAGE_COUNTRIES = "manage_countries"
+    
+    # Exchange Rates
+    VIEW_RATES = "view_rates"
+    MANAGE_RATES = "manage_rates"
+    
+    # Airports & Stamps
+    VIEW_AIRPORTS = "view_airports"
+    MANAGE_AIRPORTS = "manage_airports"
+    
+    # CMS & Branding (Developer Only by default)
     EDIT_CONTENT = "edit_content"
     EDIT_BRANDING = "edit_branding"
     
-    # Settings
-    MANAGE_RATES = "manage_rates"
-    MANAGE_COUNTRIES = "manage_countries"
-    MANAGE_FORMS = "manage_forms"
-    
-    # System
-    VIEW_STATS = "view_stats"
-    MANAGE_USERS = "manage_users"  # Only developer
+    # System (Developer Only)
+    MANAGE_USERS = "manage_users"
 
 
 # Default permissions for admin
 DEFAULT_ADMIN_PERMISSIONS = [
-    Permission.VIEW_ORDERS,
-    Permission.MANAGE_ORDERS,
+    Permission.VIEW_DASHBOARD,
+    Permission.VIEW_ORDERS_TRAVELER,
+    Permission.VIEW_ORDERS_LOCAL,
+    Permission.VIEW_ORDERS_INTERNATIONAL,
+    Permission.VIEW_ORDERS_USDT,
+    Permission.VIEW_ORDERS_CARD,
+    Permission.APPROVE_ORDERS,
+    Permission.REJECT_ORDERS,
+    Permission.EDIT_ORDERS,
+    Permission.PRINT_RECEIPTS,
+    Permission.VIEW_BLOCKLIST,
+    Permission.MANAGE_BLOCKLIST,
     Permission.VIEW_SERVICES,
-    Permission.EDIT_CONTENT,
-    Permission.MANAGE_RATES,
-    Permission.VIEW_STATS,
+    Permission.VIEW_COUNTRIES,
+    Permission.VIEW_RATES,
+    Permission.VIEW_AIRPORTS,
 ]
 
 # All permissions for developer
 ALL_PERMISSIONS = list(Permission)
+
+# Permission labels in Arabic
+PERMISSION_LABELS_AR = {
+    Permission.VIEW_DASHBOARD: "عرض لوحة التحكم",
+    Permission.VIEW_ORDERS_TRAVELER: "عرض طلبات حجز المسافرين",
+    Permission.VIEW_ORDERS_LOCAL: "عرض طلبات التحويل المحلي",
+    Permission.VIEW_ORDERS_INTERNATIONAL: "عرض طلبات التحويل الدولي",
+    Permission.VIEW_ORDERS_USDT: "عرض طلبات USDT",
+    Permission.VIEW_ORDERS_CARD: "عرض طلبات شحن البطاقات",
+    Permission.APPROVE_ORDERS: "قبول الطلبات",
+    Permission.REJECT_ORDERS: "رفض الطلبات",
+    Permission.EDIT_ORDERS: "تعديل الطلبات",
+    Permission.DELETE_ORDERS: "حذف الطلبات",
+    Permission.PRINT_RECEIPTS: "طباعة الإيصالات",
+    Permission.VIEW_BLOCKLIST: "عرض قائمة الحظر",
+    Permission.MANAGE_BLOCKLIST: "إدارة قائمة الحظر",
+    Permission.VIEW_SERVICES: "عرض الخدمات",
+    Permission.MANAGE_SERVICES: "إدارة الخدمات",
+    Permission.VIEW_COUNTRIES: "عرض الدول",
+    Permission.MANAGE_COUNTRIES: "إدارة الدول",
+    Permission.VIEW_RATES: "عرض أسعار الصرف",
+    Permission.MANAGE_RATES: "إدارة أسعار الصرف",
+    Permission.VIEW_AIRPORTS: "عرض المطارات والأختام",
+    Permission.MANAGE_AIRPORTS: "إدارة المطارات والأختام",
+    Permission.EDIT_CONTENT: "تعديل المحتوى",
+    Permission.EDIT_BRANDING: "تعديل الهوية",
+    Permission.MANAGE_USERS: "إدارة المستخدمين",
+}
 
 
 class UserBase(BaseModel):
