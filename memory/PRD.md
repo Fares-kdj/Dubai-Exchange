@@ -104,22 +104,26 @@
 
 ## المهام القادمة 📋
 
-### P0 - عاجل
-- ✅ ~~واجهة إدارة المحتوى (CMS) في لوحة التحكم~~ (تم إنجازه)
-- ✅ ~~صفحة تعبئة البطاقات~~ (تم إنجازه)
-- ✅ ~~صفحة شحن USDT~~ (تم إنجازه)
-- ✅ ~~إصلاح تخطيط Hero - المحتوى على اليسار للديسكتوب~~ (تم إنجازه)
-- ✅ ~~إصلاح الثيم في جميع الصفحات~~ (تم إنجازه)
-- ✅ ~~طرق الدفع الموحدة (Zain Cash, Mastercard Al-Rafidain, FIB)~~ (تم إنجازه)
-- ✅ ~~رسوم 2% على جميع الخدمات عدا Traveler Booking~~ (تم إنجازه)
-- ✅ ~~Micro-animations للأزرار في Hero والتحويلات~~ (تم إنجازه)
-- ✅ ~~إعادة تصميم محول العملات بشكل premium~~ (تم إنجازه)
-- ✅ ~~صفحة النجاح الموحدة (QR Code, WhatsApp, رفع الإثبات)~~ (تم إنجازه)
+### P0 - عاجل (تم إنجازها جميعاً ✅)
+- ✅ واجهة إدارة المحتوى (CMS) في لوحة التحكم
+- ✅ صفحة تعبئة البطاقات
+- ✅ صفحة شحن USDT
+- ✅ إصلاح تخطيط Hero - المحتوى على اليسار للديسكتوب
+- ✅ إصلاح الثيم في جميع الصفحات
+- ✅ طرق الدفع الموحدة (Zain Cash, Mastercard Al-Rafidain, FIB)
+- ✅ رسوم 2% على جميع الخدمات عدا Traveler Booking
+- ✅ Micro-animations للأزرار
+- ✅ إعادة تصميم محول العملات بشكل premium
+- ✅ صفحة النجاح الموحدة (QR Code, WhatsApp, رفع الإثبات)
+- ✅ Splash Screen Premium 3D مع شعار وتأثيرات
+- ✅ Local Transfer - إضافة حقل عملة المستلم (IQD/USD)
+- ✅ إعادة تصميم صفحة International Transfer Options (3-card layout)
 
-### P1 - متوسطة
+### P1 - متوسطة (جاري العمل)
 - [ ] PDF Generator للإيصالات
 - [ ] ربط رفع إثبات الدفع مع Backend (حالياً MOCKED)
-- [ ] Form Builder ديناميكي في لوحة الإدارة
+- [ ] تحديث Country-based International Transfer لدعم عملة المستلم المتغيرة
+- [ ] تعديلات لوحة التحكم المتقدمة
 
 ### P2 - منخفضة
 - [ ] لوحة الإدارة: صفحات طلبات منفصلة لكل خدمة
@@ -144,25 +148,22 @@
 
 ```
 /app/frontend/src/components/
+├── ui/
+│   └── SplashScreen.js (جديد - شاشة تحميل premium)
 ├── landing/
 │   ├── LandingPage3D.js
 │   ├── Header3D.js
 │   ├── HeroSection3D.js (micro-animations محسنة)
-│   ├── GlobalSection.js
-│   ├── ServicesSection3D.js
-│   ├── CurrencyConverterSection.js (تصميم premium جديد)
+│   ├── CurrencyConverterSection.js (تصميم premium)
 │   ├── DevicesSection.js
-│   ├── PartnersSection3D.js
-│   ├── TrustSection3D.js
-│   ├── PaymentsSection3D.js
-│   ├── ContactSection.js
 │   └── Footer3D.js
 ├── booking/
 │   ├── TravelerBooking.js
 │   ├── TermsAndConditions.js
 │   └── BookingForm.js
 ├── transfers/
-│   ├── LocalTransfer.js
+│   ├── LocalTransfer.js (+ عملة المستلم)
+│   ├── InternationalSelector.js (تصميم 3-card premium)
 │   ├── WesternUnion.js
 │   ├── MoneyGram.js
 │   ├── CountryWizard.js
@@ -171,7 +172,7 @@
 ├── services/
 │   ├── CardRecharge.js
 │   ├── USDTRecharge.js
-│   └── ServiceSuccess.js (صفحة موحدة: QR, WhatsApp, Upload)
+│   └── ServiceSuccess.js (QR, WhatsApp, Upload)
 └── config/
     └── payments.js
 ```
@@ -184,4 +185,4 @@
 ---
 
 ## آخر تحديث
-فبراير 2026 - إضافة Micro-animations للأزرار، إعادة تصميم محول العملات بشكل premium، إنشاء صفحة النجاح الموحدة مع QR Code وWhatsApp ورفع إثبات الدفع
+فبراير 2026 - إضافة Splash Screen Premium 3D، حقل عملة المستلم في Local Transfer (IQD/USD)، إعادة تصميم صفحة International Transfer Options بتخطيط 3 بطاقات premium
