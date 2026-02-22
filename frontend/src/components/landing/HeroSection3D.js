@@ -133,137 +133,150 @@ export const HeroSection3D = () => {
         }`} />
       </div>
 
-      {/* Content Container */}
-      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-16 min-h-screen flex flex-col justify-center">
-        <div className="max-w-2xl">
-          {/* CBI Badge */}
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className={`inline-flex items-center gap-3 px-5 py-2.5 rounded-full border mb-8 ${
-              isDark 
-                ? 'bg-[#D4AF37]/10 border-[#D4AF37]/30 text-[#D4AF37]' 
-                : 'bg-amber-100/80 border-amber-300 text-amber-800'
-            }`}
+      {/* Content Container - Desktop: Two-column grid with content LEFT-aligned for ALL languages */}
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-16 min-h-screen">
+        {/* Desktop: Grid layout | Mobile: Flex centered */}
+        <div className="min-h-[calc(100vh-7rem)] lg:grid lg:grid-cols-[minmax(420px,520px)_1fr] lg:items-center">
+          {/* Content Column - Always on LEFT for desktop, regardless of RTL/LTR */}
+          <div 
+            className="flex flex-col justify-center max-w-2xl mx-auto lg:mx-0 lg:max-w-none"
+            style={{ direction: 'ltr' }} // Container position is LTR
           >
-            <img 
-              src="https://upload.wikimedia.org/wikipedia/en/thumb/9/95/Central_Bank_of_Iraq_logo.png/150px-Central_Bank_of_Iraq_logo.png"
-              alt="CBI"
-              className="w-8 h-8 object-contain"
-            />
-            <span className="font-semibold text-sm">{t.cbiTitle}</span>
-          </motion.div>
+            {/* Inner content wrapper - respects text direction */}
+            <div style={{ direction: isArabic || isKurdish ? 'rtl' : 'ltr' }}>
+              {/* CBI Badge */}
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className={`inline-flex items-center gap-3 px-5 py-2.5 rounded-full border mb-8 ${
+                  isDark 
+                    ? 'bg-[#D4AF37]/10 border-[#D4AF37]/30 text-[#D4AF37]' 
+                    : 'bg-amber-100/80 border-amber-300 text-amber-800'
+                }`}
+              >
+                <img 
+                  src="https://upload.wikimedia.org/wikipedia/en/thumb/9/95/Central_Bank_of_Iraq_logo.png/150px-Central_Bank_of_Iraq_logo.png"
+                  alt="CBI"
+                  className="w-8 h-8 object-contain"
+                />
+                <span className="font-semibold text-sm">{t.cbiTitle}</span>
+              </motion.div>
 
-          {/* Company Logo */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3 }}
-            className="mb-6"
-          >
-            <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br from-[#D4AF37] to-[#B8860B] flex items-center justify-center shadow-2xl ${
-              isDark ? 'shadow-[#D4AF37]/30' : 'shadow-amber-500/40'
-            }`}>
-              <span className="text-2xl font-black text-white">DIE</span>
-            </div>
-          </motion.div>
+              {/* Company Logo */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3 }}
+                className="mb-6"
+              >
+                <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br from-[#D4AF37] to-[#B8860B] flex items-center justify-center shadow-2xl ${
+                  isDark ? 'shadow-[#D4AF37]/30' : 'shadow-amber-500/40'
+                }`}>
+                  <span className="text-2xl font-black text-white">DIE</span>
+                </div>
+              </motion.div>
 
-          {/* Company Name */}
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className={`text-4xl md:text-5xl lg:text-6xl font-bold mb-4 ${
-              isDark ? 'text-white' : 'text-slate-900'
-            }`}
-          >
-            {t.name}
-          </motion.h1>
-
-          {/* Slogan */}
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className={`text-lg md:text-xl mb-10 ${
-              isDark ? 'text-slate-300' : 'text-slate-600'
-            }`}
-          >
-            {t.slogan}
-          </motion.p>
-
-          {/* 4 Main Service Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-            className="grid grid-cols-2 gap-4 mb-10"
-          >
-            {mainServices.map((service, index) => (
-              <motion.button
-                key={service.id}
-                onClick={() => navigate(service.link)}
+              {/* Company Name */}
+              <motion.h1
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7 + index * 0.1 }}
-                whileHover={{ 
-                  scale: 1.03, 
-                  y: -5,
-                  ...service.animation
-                }}
-                whileTap={{ scale: 0.97 }}
-                className={`group relative flex items-center gap-3 px-5 py-4 rounded-2xl font-bold transition-all duration-300 overflow-hidden ${
-                  isDark 
-                    ? 'bg-slate-800/80 hover:bg-slate-700/90 text-white border border-slate-700/50' 
-                    : 'bg-white/80 hover:bg-white text-slate-900 border border-slate-200/50'
-                } backdrop-blur-sm shadow-lg hover:shadow-2xl ${service.hoverGlow}`}
-                data-testid={`hero-service-${service.id}`}
+                transition={{ delay: 0.4 }}
+                className={`text-4xl md:text-5xl lg:text-6xl font-bold mb-4 ${
+                  isDark ? 'text-white' : 'text-slate-900'
+                }`}
               >
-                {/* Icon Container */}
-                <motion.div
-                  whileHover={service.animation}
-                  transition={{ duration: 0.5 }}
-                  className={`w-12 h-12 rounded-xl bg-gradient-to-br ${service.gradient} flex items-center justify-center shadow-lg`}
-                >
-                  <service.icon className="w-6 h-6 text-white" />
-                </motion.div>
-                
-                {/* Label */}
-                <span className="text-sm md:text-base">{getLabel(service)}</span>
+                {t.name}
+              </motion.h1>
 
-                {/* Hover Glow Effect */}
-                <div className={`absolute inset-0 bg-gradient-to-r ${service.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300 rounded-2xl`} />
-              </motion.button>
-            ))}
-          </motion.div>
+              {/* Slogan */}
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className={`text-lg md:text-xl mb-10 ${
+                  isDark ? 'text-slate-300' : 'text-slate-600'
+                }`}
+              >
+                {t.slogan}
+              </motion.p>
 
-          {/* Trust Indicators */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.1 }}
-            className="flex flex-wrap items-center gap-6"
-          >
-            <div className={`flex items-center gap-2 px-4 py-2 rounded-full ${
-              isDark ? 'bg-slate-800/60 text-slate-300' : 'bg-white/60 text-slate-700'
-            } backdrop-blur-sm`}>
-              <Shield className={`w-4 h-4 ${isDark ? 'text-green-400' : 'text-green-600'}`} />
-              <span className="text-sm font-medium">{t.licensed}</span>
+              {/* 4 Main Service Buttons */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                className="grid grid-cols-2 gap-4 mb-10"
+              >
+                {mainServices.map((service, index) => (
+                  <motion.button
+                    key={service.id}
+                    onClick={() => navigate(service.link)}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.7 + index * 0.1 }}
+                    whileHover={{ 
+                      scale: 1.03, 
+                      y: -5,
+                      ...service.animation
+                    }}
+                    whileTap={{ scale: 0.97 }}
+                    className={`group relative flex items-center gap-3 px-5 py-4 rounded-2xl font-bold transition-all duration-300 overflow-hidden ${
+                      isDark 
+                        ? 'bg-slate-800/80 hover:bg-slate-700/90 text-white border border-slate-700/50' 
+                        : 'bg-white/80 hover:bg-white text-slate-900 border border-slate-200/50'
+                    } backdrop-blur-sm shadow-lg hover:shadow-2xl ${service.hoverGlow}`}
+                    data-testid={`hero-service-${service.id}`}
+                  >
+                    {/* Icon Container */}
+                    <motion.div
+                      whileHover={service.animation}
+                      transition={{ duration: 0.5 }}
+                      className={`w-12 h-12 rounded-xl bg-gradient-to-br ${service.gradient} flex items-center justify-center shadow-lg flex-shrink-0`}
+                    >
+                      <service.icon className="w-6 h-6 text-white" />
+                    </motion.div>
+                    
+                    {/* Label */}
+                    <span className="text-sm md:text-base">{getLabel(service)}</span>
+
+                    {/* Hover Glow Effect */}
+                    <div className={`absolute inset-0 bg-gradient-to-r ${service.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300 rounded-2xl`} />
+                  </motion.button>
+                ))}
+              </motion.div>
+
+              {/* Trust Indicators */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.1 }}
+                className="flex flex-wrap items-center gap-4 lg:gap-6"
+              >
+                <div className={`flex items-center gap-2 px-4 py-2 rounded-full ${
+                  isDark ? 'bg-slate-800/60 text-slate-300' : 'bg-white/60 text-slate-700'
+                } backdrop-blur-sm`}>
+                  <Shield className={`w-4 h-4 ${isDark ? 'text-green-400' : 'text-green-600'}`} />
+                  <span className="text-sm font-medium">{t.licensed}</span>
+                </div>
+                <div className={`flex items-center gap-2 px-4 py-2 rounded-full ${
+                  isDark ? 'bg-slate-800/60 text-slate-300' : 'bg-white/60 text-slate-700'
+                } backdrop-blur-sm`}>
+                  <Zap className={`w-4 h-4 ${isDark ? 'text-yellow-400' : 'text-amber-600'}`} />
+                  <span className="text-sm font-medium">{t.instant}</span>
+                </div>
+                <div className={`flex items-center gap-2 px-4 py-2 rounded-full ${
+                  isDark ? 'bg-slate-800/60 text-slate-300' : 'bg-white/60 text-slate-700'
+                } backdrop-blur-sm`}>
+                  <Globe className={`w-4 h-4 ${isDark ? 'text-blue-400' : 'text-blue-600'}`} />
+                  <span className="text-sm font-medium">{t.countries}</span>
+                </div>
+              </motion.div>
             </div>
-            <div className={`flex items-center gap-2 px-4 py-2 rounded-full ${
-              isDark ? 'bg-slate-800/60 text-slate-300' : 'bg-white/60 text-slate-700'
-            } backdrop-blur-sm`}>
-              <Zap className={`w-4 h-4 ${isDark ? 'text-yellow-400' : 'text-amber-600'}`} />
-              <span className="text-sm font-medium">{t.instant}</span>
-            </div>
-            <div className={`flex items-center gap-2 px-4 py-2 rounded-full ${
-              isDark ? 'bg-slate-800/60 text-slate-300' : 'bg-white/60 text-slate-700'
-            } backdrop-blur-sm`}>
-              <Globe className={`w-4 h-4 ${isDark ? 'text-blue-400' : 'text-blue-600'}`} />
-              <span className="text-sm font-medium">{t.countries}</span>
-            </div>
-          </motion.div>
+          </div>
+          
+          {/* Right column - Empty space for hero visual (the background image) */}
+          <div className="hidden lg:block" aria-hidden="true" />
         </div>
       </div>
 
