@@ -46,7 +46,7 @@ export const HeroSection3D = () => {
     }
   };
 
-  // 4 Main Services with icons and animations
+  // 4 Main Services with icons and animations + Track Order
   const mainServices = [
     {
       id: 'traveler',
@@ -57,7 +57,8 @@ export const HeroSection3D = () => {
       link: '/traveler-booking',
       gradient: 'from-amber-500 to-yellow-600',
       hoverGlow: 'hover:shadow-amber-500/50',
-      animation: { rotate: [0, -5, 5, 0], y: [0, -3, 0] }
+      floatDelay: 0,
+      floatDuration: 3
     },
     {
       id: 'transfers',
@@ -68,7 +69,8 @@ export const HeroSection3D = () => {
       link: '/transfers',
       gradient: 'from-blue-500 to-indigo-600',
       hoverGlow: 'hover:shadow-blue-500/50',
-      animation: { x: [-3, 3, -3, 3, 0] }
+      floatDelay: 0.5,
+      floatDuration: 3.5
     },
     {
       id: 'usdt',
@@ -79,7 +81,8 @@ export const HeroSection3D = () => {
       link: '/services/usdt',
       gradient: 'from-teal-500 to-emerald-600',
       hoverGlow: 'hover:shadow-teal-500/50',
-      animation: { scale: [1, 1.05, 1], rotate: [0, 3, -3, 0] }
+      floatDelay: 1,
+      floatDuration: 4
     },
     {
       id: 'cards',
@@ -90,7 +93,20 @@ export const HeroSection3D = () => {
       link: '/services/card-recharge',
       gradient: 'from-purple-500 to-violet-600',
       hoverGlow: 'hover:shadow-purple-500/50',
-      animation: { rotateY: [0, 10, -10, 0] }
+      floatDelay: 1.5,
+      floatDuration: 3.2
+    },
+    {
+      id: 'track',
+      icon: Search,
+      labelAr: 'تتبع الطلب',
+      labelEn: 'Track Order',
+      labelKu: 'بەدواداچوونی داواکاری',
+      link: '/track-order',
+      gradient: 'from-rose-500 to-pink-600',
+      hoverGlow: 'hover:shadow-rose-500/50',
+      floatDelay: 2,
+      floatDuration: 3.8
     }
   ];
 
