@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLanguage } from '@/context/LanguageContext';
+import { useTheme } from '@/context/ThemeContext';
 import { motion } from 'framer-motion';
 import { CheckCircle, AlertCircle, FileText, ArrowRight } from 'lucide-react';
 
 const TermsAndConditions = ({ onAccept }) => {
   const { t } = useTranslation();
   const { currentLanguage } = useLanguage();
+  const { isDark } = useTheme();
   const [accepted, setAccepted] = useState(false);
   const [showError, setShowError] = useState(false);
 
