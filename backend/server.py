@@ -212,6 +212,7 @@ async def startup_event():
     await init_default_services()
     await init_default_countries()
     await init_default_rates()
+    await init_default_stamps()
     logger.info("Application started with default data initialized")
 
 
