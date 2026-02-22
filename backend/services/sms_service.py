@@ -19,6 +19,9 @@ TEMPLATE_ORDER_CREATED = "order_created"
 TEMPLATE_ORDER_APPROVED = "order_approved"
 TEMPLATE_ORDER_REJECTED = "order_rejected"
 
+# Default WhatsApp number (can be overridden from settings)
+DEFAULT_WHATSAPP = os.environ.get("COMPANY_WHATSAPP", "+964XXXXXXXXXX")
+
 # Iraqi phone number prefixes (country code +964)
 IRAQI_PREFIXES = ["+964", "00964", "964"]
 
@@ -77,6 +80,7 @@ class SMSService:
         self.api_url = UNIMTX_API_URL
         self.access_key = UNIMTX_ACCESS_KEY
         self.sender = UNIMTX_SENDER
+        self.whatsapp = DEFAULT_WHATSAPP
         self.enabled = bool(self.access_key)
         
         if not self.enabled:
@@ -84,7 +88,12 @@ class SMSService:
         else:
             logger.info(f"SMS Service enabled with sender: {self.sender}")
     
-    async def send_template_sms(self, phone: str, template_id: str, variables: dict = None) -> dict:
+    def set_whatsapp(self, whatsapp: str):
+        """Update WhatsApp number dynamically"""
+        self.whatsapp = whatsapp
+        logger.info(f"WhatsApp number updated to: {whatsapp}")
+    
+    async def send_template_sms(self, phone: str, template_id: str, whatsapp: str = None) -> dict:
         """
         Send SMS using a template
         Returns: dict with success status and details
@@ -112,18 +121,20 @@ class SMSService:
         formatted_phone = format_iraqi_number(phone)
         result["formatted_phone"] = formatted_phone
         
+        # Use provided whatsapp or default
+        whatsapp_number = whatsapp or self.whatsapp
+        
         try:
             async with httpx.AsyncClient(timeout=30.0) as client:
                 # Build the request payload
                 payload = {
                     "to": formatted_phone,
                     "templateId": template_id,
-                    "signature": self.sender
+                    "signature": self.sender,
+                    "templateData": {
+                        "whatsapp": whatsapp_number
+                    }
                 }
-                
-                # Add template variables if provided
-                if variables:
-                    payload["templateData"] = variables
                 
                 response = await client.post(
                     f"{self.api_url}/?action=sms.message.send&accessKeyId={self.access_key}",
@@ -151,34 +162,20 @@ class SMSService:
         
         return result
     
-    async def send_order_submitted(self, phone: str, order_id: str, order_type_label: str, whatsapp: str = "") -> dict:
-        """Send SMS when order is submitted using order_created template"""
-        variables = {
-            "order_id": order_id,
-            "order_type": order_type_label,
-            "whatsapp": whatsapp or "+964XXXXXXXXXX"
-        }
-        return await self.send_template_sms(phone, TEMPLATE_ORDER_CREATED, variables)
+    async def send_order_submitted(self, phone: str, whatsapp: str = None) -> dict:
+        """Send SMS when order is submitted"""
+        return await self.send_template_sms(phone, TEMPLATE_ORDER_CREATED, whatsapp)
     
-    async def send_order_approved(self, phone: str, order_id: str, whatsapp: str = "") -> dict:
-        """Send SMS when order is approved using order_approved template"""
-        variables = {
-            "order_id": order_id,
-            "whatsapp": whatsapp or "+964XXXXXXXXXX"
-        }
-        return await self.send_template_sms(phone, TEMPLATE_ORDER_APPROVED, variables)
+    async def send_order_approved(self, phone: str, whatsapp: str = None) -> dict:
+        """Send SMS when order is approved"""
+        return await self.send_template_sms(phone, TEMPLATE_ORDER_APPROVED, whatsapp)
     
-    async def send_order_rejected(self, phone: str, order_id: str, reason: Optional[str] = None, whatsapp: str = "") -> dict:
-        """Send SMS when order is rejected using order_rejected template"""
-        variables = {
-            "order_id": order_id,
-            "reason": reason or "لمزيد من المعلومات تواصل معنا",
-            "whatsapp": whatsapp or "+964XXXXXXXXXX"
-        }
-        return await self.send_template_sms(phone, TEMPLATE_ORDER_REJECTED, variables)
+    async def send_order_rejected(self, phone: str, whatsapp: str = None) -> dict:
+        """Send SMS when order is rejected"""
+        return await self.send_template_sms(phone, TEMPLATE_ORDER_REJECTED, whatsapp)
 
 
-# Create singleton - will be reinitialized when env changes
+# Create singleton
 sms_service = SMSService()
 
 
