@@ -37,6 +37,9 @@ import AdminUsers from '@/components/admin/AdminUsers';
 import AdminRates from '@/components/admin/AdminRates';
 import AdminCMS from '@/components/admin/AdminCMS';
 import AdminBranding from '@/components/admin/AdminBranding';
+import AdminBlocklist from '@/components/admin/AdminBlocklist';
+// Admin Order Pages
+import { TravelerOrders, LocalOrders, InternationalOrders, UsdtOrders, CardOrders } from '@/components/admin/orders';
 import { LoadingProvider } from '@/context/LoadingContext';
 import '@/i18n';
 
@@ -91,7 +94,16 @@ function App() {
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<AdminOverview />} />
+                {/* Separated Order Pages */}
                 <Route path="orders" element={<AdminOrders />} />
+                <Route path="orders/traveler" element={<TravelerOrders />} />
+                <Route path="orders/local" element={<LocalOrders />} />
+                <Route path="orders/international" element={<InternationalOrders />} />
+                <Route path="orders/usdt" element={<UsdtOrders />} />
+                <Route path="orders/card" element={<CardOrders />} />
+                {/* Blocklist */}
+                <Route path="blocklist" element={<AdminBlocklist />} />
+                {/* Other Admin Pages */}
                 <Route path="services" element={<AdminServices />} />
                 <Route path="countries" element={<AdminCountries />} />
                 <Route path="rates" element={<AdminRates />} />
