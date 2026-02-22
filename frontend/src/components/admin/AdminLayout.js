@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Outlet, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   LayoutDashboard, Package, Settings, FileText, DollarSign, 
-  Palette, Users, LogOut, 
-  Menu, X, Search, Bell, Globe
+  Palette, Users, LogOut, Menu, X, Search, Bell, Globe,
+  Plane, MapPin, ArrowLeftRight, CreditCard, Wallet, Ban,
+  Building2, ChevronDown, ChevronLeft
 } from 'lucide-react';
 
 const AdminLayout = () => {
@@ -12,6 +13,7 @@ const AdminLayout = () => {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [user, setUser] = useState(null);
+  const [expandedMenus, setExpandedMenus] = useState(['orders']); // Default expanded
 
   useEffect(() => {
     const token = localStorage.getItem('adminToken');
@@ -36,21 +38,123 @@ const AdminLayout = () => {
     return user.permissions?.includes(permission);
   };
 
+  const toggleMenu = (menuId) => {
+    setExpandedMenus(prev => 
+      prev.includes(menuId) 
+        ? prev.filter(id => id !== menuId)
+        : [...prev, menuId]
+    );
+  };
+
+  // Menu structure with submenus
   const menuItems = [
-    { path: '/admin', icon: LayoutDashboard, label: 'لوحة التحكم', permission: 'view_stats' },
-    { path: '/admin/orders', icon: Package, label: 'الطلبات', permission: 'view_orders' },
-    { path: '/admin/services', icon: Settings, label: 'الخدمات', permission: 'view_services' },
-    { path: '/admin/countries', icon: Globe, label: 'الدول', permission: 'manage_countries' },
-    { path: '/admin/rates', icon: DollarSign, label: 'أسعار الصرف', permission: 'manage_rates' },
-    { path: '/admin/cms', icon: FileText, label: 'المحتوى', permission: 'edit_content' },
-    { path: '/admin/branding', icon: Palette, label: 'الهوية', permission: 'edit_branding' },
-    { path: '/admin/users', icon: Users, label: 'المستخدمون', permission: 'manage_users' },
-  ].filter(item => hasPermission(item.permission));
+    { 
+      id: 'dashboard',
+      path: '/admin', 
+      icon: LayoutDashboard, 
+      label: 'لوحة التحكم', 
+      permission: 'view_dashboard' 
+    },
+    { 
+      id: 'orders',
+      icon: Package, 
+      label: 'الطلبات',
+      hasSubmenu: true,
+      submenu: [
+        { path: '/admin/orders/traveler', icon: Plane, label: 'حجز المسافرين', permission: 'view_orders_traveler' },
+        { path: '/admin/orders/local', icon: MapPin, label: 'التحويل المحلي', permission: 'view_orders_local' },
+        { path: '/admin/orders/international', icon: ArrowLeftRight, label: 'التحويل الدولي', permission: 'view_orders_international' },
+        { path: '/admin/orders/usdt', icon: Wallet, label: 'USDT', permission: 'view_orders_usdt' },
+        { path: '/admin/orders/card', icon: CreditCard, label: 'شحن البطاقات', permission: 'view_orders_card' },
+      ]
+    },
+    { 
+      id: 'blocklist',
+      path: '/admin/blocklist', 
+      icon: Ban, 
+      label: 'قائمة الحظر', 
+      permission: 'view_blocklist' 
+    },
+    { 
+      id: 'services',
+      path: '/admin/services', 
+      icon: Settings, 
+      label: 'الخدمات', 
+      permission: 'view_services' 
+    },
+    { 
+      id: 'countries',
+      path: '/admin/countries', 
+      icon: Globe, 
+      label: 'الدول', 
+      permission: 'view_countries' 
+    },
+    { 
+      id: 'rates',
+      path: '/admin/rates', 
+      icon: DollarSign, 
+      label: 'أسعار الصرف', 
+      permission: 'view_rates' 
+    },
+    { 
+      id: 'airports',
+      path: '/admin/airports', 
+      icon: Building2, 
+      label: 'المطارات والأختام', 
+      permission: 'view_airports' 
+    },
+    { 
+      id: 'cms',
+      path: '/admin/cms', 
+      icon: FileText, 
+      label: 'المحتوى', 
+      permission: 'edit_content' 
+    },
+    { 
+      id: 'branding',
+      path: '/admin/branding', 
+      icon: Palette, 
+      label: 'الهوية', 
+      permission: 'edit_branding' 
+    },
+    { 
+      id: 'users',
+      path: '/admin/users', 
+      icon: Users, 
+      label: 'المستخدمون', 
+      permission: 'manage_users' 
+    },
+  ];
 
   const isActive = (path) => {
     if (path === '/admin') return location.pathname === '/admin';
     return location.pathname.startsWith(path);
   };
+
+  const isSubmenuActive = (submenu) => {
+    return submenu.some(item => location.pathname.startsWith(item.path));
+  };
+
+  // Filter items based on permissions
+  const filterItems = (items) => {
+    return items.filter(item => {
+      if (item.hasSubmenu) {
+        const filteredSubmenu = item.submenu.filter(sub => hasPermission(sub.permission));
+        return filteredSubmenu.length > 0;
+      }
+      return hasPermission(item.permission);
+    }).map(item => {
+      if (item.hasSubmenu) {
+        return {
+          ...item,
+          submenu: item.submenu.filter(sub => hasPermission(sub.permission))
+        };
+      }
+      return item;
+    });
+  };
+
+  const filteredMenu = filterItems(menuItems);
 
   if (!user) return null;
 
