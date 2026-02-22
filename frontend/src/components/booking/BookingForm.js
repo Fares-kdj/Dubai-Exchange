@@ -54,10 +54,11 @@ const BookingForm = ({ onSubmit }) => {
     { value: 'shalamcheh', labelAr: 'منفذ شلامجة', labelEn: 'Shalamcheh Border' }
   ];
 
+  // Note: Traveler booking has NO fee as per requirements
   const paymentMethods = [
-    { value: 'cash', labelAr: 'نقداً', labelEn: 'Cash' },
-    { value: 'bank_transfer', labelAr: 'تحويل بنكي', labelEn: 'Bank Transfer' },
-    { value: 'card', labelAr: 'بطاقة', labelEn: 'Card' }
+    { value: 'zain_cash', labelAr: 'زين كاش', labelEn: 'Zain Cash', labelKu: 'زەین کاش' },
+    { value: 'mastercard_rafidain', labelAr: 'ماستركارد الرافدين', labelEn: 'Mastercard Al-Rafidain', labelKu: 'ماستەرکارد الڕافدین' },
+    { value: 'fib', labelAr: 'FIB', labelEn: 'FIB', labelKu: 'FIB' }
   ];
 
   const handleInputChange = (field, value) => {
