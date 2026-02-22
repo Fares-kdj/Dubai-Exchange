@@ -417,7 +417,10 @@ const USDTRecharge = () => {
                     <SelectContent>
                       {paymentMethods.map(m => (
                         <SelectItem key={m.value} value={m.value}>
-                          {currentLanguage === 'ar' ? m.labelAr : m.labelEn}
+                          <span className="flex items-center gap-2">
+                            <span>{m.icon}</span>
+                            <span>{currentLanguage === 'ar' ? m.labelAr : m.labelEn}</span>
+                          </span>
                         </SelectItem>
                       ))}
                     </SelectContent>
