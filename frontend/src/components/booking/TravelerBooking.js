@@ -4,10 +4,12 @@ import BookingForm from './BookingForm';
 import SuccessPage from './SuccessPage';
 import Header3D from '../landing/Header3D';
 import Footer3D from '../landing/Footer3D';
+import { useTheme } from '@/context/ThemeContext';
 
 const TravelerBooking = () => {
   const [step, setStep] = useState(1); // 1: Terms, 2: Form, 3: Success
   const [bookingData, setBookingData] = useState(null);
+  const { isDark } = useTheme();
 
   const handleTermsAccept = () => {
     setStep(2);
@@ -21,7 +23,11 @@ const TravelerBooking = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className={`min-h-screen transition-colors duration-300 ${
+      isDark 
+        ? 'bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900' 
+        : 'bg-gradient-to-b from-slate-50 via-white to-slate-50'
+    }`}>
       <Header3D />
       <main className="pt-20">
         {step === 1 && <TermsAndConditions onAccept={handleTermsAccept} />}
