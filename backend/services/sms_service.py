@@ -88,15 +88,15 @@ class SMSService:
             "sent": False
         }
         
-        if not self.enabled:
-            result["error"] = "SMS service not configured"
-            logger.warning(f"SMS not sent (service disabled): {phone}")
-            return result
-        
-        # Only send to Iraqi numbers
+        # First check if it's an Iraqi number - skip non-Iraqi numbers regardless of service status
         if not is_iraqi_number(phone):
             result["error"] = "Not an Iraqi number - SMS skipped"
             logger.info(f"SMS skipped (non-Iraqi number): {phone}")
+            return result
+        
+        if not self.enabled:
+            result["error"] = "SMS service not configured"
+            logger.warning(f"SMS not sent (service disabled): {phone}")
             return result
         
         # Format the number
