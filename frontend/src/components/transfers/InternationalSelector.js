@@ -160,24 +160,35 @@ const InternationalSelector = () => {
                 initial={{ opacity: 0, y: 50, scale: 0.9 }}
                 animate={{ 
                   opacity: 1, 
-                  y: [0, -12, 0],
-                  scale: 1
+                  y: [0, -18, 0, -10, 0],
+                  scale: [1, 1.02, 1, 1.01, 1],
+                  rotate: [0, 1.5, 0, -1, 0]
                 }}
                 transition={{ 
                   opacity: { delay: 0.2 + index * 0.15, duration: 0.6 },
-                  scale: { delay: 0.2 + index * 0.15, duration: 0.6 },
                   y: {
-                    delay: index * 0.6,
-                    duration: 3.5 + index * 0.4,
+                    delay: index * 0.4,
+                    duration: 2.5 + index * 0.3,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  },
+                  scale: {
+                    delay: index * 0.4,
+                    duration: 2.5 + index * 0.3,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  },
+                  rotate: {
+                    delay: index * 0.4,
+                    duration: 3 + index * 0.2,
                     repeat: Infinity,
                     ease: "easeInOut"
                   }
                 }}
                 whileHover={{ 
-                  y: -20, 
-                  scale: 1.05,
-                  rotateX: 5,
-                  rotateY: index === 0 ? 5 : index === 2 ? -5 : 0,
+                  y: -25, 
+                  scale: 1.06,
+                  rotate: 0,
                   transition: { type: "spring", stiffness: 400, damping: 15 }
                 }}
                 whileTap={{ scale: 0.96 }}
