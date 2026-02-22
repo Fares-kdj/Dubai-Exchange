@@ -215,28 +215,33 @@ export const HeroSection3D = () => {
                 {t.slogan}
               </motion.p>
 
-              {/* Track Order Button - Prominent at Top */}
+              {/* Track Order Button - Prominent at Top with Strong Float */}
               <motion.button
                 onClick={() => navigate('/track-order')}
                 initial={{ opacity: 0, y: 20, scale: 0.9 }}
                 animate={{ 
                   opacity: 1, 
-                  y: [0, -6, 0],
-                  scale: 1
+                  y: [0, -15, 0],
+                  scale: [1, 1.02, 1]
                 }}
                 transition={{ 
                   opacity: { delay: 0.6, duration: 0.5 },
-                  scale: { delay: 0.6, duration: 0.5 },
                   y: {
                     delay: 0,
-                    duration: 2.5,
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  },
+                  scale: {
+                    delay: 0,
+                    duration: 2,
                     repeat: Infinity,
                     ease: "easeInOut"
                   }
                 }}
                 whileHover={{ 
                   scale: 1.05, 
-                  y: -10,
+                  y: -20,
                   transition: { type: "spring", stiffness: 400, damping: 15 }
                 }}
                 whileTap={{ scale: 0.95 }}
@@ -251,10 +256,10 @@ export const HeroSection3D = () => {
                 <motion.div
                   className="absolute inset-0 bg-white/20"
                   animate={{ 
-                    opacity: [0, 0.3, 0]
+                    opacity: [0, 0.4, 0]
                   }}
                   transition={{ 
-                    duration: 2,
+                    duration: 1.5,
                     repeat: Infinity,
                     ease: "easeInOut"
                   }}
@@ -263,11 +268,11 @@ export const HeroSection3D = () => {
                 {/* Icon */}
                 <motion.div
                   animate={{ 
-                    scale: [1, 1.1, 1],
-                    rotate: [0, 5, -5, 0]
+                    scale: [1, 1.15, 1],
+                    rotate: [0, 8, -8, 0]
                   }}
                   transition={{ 
-                    duration: 3,
+                    duration: 2.5,
                     repeat: Infinity,
                     ease: "easeInOut"
                   }}
