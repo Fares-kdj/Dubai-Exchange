@@ -313,7 +313,7 @@ const BookingForm = ({ onSubmit }) => {
                   id="destination"
                   value={formData.destination}
                   onChange={(e) => handleInputChange('destination', e.target.value)}
-                  className="h-12 border-slate-300 focus:border-[#D4AF37]"
+                  className={`h-12 focus:border-[#D4AF37] ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`}
                   placeholder={currentLanguage === 'ar' ? 'مثال: دبي، تركيا، مصر' : 'e.g., Dubai, Turkey, Egypt'}
                   data-testid="destination-input"
                 />
@@ -321,7 +321,7 @@ const BookingForm = ({ onSubmit }) => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="travelDate" className="text-slate-700 font-medium">
+                <Label htmlFor="travelDate" className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                   {currentLanguage === 'ar' ? 'تاريخ السفر' : 'Travel Date'} *
                 </Label>
                 <Input
@@ -329,7 +329,7 @@ const BookingForm = ({ onSubmit }) => {
                   type="date"
                   value={formData.travelDate}
                   onChange={(e) => handleInputChange('travelDate', e.target.value)}
-                  className="h-12 border-slate-300 focus:border-[#D4AF37]"
+                  className={`h-12 focus:border-[#D4AF37] ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`}
                   min={new Date().toISOString().split('T')[0]}
                   data-testid="travel-date-input"
                 />
@@ -337,7 +337,7 @@ const BookingForm = ({ onSubmit }) => {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-slate-700 font-medium">
+                <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                   {currentLanguage === 'ar' ? 'مكان الاستلام' : 'Pickup Location'} *
                 </Label>
                 <Select 
@@ -345,7 +345,7 @@ const BookingForm = ({ onSubmit }) => {
                   onValueChange={(value) => handleInputChange('pickupLocation', value)}
                   disabled={!formData.travelType}
                 >
-                  <SelectTrigger className="h-12 border-slate-300" data-testid="pickup-location-select">
+                  <SelectTrigger className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} data-testid="pickup-location-select">
                     <SelectValue placeholder={currentLanguage === 'ar' ? 'اختر مكان الاستلام' : 'Select pickup location'} />
                   </SelectTrigger>
                   <SelectContent>
@@ -362,19 +362,19 @@ const BookingForm = ({ onSubmit }) => {
           </div>
 
           {/* Booking Amount */}
-          <div className="bg-white rounded-3xl border-2 border-slate-200 shadow-xl p-8 mb-6">
+          <div className={`rounded-3xl border-2 shadow-xl p-8 mb-6 ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'}`}>
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center">
+              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${isDark ? 'bg-emerald-500/20' : 'bg-emerald-100'}`}>
                 <DollarSign className="w-6 h-6 text-emerald-600" />
               </div>
-              <h2 className="text-2xl font-bold text-slate-900">
+              <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 {currentLanguage === 'ar' ? 'بيانات الحجز' : 'Booking Details'}
               </h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="usdAmount" className="text-slate-700 font-medium">
+                <Label htmlFor="usdAmount" className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                   {currentLanguage === 'ar' ? 'المبلغ بالدولار (USD)' : 'Amount in USD'} *
                 </Label>
                 <Input
@@ -382,7 +382,7 @@ const BookingForm = ({ onSubmit }) => {
                   type="number"
                   value={formData.usdAmount}
                   onChange={(e) => handleInputChange('usdAmount', e.target.value)}
-                  className="h-12 border-slate-300 focus:border-[#D4AF37]"
+                  className={`h-12 focus:border-[#D4AF37] ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`}
                   placeholder="1000"
                   min="1"
                   data-testid="usd-amount-input"
@@ -391,7 +391,7 @@ const BookingForm = ({ onSubmit }) => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="iqdAmount" className="text-slate-700 font-medium">
+                <Label htmlFor="iqdAmount" className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                   {currentLanguage === 'ar' ? 'المقابل بالدينار العراقي (IQD)' : 'Equivalent in IQD'}
                 </Label>
                 <Input
@@ -399,21 +399,21 @@ const BookingForm = ({ onSubmit }) => {
                   type="text"
                   value={formData.iqdAmount}
                   readOnly
-                  className="h-12 border-slate-300 bg-slate-50 text-slate-700 font-bold"
+                  className={`h-12 font-bold ${isDark ? 'bg-slate-600 border-slate-500 text-slate-300' : 'bg-slate-50 border-slate-300 text-slate-700'}`}
                   placeholder="0"
                   data-testid="iqd-amount-display"
                 />
-                <p className="text-xs text-slate-500">
+                <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                   {currentLanguage === 'ar' ? 'يتم الحساب تلقائياً' : 'Calculated automatically'}
                 </p>
               </div>
 
               <div className="space-y-2 md:col-span-2">
-                <Label className="text-slate-700 font-medium">
+                <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                   {currentLanguage === 'ar' ? 'طريقة الدفع' : 'Payment Method'} *
                 </Label>
                 <Select value={formData.paymentMethod} onValueChange={(value) => handleInputChange('paymentMethod', value)}>
-                  <SelectTrigger className="h-12 border-slate-300" data-testid="payment-method-select">
+                  <SelectTrigger className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} data-testid="payment-method-select">
                     <SelectValue placeholder={currentLanguage === 'ar' ? 'اختر طريقة الدفع' : 'Select payment method'} />
                   </SelectTrigger>
                   <SelectContent>
@@ -430,12 +430,12 @@ const BookingForm = ({ onSubmit }) => {
           </div>
 
           {/* Document Upload */}
-          <div className="bg-white rounded-3xl border-2 border-slate-200 shadow-xl p-8 mb-8">
+          <div className={`rounded-3xl border-2 shadow-xl p-8 mb-8 ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'}`}>
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 bg-amber-100 rounded-2xl flex items-center justify-center">
+              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${isDark ? 'bg-amber-500/20' : 'bg-amber-100'}`}>
                 <Upload className="w-6 h-6 text-amber-600" />
               </div>
-              <h2 className="text-2xl font-bold text-slate-900">
+              <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 {currentLanguage === 'ar' ? 'رفع الوثائق' : 'Upload Documents'}
               </h2>
             </div>
@@ -451,6 +451,7 @@ const BookingForm = ({ onSubmit }) => {
                 onUpload={(e) => handleFileUpload('passport', e)}
                 onRemove={() => removeFile('passport')}
                 currentLanguage={currentLanguage}
+                isDark={isDark}
               />
 
               {/* Ticket */}
@@ -463,6 +464,7 @@ const BookingForm = ({ onSubmit }) => {
                 onUpload={(e) => handleFileUpload('ticket', e)}
                 onRemove={() => removeFile('ticket')}
                 currentLanguage={currentLanguage}
+                isDark={isDark}
               />
 
               {/* Personal Photo */}
@@ -475,6 +477,7 @@ const BookingForm = ({ onSubmit }) => {
                 onUpload={(e) => handleFileUpload('photo', e)}
                 onRemove={() => removeFile('photo')}
                 currentLanguage={currentLanguage}
+                isDark={isDark}
               />
             </div>
           </div>
