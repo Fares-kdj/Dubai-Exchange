@@ -172,7 +172,7 @@ const BookingForm = ({ onSubmit }) => {
   const pickupLocations = formData.travelType === 'air' ? airports : borders;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white pt-20">
+    <div className="min-h-screen pt-20">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Progress Indicator */}
         <motion.div
@@ -185,7 +185,7 @@ const BookingForm = ({ onSubmit }) => {
               <div className="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold">
                 <CheckCircle className="w-5 h-5" />
               </div>
-              <span className="text-sm font-medium text-slate-500">
+              <span className={`text-sm font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                 {currentLanguage === 'ar' ? 'الشروط' : 'Terms'}
               </span>
             </div>
@@ -194,16 +194,16 @@ const BookingForm = ({ onSubmit }) => {
               <div className="w-8 h-8 rounded-full bg-[#D4AF37] text-white flex items-center justify-center text-sm font-bold">
                 2
               </div>
-              <span className="text-sm font-medium text-slate-900">
+              <span className={`text-sm font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 {currentLanguage === 'ar' ? 'معلومات الحجز' : 'Booking Details'}
               </span>
             </div>
-            <div className="w-16 h-1 bg-slate-200 rounded"></div>
+            <div className={`w-16 h-1 rounded ${isDark ? 'bg-slate-700' : 'bg-slate-200'}`}></div>
             <div className="flex items-center gap-2 opacity-40">
-              <div className="w-8 h-8 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-sm font-bold">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${isDark ? 'bg-slate-700 text-slate-400' : 'bg-slate-200 text-slate-500'}`}>
                 3
               </div>
-              <span className="text-sm font-medium text-slate-500">
+              <span className={`text-sm font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                 {currentLanguage === 'ar' ? 'التأكيد' : 'Confirmation'}
               </span>
             </div>
@@ -220,7 +220,7 @@ const BookingForm = ({ onSubmit }) => {
           data-testid="booking-form"
         >
           {/* Customer Information */}
-          <div className="bg-white rounded-3xl border-2 border-slate-200 shadow-xl p-8 mb-6">
+          <div className={`rounded-3xl border-2 shadow-xl p-8 mb-6 ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'}`}>
             <div className="flex items-center gap-3 mb-6">
               <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center">
                 <User className="w-6 h-6 text-blue-600" />
