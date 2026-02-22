@@ -194,7 +194,7 @@ const TermsAndConditions = ({ onAccept }) => {
                     data-testid="accept-checkbox"
                   />
                 </div>
-                <label htmlFor="accept-terms" className="text-sm text-slate-700 cursor-pointer leading-relaxed">
+                <label htmlFor="accept-terms" className={`text-sm cursor-pointer leading-relaxed ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
                   {currentLanguage === 'ar'
                     ? 'لقد قرأت وأوافق على الشروط والأحكام المذكورة أعلاه. أدرك أن المعلومات المقدمة يجب أن تكون دقيقة وصحيحة.'
                     : 'I have read and agree to the terms and conditions stated above. I understand that the information provided must be accurate and correct.'}
@@ -218,9 +218,9 @@ const TermsAndConditions = ({ onAccept }) => {
               )}
 
               {/* Privacy Note */}
-              <div className="flex items-start gap-2 p-4 bg-blue-50 border border-blue-200 rounded-xl">
-                <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                <p className="text-xs text-blue-700 leading-relaxed">
+              <div className={`flex items-start gap-2 p-4 rounded-xl ${isDark ? 'bg-blue-900/30 border border-blue-700/50' : 'bg-blue-50 border border-blue-200'}`}>
+                <AlertCircle className={`w-5 h-5 flex-shrink-0 mt-0.5 ${isDark ? 'text-blue-400' : 'text-blue-600'}`} />
+                <p className={`text-xs leading-relaxed ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>
                   {currentLanguage === 'ar'
                     ? 'جميع المعلومات والوثائق المقدمة سيتم استخدامها فقط لأغراض التحقق والمعالجة. نحن ملتزمون بحماية خصوصيتك وأمان بياناتك.'
                     : 'All information and documents provided will be used solely for verification and processing purposes. We are committed to protecting your privacy and data security.'}
@@ -233,7 +233,7 @@ const TermsAndConditions = ({ onAccept }) => {
                 whileHover={{ scale: 1.02, y: -2 }}
                 whileTap={{ scale: 0.98 }}
                 data-testid="continue-button"
-                className="w-full py-4 bg-slate-900 text-white font-bold rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center justify-center gap-2 group"
+                className={`w-full py-4 font-bold rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center justify-center gap-2 group ${isDark ? 'bg-[#D4AF37] text-slate-900 hover:bg-[#E5C048]' : 'bg-slate-900 text-white'}`}
               >
                 {currentLanguage === 'ar' ? 'المتابعة إلى الحجز' : 'Continue to Booking'}
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
