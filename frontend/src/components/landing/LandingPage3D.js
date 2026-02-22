@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import Header3D from './Header3D';
 import { HeroSection3D } from './HeroSection3D';
@@ -11,7 +11,6 @@ import { TrustSection3D } from './TrustSection3D';
 import { PaymentsSection3D } from './PaymentsSection3D';
 import { ContactSection } from './ContactSection';
 import Footer3D from './Footer3D';
-import { FullPageLoader } from '@/components/ui/Loader';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -19,20 +18,8 @@ gsap.registerPlugin(ScrollTrigger);
 
 const LandingPage3D = () => {
   const { isDark } = useTheme();
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate loading time for resources
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    if (isLoading) return;
-
     // Setup scroll triggers for sections
     const sections = document.querySelectorAll('section');
     
@@ -60,12 +47,7 @@ const LandingPage3D = () => {
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     };
-  }, [isLoading]);
-
-  // Show full page loader
-  if (isLoading) {
-    return <FullPageLoader isDark={isDark} />;
-  }
+  }, []);
 
   return (
     <div className={`min-h-screen overflow-x-hidden transition-colors duration-300 ${

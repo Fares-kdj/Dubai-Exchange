@@ -2,7 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTheme } from '@/context/ThemeContext';
 
-const SplashScreen = ({ onComplete, minDuration = 1200 }) => {
+// Background images for splash screen
+const SPLASH_BACKGROUNDS = {
+  dark: 'https://customer-assets.emergentagent.com/job_dubai-exchange-1/artifacts/ko7emjzk_hero-dark.png',
+  light: 'https://customer-assets.emergentagent.com/job_dubai-exchange-1/artifacts/zvjalvls_hero-light.png'
+};
+
+const SplashScreen = ({ onComplete, minDuration = 2000 }) => {
   const { isDark } = useTheme();
   const [progress, setProgress] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
@@ -13,8 +19,6 @@ const SplashScreen = ({ onComplete, minDuration = 1200 }) => {
     : false;
 
   useEffect(() => {
-    const startTime = Date.now();
-    
     // Animate progress
     const progressInterval = setInterval(() => {
       setProgress(prev => {
@@ -102,6 +106,22 @@ const SplashScreen = ({ onComplete, minDuration = 1200 }) => {
           }`}
           data-testid="splash-screen"
         >
+          {/* Background Image with low opacity */}
+          <div 
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-500"
+            style={{
+              backgroundImage: `url(${isDark ? SPLASH_BACKGROUNDS.dark : SPLASH_BACKGROUNDS.light})`,
+              opacity: isDark ? 0.15 : 0.2
+            }}
+          />
+          
+          {/* Overlay gradient for better text readability */}
+          <div className={`absolute inset-0 ${
+            isDark 
+              ? 'bg-gradient-to-br from-slate-900/70 via-slate-800/60 to-slate-900/70'
+              : 'bg-gradient-to-br from-white/60 via-amber-50/50 to-white/60'
+          }`} />
+
           {/* Background Effects */}
           <div className="absolute inset-0 overflow-hidden">
             {!prefersReducedMotion && (
