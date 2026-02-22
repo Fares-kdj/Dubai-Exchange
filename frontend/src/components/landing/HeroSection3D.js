@@ -3,8 +3,14 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
 import { useTheme } from '@/context/ThemeContext';
-import { ASSETS, COMPANY } from '@/config/assets';
-import { Shield, Zap, Globe, MapPin } from 'lucide-react';
+import { COMPANY } from '@/config/assets';
+import { Shield, Zap, Globe, Plane, ArrowLeftRight, Wallet, CreditCard } from 'lucide-react';
+
+// Hero background images - easy to swap with videos later
+const HERO_ASSETS = {
+  dark: 'https://customer-assets.emergentagent.com/job_dubai-exchange/artifacts/taky4fxl_hero-dark.png',
+  light: 'https://customer-assets.emergentagent.com/job_dubai-exchange/artifacts/l2ellrq4_hero-light.png'
+};
 
 export const HeroSection3D = () => {
   const navigate = useNavigate();
@@ -12,16 +18,11 @@ export const HeroSection3D = () => {
   const { isDark } = useTheme();
   const isArabic = currentLanguage === 'ar';
   const isKurdish = currentLanguage === 'ku';
-  const isRTL = isArabic || isKurdish;
 
   const content = {
     ar: {
       name: COMPANY.nameAr,
       slogan: COMPANY.sloganAr,
-      feature1: 'تحويلات لجميع دول العالم',
-      feature2: 'حجز الدولار للمسافرين',
-      cta1: 'حجز الدولار للمسافرين',
-      cta2: 'التحويلات المالية',
       licensed: 'مرخصة رسمياً',
       instant: 'خدمة فورية',
       countries: '+50 دولة',
@@ -30,10 +31,6 @@ export const HeroSection3D = () => {
     en: {
       name: COMPANY.nameEn,
       slogan: COMPANY.sloganEn,
-      feature1: 'Transfers to All Countries',
-      feature2: 'USD Booking for Travelers',
-      cta1: 'Book USD for Travelers',
-      cta2: 'Money Transfers',
       licensed: 'Licensed',
       instant: 'Instant Service',
       countries: '50+ Countries',
@@ -42,10 +39,6 @@ export const HeroSection3D = () => {
     ku: {
       name: COMPANY.nameKu,
       slogan: COMPANY.sloganKu,
-      feature1: 'گواستنەوە بۆ هەموو وڵاتەکان',
-      feature2: 'نۆرەکردنی دۆلار بۆ گەشتیاران',
-      cta1: 'نۆرەکردنی دۆلار بۆ گەشتیاران',
-      cta2: 'گواستنەوەی پارە',
       licensed: 'مۆڵەتپێدراو',
       instant: 'خزمەتگوزاری یەکجار',
       countries: '+٥٠ وڵات',
@@ -53,320 +46,241 @@ export const HeroSection3D = () => {
     }
   };
 
+  // 4 Main Services with icons and animations
+  const mainServices = [
+    {
+      id: 'traveler',
+      icon: Plane,
+      labelAr: 'حجز الدولار للمسافرين',
+      labelEn: 'Traveler USD Booking',
+      labelKu: 'نۆرەکردنی دۆلار بۆ گەشتیاران',
+      link: '/traveler-booking',
+      gradient: 'from-amber-500 to-yellow-600',
+      hoverGlow: 'hover:shadow-amber-500/50',
+      animation: { rotate: [0, -5, 5, 0], y: [0, -3, 0] }
+    },
+    {
+      id: 'transfers',
+      icon: ArrowLeftRight,
+      labelAr: 'التحويلات المالية',
+      labelEn: 'Money Transfers',
+      labelKu: 'گواستنەوەی پارە',
+      link: '/transfers',
+      gradient: 'from-blue-500 to-indigo-600',
+      hoverGlow: 'hover:shadow-blue-500/50',
+      animation: { x: [-3, 3, -3, 3, 0] }
+    },
+    {
+      id: 'usdt',
+      icon: Wallet,
+      labelAr: 'شحن USDT',
+      labelEn: 'USDT Top-Up',
+      labelKu: 'شحنی USDT',
+      link: '/services/usdt',
+      gradient: 'from-teal-500 to-emerald-600',
+      hoverGlow: 'hover:shadow-teal-500/50',
+      animation: { scale: [1, 1.05, 1], rotate: [0, 3, -3, 0] }
+    },
+    {
+      id: 'cards',
+      icon: CreditCard,
+      labelAr: 'تعبئة البطاقات',
+      labelEn: 'Card Recharge',
+      labelKu: 'پڕکردنەوەی کارت',
+      link: '/services/card-recharge',
+      gradient: 'from-purple-500 to-violet-600',
+      hoverGlow: 'hover:shadow-purple-500/50',
+      animation: { rotateY: [0, 10, -10, 0] }
+    }
+  ];
+
   const t = content[currentLanguage] || content.ar;
+  const getLabel = (service) => {
+    if (currentLanguage === 'ar') return service.labelAr;
+    if (currentLanguage === 'ku') return service.labelKu;
+    return service.labelEn;
+  };
 
   return (
-    <section className={`relative min-h-screen overflow-hidden transition-colors duration-500 ${
-      isDark 
-        ? 'bg-slate-900'
-        : 'bg-gradient-to-br from-amber-50 via-white to-yellow-50'
-    }`}>
-      {/* Background with CBI Building - More Visible */}
+    <section className="relative min-h-screen overflow-hidden">
+      {/* Background Image/Video Container */}
       <div className="absolute inset-0 z-0">
-        {/* CBI Building Image - More Prominent */}
+        {/* Hero Background - Using images (easy to swap with video later) */}
         <div className="absolute inset-0">
+          {/* Dark Mode Background */}
           <img 
-            src={ASSETS.cbiBuilding1}
-            alt="Central Bank of Iraq"
-            className={`w-full h-full object-cover transition-opacity duration-500 ${
-              isDark ? 'opacity-40' : 'opacity-30'
+            src={HERO_ASSETS.dark}
+            alt="Hero Background Dark"
+            className={`absolute inset-0 w-full h-full object-cover object-right transition-opacity duration-700 ${
+              isDark ? 'opacity-100' : 'opacity-0'
             }`}
           />
-          {/* Gradient Overlay - Adjusted for better visibility */}
-          <div className={`absolute inset-0 ${
-            isDark 
-              ? 'bg-gradient-to-b from-slate-900/60 via-slate-900/40 to-slate-900/90'
-              : 'bg-gradient-to-b from-amber-50/80 via-white/60 to-yellow-50/90'
-          }`} />
+          {/* Light Mode Background */}
+          <img 
+            src={HERO_ASSETS.light}
+            alt="Hero Background Light"
+            className={`absolute inset-0 w-full h-full object-cover object-right transition-opacity duration-700 ${
+              isDark ? 'opacity-0' : 'opacity-100'
+            }`}
+          />
         </div>
 
-        {/* Golden Decorative Elements for Light Mode */}
-        {!isDark && (
-          <>
-            <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-bl from-amber-200/40 to-transparent rounded-full blur-3xl" />
-            <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-tr from-yellow-200/30 to-transparent rounded-full blur-3xl" />
-            <div className="absolute top-1/2 left-1/4 w-[300px] h-[300px] bg-gradient-to-br from-[#D4AF37]/20 to-transparent rounded-full blur-2xl" />
-          </>
-        )}
+        {/* Gradient Overlay for text readability */}
+        <div className={`absolute inset-0 ${
+          isDark 
+            ? 'bg-gradient-to-l from-transparent via-slate-900/40 to-slate-900/80'
+            : 'bg-gradient-to-l from-transparent via-white/30 to-white/70'
+        }`} />
       </div>
 
-      {/* Animated Golden Particles */}
-      <div className="absolute inset-0 z-5 overflow-hidden pointer-events-none">
-        {[...Array(6)].map((_, i) => (
+      {/* Content Container */}
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-16 min-h-screen flex flex-col justify-center">
+        <div className="max-w-2xl">
+          {/* CBI Badge */}
           <motion.div
-            key={i}
-            className={`absolute w-2 h-2 rounded-full ${isDark ? 'bg-[#D4AF37]/60' : 'bg-[#D4AF37]/80'}`}
-            style={{
-              left: `${15 + i * 15}%`,
-              top: `${20 + (i % 3) * 25}%`,
-            }}
-            animate={{
-              y: [0, -30, 0],
-              opacity: [0.3, 0.8, 0.3],
-              scale: [1, 1.5, 1],
-            }}
-            transition={{
-              duration: 3 + i * 0.5,
-              repeat: Infinity,
-              delay: i * 0.3,
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Content */}
-      <div className="relative z-20 container mx-auto px-4 sm:px-6 lg:px-8 min-h-screen flex items-center">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center w-full py-24 lg:py-32">
-          {/* Text Content */}
-          <motion.div
-            initial={{ opacity: 0, x: isRTL ? 50 : -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            className={isRTL ? 'lg:order-2' : 'lg:order-1'}
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className={`inline-flex items-center gap-3 px-5 py-2.5 rounded-full border mb-8 ${
+              isDark 
+                ? 'bg-[#D4AF37]/10 border-[#D4AF37]/30 text-[#D4AF37]' 
+                : 'bg-amber-100/80 border-amber-300 text-amber-800'
+            }`}
           >
-            {/* CBI Badge */}
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className={`inline-flex items-center gap-3 px-4 py-2 rounded-full mb-6 backdrop-blur-sm ${
-                isDark 
-                  ? 'bg-green-500/20 border border-green-500/30'
-                  : 'bg-green-600/10 border border-green-600/30 shadow-lg shadow-green-500/10'
-              }`}
-            >
-              <img 
-                src={ASSETS.cbiLogo}
-                alt="CBI"
-                className="w-8 h-8 object-contain"
-              />
-              <span className={`text-sm font-bold ${isDark ? 'text-green-400' : 'text-green-700'}`}>
-                {t.cbiTitle}
-              </span>
-            </motion.div>
-
-            {/* Logo - Using logoBlack for light mode with golden tint */}
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="mb-6"
-            >
-              <img
-                src={isDark ? ASSETS.logoWhite : ASSETS.logoBlack}
-                alt="Dubai International Exchange"
-                className={`h-14 md:h-16 ${!isDark ? 'drop-shadow-lg' : ''}`}
-                style={!isDark ? { filter: 'sepia(30%) saturate(150%)' } : {}}
-                data-testid="hero-logo"
-              />
-            </motion.div>
-
-            {/* Title */}
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className={`text-3xl md:text-4xl lg:text-5xl font-bold mb-4 leading-tight ${
-                isDark ? 'text-white' : 'text-slate-800'
-              }`}
-              data-testid="hero-title"
-            >
-              {t.name}
-            </motion.h1>
-
-            {/* Subtitle */}
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className={`text-base md:text-lg mb-6 max-w-xl ${isDark ? 'text-slate-300' : 'text-slate-700'}`}
-              data-testid="hero-subtitle"
-            >
-              {t.slogan}
-            </motion.p>
-
-            {/* Features */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.55 }}
-              className="flex flex-wrap gap-3 mb-8"
-            >
-              <div className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium shadow-lg ${
-                isDark 
-                  ? 'bg-[#D4AF37]/20 text-[#FCD34D] border border-[#D4AF37]/30'
-                  : 'bg-gradient-to-r from-amber-100 to-yellow-100 text-amber-800 border border-amber-200'
-              }`}>
-                <Globe className="w-4 h-4" />
-                <span>{t.feature1}</span>
-              </div>
-              <div className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium shadow-lg ${
-                isDark 
-                  ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-                  : 'bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 border border-blue-200'
-              }`}>
-                <Zap className="w-4 h-4" />
-                <span>{t.feature2}</span>
-              </div>
-            </motion.div>
-
-            {/* CTA Buttons */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              className="flex flex-col sm:flex-row gap-4"
-            >
-              <motion.button
-                onClick={() => navigate('/traveler-booking')}
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-6 py-3 bg-gradient-to-r from-[#D4AF37] to-[#FCD34D] text-slate-900 font-bold rounded-full shadow-xl shadow-[#D4AF37]/30 hover:shadow-[#D4AF37]/50 transition-all"
-                data-testid="cta-booking"
-              >
-                {t.cta1}
-              </motion.button>
-
-              <motion.button
-                onClick={() => navigate('/transfers')}
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                className={`px-6 py-3 backdrop-blur-sm border-2 font-bold rounded-full transition-all ${
-                  isDark 
-                    ? 'bg-white/10 border-white/30 text-white hover:bg-white/20'
-                    : 'bg-slate-800/90 border-slate-800 text-white hover:bg-slate-900'
-                }`}
-                data-testid="cta-transfers"
-              >
-                {t.cta2}
-              </motion.button>
-            </motion.div>
-
-            {/* Trust Badges */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.8 }}
-              className="flex flex-wrap items-center gap-6 mt-8"
-            >
-              {[
-                { icon: Shield, text: t.licensed, color: 'green' },
-                { icon: Zap, text: t.instant, color: 'blue' },
-                { icon: Globe, text: t.countries, color: 'purple' }
-              ].map((badge, index) => (
-                <div key={index} className="flex items-center gap-2">
-                  <div className={`w-9 h-9 rounded-full flex items-center justify-center ${
-                    isDark 
-                      ? `bg-${badge.color}-500/20`
-                      : `bg-${badge.color}-100 border border-${badge.color}-200`
-                  }`} style={{
-                    backgroundColor: isDark 
-                      ? badge.color === 'green' ? 'rgba(34,197,94,0.2)' 
-                        : badge.color === 'blue' ? 'rgba(59,130,246,0.2)' 
-                        : 'rgba(168,85,247,0.2)'
-                      : badge.color === 'green' ? 'rgba(34,197,94,0.1)' 
-                        : badge.color === 'blue' ? 'rgba(59,130,246,0.1)' 
-                        : 'rgba(168,85,247,0.1)'
-                  }}>
-                    <badge.icon className={`w-4 h-4 ${
-                      badge.color === 'green' ? 'text-green-500' 
-                        : badge.color === 'blue' ? 'text-blue-500' 
-                        : 'text-purple-500'
-                    }`} />
-                  </div>
-                  <span className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-                    {badge.text}
-                  </span>
-                </div>
-              ))}
-            </motion.div>
+            <img 
+              src="https://upload.wikimedia.org/wikipedia/en/thumb/9/95/Central_Bank_of_Iraq_logo.png/150px-Central_Bank_of_Iraq_logo.png"
+              alt="CBI"
+              className="w-8 h-8 object-contain"
+            />
+            <span className="font-semibold text-sm">{t.cbiTitle}</span>
           </motion.div>
 
-          {/* Images Side */}
+          {/* Company Logo */}
           <motion.div
-            initial={{ opacity: 0, x: isRTL ? -50 : 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className={`relative ${isRTL ? 'lg:order-1' : 'lg:order-2'}`}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3 }}
+            className="mb-6"
           >
-            <div className="relative w-full h-[450px] lg:h-[550px]">
-              {/* Golden Glow Behind Images */}
-              <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full blur-3xl ${
-                isDark ? 'bg-[#D4AF37]/20' : 'bg-[#D4AF37]/30'
-              }`} />
+            <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br from-[#D4AF37] to-[#B8860B] flex items-center justify-center shadow-2xl ${
+              isDark ? 'shadow-[#D4AF37]/30' : 'shadow-amber-500/40'
+            }`}>
+              <span className="text-2xl font-black text-white">DIE</span>
+            </div>
+          </motion.div>
 
-              {/* Airplane Image */}
-              <motion.div
-                className="absolute top-0 right-0 w-[70%] z-10"
-                animate={{ y: [0, -15, 0] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              >
-                <div className="relative">
-                  <img 
-                    src={ASSETS.heroAirplane}
-                    alt="Travel"
-                    className={`w-full h-auto rounded-3xl shadow-2xl ${!isDark ? 'ring-4 ring-amber-100' : ''}`}
-                  />
-                  <div className="absolute inset-0 rounded-3xl bg-gradient-to-t from-black/20 to-transparent" />
-                </div>
-              </motion.div>
+          {/* Company Name */}
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className={`text-4xl md:text-5xl lg:text-6xl font-bold mb-4 ${
+              isDark ? 'text-white' : 'text-slate-900'
+            }`}
+          >
+            {t.name}
+          </motion.h1>
 
-              {/* Card Hand Image */}
-              <motion.div
-                className="absolute bottom-0 left-0 w-[65%] z-20"
-                animate={{ y: [0, 10, 0] }}
-                transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-              >
-                <div className="relative">
-                  <img 
-                    src={ASSETS.heroCardHand}
-                    alt="Payment Card"
-                    className={`w-full h-auto rounded-3xl shadow-2xl ${!isDark ? 'ring-4 ring-yellow-100' : ''}`}
-                  />
-                  <div className="absolute inset-0 rounded-3xl bg-gradient-to-t from-black/20 to-transparent" />
-                </div>
-              </motion.div>
+          {/* Slogan */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className={`text-lg md:text-xl mb-10 ${
+              isDark ? 'text-slate-300' : 'text-slate-600'
+            }`}
+          >
+            {t.slogan}
+          </motion.p>
 
-              {/* Floating CBI Logo */}
-              <motion.div
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full flex items-center justify-center shadow-2xl z-30 bg-white"
-                animate={{ 
-                  scale: [1, 1.05, 1],
-                  boxShadow: [
-                    '0 0 30px rgba(212,175,55,0.4)',
-                    '0 0 60px rgba(212,175,55,0.6)',
-                    '0 0 30px rgba(212,175,55,0.4)'
-                  ]
+          {/* 4 Main Service Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="grid grid-cols-2 gap-4 mb-10"
+          >
+            {mainServices.map((service, index) => (
+              <motion.button
+                key={service.id}
+                onClick={() => navigate(service.link)}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7 + index * 0.1 }}
+                whileHover={{ 
+                  scale: 1.03, 
+                  y: -5,
+                  ...service.animation
                 }}
-                transition={{ duration: 2, repeat: Infinity }}
+                whileTap={{ scale: 0.97 }}
+                className={`group relative flex items-center gap-3 px-5 py-4 rounded-2xl font-bold transition-all duration-300 overflow-hidden ${
+                  isDark 
+                    ? 'bg-slate-800/80 hover:bg-slate-700/90 text-white border border-slate-700/50' 
+                    : 'bg-white/80 hover:bg-white text-slate-900 border border-slate-200/50'
+                } backdrop-blur-sm shadow-lg hover:shadow-2xl ${service.hoverGlow}`}
+                data-testid={`hero-service-${service.id}`}
               >
-                <img 
-                  src={ASSETS.cbiLogo}
-                  alt="CBI"
-                  className="w-16 h-16 object-contain"
-                />
-              </motion.div>
+                {/* Icon Container */}
+                <motion.div
+                  whileHover={service.animation}
+                  transition={{ duration: 0.5 }}
+                  className={`w-12 h-12 rounded-xl bg-gradient-to-br ${service.gradient} flex items-center justify-center shadow-lg`}
+                >
+                  <service.icon className="w-6 h-6 text-white" />
+                </motion.div>
+                
+                {/* Label */}
+                <span className="text-sm md:text-base">{getLabel(service)}</span>
+
+                {/* Hover Glow Effect */}
+                <div className={`absolute inset-0 bg-gradient-to-r ${service.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300 rounded-2xl`} />
+              </motion.button>
+            ))}
+          </motion.div>
+
+          {/* Trust Indicators */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.1 }}
+            className="flex flex-wrap items-center gap-6"
+          >
+            <div className={`flex items-center gap-2 px-4 py-2 rounded-full ${
+              isDark ? 'bg-slate-800/60 text-slate-300' : 'bg-white/60 text-slate-700'
+            } backdrop-blur-sm`}>
+              <Shield className={`w-4 h-4 ${isDark ? 'text-green-400' : 'text-green-600'}`} />
+              <span className="text-sm font-medium">{t.licensed}</span>
+            </div>
+            <div className={`flex items-center gap-2 px-4 py-2 rounded-full ${
+              isDark ? 'bg-slate-800/60 text-slate-300' : 'bg-white/60 text-slate-700'
+            } backdrop-blur-sm`}>
+              <Zap className={`w-4 h-4 ${isDark ? 'text-yellow-400' : 'text-amber-600'}`} />
+              <span className="text-sm font-medium">{t.instant}</span>
+            </div>
+            <div className={`flex items-center gap-2 px-4 py-2 rounded-full ${
+              isDark ? 'bg-slate-800/60 text-slate-300' : 'bg-white/60 text-slate-700'
+            } backdrop-blur-sm`}>
+              <Globe className={`w-4 h-4 ${isDark ? 'text-blue-400' : 'text-blue-600'}`} />
+              <span className="text-sm font-medium">{t.countries}</span>
             </div>
           </motion.div>
         </div>
       </div>
 
-      {/* Scroll indicator */}
+      {/* Scroll Indicator */}
       <motion.div
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1 }}
+        animate={{ opacity: 1, y: [0, 10, 0] }}
+        transition={{ delay: 1.5, duration: 2, repeat: Infinity }}
         className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20"
       >
-        <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-          className={`w-6 h-10 rounded-full border-2 flex items-start justify-center p-2 ${
-            isDark ? 'border-white/30' : 'border-amber-600/50'
-          }`}
-        >
-          <motion.div className={`w-1.5 h-1.5 rounded-full ${isDark ? 'bg-white' : 'bg-amber-600'}`} />
-        </motion.div>
+        <div className={`w-6 h-10 rounded-full border-2 flex justify-center pt-2 ${
+          isDark ? 'border-slate-600' : 'border-slate-400'
+        }`}>
+          <div className={`w-1.5 h-3 rounded-full ${
+            isDark ? 'bg-[#D4AF37]' : 'bg-amber-500'
+          }`} />
+        </div>
       </motion.div>
     </section>
   );
