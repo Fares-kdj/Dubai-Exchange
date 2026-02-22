@@ -290,10 +290,12 @@ async def get_order_stats():
     if not result:
         return OrderStatsResponse(
             total_orders=0,
+            pending_review=0,
             waiting_payment=0,
             under_review=0,
             approved=0,
             rejected=0,
+            ignored=0,
             by_type={}
         )
     
@@ -305,10 +307,12 @@ async def get_order_stats():
     
     return OrderStatsResponse(
         total_orders=total,
+        pending_review=status_counts.get("pending_review", 0),
         waiting_payment=status_counts.get("waiting_payment", 0),
         under_review=status_counts.get("under_review", 0),
         approved=status_counts.get("approved", 0),
         rejected=status_counts.get("rejected", 0),
+        ignored=status_counts.get("ignored", 0),
         by_type=type_counts
     )
 
