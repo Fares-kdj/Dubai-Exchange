@@ -11,7 +11,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from models.user import (
     UserCreate, UserResponse, UserUpdate, UserInDB, UserRole,
     LoginRequest, TokenResponse, PasswordChangeRequest,
-    Permission, DEFAULT_ADMIN_PERMISSIONS, ALL_PERMISSIONS
+    Permission, DEFAULT_ADMIN_PERMISSIONS, ALL_PERMISSIONS, PERMISSION_LABELS_AR
 )
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
@@ -336,7 +336,7 @@ async def list_permissions(current_user: UserInDB = Depends(require_developer())
         "permissions": [
             {
                 "value": p.value,
-                "label_ar": get_permission_label_ar(p),
+                "label_ar": PERMISSION_LABELS_AR.get(p, p.value),
                 "label_en": p.value.replace("_", " ").title()
             }
             for p in Permission
@@ -346,18 +346,4 @@ async def list_permissions(current_user: UserInDB = Depends(require_developer())
 
 
 def get_permission_label_ar(permission: Permission) -> str:
-    labels = {
-        Permission.VIEW_ORDERS: "عرض الطلبات",
-        Permission.MANAGE_ORDERS: "إدارة الطلبات",
-        Permission.DELETE_ORDERS: "حذف الطلبات",
-        Permission.VIEW_SERVICES: "عرض الخدمات",
-        Permission.MANAGE_SERVICES: "إدارة الخدمات",
-        Permission.EDIT_CONTENT: "تعديل المحتوى",
-        Permission.EDIT_BRANDING: "تعديل الهوية",
-        Permission.MANAGE_RATES: "إدارة أسعار الصرف",
-        Permission.MANAGE_COUNTRIES: "إدارة الدول",
-        Permission.MANAGE_FORMS: "إدارة النماذج",
-        Permission.VIEW_STATS: "عرض الإحصائيات",
-        Permission.MANAGE_USERS: "إدارة المستخدمين",
-    }
-    return labels.get(permission, permission.value)
+    return PERMISSION_LABELS_AR.get(permission, permission.value)
