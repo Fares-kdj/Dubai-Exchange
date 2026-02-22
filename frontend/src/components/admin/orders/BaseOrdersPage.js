@@ -163,7 +163,7 @@ const OrderDetailModal = ({ order, isOpen, onClose, onStatusChange, onBlock }) =
 
           {/* Tabs */}
           <div className="flex border-b border-slate-200">
-            {['details', 'documents', 'history'].map(tab => (
+            {['details', order.order_type === 'traveler' && 'admin', 'documents', 'history'].filter(Boolean).map(tab => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -173,7 +173,7 @@ const OrderDetailModal = ({ order, isOpen, onClose, onStatusChange, onBlock }) =
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                {tab === 'details' ? 'البيانات' : tab === 'documents' ? 'الوثائق' : 'السجل'}
+                {tab === 'details' ? 'البيانات' : tab === 'admin' ? 'بيانات الأدمن' : tab === 'documents' ? 'الوثائق' : 'السجل'}
               </button>
             ))}
           </div>
