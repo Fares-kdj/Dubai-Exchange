@@ -63,6 +63,7 @@ const LocalTransfer = () => {
   ];
 
   const serviceFeePercent = 2; // This would come from admin settings
+  const usdToIqdRate = 1480; // Example rate - would come from API
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -71,14 +72,22 @@ const LocalTransfer = () => {
     }
   };
 
+  // Calculate amount in IQD based on USD input
+  const calculateAmountIQD = () => {
+    if (!formData.amountUSD) return 0;
+    return Math.round(parseFloat(formData.amountUSD) * usdToIqdRate);
+  };
+
   const calculateFee = () => {
-    if (!formData.amount) return 0;
-    return (parseFloat(formData.amount) * serviceFeePercent / 100).toFixed(0);
+    const amountIQD = calculateAmountIQD();
+    if (!amountIQD) return 0;
+    return Math.round(amountIQD * serviceFeePercent / 100);
   };
 
   const calculateTotal = () => {
-    if (!formData.amount) return 0;
-    return (parseFloat(formData.amount) + parseFloat(calculateFee())).toFixed(0);
+    const amountIQD = calculateAmountIQD();
+    if (!amountIQD) return 0;
+    return amountIQD + calculateFee();
   };
 
   const validateForm = () => {
@@ -88,7 +97,8 @@ const LocalTransfer = () => {
     if (!formData.senderProvince) newErrors.senderProvince = currentLanguage === 'ar' ? 'محافظة المرسل مطلوبة' : 'Sender province required';
     if (!formData.receiverProvince) newErrors.receiverProvince = currentLanguage === 'ar' ? 'محافظة المستلم مطلوبة' : 'Receiver province required';
     if (!formData.phone.trim()) newErrors.phone = currentLanguage === 'ar' ? 'رقم الهاتف مطلوب' : 'Phone required';
-    if (!formData.amount || parseFloat(formData.amount) <= 0) newErrors.amount = currentLanguage === 'ar' ? 'المبلغ مطلوب' : 'Amount required';
+    if (!formData.amountUSD || parseFloat(formData.amountUSD) <= 0) newErrors.amountUSD = currentLanguage === 'ar' ? 'المبلغ مطلوب' : 'Amount required';
+    if (!formData.receiverCurrency) newErrors.receiverCurrency = currentLanguage === 'ar' ? 'عملة المستلم مطلوبة' : 'Receiver currency required';
     if (!formData.paymentMethod) newErrors.paymentMethod = currentLanguage === 'ar' ? 'طريقة الدفع مطلوبة' : 'Payment method required';
 
     setErrors(newErrors);
