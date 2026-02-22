@@ -38,6 +38,7 @@ import AdminRates from '@/components/admin/AdminRates';
 import AdminCMS from '@/components/admin/AdminCMS';
 import AdminBranding from '@/components/admin/AdminBranding';
 import AdminBlocklist from '@/components/admin/AdminBlocklist';
+import AdminAirports from '@/components/admin/AdminAirports';
 // Admin Order Pages
 import { TravelerOrders, LocalOrders, InternationalOrders, UsdtOrders, CardOrders } from '@/components/admin/orders';
 import { LoadingProvider } from '@/context/LoadingContext';
@@ -103,6 +104,8 @@ function App() {
                 <Route path="orders/card" element={<CardOrders />} />
                 {/* Blocklist */}
                 <Route path="blocklist" element={<AdminBlocklist />} />
+                {/* Airports & Stamps */}
+                <Route path="airports" element={<AdminAirports />} />
                 {/* Other Admin Pages */}
                 <Route path="services" element={<AdminServices />} />
                 <Route path="countries" element={<AdminCountries />} />
