@@ -58,9 +58,9 @@ const WesternUnion = () => {
   ];
 
   const paymentMethods = [
-    { value: 'cash', labelAr: 'نقداً', labelEn: 'Cash' },
-    { value: 'bank_transfer', labelAr: 'تحويل بنكي', labelEn: 'Bank Transfer' },
-    { value: 'card', labelAr: 'بطاقة', labelEn: 'Card' }
+    { value: 'zain_cash', labelAr: 'زين كاش', labelEn: 'Zain Cash', labelKu: 'زەین کاش' },
+    { value: 'mastercard_rafidain', labelAr: 'ماستركارد الرافدين', labelEn: 'Mastercard Al-Rafidain', labelKu: 'ماستەرکارد الڕافدین' },
+    { value: 'fib', labelAr: 'FIB', labelEn: 'FIB', labelKu: 'FIB' }
   ];
 
   // Exchange rates (mock - should come from API)
