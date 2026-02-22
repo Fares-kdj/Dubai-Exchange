@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
+import { useTheme } from '@/context/ThemeContext';
 import { motion } from 'framer-motion';
 import { User, Phone, Plane, MapPin, Calendar, DollarSign, CreditCard, Upload, X, CheckCircle, AlertCircle } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -8,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 const BookingForm = ({ onSubmit }) => {
   const { currentLanguage } = useLanguage();
+  const { isDark } = useTheme();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
