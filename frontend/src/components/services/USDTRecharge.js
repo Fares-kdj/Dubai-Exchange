@@ -87,15 +87,11 @@ const USDTRecharge = () => {
     }
   ];
 
-  const paymentMethods = [
-    { value: 'cash', labelAr: 'نقداً', labelEn: 'Cash' },
-    { value: 'bank_transfer', labelAr: 'تحويل بنكي', labelEn: 'Bank Transfer' },
-    { value: 'card', labelAr: 'بطاقة', labelEn: 'Card' }
-  ];
+  const paymentMethods = PAYMENT_METHODS.filter(m => m.active);
 
   // Exchange rate
   const usdtToIQD = 1480;
-  const serviceFeePercent = 1.5;
+  const serviceFeePercent = SERVICE_FEES.usdt_recharge; // 2%
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
