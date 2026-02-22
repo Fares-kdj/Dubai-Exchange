@@ -153,7 +153,7 @@ async def list_orders(
 
 
 @router.put("/{order_id}", response_model=OrderResponse)
-async def update_order(order_id: str, update: OrderUpdate):
+async def update_order(order_id: str, update: OrderUpdate, background_tasks: BackgroundTasks):
     """Update order status or details (Admin)"""
     now = datetime.now(timezone.utc).isoformat()
     update_doc = {"updated_at": now}
@@ -163,8 +163,11 @@ async def update_order(order_id: str, update: OrderUpdate):
     if not current_order:
         raise HTTPException(status_code=404, detail="Order not found")
     
+    old_status = current_order.get("status")
+    new_status = update.status.value if update.status else None
+    
     # Track status change in history
-    if update.status and update.status.value != current_order.get("status"):
+    if update.status and new_status != old_status:
         status_entry = {
             "status": update.status.value,
             "changed_by": "Admin",  # TODO: Get from auth
@@ -204,6 +207,27 @@ async def update_order(order_id: str, update: OrderUpdate):
     
     if not result:
         raise HTTPException(status_code=404, detail="Order not found")
+    
+    # Send SMS for status changes (approved/rejected)
+    if new_status and new_status != old_status:
+        phone = current_order.get("customer", {}).get("phone", "")
+        
+        if new_status == "approved":
+            background_tasks.add_task(
+                sms_service.send_order_approved,
+                phone,
+                order_id.upper()
+            )
+            logger.info(f"Order {order_id} approved, SMS queued for {phone}")
+        
+        elif new_status == "rejected":
+            background_tasks.add_task(
+                sms_service.send_order_rejected,
+                phone,
+                order_id.upper(),
+                update.rejection_reason
+            )
+            logger.info(f"Order {order_id} rejected, SMS queued for {phone}")
     
     return OrderResponse(**result)
 
