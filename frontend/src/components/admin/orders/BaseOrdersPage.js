@@ -45,6 +45,19 @@ const OrderDetailModal = ({ order, isOpen, onClose, onStatusChange, onBlock }) =
   const [loading, setLoading] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
   const [showRejectInput, setShowRejectInput] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [adminData, setAdminData] = useState({});
+  const [airports, setAirports] = useState([]);
+  const [borders, setBorders] = useState([]);
+
+  // Fetch airports and borders for traveler orders
+  useEffect(() => {
+    if (order?.order_type === 'traveler') {
+      fetch(`${API_URL}/api/stamps/airports`).then(r => r.json()).then(setAirports).catch(() => {});
+      fetch(`${API_URL}/api/stamps/borders`).then(r => r.json()).then(setBorders).catch(() => {});
+      setAdminData(order.admin_data || {});
+    }
+  }, [order]);
 
   if (!isOpen || !order) return null;
 
