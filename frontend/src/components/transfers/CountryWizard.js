@@ -429,10 +429,50 @@ const CountryWizard = () => {
                     {wizardData.amount && selectedMethod && (
                       <div className={`mt-4 p-4 rounded-xl ${isDark ? 'bg-slate-700/50' : 'bg-white'}`}>
                         <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{isArabic ? 'المستلم سيحصل على' : 'Receiver will get'}</p>
-                        <p className="text-2xl font-bold text-emerald-500">{calculateReceiveAmount().toLocaleString()}</p>
+                        <p className="text-2xl font-bold text-emerald-500">{calculateReceiveAmount().toLocaleString()} {wizardData.receiverCurrency}</p>
                       </div>
                     )}
                   </div>
+
+                  {/* Receiver Currency Selection - For Bank Transfers Only */}
+                  {isBankTransfer && (
+                    <div className={`rounded-2xl p-6 mb-6 ${isDark ? 'bg-blue-900/20 border border-blue-700/50' : 'bg-blue-50 border border-blue-200'}`}>
+                      <Label className={`text-lg font-bold mb-4 block ${isDark ? 'text-blue-400' : 'text-blue-700'}`}>
+                        {isArabic ? 'عملة المستلم' : 'Receiver Currency'} *
+                      </Label>
+                      <div className="grid grid-cols-3 gap-3">
+                        {getAvailableCurrencies().map(currency => (
+                          <motion.button
+                            key={currency.code}
+                            type="button"
+                            whileHover={{ scale: 1.02 }}
+                            onClick={() => setWizardData(p => ({ ...p, receiverCurrency: currency.code }))}
+                            className={`p-4 rounded-xl border-2 text-center transition-colors ${
+                              wizardData.receiverCurrency === currency.code
+                                ? 'border-[#D4AF37] bg-[#D4AF37]/10'
+                                : isDark ? 'border-slate-600 hover:border-slate-500' : 'border-slate-200 hover:border-slate-300'
+                            }`}
+                          >
+                            <span className={`text-lg font-bold block ${isDark ? 'text-white' : 'text-slate-900'}`}>{currency.code}</span>
+                            <span className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{isArabic ? currency.nameAr : currency.nameEn}</span>
+                          </motion.button>
+                        ))}
+                      </div>
+                      {errors.receiverCurrency && <p className="text-red-500 mt-2"><AlertCircle className="w-4 h-4 inline" /> {errors.receiverCurrency}</p>}
+                    </div>
+                  )}
+
+                  {/* Non-Bank: Show fixed currency info */}
+                  {!isBankTransfer && wizardData.country && (
+                    <div className={`rounded-2xl p-4 mb-6 ${isDark ? 'bg-amber-900/20 border border-amber-700/50' : 'bg-amber-50 border border-amber-200'}`}>
+                      <p className={`text-sm ${isDark ? 'text-amber-300' : 'text-amber-800'}`}>
+                        <AlertCircle className="w-4 h-4 inline ml-1" />
+                        {isArabic 
+                          ? `سيتم استلام المبلغ بالعملة المحلية (${countryCurrencies[wizardData.country]?.nameAr || ''})` 
+                          : `Amount will be received in local currency (${countryCurrencies[wizardData.country]?.nameEn || ''})`}
+                      </p>
+                    </div>
+                  )}
 
                   {/* Transfer Info */}
                   <div className="space-y-5">
