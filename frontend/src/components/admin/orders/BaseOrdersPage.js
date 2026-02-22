@@ -274,6 +274,156 @@ const OrderDetailModal = ({ order, isOpen, onClose, onStatusChange, onBlock }) =
               </div>
             )}
 
+            {/* Admin Data Tab - Only for Traveler orders */}
+            {activeTab === 'admin' && order.order_type === 'traveler' && (
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-bold text-slate-900">بيانات الأدمن (حجز المسافرين)</h3>
+                  <button
+                    onClick={() => setShowEditForm(!showEditForm)}
+                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  >
+                    <Edit className="w-4 h-4" />
+                    {showEditForm ? 'إلغاء' : 'تعديل'}
+                  </button>
+                </div>
+
+                {showEditForm ? (
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label>رقم الوجبة</Label>
+                      <Input 
+                        value={adminData.batch_number || ''} 
+                        onChange={e => setAdminData(p => ({ ...p, batch_number: e.target.value }))} 
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>تاريخ الوجبة</Label>
+                      <Input 
+                        type="date"
+                        value={adminData.batch_date || ''} 
+                        onChange={e => setAdminData(p => ({ ...p, batch_date: e.target.value }))} 
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>اسم الأم</Label>
+                      <Input 
+                        value={adminData.mother_name || ''} 
+                        onChange={e => setAdminData(p => ({ ...p, mother_name: e.target.value }))} 
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>رقم التذكرة</Label>
+                      <Input 
+                        value={adminData.ticket_number || ''} 
+                        onChange={e => setAdminData(p => ({ ...p, ticket_number: e.target.value }))} 
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>وقت السفر</Label>
+                      <Input 
+                        type="time"
+                        value={adminData.travel_time || ''} 
+                        onChange={e => setAdminData(p => ({ ...p, travel_time: e.target.value }))} 
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>رقم الجواز</Label>
+                      <Input 
+                        value={adminData.passport_number || ''} 
+                        onChange={e => setAdminData(p => ({ ...p, passport_number: e.target.value }))} 
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>تاريخ الإصدار</Label>
+                      <Input 
+                        type="date"
+                        value={adminData.passport_issue_date || ''} 
+                        onChange={e => setAdminData(p => ({ ...p, passport_issue_date: e.target.value }))} 
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>تاريخ النفاذ</Label>
+                      <Input 
+                        type="date"
+                        value={adminData.passport_expiry_date || ''} 
+                        onChange={e => setAdminData(p => ({ ...p, passport_expiry_date: e.target.value }))} 
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>مكتب السياحة</Label>
+                      <Input 
+                        value={adminData.travel_agency || ''} 
+                        onChange={e => setAdminData(p => ({ ...p, travel_agency: e.target.value }))} 
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>نوع السفر</Label>
+                      <Select value={adminData.travel_type || ''} onValueChange={v => setAdminData(p => ({ ...p, travel_type: v }))}>
+                        <SelectTrigger><SelectValue placeholder="اختر..." /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="air">جوي</SelectItem>
+                          <SelectItem value="land">بري</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {adminData.travel_type === 'air' && (
+                      <div className="space-y-2">
+                        <Label>المطار</Label>
+                        <Select value={adminData.airport_id || ''} onValueChange={v => setAdminData(p => ({ ...p, airport_id: v }))}>
+                          <SelectTrigger><SelectValue placeholder="اختر المطار..." /></SelectTrigger>
+                          <SelectContent>
+                            {airports.map(a => <SelectItem key={a.stamp_id} value={a.stamp_id}>{a.name_ar}</SelectItem>)}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+                    {adminData.travel_type === 'land' && (
+                      <div className="space-y-2">
+                        <Label>المنفذ الحدودي</Label>
+                        <Select value={adminData.border_id || ''} onValueChange={v => setAdminData(p => ({ ...p, border_id: v }))}>
+                          <SelectTrigger><SelectValue placeholder="اختر المنفذ..." /></SelectTrigger>
+                          <SelectContent>
+                            {borders.map(b => <SelectItem key={b.stamp_id} value={b.stamp_id}>{b.name_ar}</SelectItem>)}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+                    <div className="col-span-full flex justify-end pt-4">
+                      <button
+                        onClick={handleSaveAdminData}
+                        disabled={loading}
+                        className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                      >
+                        <CheckCircle className="w-4 h-4" />
+                        حفظ البيانات
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {[
+                      { label: 'رقم الوجبة', value: order.admin_data?.batch_number },
+                      { label: 'تاريخ الوجبة', value: order.admin_data?.batch_date },
+                      { label: 'اسم الأم', value: order.admin_data?.mother_name },
+                      { label: 'رقم التذكرة', value: order.admin_data?.ticket_number },
+                      { label: 'وقت السفر', value: order.admin_data?.travel_time },
+                      { label: 'رقم الجواز', value: order.admin_data?.passport_number },
+                      { label: 'تاريخ الإصدار', value: order.admin_data?.passport_issue_date },
+                      { label: 'تاريخ النفاذ', value: order.admin_data?.passport_expiry_date },
+                      { label: 'مكتب السياحة', value: order.admin_data?.travel_agency },
+                      { label: 'نوع السفر', value: order.admin_data?.travel_type === 'air' ? 'جوي' : order.admin_data?.travel_type === 'land' ? 'بري' : null },
+                    ].map((item, idx) => (
+                      <div key={idx} className="p-4 bg-slate-50 rounded-xl">
+                        <p className="text-xs text-slate-500 mb-1">{item.label}</p>
+                        <p className="font-medium">{item.value || '-'}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
             {activeTab === 'documents' && (
               <div className="space-y-4">
                 <h3 className="font-bold text-slate-900">الوثائق المرفوعة</h3>
