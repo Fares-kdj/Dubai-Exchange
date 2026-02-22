@@ -222,29 +222,29 @@ const BookingForm = ({ onSubmit }) => {
           {/* Customer Information */}
           <div className={`rounded-3xl border-2 shadow-xl p-8 mb-6 ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'}`}>
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center">
+              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${isDark ? 'bg-blue-500/20' : 'bg-blue-100'}`}>
                 <User className="w-6 h-6 text-blue-600" />
               </div>
-              <h2 className="text-2xl font-bold text-slate-900">
+              <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 {currentLanguage === 'ar' ? 'بيانات العميل' : 'Customer Information'}
               </h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="fullName" className="text-slate-700 font-medium">
+                <Label htmlFor="fullName" className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                   {currentLanguage === 'ar' ? 'الاسم الكامل' : 'Full Name'} *
                 </Label>
                 <Input
                   id="fullName"
                   value={formData.fullName}
                   onChange={(e) => handleInputChange('fullName', e.target.value)}
-                  className="h-12 border-slate-300 focus:border-[#D4AF37]"
+                  className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'} focus:border-[#D4AF37]`}
                   placeholder={currentLanguage === 'ar' ? 'أدخل الاسم الكامل' : 'Enter full name'}
                   data-testid="full-name-input"
                 />
                 {errors.fullName && (
-                  <p className="text-sm text-red-600 flex items-center gap-1">
+                  <p className="text-sm text-red-500 flex items-center gap-1">
                     <AlertCircle className="w-4 h-4" />
                     {errors.fullName}
                   </p>
@@ -252,7 +252,7 @@ const BookingForm = ({ onSubmit }) => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="phone" className="text-slate-700 font-medium">
+                <Label htmlFor="phone" className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                   {currentLanguage === 'ar' ? 'رقم الهاتف' : 'Phone Number'} *
                 </Label>
                 <Input
@@ -260,12 +260,12 @@ const BookingForm = ({ onSubmit }) => {
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => handleInputChange('phone', e.target.value)}
-                  className="h-12 border-slate-300 focus:border-[#D4AF37]"
+                  className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'} focus:border-[#D4AF37]`}
                   placeholder="+964 7XX XXX XXXX"
                   data-testid="phone-input"
                 />
                 {errors.phone && (
-                  <p className="text-sm text-red-600 flex items-center gap-1">
+                  <p className="text-sm text-red-500 flex items-center gap-1">
                     <AlertCircle className="w-4 h-4" />
                     {errors.phone}
                   </p>
@@ -275,23 +275,23 @@ const BookingForm = ({ onSubmit }) => {
           </div>
 
           {/* Travel Information */}
-          <div className="bg-white rounded-3xl border-2 border-slate-200 shadow-xl p-8 mb-6">
+          <div className={`rounded-3xl border-2 shadow-xl p-8 mb-6 ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'}`}>
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center">
+              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${isDark ? 'bg-purple-500/20' : 'bg-purple-100'}`}>
                 <Plane className="w-6 h-6 text-purple-600" />
               </div>
-              <h2 className="text-2xl font-bold text-slate-900">
+              <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 {currentLanguage === 'ar' ? 'بيانات السفر' : 'Travel Information'}
               </h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label className="text-slate-700 font-medium">
+                <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                   {currentLanguage === 'ar' ? 'نوع السفر' : 'Travel Type'} *
                 </Label>
                 <Select value={formData.travelType} onValueChange={(value) => handleInputChange('travelType', value)}>
-                  <SelectTrigger className="h-12 border-slate-300" data-testid="travel-type-select">
+                  <SelectTrigger className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} data-testid="travel-type-select">
                     <SelectValue placeholder={currentLanguage === 'ar' ? 'اختر نوع السفر' : 'Select travel type'} />
                   </SelectTrigger>
                   <SelectContent>
@@ -302,11 +302,11 @@ const BookingForm = ({ onSubmit }) => {
                     ))}
                   </SelectContent>
                 </Select>
-                {errors.travelType && <p className="text-sm text-red-600 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.travelType}</p>}
+                {errors.travelType && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.travelType}</p>}
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="destination" className="text-slate-700 font-medium">
+                <Label htmlFor="destination" className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                   {currentLanguage === 'ar' ? 'وجهة السفر' : 'Destination'} *
                 </Label>
                 <Input
