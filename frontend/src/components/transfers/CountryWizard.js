@@ -135,6 +135,19 @@ const CountryWizard = () => {
     setMethods(methodsMap[wizardData.country] || []);
   }, [wizardData.country]);
 
+  // Set default receiver currency when method changes
+  useEffect(() => {
+    if (wizardData.method && wizardData.country) {
+      const availableCurrencies = getAvailableCurrencies();
+      // For non-bank, auto-set to local currency; for bank, default to first option (USD)
+      if (!isBankTransfer && availableCurrencies.length === 1) {
+        setWizardData(p => ({ ...p, receiverCurrency: availableCurrencies[0].code }));
+      } else if (isBankTransfer && !wizardData.receiverCurrency) {
+        setWizardData(p => ({ ...p, receiverCurrency: 'USD' }));
+      }
+    }
+  }, [wizardData.method, wizardData.country]);
+
   const filteredCountries = countries.filter(c => 
     c.nameAr.includes(searchQuery) || c.nameEn.toLowerCase().includes(searchQuery.toLowerCase())
   );
