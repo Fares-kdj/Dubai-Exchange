@@ -27,11 +27,47 @@ const CountryWizard = () => {
     amount: '',
     country: null,
     method: null,
+    receiverCurrency: '', // New: Receiver's currency
     senderName: '',
     receiverName: '',
     phone: '',
     accountNumber: ''
   });
+
+  // Currency map for each country
+  const countryCurrencies = {
+    'dz': { code: 'DZD', nameAr: 'دينار جزائري', nameEn: 'Algerian Dinar' },
+    'eg': { code: 'EGP', nameAr: 'جنيه مصري', nameEn: 'Egyptian Pound' },
+    'tr': { code: 'TRY', nameAr: 'ليرة تركية', nameEn: 'Turkish Lira' },
+    'jo': { code: 'JOD', nameAr: 'دينار أردني', nameEn: 'Jordanian Dinar' },
+    'in': { code: 'INR', nameAr: 'روبية هندية', nameEn: 'Indian Rupee' },
+    'pk': { code: 'PKR', nameAr: 'روبية باكستانية', nameEn: 'Pakistani Rupee' },
+    'ae': { code: 'AED', nameAr: 'درهم إماراتي', nameEn: 'UAE Dirham' },
+    'sa': { code: 'SAR', nameAr: 'ريال سعودي', nameEn: 'Saudi Riyal' },
+    'lb': { code: 'LBP', nameAr: 'ليرة لبنانية', nameEn: 'Lebanese Pound' },
+    'sy': { code: 'SYP', nameAr: 'ليرة سورية', nameEn: 'Syrian Pound' }
+  };
+
+  // Check if selected method is bank transfer
+  const isBankTransfer = wizardData.method === 'bank';
+  
+  // Get available currencies for receiver based on method
+  const getAvailableCurrencies = () => {
+    if (!wizardData.country) return [];
+    const localCurrency = countryCurrencies[wizardData.country];
+    
+    if (isBankTransfer) {
+      // For bank transfers: USD, EUR, or local currency
+      return [
+        { code: 'USD', nameAr: 'دولار أمريكي', nameEn: 'US Dollar' },
+        { code: 'EUR', nameAr: 'يورو', nameEn: 'Euro' },
+        localCurrency
+      ];
+    } else {
+      // For non-bank methods: local currency only
+      return [localCurrency];
+    }
+  };
 
   // Load countries data on mount
   useEffect(() => {
