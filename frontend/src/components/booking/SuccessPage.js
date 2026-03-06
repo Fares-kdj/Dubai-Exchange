@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
+import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { CheckCircle, Copy, Download, Upload, X, Clock, MapPin, Calendar, DollarSign, CreditCard, Phone, User } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useNavigate } from 'react-router-dom';
+
+const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const SuccessPage = ({ orderData }) => {
   const { currentLanguage } = useLanguage();
@@ -11,10 +14,18 @@ const SuccessPage = ({ orderData }) => {
   const [copied, setCopied] = useState(false);
   const [paymentProofs, setPaymentProofs] = useState([]);
   const [uploading, setUploading] = useState(false);
+  const isArabic = currentLanguage === 'ar';
+  const isKurdish = currentLanguage === 'ku';
 
-  // Generate Order ID
-  const orderId = `TRV-${Date.now().toString().slice(-8)}`;
-  const orderDate = new Date().toLocaleString(currentLanguage === 'ar' ? 'ar-IQ' : 'en-US');
+  const t = (ar, en, ku) => {
+    if (isKurdish) return ku || en;
+    if (isArabic) return ar;
+    return en;
+  };
+
+  // Use Order ID from the created order
+  const orderId = orderData?.orderId || `TRV-${Date.now().toString().slice(-8)}`;
+  const orderDate = new Date().toLocaleString(isKurdish ? 'ku-IQ' : (isArabic ? 'ar-IQ' : 'en-US'));
 
   const copyOrderId = async () => {
     try {
@@ -58,40 +69,60 @@ const SuccessPage = ({ orderData }) => {
   };
 
   const submitPaymentProof = async () => {
-    if (paymentProofs.length === 0) return;
-    
+    if (paymentProofs.length === 0 || !orderId) return;
+
     setUploading(true);
-    // Simulate upload
-    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    try {
+      for (const proof of paymentProofs) {
+        const formData = new FormData();
+        formData.append('file', proof.file);
+
+        const response = await fetch(`${API_URL}/api/orders/${orderId}/payment-proof`, {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to upload some proofs');
+        }
+      }
+
+      toast.success(t('تم إرسال إثبات الدفع بنجاح!', 'Payment proof submitted successfully!', 'بەڵگەی پارەدان بە سەرکەوتوویی نێردرا!'));
+      setPaymentProofs([]);
+    } catch (err) {
+      console.error('Upload error:', err);
+      toast.error(t('حدث خطأ أثناء الرفع', 'Error uploading proof', 'کێشەیەک لە کاتی بەرزکردنەوەدا دروست بوو'));
+    }
+
     setUploading(false);
-    alert(currentLanguage === 'ar' ? 'تم إرسال إثبات الدفع بنجاح!' : 'Payment proof submitted successfully!');
   };
 
   // Get pickup location label
   const getPickupLabel = (value) => {
     const locations = {
-      'baghdad': { ar: 'مطار بغداد الدولي', en: 'Baghdad International Airport' },
-      'erbil': { ar: 'مطار أربيل الدولي', en: 'Erbil International Airport' },
-      'basra': { ar: 'مطار البصرة الدولي', en: 'Basra International Airport' },
-      'najaf': { ar: 'مطار النجف الدولي', en: 'Najaf International Airport' },
-      'sulaymaniyah': { ar: 'مطار السليمانية الدولي', en: 'Sulaymaniyah International Airport' },
-      'ibrahim_khalil': { ar: 'منفذ إبراهيم الخليل', en: 'Ibrahim Khalil Border' },
-      'trebil': { ar: 'منفذ طريبيل', en: 'Trebil Border' },
-      'safwan': { ar: 'منفذ سفوان', en: 'Safwan Border' },
-      'shalamcheh': { ar: 'منفذ شلامجة', en: 'Shalamcheh Border' }
+      'baghdad': { ar: 'مطار بغداد الدولي', en: 'Baghdad International Airport', ku: 'فڕۆکەخانەی نێودەوڵەتی بەغدا' },
+      'erbil': { ar: 'مطار أربيل الدولي', en: 'Erbil International Airport', ku: 'فڕۆکەخانەی نێودەوڵەتی هەولێر' },
+      'basra': { ar: 'مطار البصرة الدولي', en: 'Basra International Airport', ku: 'فڕۆکەخانەی نێودەوڵەتی بەسرە' },
+      'najaf': { ar: 'مطار النجف الدولي', en: 'Najaf International Airport', ku: 'فڕۆکەخانەی نێودەوڵەتی نەجەف' },
+      'sulaymaniyah': { ar: 'مطار السليمانية الدولي', en: 'Sulaymaniyah International Airport', ku: 'فڕۆکەخانەی نێودەوڵەتی سلێمانی' },
+      'ibrahim_khalil': { ar: 'منفذ إبراهيم الخليل', en: 'Ibrahim Khalil Border', ku: 'دەروازەی ئیبراهیم خەلیل' },
+      'trebil': { ar: 'منفذ طريبيل', en: 'Trebil Border', ku: 'دەروازەی تڕێبیل' },
+      'safwan': { ar: 'منفذ سفوان', en: 'Safwan Border', ku: 'دەروازەی سەفوان' },
+      'shalamcheh': { ar: 'منفذ شلامجة', en: 'Shalamcheh Border', ku: 'دەروازەی شەلامچە' }
     };
     const loc = locations[value];
-    return loc ? (currentLanguage === 'ar' ? loc.ar : loc.en) : value;
+    return loc ? t(loc.ar, loc.en, loc.ku) : value;
   };
 
   const getPaymentMethodLabel = (value) => {
     const methods = {
-      'cash': { ar: 'نقداً', en: 'Cash' },
-      'bank_transfer': { ar: 'تحويل بنكي', en: 'Bank Transfer' },
-      'card': { ar: 'بطاقة', en: 'Card' }
+      'cash': { ar: 'نقداً', en: 'Cash', ku: 'بە کاش' },
+      'bank_transfer': { ar: 'تحويل بنكي', en: 'Bank Transfer', ku: 'گواستنەوەی بانکی' },
+      'card': { ar: 'بطاقة', en: 'Card', ku: 'کارت' }
     };
     const method = methods[value];
-    return method ? (currentLanguage === 'ar' ? method.ar : method.en) : value;
+    return method ? t(method.ar, method.en, method.ku) : value;
   };
 
   return (
@@ -109,7 +140,7 @@ const SuccessPage = ({ orderData }) => {
                 <CheckCircle className="w-5 h-5" />
               </div>
               <span className="text-sm font-medium text-slate-500">
-                {currentLanguage === 'ar' ? 'الشروط' : 'Terms'}
+                {t('الشروط', 'Terms', 'مەرجەکان')}
               </span>
             </div>
             <div className="w-16 h-1 bg-green-500 rounded"></div>
@@ -118,7 +149,7 @@ const SuccessPage = ({ orderData }) => {
                 <CheckCircle className="w-5 h-5" />
               </div>
               <span className="text-sm font-medium text-slate-500">
-                {currentLanguage === 'ar' ? 'معلومات الحجز' : 'Booking Details'}
+                {t('معلومات الحجز', 'Booking Details', 'زانیارییەکانی حجزکردن')}
               </span>
             </div>
             <div className="w-16 h-1 bg-green-500 rounded"></div>
@@ -127,7 +158,7 @@ const SuccessPage = ({ orderData }) => {
                 <CheckCircle className="w-5 h-5" />
               </div>
               <span className="text-sm font-medium text-slate-900">
-                {currentLanguage === 'ar' ? 'التأكيد' : 'Confirmation'}
+                {t('التأكيد', 'Confirmation', 'دووپاتکردنەوە')}
               </span>
             </div>
           </div>
@@ -144,12 +175,14 @@ const SuccessPage = ({ orderData }) => {
             <CheckCircle className="w-14 h-14 text-white" />
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-3">
-            {currentLanguage === 'ar' ? 'تم تسجيل طلبك بنجاح!' : 'Order Created Successfully!'}
+            {t('تم تسجيل طلبك بنجاح!', 'Order Created Successfully!', 'داواکارییەکەت بە سەرکەوتوویی تۆمارکرا!')}
           </h1>
           <p className="text-lg text-slate-600">
-            {currentLanguage === 'ar' 
-              ? 'احتفظ برقم الطلب لتتبع حالته'
-              : 'Keep your order ID to track your request'}
+            {t(
+              'احتفظ برقم الطلب لتتبع حالته',
+              'Keep your order ID to track your request',
+              'ژمارەی داواکارییەکە بپارێزە بۆ تتبعکردنی بارودۆخی'
+            )}
           </p>
         </motion.div>
 
@@ -167,7 +200,7 @@ const SuccessPage = ({ orderData }) => {
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <p className="text-sm text-slate-400 mb-1">
-                    {currentLanguage === 'ar' ? 'رقم الطلب' : 'Order ID'}
+                    {t('رقم الطلب', 'Order ID', 'ژمارەی داواکاری')}
                   </p>
                   <h2 className="text-3xl font-bold tracking-wider">{orderId}</h2>
                 </div>
@@ -185,7 +218,7 @@ const SuccessPage = ({ orderData }) => {
                   )}
                 </motion.button>
               </div>
-              
+
               <div className="flex items-center gap-2 text-sm text-slate-400">
                 <Clock className="w-4 h-4" />
                 {orderDate}
@@ -195,7 +228,7 @@ const SuccessPage = ({ orderData }) => {
               <div className="mt-6 inline-flex items-center gap-2 px-4 py-2 bg-amber-500/20 border border-amber-500/30 rounded-full">
                 <div className="w-2 h-2 bg-amber-400 rounded-full animate-pulse"></div>
                 <span className="text-sm font-medium text-amber-300">
-                  {currentLanguage === 'ar' ? 'في انتظار الدفع' : 'Waiting for Payment'}
+                  {t('في انتظار الدفع', 'Waiting for Payment', 'چاوەڕوانی پارەدانە')}
                 </span>
               </div>
             </motion.div>
@@ -209,19 +242,19 @@ const SuccessPage = ({ orderData }) => {
             >
               <h3 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2">
                 <User className="w-6 h-6 text-blue-600" />
-                {currentLanguage === 'ar' ? 'بيانات العميل' : 'Customer Information'}
+                {t('بيانات العميل', 'Customer Information', 'زانیارییەکانی کڕیار')}
               </h3>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <InfoItem 
+                <InfoItem
                   icon={User}
-                  label={currentLanguage === 'ar' ? 'الاسم' : 'Name'}
+                  label={t('الاسم', 'Name', 'ناو')}
                   value={orderData?.fullName || '---'}
                   color="blue"
                 />
-                <InfoItem 
+                <InfoItem
                   icon={Phone}
-                  label={currentLanguage === 'ar' ? 'رقم الهاتف' : 'Phone'}
+                  label={t('رقم الهاتف', 'Phone', 'ژمارەی مۆبایل')}
                   value={orderData?.phone || '---'}
                   color="green"
                 />
@@ -237,25 +270,25 @@ const SuccessPage = ({ orderData }) => {
             >
               <h3 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2">
                 <MapPin className="w-6 h-6 text-purple-600" />
-                {currentLanguage === 'ar' ? 'بيانات السفر' : 'Travel Details'}
+                {t('بيانات السفر', 'Travel Details', 'زانیارییەکانی گەشت')}
               </h3>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <InfoItem 
+                <InfoItem
                   icon={MapPin}
-                  label={currentLanguage === 'ar' ? 'الوجهة' : 'Destination'}
+                  label={t('الوجهة', 'Destination', 'شوێنی مەبەست')}
                   value={orderData?.destination || '---'}
                   color="purple"
                 />
-                <InfoItem 
+                <InfoItem
                   icon={Calendar}
-                  label={currentLanguage === 'ar' ? 'تاريخ السفر' : 'Travel Date'}
+                  label={t('تاريخ السفر', 'Travel Date', 'تاریخی گەشت')}
                   value={orderData?.travelDate || '---'}
                   color="pink"
                 />
-                <InfoItem 
+                <InfoItem
                   icon={MapPin}
-                  label={currentLanguage === 'ar' ? 'مكان الاستلام' : 'Pickup Location'}
+                  label={t('مكان الاستلام', 'Pickup Location', 'شوێنی وەرگرتن')}
                   value={getPickupLabel(orderData?.pickupLocation)}
                   color="indigo"
                 />
@@ -271,27 +304,27 @@ const SuccessPage = ({ orderData }) => {
             >
               <h3 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2">
                 <DollarSign className="w-6 h-6 text-emerald-600" />
-                {currentLanguage === 'ar' ? 'المبلغ المحجوز' : 'Booking Amount'}
+                {t('المبلغ المحجوز', 'Booking Amount', 'بڕی حجزکراو')}
               </h3>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="bg-white rounded-2xl p-6 border-2 border-emerald-200">
-                  <p className="text-sm text-slate-500 mb-1">{currentLanguage === 'ar' ? 'بالدولار' : 'In USD'}</p>
+                  <p className="text-sm text-slate-500 mb-1">{t('بالدولار', 'In USD', 'بە دۆلار')}</p>
                   <p className="text-3xl font-bold text-emerald-600">
                     ${orderData?.usdAmount || '0'}
                   </p>
                 </div>
                 <div className="bg-white rounded-2xl p-6 border-2 border-teal-200">
-                  <p className="text-sm text-slate-500 mb-1">{currentLanguage === 'ar' ? 'بالدينار' : 'In IQD'}</p>
+                  <p className="text-sm text-slate-500 mb-1">{t('بالدينار', 'In IQD', 'بە دینار')}</p>
                   <p className="text-3xl font-bold text-teal-600">
-                    {orderData?.iqdAmount ? Number(orderData.iqdAmount).toLocaleString() : '0'} {currentLanguage === 'ar' ? 'د.ع' : 'IQD'}
+                    {orderData?.iqdAmount ? Number(orderData.iqdAmount).toLocaleString() : '0'} {t('د.ع', 'IQD', 'د.ع')}
                   </p>
                 </div>
               </div>
 
               <div className="mt-6 flex items-center gap-2 text-sm text-slate-600">
                 <CreditCard className="w-4 h-4" />
-                <span>{currentLanguage === 'ar' ? 'طريقة الدفع:' : 'Payment Method:'}</span>
+                <span>{t('طريقة الدفع:', 'Payment Method:', 'شێوازی پارەدان:')}</span>
                 <span className="font-medium">{getPaymentMethodLabel(orderData?.paymentMethod)}</span>
               </div>
             </motion.div>
@@ -307,11 +340,11 @@ const SuccessPage = ({ orderData }) => {
               className="bg-white rounded-3xl border-2 border-slate-200 shadow-xl p-8 text-center"
             >
               <h3 className="text-lg font-bold text-slate-900 mb-6">
-                {currentLanguage === 'ar' ? 'رمز QR للطلب' : 'Order QR Code'}
+                {t('رمز QR للطلب', 'Order QR Code', 'کۆدی QRی داواکاری')}
               </h3>
-              
+
               <div className="bg-slate-50 p-6 rounded-2xl mb-4 inline-block">
-                <QRCodeSVG 
+                <QRCodeSVG
                   value={orderId}
                   size={180}
                   level="H"
@@ -320,14 +353,16 @@ const SuccessPage = ({ orderData }) => {
               </div>
 
               <p className="text-xs text-slate-500 mb-4">
-                {currentLanguage === 'ar' 
-                  ? 'استخدم هذا الرمز للتحقق عند الاستلام'
-                  : 'Use this code for verification at pickup'}
+                {t(
+                  'استخدم هذا الرمز للتحقق عند الاستلام',
+                  'Use this code for verification at pickup',
+                  'ئەم کۆدە بەکاربهێنە بۆ دووپاتکردنەوە لە کاتی وەرگرتندا'
+                )}
               </p>
 
               <button className="w-full py-2 text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors flex items-center justify-center gap-2">
                 <Download className="w-4 h-4" />
-                {currentLanguage === 'ar' ? 'تحميل QR' : 'Download QR'}
+                {t('تحميل QR', 'Download QR', 'داگرتنی QR')}
               </button>
             </motion.div>
 
@@ -344,13 +379,13 @@ const SuccessPage = ({ orderData }) => {
                   <Phone className="w-6 h-6" />
                 </div>
                 <h3 className="text-lg font-bold">
-                  {currentLanguage === 'ar' ? 'تواصل معنا عبر واتساب' : 'Contact us via WhatsApp'}
+                  {t('تواصل معنا عبر واتساب', 'Contact us via WhatsApp', 'پەیوەندیمان پێوە بکەن لە ڕێگەی واتسئەپ')}
                 </h3>
               </div>
-              
+
               <div className="bg-white/10 rounded-2xl p-4 mb-4">
                 <p className="text-sm opacity-90 mb-2">
-                  {currentLanguage === 'ar' ? 'رقم الواتساب:' : 'WhatsApp Number:'}
+                  {t('رقم الواتساب:', 'WhatsApp Number:', 'ژمارەی واتسئەپ:')}
                 </p>
                 <div className="flex items-center justify-between">
                   <span className="text-xl font-bold tracking-wider" dir="ltr">+964 750 123 4567</span>
@@ -374,13 +409,13 @@ const SuccessPage = ({ orderData }) => {
                 </div>
               </div>
 
-              <a 
-                href="https://wa.me/9647501234567" 
-                target="_blank" 
+              <a
+                href="https://wa.me/9647501234567"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="block w-full py-3 bg-white text-green-600 font-bold rounded-xl text-center hover:bg-green-50 transition-colors"
               >
-                {currentLanguage === 'ar' ? 'فتح واتساب' : 'Open WhatsApp'}
+                {t('فتح واتساب', 'Open WhatsApp', 'کردنەوەی واتسئەپ')}
               </a>
             </motion.div>
 
@@ -392,35 +427,35 @@ const SuccessPage = ({ orderData }) => {
               className="bg-blue-50 border-2 border-blue-200 rounded-3xl p-6"
             >
               <h3 className="text-lg font-bold text-blue-900 mb-4">
-                {currentLanguage === 'ar' ? 'تعليمات الدفع' : 'Payment Instructions'}
+                {t('تعليمات الدفع', 'Payment Instructions', 'ڕێنماییەکانی پارەدان')}
               </h3>
-              
+
               <div className="space-y-3 text-sm text-blue-800">
                 <p className="flex items-start gap-2">
                   <span className="font-bold">1.</span>
-                  {currentLanguage === 'ar' 
-                    ? 'قم بالدفع في أحد فروعنا أو عبر التحويل البنكي'
-                    : 'Pay at our branch or via bank transfer'}
+                  {t(
+                    'قم بالدفع في أحد فروعنا أو عبر التحويل البنكي',
+                    'Pay at our branch or via bank transfer',
+                    'پارەکە لە یەکێک لە لقەکانمان یان لە ڕێگەی گواستنەوەی بانکی بدە'
+                  )}
                 </p>
                 <p className="flex items-start gap-2">
                   <span className="font-bold">2.</span>
-                  {currentLanguage === 'ar' 
-                    ? 'احتفظ بإيصال الدفع'
-                    : 'Keep your payment receipt'}
+                  {t('احتفظ بإيصال الدفع', 'Keep your payment receipt', 'پسووڵەی پارەدانەکە بپارێزە')}
                 </p>
                 <p className="flex items-start gap-2">
                   <span className="font-bold">3.</span>
-                  {currentLanguage === 'ar' 
-                    ? 'ارفع صورة الإيصال أدناه'
-                    : 'Upload receipt image below'}
+                  {t('ارفع صورة الإيصال أدناه', 'Upload receipt image below', 'وێنەی پسووڵەکە لە خوارەوە بەرز بکەرەوە')}
                 </p>
               </div>
 
               <div className="mt-4 p-3 bg-blue-100 rounded-xl">
                 <p className="text-xs text-blue-700">
-                  {currentLanguage === 'ar' 
-                    ? '📱 سيصلك إشعار SMS عند تغيير حالة طلبك'
-                    : '📱 You will receive SMS notification when your order status changes'}
+                  {t(
+                    '📱 سيصلك إشعار SMS عند تغيير حالة طلبك',
+                    '📱 You will receive SMS notification when your order status changes',
+                    '📱 نامەیەک (SMS)ت بۆ دێت کاتێک باری داواکارییەکەت دەگۆڕێت'
+                  )}
                 </p>
               </div>
             </motion.div>
@@ -434,7 +469,7 @@ const SuccessPage = ({ orderData }) => {
               data-testid="payment-proof-section"
             >
               <h3 className="text-lg font-bold text-slate-900 mb-4">
-                {currentLanguage === 'ar' ? 'إثبات الدفع' : 'Payment Proof'}
+                {t('إثبات الدفع', 'Payment Proof', 'بەڵگەی پارەدان')}
               </h3>
 
               {/* Upload Area */}
@@ -450,10 +485,10 @@ const SuccessPage = ({ orderData }) => {
                   />
                   <Upload className="w-10 h-10 text-slate-400 mx-auto mb-2" />
                   <p className="text-sm text-slate-600 mb-1">
-                    {currentLanguage === 'ar' ? 'اضغط لرفع الصور' : 'Click to upload images'}
+                    {t('اضغط لرفع الصور', 'Click to upload images', 'کلیک بکە بۆ بەرزکردنەوەی وێنەکان')}
                   </p>
                   <p className="text-xs text-slate-400">
-                    {currentLanguage === 'ar' ? 'يمكنك رفع عدة صور' : 'You can upload multiple images'}
+                    {t('يمكنك رفع عدة صور', 'You can upload multiple images', 'دەتوانیت چەند وێنەیەک بەرز بکەیتەوە')}
                   </p>
                 </label>
               ) : (
@@ -464,7 +499,7 @@ const SuccessPage = ({ orderData }) => {
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-slate-900 truncate">{proof.name}</p>
                         <p className="text-xs text-green-600">
-                          {currentLanguage === 'ar' ? 'جاهز للإرسال' : 'Ready to submit'}
+                          {t('جاهز للإرسال', 'Ready to submit', 'ئامادەیە بۆ ناردن')}
                         </p>
                       </div>
                       <button
@@ -485,12 +520,12 @@ const SuccessPage = ({ orderData }) => {
                     {uploading ? (
                       <>
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        {currentLanguage === 'ar' ? 'جارٍ الإرسال...' : 'Submitting...'}
+                        {t('جارٍ الإرسال...', 'Submitting...', 'خەریکی ناردنە...')}
                       </>
                     ) : (
                       <>
                         <CheckCircle className="w-5 h-5" />
-                        {currentLanguage === 'ar' ? 'إرسال إثبات الدفع' : 'Submit Payment Proof'}
+                        {t('إرسال إثبات الدفع', 'Submit Payment Proof', 'ناردنی بەڵگەی پارەدان')}
                       </>
                     )}
                   </button>
@@ -503,15 +538,17 @@ const SuccessPage = ({ orderData }) => {
                       onChange={handleFileUpload}
                       className="hidden"
                     />
-                    + {currentLanguage === 'ar' ? 'إضافة المزيد' : 'Add More'}
+                    + {t('إضافة المزيد', 'Add More', 'زیاتر زیاد بکە')}
                   </label>
                 </div>
               )}
 
               <p className="text-xs text-slate-500 mt-4 text-center">
-                {currentLanguage === 'ar' 
-                  ? 'يمكنك رفع إثبات الدفع لاحقاً من صفحة تتبع الطلب'
-                  : 'You can upload payment proof later from order tracking page'}
+                {t(
+                  'يمكنك رفع إثبات الدفع لاحقاً من صفحة تتبع الطلب',
+                  'You can upload payment proof later from order tracking page',
+                  'دەتوانیت بەڵگەی پارەدان دواتر لە لاپەڕەی تتبعکردنی داواکاری بەرز بکەیتەوە'
+                )}
               </p>
             </motion.div>
           </div>
@@ -524,18 +561,19 @@ const SuccessPage = ({ orderData }) => {
           transition={{ delay: 0.9 }}
           className="max-w-6xl mx-auto mt-12 flex flex-col sm:flex-row gap-4"
         >
-          <button 
+          <button
+            onClick={() => navigate('/track-order', { state: { orderId } })}
             className="flex-1 py-4 bg-slate-900 text-white font-bold rounded-2xl hover:bg-slate-800 transition-colors"
             data-testid="track-order-btn"
           >
-            {currentLanguage === 'ar' ? 'تتبع طلبي' : 'Track My Order'}
+            {t('تتبع طلبي', 'Track My Order', 'تتبعکردنی داواکارییەکەم')}
           </button>
-          <button 
+          <button
             onClick={() => navigate('/')}
             className="flex-1 py-4 bg-white border-2 border-slate-200 text-slate-900 font-bold rounded-2xl hover:border-slate-300 transition-colors"
             data-testid="back-home-btn"
           >
-            {currentLanguage === 'ar' ? 'العودة للرئيسية' : 'Back to Home'}
+            {t('العودة للرئيسية', 'Back to Home', 'گەڕانەوە بۆ سەرەتا')}
           </button>
         </motion.div>
       </div>

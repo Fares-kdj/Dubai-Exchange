@@ -122,7 +122,7 @@
 
 | الحقل | القيمة |
 |-------|-------|
-| Email | developer@khairbaghdad.com |
+| Email | developer@dubai-exchange.com |
 | Password | developer |
 | PUT /api/cms/contact | تحديث الاتصال (أدمن) |
 
@@ -166,7 +166,7 @@
 
 | الدور | البريد | كلمة المرور |
 |-------|--------|-------------|
-| المطور | developer@khairbaghdad.com | developer |
+| المطور | developer@dubai-exchange.com | developer |
 
 ---
 

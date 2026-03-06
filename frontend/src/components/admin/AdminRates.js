@@ -61,7 +61,7 @@ const AdminRates = () => {
   const handleBulkSave = async () => {
     setSaving(true);
     try {
-      const updates = rates.map(function(r) {
+      const updates = rates.map(function (r) {
         return { currency_code: r.currency_code, buy_rate: r.buy_rate, sell_rate: r.sell_rate };
       });
       await fetch(API_URL + '/api/rates/bulk/update', {
@@ -140,15 +140,22 @@ const AdminRates = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {rates.map(function(rate) {
+            {rates.map(function (rate) {
               const isEditing = editingRate === rate.currency_code;
               const spread = rate.sell_rate - rate.buy_rate;
-              
+
               return (
                 <tr key={rate.currency_code} className={rate.is_active ? '' : 'opacity-50 bg-slate-50'}>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <span className="text-2xl">{rate.flag}</span>
+                      <div className="w-10 h-7 flex items-center justify-center bg-slate-100 rounded overflow-hidden shadow-sm border border-slate-200">
+                        <img
+                          src={rate.flag && rate.flag.length > 4 ? rate.flag : `https://flagcdn.com/w80/${(rate.currency_code === 'IQD' ? 'iq' : (rate.currency_code === 'USD' ? 'us' : (rate.currency_code === 'EUR' ? 'eu' : rate.currency_code.substring(0, 2).toLowerCase())))}.png`}
+                          alt=""
+                          className="w-full h-full object-cover"
+                          onError={(e) => { e.target.src = 'https://flagcdn.com/w80/un.png'; }}
+                        />
+                      </div>
                       <div>
                         <p className="font-bold text-slate-900">{rate.currency_code}</p>
                         <p className="text-sm text-slate-500">{rate.currency_name_ar}</p>
@@ -160,7 +167,7 @@ const AdminRates = () => {
                       <Input
                         type="number"
                         value={editValues.buy_rate}
-                        onChange={function(e) { setEditValues(Object.assign({}, editValues, { buy_rate: parseFloat(e.target.value) || 0 })); }}
+                        onChange={function (e) { setEditValues(Object.assign({}, editValues, { buy_rate: parseFloat(e.target.value) || 0 })); }}
                         className="w-28 mx-auto text-center"
                       />
                     ) : (
@@ -172,7 +179,7 @@ const AdminRates = () => {
                       <Input
                         type="number"
                         value={editValues.sell_rate}
-                        onChange={function(e) { setEditValues(Object.assign({}, editValues, { sell_rate: parseFloat(e.target.value) || 0 })); }}
+                        onChange={function (e) { setEditValues(Object.assign({}, editValues, { sell_rate: parseFloat(e.target.value) || 0 })); }}
                         className="w-28 mx-auto text-center"
                       />
                     ) : (
@@ -197,7 +204,7 @@ const AdminRates = () => {
                     {isEditing ? (
                       <div className="flex items-center justify-center gap-2">
                         <button
-                          onClick={function() { handleSave(rate.currency_code); }}
+                          onClick={function () { handleSave(rate.currency_code); }}
                           disabled={saving}
                           className="p-2 bg-green-100 text-green-600 rounded-lg hover:bg-green-200"
                         >
@@ -207,12 +214,12 @@ const AdminRates = () => {
                           onClick={handleCancel}
                           className="p-2 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200"
                         >
-                          <X className="w-4 h-4" />
+                          <X className="w-4 h-4 stroke-[2.5]" />
                         </button>
                       </div>
                     ) : (
                       <button
-                        onClick={function() { handleEdit(rate); }}
+                        onClick={function () { handleEdit(rate); }}
                         className="p-2 hover:bg-blue-100 text-blue-600 rounded-lg"
                       >
                         <Edit2 className="w-4 h-4" />

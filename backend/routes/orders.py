@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 import os
 import uuid
 import logging
-from motor.motor_asyncio import AsyncIOMotorClient
+from pathlib import Path
 
 from models.order import (
     OrderCreate, OrderResponse, OrderUpdate, OrderTrackRequest,
@@ -12,19 +12,38 @@ from models.order import (
     Document, generate_order_id
 )
 from services.sms_service import sms_service
+from routes.blocklist import is_blocked
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/orders", tags=["Orders"])
 
-# MongoDB connection
-mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ.get('DB_NAME', 'test_database')]
+from database import db
 orders_collection = db.orders
+settings_collection = db.settings
+
+
+def increment_numeric_string(s: str) -> str:
+    """Increment a numeric string (preserving format/dashes)"""
+    try:
+        # Keep track of dash positions
+        dashes = [i for i, char in enumerate(s) if char == "-"]
+        # Remove dashes
+        clean = s.replace("-", "")
+        # Convert to int, increment
+        new_val = int(clean) + 1
+        # Convert back to string, padding to original clean length
+        new_str = str(new_val).zfill(len(clean))
+        # Re-insert dashes
+        res = list(new_str)
+        for pos in dashes:
+            res.insert(pos, "-")
+        return "".join(res)
+    except Exception:
+        return s
 
 # Upload directory
-UPLOAD_DIR = "/app/uploads"
+UPLOAD_DIR = str(Path(__file__).parent.parent / "uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 
@@ -38,8 +57,42 @@ def serialize_order(order: dict) -> dict:
 @router.post("", response_model=OrderResponse)
 async def create_order(order: OrderCreate, background_tasks: BackgroundTasks):
     """Create a new order"""
+    # Check if customer is blocked
+    block_check = await is_blocked(order.customer.full_name, order.customer.phone)
+    if block_check["blocked"]:
+        logger.warning(f"Blocked attempt from {order.customer.phone}: {block_check['reason']}")
+        raise HTTPException(
+            status_code=403, 
+            detail="عذراً، لا يمكن إتمام الطلب في الوقت الحالي. يرجى التواصل مع الدعم الفني."
+        )
+
     now = datetime.now(timezone.utc).isoformat()
     order_id = generate_order_id(order.order_type)
+    
+    # Generate sequential MTCN and Reference Number for Western Union
+    # Generate sequential MTCN for Western Union
+    if order.order_type == OrderType.WESTERN_UNION:
+        settings = await settings_collection.find_one({"type": "western_union"})
+        current_mtcn = settings.get("base_mtcn", "617-015-0012") if settings else "617-015-0012"
+        next_mtcn = increment_numeric_string(current_mtcn)
+        order.details["mtcn"] = next_mtcn
+        await settings_collection.update_one(
+            {"type": "western_union"},
+            {"$set": {"base_mtcn": next_mtcn, "updated_at": now}},
+            upsert=True
+        )
+    
+    # Generate sequential Reference Number for MoneyGram
+    elif order.order_type == OrderType.MONEYGRAM:
+        settings = await settings_collection.find_one({"type": "moneygram"})
+        current_ref = settings.get("base_reference_number", "0000000000") if settings else "0000000000"
+        next_ref = increment_numeric_string(current_ref)
+        order.details["reference_number"] = next_ref
+        await settings_collection.update_one(
+            {"type": "moneygram"},
+            {"$set": {"base_reference_number": next_ref, "updated_at": now}},
+            upsert=True
+        )
     
     order_doc = {
         "order_id": order_id,
@@ -81,7 +134,32 @@ async def track_order(request: OrderTrackRequest):
             detail="الطلب غير موجود. تأكد من رقم الطلب ونوعه."
         )
     
+    # Check if customer is blocked
+    block_check = await is_blocked(order["customer"]["full_name"], order["customer"]["phone"])
+    order["customer_blocked"] = block_check["blocked"]
+    
     return OrderResponse(**order)
+
+
+@router.get("/stats/summary")
+async def get_stats_summary():
+    """Get order counts grouped by status for dashboard overview"""
+    pipeline = [
+        {"$group": {"_id": "$status", "count": {"$sum": 1}}}
+    ]
+    cursor = orders_collection.aggregate(pipeline)
+    status_counts = await cursor.to_list(length=100)
+
+    counts = {item["_id"]: item["count"] for item in status_counts}
+    total = sum(counts.values())
+
+    return {
+        "total_orders": total,
+        "waiting_payment": counts.get("waiting_payment", 0),
+        "under_review": counts.get("under_review", 0),
+        "approved": counts.get("approved", 0),
+        "rejected": counts.get("rejected", 0),
+    }
 
 
 @router.get("/{order_id}", response_model=OrderResponse)
@@ -95,7 +173,12 @@ async def get_order(order_id: str):
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
     
+    # Check if customer is blocked
+    block_check = await is_blocked(order["customer"]["full_name"], order["customer"]["phone"])
+    order["customer_blocked"] = block_check["blocked"]
+    
     return OrderResponse(**order)
+
 
 
 @router.get("", response_model=OrderListResponse)
@@ -112,7 +195,10 @@ async def list_orders(
     if status:
         query["status"] = status.value
     if order_type:
-        query["order_type"] = order_type.value
+        if order_type == OrderType.INTERNATIONAL:
+            query["order_type"] = {"$in": ["western_union", "moneygram", "country_based"]}
+        else:
+            query["order_type"] = order_type.value
     if search:
         query["$or"] = [
             {"order_id": {"$regex": search, "$options": "i"}},
@@ -125,6 +211,11 @@ async def list_orders(
     
     cursor = orders_collection.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(page_size)
     orders = await cursor.to_list(length=page_size)
+    
+    # Process orders to check if customer is blocked
+    for order in orders:
+        block_check = await is_blocked(order["customer"]["full_name"], order["customer"]["phone"])
+        order["customer_blocked"] = block_check["blocked"]
     
     return OrderListResponse(
         orders=[OrderResponse(**order) for order in orders],
@@ -229,12 +320,26 @@ async def upload_payment_proof(order_id: str, file: UploadFile = File(...)):
         "uploaded_at": datetime.now(timezone.utc).isoformat()
     }
     
+    # Status history entry for proof upload
+    history_entry = {
+        "status": OrderStatus.PENDING_REVIEW.value,
+        "changed_by": "System (Payment Proof)",
+        "changed_at": datetime.now(timezone.utc).isoformat(),
+        "reason": "Customer uploaded payment proof"
+    }
+    
     # Update order
     result = await orders_collection.find_one_and_update(
         {"order_id": order_id.upper()},
         {
-            "$push": {"payment_proofs": proof_doc},
-            "$set": {"updated_at": datetime.now(timezone.utc).isoformat()}
+            "$push": {
+                "payment_proofs": proof_doc,
+                "status_history": history_entry
+            },
+            "$set": {
+                "status": OrderStatus.PENDING_REVIEW.value,
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }
         },
         return_document=True,
         projection={"_id": 0}

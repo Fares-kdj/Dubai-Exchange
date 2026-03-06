@@ -1,19 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Outlet, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  LayoutDashboard, Package, Settings, FileText, DollarSign, 
+import {
+  LayoutDashboard, Package, Settings, FileText, DollarSign,
   Palette, Users, LogOut, Menu, X, Search, Bell, Globe,
   Plane, MapPin, ArrowLeftRight, CreditCard, Wallet, Ban,
-  Building2, ChevronDown, ChevronLeft
+  Building2, ChevronDown, ChevronLeft, Crosshair, Clock
 } from 'lucide-react';
+import { useBranding } from '@/context/BrandingContext';
+
+const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const AdminLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { logoDark } = useBranding();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [user, setUser] = useState(null);
   const [expandedMenus, setExpandedMenus] = useState(['orders']); // Default expanded
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('adminToken');
@@ -24,6 +30,33 @@ const AdminLayout = () => {
     }
     setUser(JSON.parse(userStr));
   }, [navigate]);
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      const token = localStorage.getItem('adminToken');
+      if (!token) return;
+
+      try {
+        const res = await fetch(`${API_URL}/api/orders?page_size=10`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          // Filter for "New/Actionable" statuses
+          const actionable = (data.orders || []).filter(o =>
+            o.status === 'waiting_payment' || o.status === 'pending_review'
+          ).slice(0, 5);
+          setNotifications(actionable);
+        }
+      } catch (err) {
+        console.error('Error fetching notifications:', err);
+      }
+    };
+
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 60000); // Check every minute
+    return () => clearInterval(interval);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('adminToken');
@@ -39,8 +72,8 @@ const AdminLayout = () => {
   };
 
   const toggleMenu = (menuId) => {
-    setExpandedMenus(prev => 
-      prev.includes(menuId) 
+    setExpandedMenus(prev =>
+      prev.includes(menuId)
         ? prev.filter(id => id !== menuId)
         : [...prev, menuId]
     );
@@ -48,16 +81,16 @@ const AdminLayout = () => {
 
   // Menu structure with submenus
   const menuItems = [
-    { 
+    {
       id: 'dashboard',
-      path: '/admin', 
-      icon: LayoutDashboard, 
-      label: 'لوحة التحكم', 
-      permission: 'view_dashboard' 
+      path: '/admin',
+      icon: LayoutDashboard,
+      label: 'لوحة التحكم',
+      permission: 'view_dashboard'
     },
-    { 
+    {
       id: 'orders',
-      icon: Package, 
+      icon: Package,
       label: 'الطلبات',
       hasSubmenu: true,
       submenu: [
@@ -68,61 +101,61 @@ const AdminLayout = () => {
         { path: '/admin/orders/card', icon: CreditCard, label: 'شحن البطاقات', permission: 'view_orders_card' },
       ]
     },
-    { 
+    {
       id: 'blocklist',
-      path: '/admin/blocklist', 
-      icon: Ban, 
-      label: 'قائمة الحظر', 
-      permission: 'view_blocklist' 
+      path: '/admin/blocklist',
+      icon: Ban,
+      label: 'قائمة الحظر',
+      permission: 'view_blocklist'
     },
-    { 
+    {
       id: 'services',
-      path: '/admin/services', 
-      icon: Settings, 
-      label: 'الخدمات', 
-      permission: 'view_services' 
+      path: '/admin/services',
+      icon: Settings,
+      label: 'الخدمات',
+      permission: 'view_services'
     },
-    { 
+    {
       id: 'countries',
-      path: '/admin/countries', 
-      icon: Globe, 
-      label: 'الدول', 
-      permission: 'view_countries' 
+      path: '/admin/countries',
+      icon: Globe,
+      label: 'الدول',
+      permission: 'view_countries'
     },
-    { 
+    {
       id: 'rates',
-      path: '/admin/rates', 
-      icon: DollarSign, 
-      label: 'أسعار الصرف', 
-      permission: 'view_rates' 
+      path: '/admin/rates',
+      icon: DollarSign,
+      label: 'أسعار الصرف',
+      permission: 'view_rates'
     },
-    { 
+    {
       id: 'airports',
-      path: '/admin/airports', 
-      icon: Building2, 
-      label: 'المطارات والأختام', 
-      permission: 'view_airports' 
+      path: '/admin/airports',
+      icon: Building2,
+      label: 'المطارات والأختام',
+      permission: 'view_airports'
     },
-    { 
+    {
       id: 'cms',
-      path: '/admin/cms', 
-      icon: FileText, 
-      label: 'المحتوى', 
-      permission: 'edit_content' 
+      path: '/admin/cms',
+      icon: FileText,
+      label: 'المحتوى',
+      permission: 'edit_content'
     },
-    { 
+    {
       id: 'branding',
-      path: '/admin/branding', 
-      icon: Palette, 
-      label: 'الهوية', 
-      permission: 'edit_branding' 
+      path: '/admin/branding',
+      icon: Palette,
+      label: 'الهوية',
+      permission: 'edit_branding'
     },
-    { 
+    {
       id: 'users',
-      path: '/admin/users', 
-      icon: Users, 
-      label: 'المستخدمون', 
-      permission: 'manage_users' 
+      path: '/admin/users',
+      icon: Users,
+      label: 'المستخدمون',
+      permission: 'manage_users'
     },
   ];
 
@@ -159,7 +192,7 @@ const AdminLayout = () => {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-slate-100 flex">
+    <div className="min-h-screen bg-slate-100 flex admin-panel" dir="rtl">
       {/* Sidebar */}
       <motion.aside
         initial={false}
@@ -169,12 +202,16 @@ const AdminLayout = () => {
         {/* Logo */}
         <div className="p-6 border-b border-slate-800">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-[#D4AF37] to-[#FCD34D] rounded-xl flex items-center justify-center flex-shrink-0">
-              <span className="text-sm font-black text-slate-900">خير</span>
+            <div className="w-10 h-10 flex items-center justify-center flex-shrink-0">
+              <img
+                src={logoDark}
+                alt="شعار الشركة"
+                className="h-9 object-contain"
+              />
             </div>
             {sidebarOpen && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                <h1 className="font-bold text-white">خير بغداد</h1>
+                <h1 className="font-bold text-white">دبي العالمية</h1>
                 <p className="text-xs text-slate-400">لوحة التحكم</p>
               </motion.div>
             )}
@@ -190,11 +227,10 @@ const AdminLayout = () => {
                   <>
                     <button
                       onClick={() => toggleMenu(item.id)}
-                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-                        isSubmenuActive(item.submenu)
-                          ? 'bg-[#D4AF37]/20 text-[#D4AF37]'
-                          : 'text-slate-400 hover:text-white hover:bg-slate-800'
-                      }`}
+                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${isSubmenuActive(item.submenu)
+                        ? 'bg-[#D4AF37]/20 text-[#D4AF37]'
+                        : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                        }`}
                     >
                       <item.icon className="w-5 h-5 flex-shrink-0" />
                       {sidebarOpen && (
@@ -218,11 +254,10 @@ const AdminLayout = () => {
                             <li key={sub.path}>
                               <Link
                                 to={sub.path}
-                                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all text-sm ${
-                                  isActive(sub.path)
-                                    ? 'bg-[#D4AF37] text-slate-900'
-                                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
-                                }`}
+                                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all text-sm ${isActive(sub.path)
+                                  ? 'bg-[#D4AF37] text-slate-900'
+                                  : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                                  }`}
                               >
                                 <sub.icon className="w-4 h-4 flex-shrink-0" />
                                 <span>{sub.label}</span>
@@ -236,11 +271,10 @@ const AdminLayout = () => {
                 ) : (
                   <Link
                     to={item.path}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-                      isActive(item.path)
-                        ? 'bg-[#D4AF37] text-slate-900'
-                        : 'text-slate-400 hover:text-white hover:bg-slate-800'
-                    }`}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${isActive(item.path)
+                      ? 'bg-[#D4AF37] text-slate-900'
+                      : 'text-slate-400 hover:text-white hover:bg-slate-800'
+                      }`}
                   >
                     <item.icon className="w-5 h-5 flex-shrink-0" />
                     {sidebarOpen && (
@@ -284,7 +318,7 @@ const AdminLayout = () => {
                 onClick={() => setSidebarOpen(!sidebarOpen)}
                 className="p-2 hover:bg-slate-100 rounded-lg"
               >
-                {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                {sidebarOpen ? <X className="w-5 h-5 stroke-[2.5] text-slate-600" /> : <Menu className="w-5 h-5 text-slate-600" />}
               </button>
               <div className="relative hidden md:block">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -297,10 +331,85 @@ const AdminLayout = () => {
             </div>
 
             <div className="flex items-center gap-4">
-              <button className="relative p-2 hover:bg-slate-100 rounded-lg">
-                <Bell className="w-5 h-5 text-slate-600" />
-                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
-              </button>
+              <div className="relative">
+                <button
+                  onClick={() => setShowNotifications(!showNotifications)}
+                  className="relative p-2 hover:bg-slate-100 rounded-lg"
+                >
+                  <Bell className="w-5 h-5 text-slate-600" />
+                  {notifications.length > 0 && (
+                    <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                  )}
+                </button>
+
+                <AnimatePresence>
+                  {showNotifications && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 10 }}
+                      className="absolute left-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden z-50"
+                    >
+                      <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+                        <h3 className="font-bold text-slate-900">الإشعارات</h3>
+                        <span className="text-xs text-slate-500">{notifications.length} طلبات جديدة</span>
+                      </div>
+                      <div className="max-h-96 overflow-y-auto">
+                        {notifications.length > 0 ? (
+                          notifications.map(notif => (
+                            <Link
+                              key={notif.order_id}
+                              to={`/admin/orders/${['western_union', 'moneygram', 'country_based'].includes(notif.order_type) ? 'international' :
+                                ['usdt_recharge', 'usdt'].includes(notif.order_type) ? 'usdt' :
+                                  ['card_recharge', 'card'].includes(notif.order_type) ? 'card' :
+                                    notif.order_type
+                                }`}
+                              onClick={() => setShowNotifications(false)}
+                              className="block p-4 hover:bg-slate-50 border-b border-slate-50 last:border-0 transition-colors"
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center">
+                                  <Clock className="w-5 h-5 text-yellow-600" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-sm font-bold text-slate-900 truncate">
+                                    طلب {notif.order_id} جديد
+                                  </p>
+                                  <p className="text-xs text-slate-500">
+                                    {notif.customer?.full_name} - {
+                                      notif.order_type === 'western_union' ? 'ويسترن يونيون' :
+                                        notif.order_type === 'moneygram' ? 'موني جرام' :
+                                          notif.order_type === 'country_based' ? 'حسب الدولة' :
+                                            notif.order_type === 'traveler' ? 'حجز مسافر' :
+                                              notif.order_type === 'local' ? 'تحويل محلي' :
+                                                (notif.order_type === 'usdt' || notif.order_type === 'usdt_recharge') ? 'USDT' :
+                                                  (notif.order_type === 'card' || notif.order_type === 'card_recharge') ? 'شحن بطاقة' : notif.order_type
+                                    }
+                                  </p>
+                                </div>
+                              </div>
+                            </Link>
+                          ))
+                        ) : (
+                          <div className="p-8 text-center text-slate-500">
+                            <Bell className="w-8 h-8 mx-auto mb-2 opacity-20" />
+                            <p className="text-sm">لا توجد إشعارات جديدة</p>
+                          </div>
+                        )}
+                      </div>
+                      {notifications.length > 0 && (
+                        <Link
+                          to="/admin/orders"
+                          onClick={() => setShowNotifications(false)}
+                          className="block p-3 text-center text-sm text-[#D4AF37] font-medium hover:bg-slate-50"
+                        >
+                          عرض كل الطلبات
+                        </Link>
+                      )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
               <Link to="/" className="text-sm text-slate-600 hover:text-[#D4AF37]">
                 عرض الموقع →
               </Link>

@@ -1,14 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Building2, Plane, MapPin, Stamp, PenTool, Plus, Edit2, Trash2, 
+import {
+  Building2, Plane, MapPin, Stamp, PenTool, Plus, Edit2, Trash2,
   Upload, Check, X, RefreshCw, Image, ToggleLeft, ToggleRight
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import ConfirmModal from './ConfirmModal';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
+
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('adminToken');
+  return { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) };
+};
 
 const stampTypeConfig = {
   airport: { label: 'مطار', icon: Plane, color: 'bg-blue-100 text-blue-700' },
@@ -24,10 +31,14 @@ const AdminAirports = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingStamp, setEditingStamp] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [confirmConfig, setConfirmConfig] = useState({ isOpen: false, title: '', message: '', onConfirm: null });
+
+  const showConfirm = (config) => setConfirmConfig({ ...config, isOpen: true });
 
   const [formData, setFormData] = useState({
     name_ar: '',
     name_en: '',
+    name_ku: '',
     stamp_type: 'airport',
     is_active: true,
     sort_order: 0
@@ -45,9 +56,15 @@ const AdminAirports = () => {
       if (res.ok) {
         const data = await res.json();
         setStamps(data);
+      } else {
+        const detail = await res.json().catch(() => ({ detail: 'Failed to parse error response' }));
+        console.error('Fetch error:', res.status, detail);
+        if (res.status === 401) toast.error('انتهت الجلسة، يرجى تسجيل الخروج والدخول مجدداً');
+        else if (res.status === 403) toast.error('ليس لديك صلاحية لعرض هذه البيانات');
       }
     } catch (err) {
       console.error('Error:', err);
+      toast.error('خطأ في الاتصال بالخادم');
     }
     setLoading(false);
   };
@@ -58,16 +75,18 @@ const AdminAirports = () => {
 
   const handleSubmit = async () => {
     if (!formData.name_ar.trim()) {
-      alert('يرجى إدخال الاسم بالعربية');
+      toast.error('يرجى إدخال الاسم بالعربية');
       return;
     }
 
     try {
       const token = getToken();
-      const url = editingStamp 
+      const url = editingStamp
         ? `${API_URL}/api/stamps/${editingStamp.stamp_id}`
         : `${API_URL}/api/stamps/`;
-      
+
+      console.log('Submitting to:', url, 'Data:', formData);
+
       const res = await fetch(url, {
         method: editingStamp ? 'PUT' : 'POST',
         headers: {
@@ -81,35 +100,43 @@ const AdminAirports = () => {
       });
 
       if (res.ok) {
+        toast.success(editingStamp ? 'تم التحديث بنجاح' : 'تمت الإضافة بنجاح');
         setShowModal(false);
         setEditingStamp(null);
-        setFormData({ name_ar: '', name_en: '', stamp_type: activeTab, is_active: true, sort_order: 0 });
+        setFormData({ name_ar: '', name_en: '', name_ku: '', stamp_type: activeTab, is_active: true, sort_order: 0 });
         fetchStamps();
       } else {
-        const err = await res.json();
-        alert(err.detail || 'حدث خطأ');
+        const err = await res.json().catch(() => ({ detail: `Error ${res.status}: Could not parse response` }));
+        console.error('Submission failed:', res.status, err);
+        toast.error(err.detail || 'حدث خطأ أثناء الحفظ');
+        if (res.status === 401) toast.error('يرجى إعادة تسجيل الدخول');
       }
     } catch (err) {
       console.error('Error:', err);
+      toast.error('خطأ في الاتصال بالخادم، يرجى المحاولة لاحقاً');
     }
   };
 
-  const handleDelete = async (stampId) => {
-    if (!window.confirm('هل أنت متأكد من الحذف؟')) return;
+  const handleDelete = (stampId) => {
+    showConfirm({
+      title: 'حذف العنصر',
+      message: 'هل أنت متأكد من حذف هذا العنصر؟ لا يمكن تراجع عن هذا الإجراء.',
+      onConfirm: async () => {
+        try {
+          const token = getToken();
+          const res = await fetch(`${API_URL}/api/stamps/${stampId}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
 
-    try {
-      const token = getToken();
-      const res = await fetch(`${API_URL}/api/stamps/${stampId}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-
-      if (res.ok) {
-        fetchStamps();
+          if (res.ok) {
+            fetchStamps();
+          }
+        } catch (err) {
+          console.error('Error:', err);
+        }
       }
-    } catch (err) {
-      console.error('Error:', err);
-    }
+    });
   };
 
   const handleToggleActive = async (stamp) => {
@@ -146,7 +173,7 @@ const AdminAirports = () => {
         fetchStamps();
       } else {
         const err = await res.json();
-        alert(err.detail || 'فشل في رفع الصورة');
+        toast.error(err.detail || 'فشل في رفع الصورة');
       }
     } catch (err) {
       console.error('Error:', err);
@@ -159,6 +186,7 @@ const AdminAirports = () => {
     setFormData({
       name_ar: stamp.name_ar,
       name_en: stamp.name_en || '',
+      name_ku: stamp.name_ku || '',
       stamp_type: stamp.stamp_type,
       is_active: stamp.is_active,
       sort_order: stamp.sort_order
@@ -168,7 +196,7 @@ const AdminAirports = () => {
 
   const openAddModal = () => {
     setEditingStamp(null);
-    setFormData({ name_ar: '', name_en: '', stamp_type: activeTab, is_active: true, sort_order: 0 });
+    setFormData({ name_ar: '', name_en: '', name_ku: '', stamp_type: activeTab, is_active: true, sort_order: 0 });
     setShowModal(true);
   };
 
@@ -194,7 +222,7 @@ const AdminAirports = () => {
           <button onClick={fetchStamps} className="p-2 hover:bg-slate-100 rounded-lg">
             <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
           </button>
-          <button 
+          <button
             onClick={openAddModal}
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700"
           >
@@ -211,11 +239,10 @@ const AdminAirports = () => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-medium transition-all ${
-                activeTab === tab.id 
-                  ? 'bg-blue-600 text-white' 
-                  : 'text-slate-600 hover:bg-slate-100'
-              }`}
+              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-medium transition-all ${activeTab === tab.id
+                ? 'bg-blue-600 text-white'
+                : 'text-slate-600 hover:bg-slate-100'
+                }`}
             >
               <tab.icon className="w-4 h-4" />
               {tab.label}
@@ -245,16 +272,15 @@ const AdminAirports = () => {
                 key={stamp.stamp_id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className={`rounded-2xl border-2 overflow-hidden transition-all ${
-                  stamp.is_active ? 'border-slate-200' : 'border-slate-100 opacity-60'
-                }`}
+                className={`rounded-2xl border-2 overflow-hidden transition-all ${stamp.is_active ? 'border-slate-200' : 'border-slate-100 opacity-60'
+                  }`}
               >
                 {/* Image Area */}
                 <div className="h-40 bg-slate-100 relative flex items-center justify-center">
                   {stamp.stamp_image ? (
-                    <img 
-                      src={stamp.stamp_image} 
-                      alt={stamp.name_ar} 
+                    <img
+                      src={stamp.stamp_image}
+                      alt={stamp.name_ar}
                       className="w-full h-full object-contain p-4"
                     />
                   ) : (
@@ -263,12 +289,12 @@ const AdminAirports = () => {
                       <p className="text-sm">لا توجد صورة</p>
                     </div>
                   )}
-                  
+
                   {/* Upload Button */}
                   <label className="absolute bottom-2 right-2 p-2 bg-white rounded-lg shadow-lg cursor-pointer hover:bg-slate-50">
-                    <input 
-                      type="file" 
-                      accept="image/*" 
+                    <input
+                      type="file"
+                      accept="image/*"
                       className="hidden"
                       onChange={(e) => e.target.files[0] && handleImageUpload(stamp.stamp_id, e.target.files[0])}
                       disabled={uploading}
@@ -282,7 +308,10 @@ const AdminAirports = () => {
                   <div className="flex items-start justify-between mb-3">
                     <div>
                       <h3 className="font-bold text-slate-900">{stamp.name_ar}</h3>
-                      {stamp.name_en && <p className="text-sm text-slate-500">{stamp.name_en}</p>}
+                      <div className="flex gap-2 text-xs text-slate-500 mt-1">
+                        {stamp.name_en && <span>EN: {stamp.name_en}</span>}
+                        {stamp.name_ku && <span>KU: {stamp.name_ku}</span>}
+                      </div>
                     </div>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${stampTypeConfig[stamp.stamp_type]?.color}`}>
                       {stampTypeConfig[stamp.stamp_type]?.label}
@@ -329,8 +358,8 @@ const AdminAirports = () => {
                 <h2 className="text-lg font-bold text-slate-900">
                   {editingStamp ? 'تعديل' : 'إضافة'} {stampTypeConfig[activeTab]?.label}
                 </h2>
-                <button onClick={() => setShowModal(false)} className="p-2 hover:bg-slate-200 rounded-lg">
-                  <X className="w-5 h-5" />
+                <button onClick={() => setShowModal(false)} className="p-2 hover:bg-red-50 text-slate-500 hover:text-red-600 rounded-lg transition-colors border-0" title="إغلاق">
+                  <X className="w-6 h-6 stroke-[2.5]" />
                 </button>
               </div>
 
@@ -350,6 +379,14 @@ const AdminAirports = () => {
                     onChange={(e) => setFormData(p => ({ ...p, name_en: e.target.value }))}
                     placeholder="Enter name in English..."
                     dir="ltr"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>الاسم بالكردية</Label>
+                  <Input
+                    value={formData.name_ku}
+                    onChange={(e) => setFormData(p => ({ ...p, name_ku: e.target.value }))}
+                    placeholder="Enter name in Kurdish..."
                   />
                 </div>
                 <div className="space-y-2">
@@ -385,6 +422,14 @@ const AdminAirports = () => {
           </div>
         )}
       </AnimatePresence>
+      <ConfirmModal
+        isOpen={confirmConfig.isOpen}
+        onClose={() => setConfirmConfig({ ...confirmConfig, isOpen: false })}
+        onConfirm={confirmConfig.onConfirm}
+        title={confirmConfig.title}
+        message={confirmConfig.message}
+        type="danger"
+      />
     </div>
   );
 };

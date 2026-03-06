@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, ToggleLeft, ToggleRight, Save, X, RefreshCw, Shield, User, Key } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import ConfirmModal from './ConfirmModal';
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
@@ -14,6 +15,9 @@ const AdminUsers = () => {
 
   const emptyForm = { email: '', name: '', password: '', role: 'admin', permissions: [], is_active: true };
   const [formData, setFormData] = useState(emptyForm);
+  const [confirmConfig, setConfirmConfig] = useState({ isOpen: false, title: '', message: '', onConfirm: null });
+
+  const showConfirm = (config) => setConfirmConfig({ ...config, isOpen: true });
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem('adminToken');
@@ -53,12 +57,17 @@ const AdminUsers = () => {
     } catch (err) { console.error('Error:', err); }
   };
 
-  const handleDelete = async (userId) => {
-    if (!window.confirm('حذف؟')) return;
-    try {
-      await fetch(API_URL + '/api/auth/users/' + userId, { method: 'DELETE', headers: getAuthHeaders() });
-      loadUsers();
-    } catch (err) { console.error('Error:', err); }
+  const handleDelete = (userId) => {
+    showConfirm({
+      title: 'حذف المستخدم',
+      message: 'هل أنت متأكد من حذف هذا المستخدم؟ لا يمكن التراجع عن هذا الإجراء.',
+      onConfirm: async () => {
+        try {
+          await fetch(API_URL + '/api/auth/users/' + userId, { method: 'DELETE', headers: getAuthHeaders() });
+          loadUsers();
+        } catch (err) { console.error('Error:', err); }
+      }
+    });
   };
 
   const handleEdit = (user) => {
@@ -79,7 +88,7 @@ const AdminUsers = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const payload = {...formData};
+      const payload = { ...formData };
       if (!payload.password) delete payload.password;
       const url = editingUser ? API_URL + '/api/auth/users/' + editingUser.user_id : API_URL + '/api/auth/users';
       await fetch(url, { method: editingUser ? 'PUT' : 'POST', headers: getAuthHeaders(), body: JSON.stringify(payload) });
@@ -109,8 +118,9 @@ const AdminUsers = () => {
           <h1 className="text-2xl font-bold text-slate-900">إدارة المستخدمين</h1>
           <p className="text-slate-600">إضافة وتعديل المستخدمين والصلاحيات</p>
         </div>
-        <button onClick={handleNew} className="px-4 py-2 bg-amber-500 text-white font-medium rounded-xl flex items-center gap-2">
-          <Plus className="w-5 h-5" />إضافة مستخدم
+        <button onClick={handleNew} className="px-5 py-2.5 bg-amber-600 text-white font-bold rounded-xl flex items-center gap-2 hover:bg-amber-700 transition-all shadow-md active:scale-95">
+          <Plus className="w-5 h-5 text-white stroke-[2.5]" />
+          <span>إضافة مستخدم</span>
         </button>
       </div>
 
@@ -149,23 +159,25 @@ const AdminUsers = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="sticky top-0 bg-white border-b p-6 flex items-center justify-between">
-              <h2 className="text-xl font-bold">{editingUser ? 'تعديل' : 'إضافة مستخدم'}</h2>
-              <button onClick={() => setShowForm(false)} className="p-2 hover:bg-slate-100 rounded-lg"><X className="w-5 h-5" /></button>
+              <h2 className="text-xl font-bold text-slate-900">{editingUser ? 'تعديل' : 'إضافة مستخدم'}</h2>
+              <button onClick={() => setShowForm(false)} className="p-2 hover:bg-red-50 text-slate-500 hover:text-red-600 rounded-lg transition-colors border-0" title="إغلاق">
+                <X className="w-6 h-6 stroke-[2.5]" />
+              </button>
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>الاسم</Label>
-                  <Input value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} required />
+                  <Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required />
                 </div>
                 <div className="space-y-2">
                   <Label>البريد الإلكتروني</Label>
-                  <Input type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} required />
+                  <Input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} required />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label>{editingUser ? 'كلمة المرور الجديدة (اختياري)' : 'كلمة المرور'}</Label>
-                <Input type="password" value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} required={!editingUser} />
+                <Input type="password" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} required={!editingUser} />
               </div>
 
               {editingUser?.role !== 'developer' && (
@@ -175,7 +187,7 @@ const AdminUsers = () => {
                     {permissions.map(p => (
                       <label key={p.value} className={'flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer ' + (formData.permissions.includes(p.value) ? 'border-amber-500 bg-amber-50' : 'border-slate-200')}>
                         <input type="checkbox" checked={formData.permissions.includes(p.value)} onChange={() => togglePermission(p.value)} className="w-4 h-4 accent-amber-500" />
-                        <span className="text-sm">{p.label_ar}</span>
+                        <span className="text-sm font-medium text-slate-700">{p.label_ar}</span>
                       </label>
                     ))}
                   </div>
@@ -190,6 +202,15 @@ const AdminUsers = () => {
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        isOpen={confirmConfig.isOpen}
+        onClose={() => setConfirmConfig({ ...confirmConfig, isOpen: false })}
+        onConfirm={confirmConfig.onConfirm}
+        title={confirmConfig.title}
+        message={confirmConfig.message}
+        type="danger"
+      />
     </div>
   );
 };

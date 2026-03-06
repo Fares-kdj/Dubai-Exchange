@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
+import { toast } from 'sonner';
 import { useTheme } from '@/context/ThemeContext';
 import { motion } from 'framer-motion';
 import { CheckCircle, Copy, Download, Upload, X, Clock, MapPin, DollarSign, CreditCard, Phone, User, Globe, ArrowRight } from 'lucide-react';
@@ -13,13 +14,25 @@ const TransferSuccess = () => {
   const navigate = useNavigate();
   const { currentLanguage } = useLanguage();
   const { isDark } = useTheme();
+
   const [copied, setCopied] = useState(false);
   const [paymentProofs, setPaymentProofs] = useState([]);
   const [uploading, setUploading] = useState(false);
 
+  const isArabic = currentLanguage === 'ar';
+  const isKurdish = currentLanguage === 'ku';
+
+  const t = (ar, en, ku) => {
+    if (isKurdish) return ku || en;
+    if (isArabic) return ar;
+    return en;
+  };
+
+  const API_URL = process.env.REACT_APP_BACKEND_URL;
+
   const orderData = location.state?.orderData || {};
   const orderId = orderData.orderId || `TRF-${Date.now().toString().slice(-8)}`;
-  const orderDate = new Date().toLocaleString(currentLanguage === 'ar' ? 'ar-IQ' : 'en-US');
+  const orderDate = new Date().toLocaleString(isKurdish ? 'ku-IQ' : (isArabic ? 'ar-IQ' : 'en-US'));
 
   const copyOrderId = async () => {
     try {
@@ -59,22 +72,68 @@ const TransferSuccess = () => {
   };
 
   const submitPaymentProof = async () => {
-    if (paymentProofs.length === 0) return;
+    if (paymentProofs.length === 0 || !orderId) return;
+
     setUploading(true);
-    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    try {
+      for (const proof of paymentProofs) {
+        const formData = new FormData();
+        formData.append('file', proof.file);
+
+        const response = await fetch(`${API_URL}/api/orders/${orderId}/payment-proof`, {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to upload some proofs');
+        }
+      }
+
+      toast.success(t('تم إرسال إثبات الدفع بنجاح!', 'Payment proof submitted successfully!', 'بەڵگەی پارەدان بە سەرکەوتوویی نێردرا!'));
+      setPaymentProofs([]);
+    } catch (err) {
+      console.error('Upload error:', err);
+      toast.error(t('حدث خطأ أثناء الرفع', 'Error uploading proof', 'هەڵەیەک لە کاتی بارکردن ڕوویدا'));
+    }
+
     setUploading(false);
-    alert(currentLanguage === 'ar' ? 'تم إرسال إثبات الدفع!' : 'Payment proof submitted!');
   };
 
   const getTransferTypeLabel = () => {
     const types = {
-      local: { ar: 'تحويل محلي', en: 'Local Transfer' },
-      western_union: { ar: 'ويسترن يونيون', en: 'Western Union' },
-      moneygram: { ar: 'موني جرام', en: 'MoneyGram' },
-      country_based: { ar: 'تحويل حسب الدولة', en: 'Country-based Transfer' }
+      local: { ar: 'تحويل محلي', en: 'Local Transfer', ku: 'گواستنەوەی ناوخۆیی' },
+      western_union: { ar: 'ويسترن يونيون', en: 'Western Union', ku: 'وێستەرن یونیۆن' },
+      moneygram: { ar: 'موني جرام', en: 'MoneyGram', ku: 'مۆنی گرام' },
+      country_based: { ar: 'تحويل حسب الدولة', en: 'Country-based Transfer', ku: 'گواستنەوە بەپێی وڵات' }
     };
     const type = types[orderData.type];
-    return type ? (currentLanguage === 'ar' ? type.ar : type.en) : orderData.type;
+    return type ? t(type.ar, type.en, type.ku) : orderData.type;
+  };
+
+  const getCountryLabel = (countryCode) => {
+    if (!countryCode) return '';
+    const countries = {
+      iraq: { ar: 'العراق', en: 'Iraq', ku: 'عێراق' },
+      uae: { ar: 'الإمارات', en: 'UAE', ku: 'ئیمارات' },
+      saudi: { ar: 'السعودية', en: 'Saudi Arabia', ku: 'سعودیە' },
+      jordan: { ar: 'الأردن', en: 'Jordan', ku: 'ئوردن' },
+      egypt: { ar: 'مصر', en: 'Egypt', ku: 'میسر' },
+      turkey: { ar: 'تركيا', en: 'Turkey', ku: 'تورکیا' },
+      usa: { ar: 'الولايات المتحدة', en: 'United States', ku: 'ئەمریکا' },
+      uk: { ar: 'بريطانيا', en: 'United Kingdom', ku: 'بەریتانیا' },
+      germany: { ar: 'ألمانيا', en: 'Germany', ku: 'ئەڵمانیا' },
+      france: { ar: 'فرنسا', en: 'France', ku: 'فەڕەنسا' },
+      canada: { ar: 'كندا', en: 'Canada', ku: 'کەنەدا' },
+      australia: { ar: 'أستراليا', en: 'Australia', ku: 'ئوستورالیا' },
+      india: { ar: 'الهند', en: 'India', ku: 'هیندستان' },
+      pakistan: { ar: 'باكستان', en: 'Pakistan', ku: 'پاکستان' },
+      lebanon: { ar: 'لبنان', en: 'Lebanon', ku: 'لوبنان' },
+      syria: { ar: 'سوريا', en: 'Syria', ku: 'سوریا' }
+    };
+    const country = countries[countryCode.toLowerCase()];
+    return country ? t(country.ar, country.en, country.ku) : countryCode;
   };
 
   const getTypeColor = () => {
@@ -88,13 +147,12 @@ const TransferSuccess = () => {
   };
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${
-      isDark 
-        ? 'bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900' 
-        : 'bg-gradient-to-b from-green-50 via-white to-slate-50'
-    }`}>
+    <div className={`min-h-screen transition-colors duration-300 ${isDark
+      ? 'bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900'
+      : 'bg-gradient-to-b from-green-50 via-white to-slate-50'
+      }`}>
       <Header3D />
-      
+
       <main className="pt-24 pb-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           {/* Success Animation */}
@@ -104,16 +162,15 @@ const TransferSuccess = () => {
             transition={{ type: "spring", duration: 0.6 }}
             className="text-center mb-12"
           >
-            <div className={`w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl ${
-              isDark ? 'bg-green-600' : 'bg-green-500'
-            }`}>
+            <div className={`w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl ${isDark ? 'bg-green-600' : 'bg-green-500'
+              }`}>
               <CheckCircle className="w-14 h-14 text-white" />
             </div>
             <h1 className={`text-4xl md:text-5xl font-bold mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-              {currentLanguage === 'ar' ? 'تم تسجيل طلبك بنجاح!' : 'Order Created Successfully!'}
+              {t('تم تسجيل طلبك بنجاح!', 'Order Created Successfully!', 'داواکارییەکەت بە سەرکەوتوویی تۆمارکرا!')}
             </h1>
             <p className={`text-lg ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-              {currentLanguage === 'ar' ? 'احتفظ برقم الطلب لتتبع حالته' : 'Keep your order ID to track status'}
+              {t('احتفظ برقم الطلب لتتبع حالته', 'Keep your order ID to track status', 'ژمارەی داواکارییەکە بپارێزە بۆ بەدواداچوونی بارودۆخەکەی')}
             </p>
           </motion.div>
 
@@ -131,7 +188,7 @@ const TransferSuccess = () => {
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <p className="text-sm text-white/70 mb-1">
-                      {currentLanguage === 'ar' ? 'رقم الطلب' : 'Order ID'}
+                      {t('رقم الطلب', 'Order ID', 'ژمارەی داواکاری')}
                     </p>
                     <h2 className="text-3xl font-bold tracking-wider">{orderId}</h2>
                   </div>
@@ -145,7 +202,7 @@ const TransferSuccess = () => {
                     {copied ? <CheckCircle className="w-6 h-6" /> : <Copy className="w-6 h-6" />}
                   </motion.button>
                 </div>
-                
+
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-2 text-sm text-white/70">
                     <Clock className="w-4 h-4" />
@@ -160,7 +217,7 @@ const TransferSuccess = () => {
                 <div className="mt-6 inline-flex items-center gap-2 px-4 py-2 bg-amber-500/30 border border-amber-400/50 rounded-full">
                   <div className="w-2 h-2 bg-amber-300 rounded-full animate-pulse"></div>
                   <span className="text-sm font-medium text-amber-100">
-                    {currentLanguage === 'ar' ? 'في انتظار الدفع' : 'Waiting for Payment'}
+                    {t('في انتظار الدفع', 'Waiting for Payment', 'لە چاوەڕوانی پارەدان')}
                   </span>
                 </div>
               </motion.div>
@@ -170,17 +227,16 @@ const TransferSuccess = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className={`rounded-3xl border-2 shadow-xl p-8 ${
-                  isDark 
-                    ? 'bg-slate-800/50 border-slate-700' 
-                    : 'bg-white border-slate-200'
-                }`}
+                className={`rounded-3xl border-2 shadow-xl p-8 ${isDark
+                  ? 'bg-slate-800/50 border-slate-700'
+                  : 'bg-white border-slate-200'
+                  }`}
               >
                 <h3 className={`text-2xl font-bold mb-6 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                   <User className="w-6 h-6 text-blue-600" />
-                  {currentLanguage === 'ar' ? 'تفاصيل التحويل' : 'Transfer Details'}
+                  {t('تفاصيل التحويل', 'Transfer Details', 'زانیاری گواستنەوە')}
                 </h3>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {orderData.senderName && (
                     <div className="flex items-start gap-3">
@@ -188,19 +244,19 @@ const TransferSuccess = () => {
                         <User className="w-5 h-5 text-blue-600" />
                       </div>
                       <div>
-                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{currentLanguage === 'ar' ? 'المرسل' : 'Sender'}</p>
+                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('المرسل', 'Sender', 'نێرەر')}</p>
                         <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{orderData.senderName}</p>
                       </div>
                     </div>
                   )}
-                  
+
                   {orderData.receiverName && (
                     <div className="flex items-start gap-3">
                       <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-green-500/20' : 'bg-green-100'}`}>
                         <User className="w-5 h-5 text-green-600" />
                       </div>
                       <div>
-                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{currentLanguage === 'ar' ? 'المستلم' : 'Receiver'}</p>
+                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('المستلم', 'Receiver', 'وەرگر')}</p>
                         <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{orderData.receiverName}</p>
                       </div>
                     </div>
@@ -212,7 +268,7 @@ const TransferSuccess = () => {
                         <Phone className="w-5 h-5 text-purple-600" />
                       </div>
                       <div>
-                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{currentLanguage === 'ar' ? 'الهاتف' : 'Phone'}</p>
+                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('الهاتف', 'Phone', 'مۆبایل')}</p>
                         <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{orderData.phone}</p>
                       </div>
                     </div>
@@ -224,8 +280,10 @@ const TransferSuccess = () => {
                         <Globe className="w-5 h-5 text-indigo-600" />
                       </div>
                       <div>
-                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{currentLanguage === 'ar' ? 'الدولة' : 'Country'}</p>
-                        <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{orderData.countryName || orderData.receiverCountry}</p>
+                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('الدولة', 'Country', 'وڵات')}</p>
+                        <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                          {orderData.countryName || getCountryLabel(orderData.receiverCountry)}
+                        </p>
                       </div>
                     </div>
                   )}
@@ -237,40 +295,37 @@ const TransferSuccess = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
-                className={`rounded-3xl border-2 shadow-xl p-8 ${
-                  isDark 
-                    ? 'bg-emerald-900/20 border-emerald-700/50' 
-                    : 'bg-gradient-to-br from-emerald-50 to-teal-50 border-emerald-200'
-                }`}
+                className={`rounded-3xl border-2 shadow-xl p-8 ${isDark
+                  ? 'bg-emerald-900/20 border-emerald-700/50'
+                  : 'bg-gradient-to-br from-emerald-50 to-teal-50 border-emerald-200'
+                  }`}
               >
                 <h3 className={`text-2xl font-bold mb-6 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                   <DollarSign className="w-6 h-6 text-emerald-600" />
-                  {currentLanguage === 'ar' ? 'تفاصيل المبلغ' : 'Amount Details'}
+                  {t('تفاصيل المبلغ', 'Amount Details', 'زانیاری بڕی پارە')}
                 </h3>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {orderData.amount && (
-                    <div className={`rounded-2xl p-6 border-2 ${
-                      isDark ? 'bg-slate-800/50 border-emerald-700/50' : 'bg-white border-emerald-200'
-                    }`}>
+                    <div className={`rounded-2xl p-6 border-2 ${isDark ? 'bg-slate-800/50 border-emerald-700/50' : 'bg-white border-emerald-200'
+                      }`}>
                       <p className={`text-sm mb-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                        {currentLanguage === 'ar' ? 'المبلغ' : 'Amount'}
+                        {t('المبلغ', 'Amount', 'بڕ')}
                       </p>
                       <p className="text-3xl font-bold text-emerald-600">
-                        {orderData.currency ? `${orderData.amount} ${orderData.currency}` : `${Number(orderData.amount).toLocaleString()} ${currentLanguage === 'ar' ? 'د.ع' : 'IQD'}`}
+                        {orderData.currency ? `${orderData.amount} ${orderData.currency}` : `${Number(orderData.amount).toLocaleString()} ${t('د.ع', 'IQD', 'د.ع')}`}
                       </p>
                     </div>
                   )}
-                  
+
                   {(orderData.total || orderData.iqdAmount) && (
-                    <div className={`rounded-2xl p-6 border-2 ${
-                      isDark ? 'bg-slate-800/50 border-teal-700/50' : 'bg-white border-teal-200'
-                    }`}>
+                    <div className={`rounded-2xl p-6 border-2 ${isDark ? 'bg-slate-800/50 border-teal-700/50' : 'bg-white border-teal-200'
+                      }`}>
                       <p className={`text-sm mb-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                        {currentLanguage === 'ar' ? 'الإجمالي للدفع' : 'Total to Pay'}
+                        {t('الإجمالي للدفع', 'Total to Pay', 'کۆی گشتی بۆ پارەدان')}
                       </p>
                       <p className="text-3xl font-bold text-teal-600">
-                        {Number(orderData.total || orderData.iqdAmount).toLocaleString()} {currentLanguage === 'ar' ? 'د.ع' : 'IQD'}
+                        {Number(orderData.total || orderData.iqdAmount).toLocaleString()} {t('د.ع', 'IQD', 'د.ع')}
                       </p>
                     </div>
                   )}
@@ -279,8 +334,8 @@ const TransferSuccess = () => {
                 {orderData.serviceFee && (
                   <div className={`mt-4 p-4 rounded-xl ${isDark ? 'bg-slate-800/30' : 'bg-white/50'}`}>
                     <div className="flex justify-between items-center text-sm">
-                      <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>{currentLanguage === 'ar' ? 'رسوم الخدمة' : 'Service Fee'}</span>
-                      <span className="font-semibold text-amber-600">{Number(orderData.serviceFee).toLocaleString()} {currentLanguage === 'ar' ? 'د.ع' : 'IQD'}</span>
+                      <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>{t('رسوم الخدمة', 'Service Fee', 'رسوومی خزمەتگوزاری')}</span>
+                      <span className="font-semibold text-amber-600">{Number(orderData.serviceFee).toLocaleString()} {t('د.ع', 'IQD', 'د.ع')}</span>
                     </div>
                   </div>
                 )}
@@ -294,20 +349,19 @@ const TransferSuccess = () => {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.5 }}
-                className={`rounded-3xl border-2 shadow-xl p-8 text-center ${
-                  isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'
-                }`}
+                className={`rounded-3xl border-2 shadow-xl p-8 text-center ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'
+                  }`}
               >
                 <h3 className={`text-lg font-bold mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                  {currentLanguage === 'ar' ? 'رمز QR' : 'QR Code'}
+                  {t('رمز QR', 'QR Code', 'کۆدی QR')}
                 </h3>
-                
+
                 <div className={`p-6 rounded-2xl mb-4 inline-block ${isDark ? 'bg-white' : 'bg-slate-50'}`}>
                   <QRCodeSVG value={orderId} size={160} level="H" includeMargin={true} />
                 </div>
 
                 <p className={`text-xs mb-4 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                  {currentLanguage === 'ar' ? 'للتحقق عند الاستلام' : 'For verification'}
+                  {t('للتحقق عند الاستلام', 'For verification', 'بۆ دڵنیابوونەوە لە کاتی وەرگرتن')}
                 </p>
               </motion.div>
 
@@ -324,13 +378,13 @@ const TransferSuccess = () => {
                     <Phone className="w-6 h-6" />
                   </div>
                   <h3 className="text-lg font-bold">
-                    {currentLanguage === 'ar' ? 'تواصل معنا عبر واتساب' : 'Contact us via WhatsApp'}
+                    {t('تواصل معنا عبر واتساب', 'Contact us via WhatsApp', 'پەیوەندیمان پێوە بکە لە ڕێگەی واتسئەپ')}
                   </h3>
                 </div>
-                
+
                 <div className="bg-white/10 rounded-2xl p-4 mb-4">
                   <p className="text-sm opacity-90 mb-2">
-                    {currentLanguage === 'ar' ? 'رقم الواتساب:' : 'WhatsApp Number:'}
+                    {t('رقم الواتساب:', 'WhatsApp Number:', 'ژمارەی واتسئەپ:')}
                   </p>
                   <div className="flex items-center justify-between">
                     <span className="text-xl font-bold tracking-wider" dir="ltr">+964 750 123 4567</span>
@@ -354,13 +408,13 @@ const TransferSuccess = () => {
                   </div>
                 </div>
 
-                <a 
-                  href="https://wa.me/9647501234567" 
-                  target="_blank" 
+                <a
+                  href="https://wa.me/9647501234567"
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="block w-full py-3 bg-white text-green-600 font-bold rounded-xl text-center hover:bg-green-50 transition-colors"
                 >
-                  {currentLanguage === 'ar' ? 'فتح واتساب' : 'Open WhatsApp'}
+                  {t('فتح واتساب', 'Open WhatsApp', 'واتسئەپ بکەرەوە')}
                 </a>
               </motion.div>
 
@@ -369,32 +423,31 @@ const TransferSuccess = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
-                className={`rounded-3xl p-6 border-2 ${
-                  isDark ? 'bg-blue-900/20 border-blue-700/50' : 'bg-blue-50 border-blue-200'
-                }`}
+                className={`rounded-3xl p-6 border-2 ${isDark ? 'bg-blue-900/20 border-blue-700/50' : 'bg-blue-50 border-blue-200'
+                  }`}
               >
                 <h3 className={`text-lg font-bold mb-4 ${isDark ? 'text-blue-400' : 'text-blue-900'}`}>
-                  {currentLanguage === 'ar' ? 'تعليمات الدفع' : 'Payment Instructions'}
+                  {t('تعليمات الدفع', 'Payment Instructions', 'ڕێنماییەکانی پارەدان')}
                 </h3>
-                
+
                 <div className={`space-y-3 text-sm ${isDark ? 'text-blue-300' : 'text-blue-800'}`}>
                   <p className="flex items-start gap-2">
                     <span className="font-bold">1.</span>
-                    {currentLanguage === 'ar' ? 'قم بالدفع في أحد فروعنا' : 'Pay at our branch'}
+                    {t('قم بالدفع في أحد فروعنا', 'Pay at our branch', 'لە یەکێک لە لقەکانمان پارە بدە')}
                   </p>
                   <p className="flex items-start gap-2">
                     <span className="font-bold">2.</span>
-                    {currentLanguage === 'ar' ? 'احتفظ بإيصال الدفع' : 'Keep the receipt'}
+                    {t('احتفظ بإيصال الدفع', 'Keep the receipt', 'وەسڵی پارەدانەکە بپارێزە')}
                   </p>
                   <p className="flex items-start gap-2">
                     <span className="font-bold">3.</span>
-                    {currentLanguage === 'ar' ? 'ارفع صورة الإيصال' : 'Upload receipt image'}
+                    {t('ارفع صورة الإيصال', 'Upload receipt image', 'وێنەی وەسڵەکە بار بکە')}
                   </p>
                 </div>
 
                 <div className={`mt-4 p-3 rounded-xl ${isDark ? 'bg-blue-800/30' : 'bg-blue-100'}`}>
                   <p className={`text-xs ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>
-                    📱 {currentLanguage === 'ar' ? 'سيصلك إشعار عند تغيير الحالة' : 'You will be notified when status changes'}
+                    📱 {t('سيصلك إشعار عند تغيير الحالة', 'You will be notified when status changes', 'کاتێک بارودۆخەکە گۆڕا ئاگادارت دەکەینەوە')}
                   </p>
                 </div>
               </motion.div>
@@ -404,31 +457,28 @@ const TransferSuccess = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7 }}
-                className={`rounded-3xl border-2 shadow-xl p-6 ${
-                  isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'
-                }`}
+                className={`rounded-3xl border-2 shadow-xl p-6 ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'
+                  }`}
                 data-testid="transfer-payment-proof"
               >
                 <h3 className={`text-lg font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                  {currentLanguage === 'ar' ? 'إثبات الدفع' : 'Payment Proof'}
+                  {t('إثبات الدفع', 'Payment Proof', 'بەڵگەی پارەدان')}
                 </h3>
 
                 {paymentProofs.length === 0 ? (
-                  <label className={`block border-2 border-dashed rounded-2xl p-6 transition-all cursor-pointer text-center ${
-                    isDark 
-                      ? 'border-slate-600 hover:border-[#D4AF37] hover:bg-slate-700/50' 
-                      : 'border-slate-300 hover:border-[#D4AF37] hover:bg-slate-50'
-                  }`}>
+                  <label className={`block border-2 border-dashed rounded-2xl p-6 transition-all cursor-pointer text-center ${isDark
+                    ? 'border-slate-600 hover:border-[#D4AF37] hover:bg-slate-700/50'
+                    : 'border-slate-300 hover:border-[#D4AF37] hover:bg-slate-50'
+                    }`}>
                     <input type="file" accept="image/*" multiple onChange={handleFileUpload} className="hidden" />
                     <Upload className={`w-10 h-10 mx-auto mb-2 ${isDark ? 'text-slate-500' : 'text-slate-400'}`} />
-                    <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{currentLanguage === 'ar' ? 'رفع صورة' : 'Upload image'}</p>
+                    <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{t('رفع صورة', 'Upload image', 'وێنە بار بکە')}</p>
                   </label>
                 ) : (
                   <div className="space-y-3">
                     {paymentProofs.map((proof) => (
-                      <div key={proof.id} className={`flex items-center gap-3 rounded-xl p-3 ${
-                        isDark ? 'bg-green-900/30 border border-green-700/50' : 'bg-green-50 border border-green-200'
-                      }`}>
+                      <div key={proof.id} className={`flex items-center gap-3 rounded-xl p-3 ${isDark ? 'bg-green-900/30 border border-green-700/50' : 'bg-green-50 border border-green-200'
+                        }`}>
                         <img src={proof.preview} alt="proof" className="w-12 h-12 rounded-lg object-cover" />
                         <div className="flex-1 min-w-0">
                           <p className={`text-sm font-medium truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>{proof.name}</p>
@@ -445,9 +495,9 @@ const TransferSuccess = () => {
                       className="w-full py-3 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 disabled:opacity-50 flex items-center justify-center gap-2"
                     >
                       {uploading ? (
-                        <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />{currentLanguage === 'ar' ? 'جارٍ...' : 'Submitting...'}</>
+                        <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />{t('جارٍ...', 'Submitting...', 'تۆمارکردن...')}</>
                       ) : (
-                        <><CheckCircle className="w-5 h-5" />{currentLanguage === 'ar' ? 'إرسال' : 'Submit'}</>
+                        <><CheckCircle className="w-5 h-5" />{t('إرسال', 'Submit', 'ناردن')}</>
                       )}
                     </button>
                   </div>
@@ -463,26 +513,24 @@ const TransferSuccess = () => {
             transition={{ delay: 0.8 }}
             className="max-w-5xl mx-auto mt-12 flex flex-col sm:flex-row gap-4"
           >
-            <button 
-              onClick={() => navigate('/track-order')}
-              className={`flex-1 py-4 font-bold rounded-2xl transition-colors flex items-center justify-center gap-2 ${
-                isDark 
-                  ? 'bg-[#D4AF37] text-slate-900 hover:bg-[#FCD34D]' 
-                  : 'bg-slate-900 text-white hover:bg-slate-800'
-              }`}
+            <button
+              onClick={() => navigate('/track-order', { state: { orderId } })}
+              className={`flex-1 py-4 font-bold rounded-2xl transition-colors flex items-center justify-center gap-2 ${isDark
+                ? 'bg-[#D4AF37] text-slate-900 hover:bg-[#FCD34D]'
+                : 'bg-slate-900 text-white hover:bg-slate-800'
+                }`}
             >
-              {currentLanguage === 'ar' ? 'تتبع طلبي' : 'Track My Order'}
+              {t('تتبع طلبي', 'Track My Order', 'بەدواداچوونی داواکارییەکەم')}
               <ArrowRight className="w-5 h-5" />
             </button>
-            <button 
+            <button
               onClick={() => navigate('/')}
-              className={`flex-1 py-4 border-2 font-bold rounded-2xl transition-colors ${
-                isDark 
-                  ? 'bg-transparent border-slate-600 text-white hover:border-slate-500' 
-                  : 'bg-white border-slate-200 text-slate-900 hover:border-slate-300'
-              }`}
+              className={`flex-1 py-4 border-2 font-bold rounded-2xl transition-colors ${isDark
+                ? 'bg-transparent border-slate-600 text-white hover:border-slate-500'
+                : 'bg-white border-slate-200 text-slate-900 hover:border-slate-300'
+                }`}
             >
-              {currentLanguage === 'ar' ? 'العودة للرئيسية' : 'Back to Home'}
+              {t('العودة للرئيسية', 'Back to Home', 'گەڕانەوە بۆ سەرەکی')}
             </button>
           </motion.div>
         </div>

@@ -59,22 +59,22 @@ export const GlobalSection = () => {
 
   // Example countries with flags (just examples, we support ALL countries)
   const exampleCountries = [
-    { flag: '🇦🇪', nameAr: 'الإمارات', nameEn: 'UAE', nameKu: 'ئیمارات' },
-    { flag: '🇸🇦', nameAr: 'السعودية', nameEn: 'Saudi Arabia', nameKu: 'سعودیە' },
-    { flag: '🇹🇷', nameAr: 'تركيا', nameEn: 'Turkey', nameKu: 'تورکیا' },
-    { flag: '🇯🇴', nameAr: 'الأردن', nameEn: 'Jordan', nameKu: 'ئوردن' },
-    { flag: '🇪🇬', nameAr: 'مصر', nameEn: 'Egypt', nameKu: 'میسر' },
-    { flag: '🇱🇧', nameAr: 'لبنان', nameEn: 'Lebanon', nameKu: 'لوبنان' },
-    { flag: '🇰🇼', nameAr: 'الكويت', nameEn: 'Kuwait', nameKu: 'کوەیت' },
-    { flag: '🇶🇦', nameAr: 'قطر', nameEn: 'Qatar', nameKu: 'قەتەر' },
-    { flag: '🇧🇭', nameAr: 'البحرين', nameEn: 'Bahrain', nameKu: 'بەحرەین' },
-    { flag: '🇮🇷', nameAr: 'إيران', nameEn: 'Iran', nameKu: 'ئێران' },
-    { flag: '🇮🇳', nameAr: 'الهند', nameEn: 'India', nameKu: 'هیندستان' },
-    { flag: '🇵🇰', nameAr: 'باكستان', nameEn: 'Pakistan', nameKu: 'پاکستان' },
-    { flag: '🇩🇪', nameAr: 'ألمانيا', nameEn: 'Germany', nameKu: 'ئەڵمانیا' },
-    { flag: '🇬🇧', nameAr: 'بريطانيا', nameEn: 'UK', nameKu: 'بەریتانیا' },
-    { flag: '🇺🇸', nameAr: 'أمريكا', nameEn: 'USA', nameKu: 'ئەمریکا' },
-    { flag: '🇨🇳', nameAr: 'الصين', nameEn: 'China', nameKu: 'چین' }
+    { flag: 'ae', nameAr: 'الإمارات', nameEn: 'UAE', nameKu: 'ئیمارات' },
+    { flag: 'sa', nameAr: 'السعودية', nameEn: 'Saudi Arabia', nameKu: 'سعودیە' },
+    { flag: 'tr', nameAr: 'تركيا', nameEn: 'Turkey', nameKu: 'تورکیا' },
+    { flag: 'jo', nameAr: 'الأردن', nameEn: 'Jordan', nameKu: 'ئوردن' },
+    { flag: 'eg', nameAr: 'مصر', nameEn: 'Egypt', nameKu: 'میسر' },
+    { flag: 'lb', nameAr: 'لبنان', nameEn: 'Lebanon', nameKu: 'لوبنان' },
+    { flag: 'kw', nameAr: 'الكويت', nameEn: 'کوەیت' },
+    { flag: 'qa', nameAr: 'قطر', nameEn: 'Qatar', nameKu: 'قەتەر' },
+    { flag: 'bh', nameAr: 'البحرين', nameEn: 'Bahrain', nameKu: 'بەحرەین' },
+    { flag: 'ir', nameAr: 'إيران', nameEn: 'Iran', nameKu: 'ئێران' },
+    { flag: 'in', nameAr: 'الهند', nameEn: 'India', nameKu: 'هیندستان' },
+    { flag: 'pk', nameAr: 'باكستان', nameEn: 'Pakistan', nameKu: 'پاکستان' },
+    { flag: 'de', nameAr: 'ألمانيا', nameEn: 'Germany', nameKu: 'ئەڵمانیا' },
+    { flag: 'gb', nameAr: 'بريطانيا', nameEn: 'UK', nameKu: 'بەریتانیا' },
+    { flag: 'us', nameAr: 'أمريكا', nameEn: 'USA', nameKu: 'ئەمریکا' },
+    { flag: 'cn', nameAr: 'الصين', nameEn: 'China', nameKu: 'چین' }
   ];
 
   const getCountryName = (country) => {
@@ -84,35 +84,31 @@ export const GlobalSection = () => {
   };
 
   return (
-    <section 
+    <section
       ref={sectionRef}
-      className={`relative py-24 md:py-32 overflow-hidden transition-colors duration-500 ${
-        isDark 
-          ? 'bg-gradient-to-b from-slate-900 via-blue-950 to-slate-900'
-          : 'bg-gradient-to-b from-blue-50 via-indigo-50 to-white'
-      }`}
+      className={`relative py-24 md:py-32 overflow-hidden transition-colors duration-500 ${isDark
+        ? 'bg-gradient-to-b from-slate-900 via-blue-950 to-slate-900'
+        : 'bg-gradient-to-b from-blue-50 via-indigo-50 to-white'
+        }`}
       id="global"
     >
       {/* Background */}
       <div className="absolute inset-0">
         {/* Globe Image in Background */}
-        <div className={`absolute top-1/2 right-0 -translate-y-1/2 w-[600px] h-[600px] ${
-          isDark ? 'opacity-30' : 'opacity-20'
-        }`}>
-          <img 
+        <div className={`absolute top-1/2 right-0 -translate-y-1/2 w-[600px] h-[600px] ${isDark ? 'opacity-30' : 'opacity-20'
+          }`}>
+          <img
             src={ASSETS.globalNetwork}
             alt="Global Network"
             className="w-full h-full object-contain"
           />
         </div>
-        
+
         {/* Decorative Elements */}
-        <div className={`absolute top-20 left-20 w-64 h-64 rounded-full blur-3xl ${
-          isDark ? 'bg-blue-500/20' : 'bg-blue-400/20'
-        }`} />
-        <div className={`absolute bottom-20 right-20 w-80 h-80 rounded-full blur-3xl ${
-          isDark ? 'bg-[#D4AF37]/10' : 'bg-amber-300/20'
-        }`} />
+        <div className={`absolute top-20 left-20 w-64 h-64 rounded-full blur-3xl ${isDark ? 'bg-blue-500/20' : 'bg-blue-400/20'
+          }`} />
+        <div className={`absolute bottom-20 right-20 w-80 h-80 rounded-full blur-3xl ${isDark ? 'bg-[#D4AF37]/10' : 'bg-amber-300/20'
+          }`} />
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -123,23 +119,21 @@ export const GlobalSection = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <motion.span 
+          <motion.span
             initial={{ opacity: 0, scale: 0.8 }}
             animate={isInView ? { opacity: 1, scale: 1 } : {}}
             transition={{ delay: 0.2 }}
-            className={`inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full text-sm font-medium ${
-              isDark 
-                ? 'bg-blue-500/20 border border-blue-500/30 text-blue-400'
-                : 'bg-blue-500/10 border border-blue-500/20 text-blue-600'
-            }`}
+            className={`inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full text-sm font-medium ${isDark
+              ? 'bg-blue-500/20 border border-blue-500/30 text-blue-400'
+              : 'bg-blue-500/10 border border-blue-500/20 text-blue-600'
+              }`}
           >
             <Globe className="w-4 h-4" />
             {t.badge}
           </motion.span>
 
-          <h2 className={`text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 ${
-            isDark ? 'text-white' : 'text-slate-900'
-          }`}>
+          <h2 className={`text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 ${isDark ? 'text-white' : 'text-slate-900'
+            }`}>
             {t.title}
           </h2>
 
@@ -161,15 +155,13 @@ export const GlobalSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: 0.3 + index * 0.1 }}
-              className={`p-5 rounded-2xl text-center transition-colors ${
-                isDark 
-                  ? 'bg-white/5 border border-white/10 hover:bg-white/10'
-                  : 'bg-white border border-slate-200 shadow-sm hover:shadow-md'
-              }`}
+              className={`p-5 rounded-2xl text-center transition-colors ${isDark
+                ? 'bg-white/5 border border-white/10 hover:bg-white/10'
+                : 'bg-white border border-slate-200 shadow-sm hover:shadow-md'
+                }`}
             >
-              <feature.icon className={`w-10 h-10 mx-auto mb-3 ${
-                isDark ? 'text-[#D4AF37]' : 'text-blue-600'
-              }`} />
+              <feature.icon className={`w-10 h-10 mx-auto mb-3 ${isDark ? 'text-[#D4AF37]' : 'text-blue-600'
+                }`} />
               <h4 className={`font-bold mb-1 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 {feature.title}
               </h4>
@@ -185,11 +177,10 @@ export const GlobalSection = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className={`p-8 rounded-3xl ${
-            isDark 
-              ? 'bg-white/5 backdrop-blur-xl border border-white/10'
-              : 'bg-white/80 backdrop-blur-xl border border-slate-200 shadow-2xl'
-          }`}
+          className={`p-8 rounded-3xl ${isDark
+            ? 'bg-white/5 backdrop-blur-xl border border-white/10'
+            : 'bg-white/80 backdrop-blur-xl border border-slate-200 shadow-2xl'
+            }`}
         >
           <div className="flex items-center justify-center gap-3 mb-8">
             <Banknote className={`w-6 h-6 ${isDark ? 'text-[#D4AF37]' : 'text-amber-600'}`} />
@@ -207,13 +198,18 @@ export const GlobalSection = () => {
                 animate={isInView ? { opacity: 1, scale: 1 } : {}}
                 transition={{ delay: 0.5 + index * 0.03 }}
                 whileHover={{ scale: 1.1, y: -5 }}
-                className={`flex flex-col items-center gap-2 p-3 rounded-xl transition-colors cursor-pointer ${
-                  isDark 
-                    ? 'bg-white/5 hover:bg-white/10'
-                    : 'bg-slate-50 hover:bg-amber-50 border border-slate-100'
-                }`}
+                className={`flex flex-col items-center gap-2 p-3 rounded-xl transition-colors cursor-pointer ${isDark
+                  ? 'bg-white/5 hover:bg-white/10'
+                  : 'bg-slate-50 hover:bg-amber-50 border border-slate-100'
+                  }`}
               >
-                <span className="text-3xl">{country.flag}</span>
+                <div className={`w-12 h-9 flex items-center justify-center ${isDark ? 'bg-white/10' : 'bg-white'} rounded shadow-sm overflow-hidden border ${isDark ? 'border-white/20' : 'border-slate-200'}`}>
+                  <img
+                    src={`https://flagcdn.com/w80/${country.flag.toLowerCase()}.png`}
+                    alt={country.nameEn}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
                 <span className={`text-xs font-medium text-center ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
                   {getCountryName(country)}
                 </span>
@@ -224,8 +220,14 @@ export const GlobalSection = () => {
           {/* "And more" indicator */}
           <div className="flex items-center justify-center gap-2">
             <div className="flex -space-x-2">
-              {['🇫🇷', '🇮🇹', '🇪🇸', '🇯🇵', '🇧🇷'].map((flag, i) => (
-                <span key={i} className="text-2xl opacity-60">{flag}</span>
+              {['fr', 'it', 'es', 'jp', 'br'].map((code, i) => (
+                <div key={i} className={`w-8 h-6 rounded overflow-hidden border-2 ${isDark ? 'border-slate-800' : 'border-white'} shadow-sm`}>
+                  <img
+                    src={`https://flagcdn.com/w40/${code}.png`}
+                    alt=""
+                    className="w-full h-full object-cover"
+                  />
+                </div>
               ))}
             </div>
             <span className={`text-sm font-medium ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
@@ -245,11 +247,10 @@ export const GlobalSection = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => window.location.href = '/transfers'}
-            className={`px-8 py-4 rounded-full font-bold inline-flex items-center gap-2 shadow-xl transition-all ${
-              isDark 
-                ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:shadow-blue-500/30'
-                : 'bg-gradient-to-r from-blue-600 to-indigo-700 text-white hover:shadow-blue-600/30'
-            }`}
+            className={`px-8 py-4 rounded-full font-bold inline-flex items-center gap-2 shadow-xl transition-all ${isDark
+              ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:shadow-blue-500/30'
+              : 'bg-gradient-to-r from-blue-600 to-indigo-700 text-white hover:shadow-blue-600/30'
+              }`}
           >
             {t.cta}
             <ArrowRight className="w-5 h-5" />

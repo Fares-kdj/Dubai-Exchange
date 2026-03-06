@@ -1,14 +1,17 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useBranding } from '@/context/BrandingContext';
 
 // Full Page Loader - للصفحات الكبيرة مثل الرئيسية
 const FullPageLoader = ({ isDark = true }) => {
+  const { logoLight, logoDark, primaryColor } = useBranding();
+  const logo = isDark ? logoDark : logoLight;
+
   return (
-    <div className={`fixed inset-0 z-[9999] flex items-center justify-center ${
-      isDark 
-        ? 'bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900' 
-        : 'bg-gradient-to-br from-amber-50 via-white to-slate-50'
-    }`}>
+    <div className={`fixed inset-0 z-[9999] flex items-center justify-center ${isDark
+      ? 'bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900'
+      : 'bg-gradient-to-br from-amber-50 via-white to-slate-50'
+      }`}>
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute inset-0" style={{
@@ -18,8 +21,8 @@ const FullPageLoader = ({ isDark = true }) => {
 
       {/* Central Bank Logo Watermark */}
       <div className="absolute inset-0 flex items-center justify-center opacity-5">
-        <img 
-          src="https://upload.wikimedia.org/wikipedia/en/thumb/9/95/Central_Bank_of_Iraq_logo.png/150px-Central_Bank_of_Iraq_logo.png"
+        <img
+          src="/assets/cbi-logo.png"
           alt=""
           className="w-96 h-96 object-contain"
         />
@@ -58,7 +61,7 @@ const FullPageLoader = ({ isDark = true }) => {
             {/* Inner Logo */}
             <div className="absolute inset-0 flex items-center justify-center">
               <motion.div
-                animate={{ 
+                animate={{
                   scale: [1, 1.1, 1],
                   boxShadow: [
                     "0 0 20px rgba(212, 175, 55, 0.3)",
@@ -67,9 +70,9 @@ const FullPageLoader = ({ isDark = true }) => {
                   ]
                 }}
                 transition={{ duration: 2, repeat: Infinity }}
-                className="w-24 h-24 bg-gradient-to-br from-[#D4AF37] to-[#B8860B] rounded-2xl flex items-center justify-center shadow-2xl"
+                className="w-24 h-24 bg-white rounded-2xl flex items-center justify-center shadow-2xl p-4"
               >
-                <span className="text-3xl font-black text-white">DIE</span>
+                <img src={logo} alt="Logo" className="w-full h-full object-contain" />
               </motion.div>
             </div>
           </div>
@@ -145,9 +148,8 @@ const OverlayLoader = ({ message, isDark = true }) => {
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.8, opacity: 0 }}
-        className={`px-8 py-6 rounded-2xl shadow-2xl flex items-center gap-4 ${
-          isDark ? 'bg-slate-800 border border-slate-700' : 'bg-white border border-slate-200'
-        }`}
+        className={`px-8 py-6 rounded-2xl shadow-2xl flex items-center gap-4 ${isDark ? 'bg-slate-800 border border-slate-700' : 'bg-white border border-slate-200'
+          }`}
       >
         {/* Spinner */}
         <div className="relative">

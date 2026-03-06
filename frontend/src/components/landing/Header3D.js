@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
 import { useTheme } from '@/context/ThemeContext';
-import { ASSETS } from '@/config/assets';
+import { useBranding } from '@/context/BrandingContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Globe, Sun, Moon } from 'lucide-react';
 
 const Header3D = () => {
+  const { logoLight, logoDark } = useBranding();
   const navigate = useNavigate();
   const location = useLocation();
   const { currentLanguage, changeLanguage } = useLanguage();
@@ -51,16 +52,21 @@ const Header3D = () => {
   ];
 
   const handleNavClick = (href) => {
-    if (href.startsWith('/#')) {
-      if (location.pathname !== '/') {
-        navigate('/');
-        setTimeout(() => {
-          const element = document.getElementById(href.replace('/#', ''));
-          element?.scrollIntoView({ behavior: 'smooth' });
-        }, 100);
+    if (href === '/' || href === '/#home') {
+      if (location.pathname === '/') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
-        const element = document.getElementById(href.replace('/#', ''));
-        element?.scrollIntoView({ behavior: 'smooth' });
+        navigate('/');
+      }
+    } else if (href.startsWith('/#')) {
+      if (location.pathname !== '/') {
+        navigate(href);
+      } else {
+        const targetId = href.replace('/#', '');
+        const element = document.getElementById(targetId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
       }
     } else {
       navigate(href);
@@ -69,30 +75,29 @@ const Header3D = () => {
   };
 
   return (
-    <motion.header 
+    <motion.header
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled || !isLandingPage
-          ? isDark 
-            ? 'bg-slate-900/95 backdrop-blur-xl border-b border-slate-800 shadow-lg'
-            : 'bg-white/95 backdrop-blur-xl border-b border-slate-200 shadow-lg'
-          : 'bg-transparent'
-      }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled || !isLandingPage
+        ? isDark
+          ? 'bg-slate-900/95 backdrop-blur-xl border-b border-slate-800 shadow-lg'
+          : 'bg-white/95 backdrop-blur-xl border-b border-slate-200 shadow-lg'
+        : 'bg-transparent'
+        }`}
     >
       <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <motion.div 
+          <motion.div
             className="flex items-center gap-3 cursor-pointer"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => navigate('/')}
             data-testid="header-logo"
           >
-            <img 
-              src={isDark ? ASSETS.logoWhite : ASSETS.logoBlack}
-              alt="Dubai International Exchange" 
+            <img
+              src={isDark ? logoDark : logoLight}
+              alt="شعار الشركة"
               className={`h-10 md:h-12 object-contain ${!isDark ? 'drop-shadow-sm' : ''}`}
               style={!isDark ? { filter: 'sepia(30%) saturate(150%)' } : {}}
             />
@@ -105,11 +110,10 @@ const Header3D = () => {
                 key={item.key}
                 onClick={() => handleNavClick(item.href)}
                 data-testid={`nav-${item.key}`}
-                className={`transition-colors duration-300 text-sm font-medium relative group ${
-                  isDark 
-                    ? 'text-slate-300 hover:text-white'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
+                className={`transition-colors duration-300 text-sm font-medium relative group ${isDark
+                  ? 'text-slate-300 hover:text-white'
+                  : 'text-slate-600 hover:text-slate-900'
+                  }`}
               >
                 {getNavLabel(item)}
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-[#D4AF37] to-[#FCD34D] group-hover:w-full transition-all duration-300"></span>
@@ -123,11 +127,10 @@ const Header3D = () => {
             <motion.button
               onClick={toggleTheme}
               data-testid="theme-toggle"
-              className={`p-2.5 rounded-full transition-all duration-300 ${
-                isDark 
-                  ? 'bg-white/10 hover:bg-white/20 text-white'
-                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-              }`}
+              className={`p-2.5 rounded-full transition-all duration-300 ${isDark
+                ? 'bg-white/10 hover:bg-white/20 text-white'
+                : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                }`}
               whileHover={{ scale: 1.1, rotate: 15 }}
               whileTap={{ scale: 0.9 }}
             >
@@ -139,11 +142,10 @@ const Header3D = () => {
               <motion.button
                 onClick={() => setLangDropdownOpen(!langDropdownOpen)}
                 data-testid="language-switcher"
-                className={`flex items-center gap-2 px-4 py-2 rounded-full border transition-all duration-300 ${
-                  isDark 
-                    ? 'bg-white/10 hover:bg-white/20 border-white/20'
-                    : 'bg-slate-100 hover:bg-slate-200 border-slate-200'
-                }`}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full border transition-all duration-300 ${isDark
+                  ? 'bg-white/10 hover:bg-white/20 border-white/20'
+                  : 'bg-slate-100 hover:bg-slate-200 border-slate-200'
+                  }`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -159,11 +161,10 @@ const Header3D = () => {
                     initial={{ opacity: 0, y: -10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                    className={`absolute top-full mt-2 right-0 backdrop-blur-xl border rounded-2xl overflow-hidden shadow-xl min-w-[140px] ${
-                      isDark 
-                        ? 'bg-slate-800 border-slate-700'
-                        : 'bg-white border-slate-200'
-                    }`}
+                    className={`absolute top-full mt-2 right-0 backdrop-blur-xl border rounded-2xl overflow-hidden shadow-xl min-w-[140px] ${isDark
+                      ? 'bg-slate-800 border-slate-700'
+                      : 'bg-white border-slate-200'
+                      }`}
                   >
                     {languages.map((lang) => (
                       <button
@@ -173,15 +174,14 @@ const Header3D = () => {
                           setLangDropdownOpen(false);
                         }}
                         data-testid={`lang-${lang.code}`}
-                        className={`w-full px-4 py-3 text-left text-sm transition-colors ${
-                          currentLanguage === lang.code 
-                            ? isDark 
-                              ? 'text-[#D4AF37] bg-slate-700 font-medium'
-                              : 'text-[#B8860B] bg-slate-100 font-medium'
-                            : isDark 
-                              ? 'text-slate-200 hover:bg-slate-700'
-                              : 'text-slate-600 hover:bg-slate-100'
-                        }`}
+                        className={`w-full px-4 py-3 text-left text-sm transition-colors ${currentLanguage === lang.code
+                          ? isDark
+                            ? 'text-[#D4AF37] bg-slate-700 font-medium'
+                            : 'text-[#B8860B] bg-slate-100 font-medium'
+                          : isDark
+                            ? 'text-slate-200 hover:bg-slate-700'
+                            : 'text-slate-600 hover:bg-slate-100'
+                          }`}
                       >
                         {lang.name}
                       </button>
@@ -212,13 +212,12 @@ const Header3D = () => {
             >
               {isDark ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5" />}
             </motion.button>
-            
+
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               data-testid="mobile-menu-button"
-              className={`p-2 transition-colors rounded-lg ${
-                isDark ? 'text-white hover:bg-white/10' : 'text-slate-900 hover:bg-slate-100'
-              }`}
+              className={`p-2 transition-colors rounded-lg ${isDark ? 'text-white hover:bg-white/10' : 'text-slate-900 hover:bg-slate-100'
+                }`}
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -239,14 +238,13 @@ const Header3D = () => {
                   <button
                     key={item.key}
                     onClick={() => handleNavClick(item.href)}
-                    className={`transition-colors py-2 text-sm font-medium text-left ${
-                      isDark ? 'text-slate-300 hover:text-white' : 'text-slate-600 hover:text-slate-900'
-                    }`}
+                    className={`transition-colors py-2 text-sm font-medium text-left ${isDark ? 'text-slate-300 hover:text-white' : 'text-slate-600 hover:text-slate-900'
+                      }`}
                   >
                     {getNavLabel(item)}
                   </button>
                 ))}
-                
+
                 <div className={`flex flex-col gap-2 pt-2 border-t ${isDark ? 'border-slate-700' : 'border-slate-200'}`}>
                   {languages.map((lang) => (
                     <button
@@ -255,18 +253,17 @@ const Header3D = () => {
                         changeLanguage(lang.code);
                         setMobileMenuOpen(false);
                       }}
-                      className={`text-left py-2 text-sm ${
-                        currentLanguage === lang.code 
-                          ? isDark ? 'text-[#D4AF37] font-medium' : 'text-[#B8860B] font-medium'
-                          : isDark ? 'text-slate-400' : 'text-slate-500'
-                      }`}
+                      className={`text-left py-2 text-sm ${currentLanguage === lang.code
+                        ? isDark ? 'text-[#D4AF37] font-medium' : 'text-[#B8860B] font-medium'
+                        : isDark ? 'text-slate-400' : 'text-slate-500'
+                        }`}
                     >
                       {lang.name}
                     </button>
                   ))}
                 </div>
 
-                <button 
+                <button
                   onClick={() => { navigate('/traveler-booking'); setMobileMenuOpen(false); }}
                   className="w-full mt-2 px-6 py-2.5 bg-gradient-to-r from-[#D4AF37] to-[#FCD34D] text-slate-900 font-bold rounded-full shadow-lg"
                 >

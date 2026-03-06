@@ -4,6 +4,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { useTheme } from '@/context/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowRight, DollarSign, Globe, CreditCard, CheckCircle, AlertCircle, Search, Clock, User, Star } from 'lucide-react';
+import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import ReactCountryFlag from 'react-country-flag';
@@ -15,13 +16,21 @@ const CountryWizard = () => {
   const { currentLanguage } = useLanguage();
   const { isDark } = useTheme();
   const isArabic = currentLanguage === 'ar';
-  
+  const isKurdish = currentLanguage === 'ku';
+
+  const t = (ar, en, ku) => {
+    if (isKurdish) return ku || en;
+    if (isArabic) return ar;
+    return en;
+  };
+
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
   const [countries, setCountries] = useState([]);
   const [methods, setMethods] = useState([]);
+  const API_URL = process.env.REACT_APP_BACKEND_URL;
 
   const [wizardData, setWizardData] = useState({
     amount: '',
@@ -31,59 +40,73 @@ const CountryWizard = () => {
     senderName: '',
     receiverName: '',
     phone: '',
-    accountNumber: ''
+    purpose: '',
+    customFields: {}
   });
 
-  // Currency map for each country
-  const countryCurrencies = {
-    'dz': { code: 'DZD', nameAr: 'دينار جزائري', nameEn: 'Algerian Dinar' },
-    'eg': { code: 'EGP', nameAr: 'جنيه مصري', nameEn: 'Egyptian Pound' },
-    'tr': { code: 'TRY', nameAr: 'ليرة تركية', nameEn: 'Turkish Lira' },
-    'jo': { code: 'JOD', nameAr: 'دينار أردني', nameEn: 'Jordanian Dinar' },
-    'in': { code: 'INR', nameAr: 'روبية هندية', nameEn: 'Indian Rupee' },
-    'pk': { code: 'PKR', nameAr: 'روبية باكستانية', nameEn: 'Pakistani Rupee' },
-    'ae': { code: 'AED', nameAr: 'درهم إماراتي', nameEn: 'UAE Dirham' },
-    'sa': { code: 'SAR', nameAr: 'ريال سعودي', nameEn: 'Saudi Riyal' },
-    'lb': { code: 'LBP', nameAr: 'ليرة لبنانية', nameEn: 'Lebanese Pound' },
-    'sy': { code: 'SYP', nameAr: 'ليرة سورية', nameEn: 'Syrian Pound' }
+  // Currency names map for display
+  const currencyNames = {
+    'DZD': { ar: 'دينار جزائري', en: 'Algerian Dinar', ku: 'دیناری جەزائیری' },
+    'EGP': { ar: 'جنيه مصري', en: 'Egyptian Pound', ku: 'جونیەی میسری' },
+    'TRY': { ar: 'ليرة تركية', en: 'Turkish Lira', ku: 'لیرەی تورکی' },
+    'JOD': { ar: 'دينار أردني', en: 'Jordanian Dinar', ku: 'دیناری ئوردنی' },
+    'INR': { ar: 'روبية هندية', en: 'Indian Rupee', ku: 'ڕوپیەی هیندی' },
+    'PKR': { ar: 'روبية باكستانية', en: 'Pakistani Rupee', ku: 'ڕوپیەی پاکستانی' },
+    'AED': { ar: 'درهم إماراتي', en: 'UAE Dirham', ku: 'درههەمی ئیماراتی' },
+    'SAR': { ar: 'ريال سعودي', en: 'Saudi Riyal', ku: 'ڕیاڵی سعودی' },
+    'LBP': { ar: 'ليرة لبنانية', en: 'Lebanese Pound', ku: 'لیرەی لوبنانی' },
+    'SYP': { ar: 'ليرة سورية', en: 'Syrian Pound', ku: 'لیرەی سووری' },
+    'USD': { ar: 'دولار أمريكي', en: 'US Dollar', ku: 'دۆلاری ئەمریکی' },
+    'EUR': { ar: 'يورو', en: 'Euro', ku: 'یۆرۆ' }
   };
 
   // Check if selected method is bank transfer
   const isBankTransfer = wizardData.method === 'bank';
-  
+
   // Get available currencies for receiver based on method
   const getAvailableCurrencies = () => {
     if (!wizardData.country) return [];
-    const localCurrency = countryCurrencies[wizardData.country];
-    
+    const country = countries.find(c => c.country_code === wizardData.country);
+    if (!country) return [];
+
+    const localCurrencyCode = country.currency;
+    const localCurrencyInfo = {
+      code: localCurrencyCode,
+      nameAr: currencyNames[localCurrencyCode]?.ar || localCurrencyCode,
+      nameEn: currencyNames[localCurrencyCode]?.en || localCurrencyCode,
+      nameKu: currencyNames[localCurrencyCode]?.ku || localCurrencyCode
+    };
+
     if (isBankTransfer) {
       // For bank transfers: USD, EUR, or local currency
       return [
-        { code: 'USD', nameAr: 'دولار أمريكي', nameEn: 'US Dollar' },
-        { code: 'EUR', nameAr: 'يورو', nameEn: 'Euro' },
-        localCurrency
+        { code: 'USD', nameAr: currencyNames['USD'].ar, nameEn: currencyNames['USD'].en, nameKu: currencyNames['USD'].ku },
+        { code: 'EUR', nameAr: currencyNames['EUR'].ar, nameEn: currencyNames['EUR'].en, nameKu: currencyNames['EUR'].ku },
+        localCurrencyInfo
       ];
     } else {
       // For non-bank methods: local currency only
-      return [localCurrency];
+      return [localCurrencyInfo];
     }
   };
 
-  // Load countries data on mount
+  // Load countries data from API
   useEffect(() => {
-    setCountries([
-      { code: 'dz', countryCode: 'DZ', nameAr: 'الجزائر', nameEn: 'Algeria' },
-      { code: 'eg', countryCode: 'EG', nameAr: 'مصر', nameEn: 'Egypt' },
-      { code: 'tr', countryCode: 'TR', nameAr: 'تركيا', nameEn: 'Turkey' },
-      { code: 'jo', countryCode: 'JO', nameAr: 'الأردن', nameEn: 'Jordan' },
-      { code: 'in', countryCode: 'IN', nameAr: 'الهند', nameEn: 'India' },
-      { code: 'pk', countryCode: 'PK', nameAr: 'باكستان', nameEn: 'Pakistan' },
-      { code: 'ae', countryCode: 'AE', nameAr: 'الإمارات', nameEn: 'UAE' },
-      { code: 'sa', countryCode: 'SA', nameAr: 'السعودية', nameEn: 'Saudi Arabia' },
-      { code: 'lb', countryCode: 'LB', nameAr: 'لبنان', nameEn: 'Lebanon' },
-      { code: 'sy', countryCode: 'SY', nameAr: 'سوريا', nameEn: 'Syria' }
-    ]);
-  }, []);
+    const fetchCountries = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`${API_URL}/api/cms/countries?active_only=true`);
+        if (res.ok) {
+          const data = await res.json();
+          setCountries(data);
+        }
+      } catch (err) {
+        console.error('Error fetching countries:', err);
+      }
+      setLoading(false);
+    };
+    fetchCountries();
+  }, [API_URL]);
 
   // Load methods when country changes
   useEffect(() => {
@@ -91,87 +114,49 @@ const CountryWizard = () => {
       setMethods([]);
       return;
     }
-    
-    const methodsMap = {
-      'dz': [
-        { id: 'baridimob', nameAr: 'بريدي موب', nameEn: 'Baridi Mob', rate: 140, duration: '1-2h', badge: 'fastest' },
-        { id: 'bank', nameAr: 'تحويل بنكي', nameEn: 'Bank Transfer', rate: 136, duration: '2-5d' }
-      ],
-      'eg': [
-        { id: 'vodafone', nameAr: 'فودافون كاش', nameEn: 'Vodafone Cash', rate: 50, duration: 'Instant', badge: 'popular' },
-        { id: 'bank', nameAr: 'تحويل بنكي', nameEn: 'Bank Transfer', rate: 48, duration: '2-3d' }
-      ],
-      'tr': [
-        { id: 'papara', nameAr: 'باباره', nameEn: 'Papara', rate: 34, duration: 'Instant', badge: 'fastest' },
-        { id: 'bank', nameAr: 'تحويل بنكي', nameEn: 'Bank Transfer', rate: 33, duration: '1-3d' }
-      ],
-      'jo': [
-        { id: 'cliq', nameAr: 'كليك', nameEn: 'CliQ', rate: 2110, duration: '1-2h', badge: 'popular' },
-        { id: 'bank', nameAr: 'تحويل بنكي', nameEn: 'Bank Transfer', rate: 2100, duration: '2-3d' }
-      ],
-      'in': [
-        { id: 'upi', nameAr: 'UPI', nameEn: 'UPI', rate: 83, duration: 'Instant', badge: 'fastest' },
-        { id: 'bank', nameAr: 'تحويل بنكي', nameEn: 'Bank Transfer', rate: 82, duration: '1-3d' }
-      ],
-      'pk': [
-        { id: 'jazzcash', nameAr: 'جاز كاش', nameEn: 'JazzCash', rate: 278, duration: 'Instant', badge: 'popular' },
-        { id: 'bank', nameAr: 'تحويل بنكي', nameEn: 'Bank Transfer', rate: 276, duration: '2-3d' }
-      ],
-      'ae': [
-        { id: 'bank', nameAr: 'تحويل بنكي', nameEn: 'Bank Transfer', rate: 400, duration: '1-2d', badge: 'popular' }
-      ],
-      'sa': [
-        { id: 'stcpay', nameAr: 'STC Pay', nameEn: 'STC Pay', rate: 390, duration: 'Instant', badge: 'fastest' },
-        { id: 'bank', nameAr: 'تحويل بنكي', nameEn: 'Bank Transfer', rate: 388, duration: '1-2d' }
-      ],
-      'lb': [
-        { id: 'bank', nameAr: 'تحويل بنكي', nameEn: 'Bank Transfer', rate: 89000, duration: '2-3d' }
-      ],
-      'sy': [
-        { id: 'hawala', nameAr: 'حوالة', nameEn: 'Hawala', rate: 14000, duration: '1-2d', badge: 'popular' }
-      ]
-    };
-    
-    setMethods(methodsMap[wizardData.country] || []);
-  }, [wizardData.country]);
+    const country = countries.find(c => c.country_code === wizardData.country);
+    setMethods(country?.transfer_methods || []);
+  }, [wizardData.country, countries]);
 
   // Set default receiver currency when method changes
   useEffect(() => {
     if (wizardData.method && wizardData.country) {
       const isBank = wizardData.method === 'bank';
-      const localCurrency = countryCurrencies[wizardData.country];
-      
-      if (!isBank && localCurrency) {
+      const country = countries.find(c => c.country_code === wizardData.country);
+
+      if (!isBank && country?.currency) {
         // For non-bank, auto-set to local currency
-        setWizardData(p => ({ ...p, receiverCurrency: localCurrency.code }));
+        setWizardData(p => ({ ...p, receiverCurrency: country.currency }));
       } else if (isBank && !wizardData.receiverCurrency) {
         // For bank, default to USD
         setWizardData(p => ({ ...p, receiverCurrency: 'USD' }));
       }
     }
-  }, [wizardData.method, wizardData.country]);
+  }, [wizardData.method, wizardData.country, countries]);
 
-  const filteredCountries = countries.filter(c => 
-    c.nameAr.includes(searchQuery) || c.nameEn.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredCountries = countries.filter(c =>
+    c.name_ar.includes(searchQuery) ||
+    c.name_en.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (c.name_ku && c.name_ku.includes(searchQuery))
   );
 
-  const selectedCountry = countries.find(c => c.code === wizardData.country);
-  const selectedMethod = methods.find(m => m.id === wizardData.method);
+  const selectedCountry = countries.find(c => c.country_code === wizardData.country);
+  const selectedMethod = methods.find(m => m.method_id === wizardData.method);
 
   const calculateReceiveAmount = () => {
     if (!wizardData.amount || !selectedMethod) return 0;
-    return Math.round(parseFloat(wizardData.amount) * selectedMethod.rate);
+    return Math.round(parseFloat(wizardData.amount) * (selectedMethod.exchange_rate || 1));
   };
 
   const handleNext = () => {
     // Step 1: Select Country
     if (step === 1 && !wizardData.country) {
-      setErrors({ country: isArabic ? 'اختر الدولة' : 'Select country' });
+      setErrors({ country: t('اختر الدولة', 'Select country', 'وڵات هەڵبژێرە') });
       return;
     }
     // Step 2: Select Method
     if (step === 2 && !wizardData.method) {
-      setErrors({ method: isArabic ? 'اختر الطريقة' : 'Select method' });
+      setErrors({ method: t('اختر الطريقة', 'Select method', 'شێواز هەڵبژێرە') });
       return;
     }
     // Step 3: Enter Amount and Info - validated in submit
@@ -187,40 +172,97 @@ const CountryWizard = () => {
 
   const handleSubmit = async () => {
     const newErrors = {};
-    if (!wizardData.amount || parseFloat(wizardData.amount) <= 0) newErrors.amount = isArabic ? 'أدخل المبلغ' : 'Enter amount';
-    if (!wizardData.senderName.trim()) newErrors.senderName = isArabic ? 'مطلوب' : 'Required';
-    if (!wizardData.receiverName.trim()) newErrors.receiverName = isArabic ? 'مطلوب' : 'Required';
-    if (!wizardData.phone.trim()) newErrors.phone = isArabic ? 'مطلوب' : 'Required';
-    if (isBankTransfer && !wizardData.receiverCurrency) newErrors.receiverCurrency = isArabic ? 'اختر عملة المستلم' : 'Select receiver currency';
-    
+    if (!wizardData.amount || parseFloat(wizardData.amount) <= 0) newErrors.amount = t('أدخل المبلغ', 'Enter amount', 'بڕی پارە بنووسە');
+    if (!wizardData.senderName.trim()) newErrors.senderName = t('مطلوب', 'Required', 'پێویستە');
+    if (!wizardData.receiverName.trim()) newErrors.receiverName = t('مطلوب', 'Required', 'پێویستە');
+    if (!wizardData.phone.trim()) newErrors.phone = t('مطلوب', 'Required', 'پێویستە');
+    if (isBankTransfer && !wizardData.receiverCurrency) newErrors.receiverCurrency = t('اختر عملة المستلم', 'Select receiver currency', 'دراوی وەرگر هەڵبژێرە');
+
+    // Add dynamic field validation
+    if (selectedMethod?.fields && selectedMethod.fields.length > 0) {
+      selectedMethod.fields.forEach(f => {
+        // Only validate if explicitly required or if not specified (default to required if field doesn't have the property)
+        const isRequired = f.required !== false;
+        if (isRequired && !wizardData.customFields[f.field_id]?.toString().trim()) {
+          newErrors[f.field_id] = t('مطلوب', 'Required', 'پێویستە');
+        }
+      });
+    } else if (!wizardData.customFields.generic_account?.trim()) {
+      // Only require generic if no custom fields are defined
+      newErrors.generic_account = t('مطلوب', 'Required', 'پێویستە');
+    }
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
-    
+
     setLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Get the currency name for display
-    const selectedCurrency = getAvailableCurrencies().find(c => c.code === wizardData.receiverCurrency);
-    
-    navigate('/transfers/success', { 
-      state: { 
-        orderData: {
+    try {
+      // 1. Perform Block Check for better UX
+      const blockRes = await fetch(`${API_URL}/api/blocklist/check?full_name=${encodeURIComponent(wizardData.senderName)}&phone=${encodeURIComponent(wizardData.phone)}`);
+      if (blockRes.ok) {
+        const blockData = await blockRes.json();
+        if (blockData.blocked) {
+          toast.error(blockData.message || t('عذراً، لا يمكن إتمام طلبك حالياً.', 'Sorry, your request cannot be processed at this time.', 'ببوورە، داواکارییەکەت لە ئێستادا جێبەجێ ناکرێت.'));
+          setLoading(false);
+          return;
+        }
+      }
+
+      // 2. Submit Order
+      const orderData = {
+        order_type: 'country_based',
+        customer: {
+          full_name: wizardData.senderName,
+          phone: wizardData.phone
+        },
+        details: {
           amount: wizardData.amount,
           senderName: wizardData.senderName,
           receiverName: wizardData.receiverName,
           phone: wizardData.phone,
-          type: 'country_based',
-          countryName: selectedCountry ? (isArabic ? selectedCountry.nameAr : selectedCountry.nameEn) : '',
-          methodName: selectedMethod ? (isArabic ? selectedMethod.nameAr : selectedMethod.nameEn) : '',
+          countryCode: wizardData.country,
+          countryName: selectedCountry ? (isArabic ? selectedCountry.name_ar : selectedCountry.name_en) : '',
+          methodId: wizardData.method,
+          methodName: selectedMethod ? t(selectedMethod.name_ar, selectedMethod.name_en, selectedMethod.name_ku) : '',
           receiverCurrency: wizardData.receiverCurrency,
-          receiverCurrencyName: selectedCurrency ? (isArabic ? selectedCurrency.nameAr : selectedCurrency.nameEn) : '',
           receiveAmount: calculateReceiveAmount(),
-          orderId: 'CB-' + Date.now().toString().slice(-8)
+          purpose: selectedCountry?.country_code?.toUpperCase() === 'CN' ? 'trade' : wizardData.purpose,
+          customFields: wizardData.customFields
         }
+      };
+
+      const res = await fetch(`${API_URL}/api/orders`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData)
+      });
+
+      if (res.ok) {
+        const order = await res.json();
+        const selectedCurrency = getAvailableCurrencies().find(c => c.code === wizardData.receiverCurrency);
+
+        navigate('/transfers/success', {
+          state: {
+            orderData: {
+              ...orderData.details,
+              type: 'country_based',
+              receiverCurrencyName: selectedCurrency ? (isArabic ? selectedCurrency.nameAr : selectedCurrency.nameEn) : '',
+              orderId: order.order_id
+            }
+          }
+        });
+      } else {
+        const err = await res.json();
+        toast.error(err.detail || t('حدث خطأ أثناء إرسال الطلب', 'Error submitting order', 'کێشەیەک لە ناردنی داواکارییەکەدا هەیە'));
       }
-    });
+    } catch (err) {
+      console.error('Error:', err);
+      toast.error(t('حدث خطأ في الاتصال', 'Connection error', 'کێشەی پەیوەندیکردن هەیە'));
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Step indicator - Now 4 steps: Country -> Method -> Summary -> Amount & Info
@@ -228,9 +270,8 @@ const CountryWizard = () => {
     <div className="flex items-center justify-center gap-2 mb-8">
       {[1, 2, 3, 4].map(s => (
         <React.Fragment key={s}>
-          <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-colors ${
-            s < step ? 'bg-green-500 text-white' : s === step ? 'bg-[#D4AF37] text-white shadow-lg' : isDark ? 'bg-slate-700 text-slate-400' : 'bg-slate-200 text-slate-500'
-          }`}>
+          <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-colors ${s < step ? 'bg-green-500 text-white' : s === step ? 'bg-[#D4AF37] text-white shadow-lg' : isDark ? 'bg-slate-700 text-slate-400' : 'bg-slate-200 text-slate-500'
+            }`}>
             {s < step ? <CheckCircle className="w-5 h-5" /> : s}
           </div>
           {s < 4 && <div className={`w-8 h-1 rounded ${s < step ? 'bg-green-500' : isDark ? 'bg-slate-700' : 'bg-slate-200'}`} />}
@@ -240,13 +281,12 @@ const CountryWizard = () => {
   );
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${
-      isDark 
-        ? 'bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900' 
-        : 'bg-gradient-to-b from-slate-50 via-white to-slate-50'
-    }`}>
+    <div className={`min-h-screen transition-colors duration-300 ${isDark
+      ? 'bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900'
+      : 'bg-gradient-to-b from-slate-50 via-white to-slate-50'
+      }`}>
       <Header3D />
-      
+
       <main className="pt-24 pb-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.button
@@ -256,7 +296,7 @@ const CountryWizard = () => {
             className={`flex items-center gap-2 mb-8 group ${isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'}`}
           >
             <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-            {isArabic ? 'رجوع' : 'Back'}
+            {t('رجوع', 'Back', 'گەڕانەوە')}
           </motion.button>
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">
@@ -264,7 +304,7 @@ const CountryWizard = () => {
               <Globe className="w-10 h-10 text-white" />
             </div>
             <h1 className={`text-3xl md:text-4xl font-bold mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-              {isArabic ? 'تحويل حسب الدولة' : 'Country-based Transfer'}
+              {t('تحويل حسب الدولة', 'Country-based Transfer', 'گواستنەوە بەپێی وڵات')}
             </h1>
           </motion.div>
 
@@ -275,53 +315,49 @@ const CountryWizard = () => {
               {/* Step 1: Select Country */}
               {step === 1 && (
                 <motion.div key="s1" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }}
-                  className={`rounded-3xl border-2 shadow-xl p-8 ${
-                    isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'
-                  }`}>
+                  className={`rounded-3xl border-2 shadow-xl p-8 ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'
+                    }`}>
                   <div className="flex items-center gap-3 mb-6">
                     <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${isDark ? 'bg-blue-500/20' : 'bg-blue-100'}`}>
                       <Globe className="w-6 h-6 text-blue-600" />
                     </div>
-                    <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{isArabic ? 'اختر الدولة' : 'Select Country'}</h2>
+                    <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('اختر الدولة', 'Select Country', 'وڵات هەڵبژێرە')}</h2>
                   </div>
                   <div className="relative mb-6">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                     <Input value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-                      className={`h-12 pl-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : ''}`} 
-                      placeholder={isArabic ? 'ابحث...' : 'Search...'} />
+                      className={`h-12 pl-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : ''}`}
+                      placeholder={t('ابحث...', 'Search...', 'گەڕان...')} />
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                     {filteredCountries.map(c => (
-                      <motion.button key={c.code} type="button" whileHover={{ scale: 1.05 }}
-                        onClick={() => setWizardData(p => ({ ...p, country: c.code, method: null }))}
-                        className={`p-4 rounded-2xl border-2 text-center transition-colors ${
-                          wizardData.country === c.code 
-                            ? 'border-[#D4AF37] bg-[#D4AF37]/10' 
-                            : isDark ? 'border-slate-600 hover:border-slate-500' : 'border-slate-200 hover:border-slate-300'
-                        }`}>
+                      <motion.button key={c.country_code} type="button" whileHover={{ scale: 1.05 }}
+                        onClick={() => setWizardData(p => ({ ...p, country: c.country_code, method: null }))}
+                        className={`p-4 rounded-2xl border-2 text-center transition-colors ${wizardData.country === c.country_code
+                          ? 'border-[#D4AF37] bg-[#D4AF37]/10'
+                          : isDark ? 'border-slate-600 hover:border-slate-500' : 'border-slate-200 hover:border-slate-300'
+                          }`}>
                         <div className="flex justify-center mb-2">
-                          <ReactCountryFlag
-                            countryCode={c.countryCode}
-                            svg
-                            style={{
-                              width: '48px',
-                              height: '36px',
-                              borderRadius: '4px',
-                              objectFit: 'cover',
-                              boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                            }}
-                          />
+                          <div className={`w-12 h-10 flex items-center justify-center ${isDark ? 'bg-white/5' : 'bg-slate-100'} rounded-lg overflow-hidden border ${isDark ? 'border-slate-700' : 'border-slate-100 shadow-sm'}`}>
+                            <img
+                              src={c.flag && c.flag.startsWith('http') ? c.flag : `https://flagcdn.com/w80/${c.country_code.toLowerCase()}.png`}
+                              alt={c.country_code}
+                              className="w-full h-full object-cover"
+                              onError={(e) => { e.target.src = 'https://flagcdn.com/w80/un.png'; }}
+                            />
+                          </div>
                         </div>
-                        <span className={`text-sm font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{isArabic ? c.nameAr : c.nameEn}</span>
+                        <span className={`text-sm font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                          {t(c.name_ar, c.name_en, c.name_ku)}
+                        </span>
                       </motion.button>
                     ))}
                   </div>
                   {errors.country && <p className="text-red-500 mt-4"><AlertCircle className="w-4 h-4 inline" /> {errors.country}</p>}
                   <motion.button onClick={handleNext} whileHover={{ scale: 1.02 }}
-                    className={`w-full mt-8 py-4 font-bold rounded-2xl flex items-center justify-center gap-2 ${
-                      isDark ? 'bg-[#D4AF37] text-slate-900 hover:bg-[#FCD34D]' : 'bg-slate-900 text-white hover:bg-slate-800'
-                    }`}>
-                    {isArabic ? 'التالي' : 'Next'} <ArrowRight className="w-5 h-5" />
+                    className={`w-full mt-8 py-4 font-bold rounded-2xl flex items-center justify-center gap-2 ${isDark ? 'bg-[#D4AF37] text-slate-900 hover:bg-[#FCD34D]' : 'bg-slate-900 text-white hover:bg-slate-800'
+                      }`}>
+                    {t('التالي', 'Next', 'داهاتوو')} <ArrowRight className="w-5 h-5" />
                   </motion.button>
                 </motion.div>
               )}
@@ -329,33 +365,35 @@ const CountryWizard = () => {
               {/* Step 2: Select Method */}
               {step === 2 && (
                 <motion.div key="s2" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }}
-                  className={`rounded-3xl border-2 shadow-xl p-8 ${
-                    isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'
-                  }`}>
+                  className={`rounded-3xl border-2 shadow-xl p-8 ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'
+                    }`}>
                   <div className="flex items-center gap-3 mb-6">
                     <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${isDark ? 'bg-purple-500/20' : 'bg-purple-100'}`}>
                       <CreditCard className="w-6 h-6 text-purple-600" />
                     </div>
-                    <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{isArabic ? 'اختر طريقة التحويل' : 'Select Method'}</h2>
+                    <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('اختر طريقة التحويل', 'Select Method', 'شێوازی گواستنەوە هەڵبژێرە')}</h2>
                   </div>
                   <div className="space-y-4">
                     {methods.map(m => (
-                      <motion.button key={m.id} type="button" whileHover={{ scale: 1.02 }}
-                        onClick={() => setWizardData(p => ({ ...p, method: m.id }))}
-                        className={`w-full p-6 rounded-2xl border-2 text-left relative transition-colors ${
-                          wizardData.method === m.id 
-                            ? 'border-[#D4AF37] bg-[#D4AF37]/5' 
-                            : isDark ? 'border-slate-600 hover:border-slate-500' : 'border-slate-200 hover:border-slate-300'
-                        }`}>
-                        {m.badge && <span className="absolute -top-2 right-4 px-3 py-1 bg-[#D4AF37] rounded-full text-xs font-bold text-slate-900">{m.badge === 'fastest' ? (isArabic ? 'الأسرع' : 'Fastest') : (isArabic ? 'شائع' : 'Popular')}</span>}
+                      <motion.button key={m.method_id} type="button" whileHover={{ scale: 1.02 }}
+                        onClick={() => setWizardData(p => ({ ...p, method: m.method_id }))}
+                        className={`w-full p-6 rounded-2xl border-2 text-left relative transition-colors ${wizardData.method === m.method_id
+                          ? 'border-[#D4AF37] bg-[#D4AF37]/5'
+                          : isDark ? 'border-slate-600 hover:border-slate-500' : 'border-slate-200 hover:border-slate-300'
+                          }`}>
                         <div className="flex items-center justify-between">
-                          <div>
-                            <h3 className={`font-bold text-lg ${isDark ? 'text-white' : 'text-slate-900'}`}>{isArabic ? m.nameAr : m.nameEn}</h3>
-                            <p className={`text-sm flex items-center gap-1 mt-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}><Clock className="w-4 h-4" />{m.duration}</p>
+                          <div className={isArabic ? 'text-right' : 'text-left'}>
+                            <h3 className={`font-bold text-lg ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                              {t(m.name_ar, m.name_en, m.name_ku)}
+                            </h3>
+                            <p className={`text-sm flex items-center gap-1 mt-1 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                              <Clock className="w-4 h-4" />
+                              {m.duration}
+                            </p>
                           </div>
                           <div className="text-right">
-                            <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{isArabic ? 'السعر' : 'Rate'}</p>
-                            <p className="font-bold text-emerald-500">{m.rate}</p>
+                            <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('السعر', 'Rate', 'نرخ')}</p>
+                            <p className="font-bold text-emerald-500">{m.exchange_rate}</p>
                           </div>
                         </div>
                       </motion.button>
@@ -363,10 +401,9 @@ const CountryWizard = () => {
                   </div>
                   {errors.method && <p className="text-red-500 mt-4"><AlertCircle className="w-4 h-4 inline" /> {errors.method}</p>}
                   <motion.button onClick={handleNext} whileHover={{ scale: 1.02 }}
-                    className={`w-full mt-8 py-4 font-bold rounded-2xl flex items-center justify-center gap-2 ${
-                      isDark ? 'bg-[#D4AF37] text-slate-900 hover:bg-[#FCD34D]' : 'bg-slate-900 text-white hover:bg-slate-800'
-                    }`}>
-                    {isArabic ? 'التالي' : 'Next'} <ArrowRight className="w-5 h-5" />
+                    className={`w-full mt-8 py-4 font-bold rounded-2xl flex items-center justify-center gap-2 ${isDark ? 'bg-[#D4AF37] text-slate-900 hover:bg-[#FCD34D]' : 'bg-slate-900 text-white hover:bg-slate-800'
+                      }`}>
+                    {t('التالي', 'Next', 'داهاتوو')} <ArrowRight className="w-5 h-5" />
                   </motion.button>
                 </motion.div>
               )}
@@ -374,41 +411,44 @@ const CountryWizard = () => {
               {/* Step 3: Summary */}
               {step === 3 && selectedCountry && selectedMethod && (
                 <motion.div key="s3" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }}
-                  className={`rounded-3xl border-2 shadow-xl p-8 ${
-                    isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'
-                  }`}>
+                  className={`rounded-3xl border-2 shadow-xl p-8 ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'
+                    }`}>
                   <div className="flex items-center gap-3 mb-6">
                     <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${isDark ? 'bg-amber-500/20' : 'bg-amber-100'}`}>
                       <Star className="w-6 h-6 text-amber-600" />
                     </div>
-                    <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{isArabic ? 'اختيارك' : 'Your Selection'}</h2>
+                    <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('اختيارك', 'Your Selection', 'هەڵبژاردەکەت')}</h2>
                   </div>
                   <div className={`rounded-2xl p-6 space-y-4 ${isDark ? 'bg-slate-700/50' : 'bg-slate-50'}`}>
                     <div className={`flex justify-between pb-4 border-b ${isDark ? 'border-slate-600' : 'border-slate-200'}`}>
-                      <span className={isDark ? 'text-slate-300' : 'text-slate-600'}>{isArabic ? 'الدولة' : 'Country'}</span>
+                      <span className={isDark ? 'text-slate-300' : 'text-slate-600'}>{t('الدولة', 'Country', 'وڵات')}</span>
                       <span className={`font-bold flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                        <ReactCountryFlag
-                          countryCode={selectedCountry.countryCode}
-                          svg
-                          style={{ width: '24px', height: '18px', borderRadius: '2px' }}
-                        />
-                        {isArabic ? selectedCountry.nameAr : selectedCountry.nameEn}
+                        <div className="w-8 h-6 flex items-center justify-center bg-white/10 rounded overflow-hidden border border-white/20">
+                          <img
+                            src={selectedCountry.flag && selectedCountry.flag.startsWith('http') ? selectedCountry.flag : `https://flagcdn.com/w40/${selectedCountry.country_code.toLowerCase()}.png`}
+                            alt=""
+                            className="w-full h-full object-cover"
+                            onError={(e) => { e.target.src = 'https://flagcdn.com/w40/un.png'; }}
+                          />
+                        </div>
+                        {t(selectedCountry.name_ar, selectedCountry.name_en, selectedCountry.name_ku)}
                       </span>
                     </div>
                     <div className={`flex justify-between pb-4 border-b ${isDark ? 'border-slate-600' : 'border-slate-200'}`}>
-                      <span className={isDark ? 'text-slate-300' : 'text-slate-600'}>{isArabic ? 'الطريقة' : 'Method'}</span>
-                      <span className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{isArabic ? selectedMethod.nameAr : selectedMethod.nameEn}</span>
+                      <span className={isDark ? 'text-slate-300' : 'text-slate-600'}>{t('الطريقة', 'Method', 'شێواز')}</span>
+                      <span className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                        {t(selectedMethod.name_ar, selectedMethod.name_en, selectedMethod.name_ku)}
+                      </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className={isDark ? 'text-slate-300' : 'text-slate-600'}>{isArabic ? 'سعر الصرف' : 'Exchange Rate'}</span>
-                      <span className="font-bold text-emerald-500">1$ = {selectedMethod.rate}</span>
+                      <span className={isDark ? 'text-slate-300' : 'text-slate-600'}>{t('سعر الصرف', 'Exchange Rate', 'نرخی ئاڵوگۆڕ')}</span>
+                      <span className="font-bold text-emerald-500">1$ = {selectedMethod.exchange_rate}</span>
                     </div>
                   </div>
                   <motion.button onClick={handleNext} whileHover={{ scale: 1.02 }}
-                    className={`w-full mt-8 py-4 font-bold rounded-2xl flex items-center justify-center gap-2 ${
-                      isDark ? 'bg-[#D4AF37] text-slate-900 hover:bg-[#FCD34D]' : 'bg-slate-900 text-white hover:bg-slate-800'
-                    }`}>
-                    {isArabic ? 'المتابعة' : 'Continue'} <ArrowRight className="w-5 h-5" />
+                    className={`w-full mt-8 py-4 font-bold rounded-2xl flex items-center justify-center gap-2 ${isDark ? 'bg-[#D4AF37] text-slate-900 hover:bg-[#FCD34D]' : 'bg-slate-900 text-white hover:bg-slate-800'
+                      }`}>
+                    {t('المتابعة', 'Continue', 'بەردەوام بە')} <ArrowRight className="w-5 h-5" />
                   </motion.button>
                 </motion.div>
               )}
@@ -416,28 +456,27 @@ const CountryWizard = () => {
               {/* Step 4: Amount and Transfer Info Combined */}
               {step === 4 && (
                 <motion.div key="s4" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }}
-                  className={`rounded-3xl border-2 shadow-xl p-8 ${
-                    isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'
-                  }`}>
+                  className={`rounded-3xl border-2 shadow-xl p-8 ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'
+                    }`}>
                   <div className="flex items-center gap-3 mb-6">
                     <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${isDark ? 'bg-emerald-500/20' : 'bg-emerald-100'}`}>
                       <DollarSign className="w-6 h-6 text-emerald-600" />
                     </div>
-                    <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{isArabic ? 'المبلغ والمعلومات' : 'Amount & Info'}</h2>
+                    <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('المبلغ والمعلومات', 'Amount & Info', 'بڕ و زانیاری')}</h2>
                   </div>
-                  
+
                   {/* Amount Section */}
                   <div className={`rounded-2xl p-6 mb-6 ${isDark ? 'bg-emerald-900/20 border border-emerald-700/50' : 'bg-emerald-50 border border-emerald-200'}`}>
-                    <Label className={`text-lg font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>{isArabic ? 'المبلغ بالدولار ($)' : 'Amount in USD ($)'}</Label>
+                    <Label className={`text-lg font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>{t('المبلغ بالدولار ($)', 'Amount in USD ($)', 'بڕ بە دۆلار ($)')}</Label>
                     <Input type="number" value={wizardData.amount}
                       onChange={e => setWizardData(p => ({ ...p, amount: e.target.value }))}
-                      className={`h-16 text-3xl font-bold mt-2 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : ''}`} 
+                      className={`h-16 text-3xl font-bold mt-2 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : ''}`}
                       placeholder="100" min="1" />
                     {errors.amount && <p className="text-red-500 mt-2"><AlertCircle className="w-4 h-4 inline" /> {errors.amount}</p>}
-                    
+
                     {wizardData.amount && selectedMethod && (
                       <div className={`mt-4 p-4 rounded-xl ${isDark ? 'bg-slate-700/50' : 'bg-white'}`}>
-                        <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{isArabic ? 'المستلم سيحصل على' : 'Receiver will get'}</p>
+                        <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{t('المستلم سيحصل على', 'Receiver will get', 'وەرگر دەستیدەکەوێت')}</p>
                         <p className="text-2xl font-bold text-emerald-500">{calculateReceiveAmount().toLocaleString()} {wizardData.receiverCurrency}</p>
                       </div>
                     )}
@@ -447,7 +486,7 @@ const CountryWizard = () => {
                   {isBankTransfer && (
                     <div className={`rounded-2xl p-6 mb-6 ${isDark ? 'bg-blue-900/20 border border-blue-700/50' : 'bg-blue-50 border border-blue-200'}`}>
                       <Label className={`text-lg font-bold mb-4 block ${isDark ? 'text-blue-400' : 'text-blue-700'}`}>
-                        {isArabic ? 'عملة المستلم' : 'Receiver Currency'} *
+                        {t('عملة المستلم', 'Receiver Currency', 'دراوی وەرگر')} *
                       </Label>
                       <div className="grid grid-cols-3 gap-3">
                         {getAvailableCurrencies().map(currency => (
@@ -456,14 +495,13 @@ const CountryWizard = () => {
                             type="button"
                             whileHover={{ scale: 1.02 }}
                             onClick={() => setWizardData(p => ({ ...p, receiverCurrency: currency.code }))}
-                            className={`p-4 rounded-xl border-2 text-center transition-colors ${
-                              wizardData.receiverCurrency === currency.code
-                                ? 'border-[#D4AF37] bg-[#D4AF37]/10'
-                                : isDark ? 'border-slate-600 hover:border-slate-500' : 'border-slate-200 hover:border-slate-300'
-                            }`}
+                            className={`p-4 rounded-xl border-2 text-center transition-colors ${wizardData.receiverCurrency === currency.code
+                              ? 'border-[#D4AF37] bg-[#D4AF37]/10'
+                              : isDark ? 'border-slate-600 hover:border-slate-500' : 'border-slate-200 hover:border-slate-300'
+                              }`}
                           >
                             <span className={`text-lg font-bold block ${isDark ? 'text-white' : 'text-slate-900'}`}>{currency.code}</span>
-                            <span className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{isArabic ? currency.nameAr : currency.nameEn}</span>
+                            <span className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{t(currency.nameAr, currency.nameEn, currency.nameKu)}</span>
                           </motion.button>
                         ))}
                       </div>
@@ -476,9 +514,11 @@ const CountryWizard = () => {
                     <div className={`rounded-2xl p-4 mb-6 ${isDark ? 'bg-amber-900/20 border border-amber-700/50' : 'bg-amber-50 border border-amber-200'}`}>
                       <p className={`text-sm ${isDark ? 'text-amber-300' : 'text-amber-800'}`}>
                         <AlertCircle className="w-4 h-4 inline ml-1" />
-                        {isArabic 
-                          ? `سيتم استلام المبلغ بالعملة المحلية (${countryCurrencies[wizardData.country]?.nameAr || ''})` 
-                          : `Amount will be received in local currency (${countryCurrencies[wizardData.country]?.nameEn || ''})`}
+                        {isArabic
+                          ? `سيتم استلام المبلغ بالعملة المحلية (${selectedCountry.currency})`
+                          : (currentLanguage === 'ku'
+                            ? `بڕەکە بە دراوی ناوخۆیی (${selectedCountry.currency}) وەردەگیرێت`
+                            : `Amount will be received in local currency (${selectedCountry.currency})`)}
                       </p>
                     </div>
                   )}
@@ -486,33 +526,107 @@ const CountryWizard = () => {
                   {/* Transfer Info */}
                   <div className="space-y-5">
                     <div>
-                      <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{isArabic ? 'اسم المرسل' : 'Sender Name'} *</Label>
-                      <Input value={wizardData.senderName} onChange={e => setWizardData(p => ({ ...p, senderName: e.target.value }))} 
+                      <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{t('اسم المرسل', 'Sender Name', 'ناوی نێرەر')} *</Label>
+                      <Input value={wizardData.senderName} onChange={e => setWizardData(p => ({ ...p, senderName: e.target.value }))}
                         className={`h-12 mt-2 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : ''}`} />
                       {errors.senderName && <p className="text-red-500 text-sm mt-1">{errors.senderName}</p>}
                     </div>
                     <div>
-                      <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{isArabic ? 'اسم المستلم' : 'Receiver Name'} *</Label>
-                      <Input value={wizardData.receiverName} onChange={e => setWizardData(p => ({ ...p, receiverName: e.target.value }))} 
+                      <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{t('اسم المستلم', 'Receiver Name', 'ناوی وەرگر')} *</Label>
+                      <Input value={wizardData.receiverName} onChange={e => setWizardData(p => ({ ...p, receiverName: e.target.value }))}
                         className={`h-12 mt-2 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : ''}`} />
                       {errors.receiverName && <p className="text-red-500 text-sm mt-1">{errors.receiverName}</p>}
                     </div>
                     <div>
-                      <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{isArabic ? 'رقم الهاتف' : 'Phone'} *</Label>
-                      <Input value={wizardData.phone} onChange={e => setWizardData(p => ({ ...p, phone: e.target.value }))} 
+                      <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{t('رقم الهاتف', 'Phone', 'مۆبایل')} *</Label>
+                      <Input value={wizardData.phone} onChange={e => setWizardData(p => ({ ...p, phone: e.target.value }))}
                         className={`h-12 mt-2 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : ''}`} placeholder="+964" />
                       {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
                     </div>
+
+                    {/* Purpose Selection */}
                     <div>
-                      <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{isArabic ? 'رقم الحساب (اختياري)' : 'Account (optional)'}</Label>
-                      <Input value={wizardData.accountNumber} onChange={e => setWizardData(p => ({ ...p, accountNumber: e.target.value }))} 
-                        className={`h-12 mt-2 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : ''}`} />
+                      <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
+                        {t('الغرض من التحويل', 'Transfer Purpose', 'مەبەستی گواستنەوە')} {selectedCountry?.country_code?.toUpperCase() === 'CN' && '*'}
+                      </Label>
+                      <select
+                        value={selectedCountry?.country_code?.toUpperCase() === 'CN' ? 'trade' : wizardData.purpose}
+                        onChange={e => setWizardData(p => ({ ...p, purpose: e.target.value }))}
+                        disabled={selectedCountry?.country_code?.toUpperCase() === 'CN'}
+                        className={`w-full h-12 mt-2 px-3 rounded-md border text-sm appearance-none ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-slate-200 text-slate-900'
+                          } disabled:opacity-50`}
+                      >
+                        {selectedCountry?.country_code?.toUpperCase() !== 'CN' && (
+                          <option value="">{t('اختياري', 'Optional', 'ئارەزوومەندانە')}</option>
+                        )}
+                        <option value="trade">{t('تجارة', 'Trade', 'بازرگانی')}</option>
+                        {selectedCountry?.country_code?.toUpperCase() !== 'CN' && (
+                          <>
+                            <option value="family_expenses">{t('نفقات الأسرة', 'Family Expenses', 'خەرجی خێزان')}</option>
+                            <option value="medical">{t('علاج', 'Medical Treatment', 'چاره‌سەری پزیشکی')}</option>
+                          </>
+                        )}
+                      </select>
                     </div>
+                    {/* Dynamic Custom Fields */}
+                    {selectedMethod?.fields && selectedMethod.fields.length > 0 ? (
+                      selectedMethod.fields.map(field => (
+                        <div key={field.field_id}>
+                          <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
+                            {t(field.name_ar, field.name_en, field.name_ku)} {field.required !== false && '*'}
+                          </Label>
+
+                          {field.field_type === 'select' ? (
+                            <select
+                              value={wizardData.customFields[field.field_id] || ''}
+                              onChange={e => setWizardData(p => ({
+                                ...p,
+                                customFields: { ...p.customFields, [field.field_id]: e.target.value }
+                              }))}
+                              className={`w-full h-12 mt-2 px-3 rounded-md border text-sm appearance-none ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'bg-white border-slate-200 text-slate-900'
+                                }`}
+                            >
+                              <option value="">{t('اختر...', 'Select...', 'هەڵبژێرە...')}</option>
+                              {field.options?.map(opt => (
+                                <option key={opt.value} value={opt.value}>{opt.label}</option>
+                              ))}
+                            </select>
+                          ) : (
+                            <Input
+                              type={field.field_type || 'text'}
+                              value={wizardData.customFields[field.field_id] || ''}
+                              onChange={e => setWizardData(p => ({
+                                ...p,
+                                customFields: { ...p.customFields, [field.field_id]: e.target.value }
+                              }))}
+                              className={`h-12 mt-2 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : ''}`}
+                              placeholder={t(field.placeholder_ar, field.placeholder_en, field.placeholder_ku)}
+                            />
+                          )}
+                          {errors[field.field_id] && <p className="text-red-500 text-sm mt-1">{errors[field.field_id]}</p>}
+                        </div>
+                      ))
+                    ) : (
+                      /* Fallback to generic account number if no custom fields defined */
+                      <div>
+                        <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
+                          {t('رقم الحساب أو المعرف', 'Account or ID', 'ژمارەی ئەژمار یان ناسێنەر')} *
+                        </Label>
+                        <Input
+                          value={wizardData.customFields.generic_account || ''}
+                          onChange={e => setWizardData(p => ({
+                            ...p,
+                            customFields: { ...p.customFields, generic_account: e.target.value }
+                          }))}
+                          className={`h-12 mt-2 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : ''}`}
+                        />
+                      </div>
+                    )}
                   </div>
-                  
+
                   <motion.button onClick={handleSubmit} disabled={loading} whileHover={{ scale: 1.02 }}
                     className="w-full mt-8 py-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold rounded-2xl flex items-center justify-center gap-2 disabled:opacity-50">
-                    {loading ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <><CheckCircle className="w-5 h-5" />{isArabic ? 'تسجيل الطلب' : 'Submit Order'}</>}
+                    {loading ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <><CheckCircle className="w-5 h-5" />{t('تسجيل الطلب', 'Submit Order', 'تۆمارکردنی داواکاری')}</>}
                   </motion.button>
                 </motion.div>
               )}

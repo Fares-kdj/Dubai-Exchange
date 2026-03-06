@@ -4,17 +4,13 @@ from datetime import datetime, timezone
 from pydantic import BaseModel
 import os
 import httpx
-from motor.motor_asyncio import AsyncIOMotorClient
 
 from models.user import Permission, UserInDB
 from routes.auth import get_current_user, require_permission
 
 router = APIRouter(prefix="/rates", tags=["Exchange Rates"])
 
-# MongoDB connection
-mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ.get('DB_NAME', 'test_database')]
+from database import db
 rates_collection = db.exchange_rates
 settings_collection = db.settings
 
@@ -87,35 +83,6 @@ async def create_rate(
     return RateResponse(**rate_doc)
 
 
-@router.put("/{currency_code}", response_model=RateResponse)
-async def update_rate(
-    currency_code: str,
-    update: RateUpdate,
-    current_user: UserInDB = Depends(require_permission(Permission.MANAGE_RATES))
-):
-    """Update exchange rate"""
-    update_doc = {
-        "updated_at": datetime.now(timezone.utc).isoformat(),
-        "updated_by": current_user.name
-    }
-    
-    for field, value in update.model_dump(exclude_unset=True).items():
-        if value is not None:
-            update_doc[field] = value
-    
-    result = await rates_collection.find_one_and_update(
-        {"currency_code": currency_code.upper()},
-        {"$set": update_doc},
-        return_document=True,
-        projection={"_id": 0}
-    )
-    
-    if not result:
-        raise HTTPException(status_code=404, detail="Currency not found")
-    
-    return RateResponse(**result)
-
-
 @router.put("/bulk/update")
 async def bulk_update_rates(
     data: BulkRateUpdate,
@@ -148,6 +115,35 @@ async def bulk_update_rates(
             updated += 1
     
     return {"message": f"Updated {updated} rates", "updated": updated}
+
+
+@router.put("/{currency_code}", response_model=RateResponse)
+async def update_rate(
+    currency_code: str,
+    update: RateUpdate,
+    current_user: UserInDB = Depends(require_permission(Permission.MANAGE_RATES))
+):
+    """Update exchange rate"""
+    update_doc = {
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "updated_by": current_user.name
+    }
+    
+    for field, value in update.model_dump(exclude_unset=True).items():
+        if value is not None:
+            update_doc[field] = value
+    
+    result = await rates_collection.find_one_and_update(
+        {"currency_code": currency_code.upper()},
+        {"$set": update_doc},
+        return_document=True,
+        projection={"_id": 0}
+    )
+    
+    if not result:
+        raise HTTPException(status_code=404, detail="Currency not found")
+    
+    return RateResponse(**result)
 
 
 @router.delete("/{currency_code}")

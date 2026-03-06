@@ -22,6 +22,7 @@ class OrderType(str, Enum):
     COUNTRY_BASED = "country_based"
     CARD_RECHARGE = "card_recharge"
     USDT_RECHARGE = "usdt_recharge"
+    INTERNATIONAL = "international" # Meta-category for filtering
 
 
 def generate_order_id(order_type: OrderType) -> str:
@@ -79,6 +80,7 @@ class OrderResponse(OrderBase):
     admin_data: Optional[Dict[str, Any]] = None
     status_history: List[Dict[str, Any]] = []
     rejection_reason: Optional[str] = None
+    customer_blocked: bool = False
 
 
 class OrderUpdate(BaseModel):

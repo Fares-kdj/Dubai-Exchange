@@ -12,6 +12,11 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+section[id],
+footer[id] {
+    scroll-margin-top: 80px;
+}
+
 code {
     font-family:
         source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
@@ -25,25 +30,47 @@ code {
         --card-foreground: 222 47% 11%;
         --popover: 0 0% 100%;
         --popover-foreground: 222 47% 11%;
-        --primary: 222 47% 11%;
+        --primary: 12 64% 52%;
         --primary-foreground: 210 40% 98%;
-        --secondary: 210 40% 96.1%;
-        --secondary-foreground: 222 47% 11%;
+        --secondary: 250 33% 17%;
+        --secondary-foreground: 210 40% 98%;
         --muted: 210 40% 96.1%;
         --muted-foreground: 215 16% 47%;
-        --accent: 43 74% 66%;
-        --accent-foreground: 0 0% 100%;
+        --accent: 110 98% 65%;
+        --accent-foreground: 222 47% 11%;
         --destructive: 0 84.2% 60.2%;
         --destructive-foreground: 210 40% 98%;
         --border: 214 32% 91%;
         --input: 214 32% 91%;
-        --ring: 43 74% 66%;
-        --chart-1: 43 74% 66%;
-        --chart-2: 48 96% 89%;
-        --chart-3: 45 93% 47%;
-        --chart-4: 43 74% 66%;
-        --chart-5: 48 96% 89%;
+        --ring: 12 64% 52%;
+        --chart-1: 12 64% 52%;
+        --chart-2: 250 33% 17%;
+        --chart-3: 110 98% 65%;
+        --chart-4: 12 64% 52%;
+        --chart-5: 250 33% 17%;
         --radius: 1rem;
+    }
+
+    .dark {
+        --background: 222.2 84% 4.9%;
+        --foreground: 210 40% 98%;
+        --card: 222.2 84% 4.9%;
+        --card-foreground: 210 40% 98%;
+        --popover: 222.2 84% 4.9%;
+        --popover-foreground: 210 40% 98%;
+        --primary: 210 40% 98%;
+        --primary-foreground: 222.2 47.4% 11.2%;
+        --secondary: 217.2 32.6% 17.5%;
+        --secondary-foreground: 210 40% 98%;
+        --muted: 217.2 32.6% 17.5%;
+        --muted-foreground: 215 20.2% 65.1%;
+        --accent: 43 74% 66%;
+        --accent-foreground: 210 40% 98%;
+        --destructive: 0 62.8% 30.6%;
+        --destructive-foreground: 210 40% 98%;
+        --border: 217.2 32.6% 17.5%;
+        --input: 217.2 32.6% 17.5%;
+        --ring: 43 74% 66%;
     }
 }
 
@@ -51,8 +78,68 @@ code {
     * {
         @apply border-border;
     }
+
     body {
         @apply bg-background text-foreground;
+    }
+
+    /* Fix: ensure all modal/dialog content has dark readable text in LIGHT mode */
+    :not(.dark) .fixed.inset-0 *:not([class*="text-"]):not(button):not(svg):not(path),
+    :not(.dark) [role="dialog"] *:not([class*="text-"]):not(button):not(svg):not(path) {
+        color: inherit;
+    }
+
+    /* Force modals to have dark background and dark text by default in LIGHT mode */
+    :not(.dark) .fixed.inset-0>div[class*="bg-white"],
+    :not(.dark) [data-radix-popper-content-wrapper] {
+        color: hsl(222 47% 11%);
+    }
+
+    /* Admin Panel Core: Force Light Theme Independence */
+    .admin-panel {
+        background-color: #f1f5f9 !important;
+        /* slate-100 */
+        color: #0f172a !important;
+        /* slate-900 */
+    }
+
+    .admin-panel input,
+    .admin-panel textarea,
+    .admin-panel select {
+        color: #0f172a !important;
+    }
+
+    /* Apply dark text only to buttons OUTSIDE the sidebar (aside) */
+    .admin-panel main button:not(.bg-slate-900):not(.bg-blue-600):not(.bg-red-600):not(.bg-green-600):not(.bg-orange-600):not(.bg-amber-600):not(.bg-slate-600) {
+        color: #0f172a !important;
+    }
+
+    .admin-panel [role="tablist"] button,
+    .admin-panel [role="tab"] {
+        color: #475569 !important;
+        /* slate-600 */
+    }
+
+    .admin-panel [role="tab"][data-state="active"] {
+        color: #d4af37 !important;
+    }
+
+    /* Ensure modals within admin also respect light theme */
+    .admin-panel [role="dialog"],
+    .admin-panel [data-radix-popper-content-wrapper] {
+        background-color: white !important;
+        color: #0f172a !important;
+    }
+
+    .admin-panel [role="dialog"] * {
+        color: inherit;
+    }
+
+    .admin-panel [role="dialog"] h2,
+    .admin-panel [role="dialog"] h3,
+    .admin-panel [role="dialog"] p,
+    .admin-panel [role="dialog"] span:not(.bg-red-500):not(.bg-green-500) {
+        color: #0f172a !important;
     }
 }
 
@@ -61,7 +148,7 @@ code {
         display: contents !important;
     }
 
-    [data-debug-wrapper="true"] > * {
+    [data-debug-wrapper="true"]>* {
         margin-left: inherit;
         margin-right: inherit;
         margin-top: inherit;

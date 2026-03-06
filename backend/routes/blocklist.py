@@ -2,7 +2,6 @@ from fastapi import APIRouter, HTTPException, Depends, Query
 from typing import List, Optional
 from datetime import datetime, timezone
 import uuid
-from motor.motor_asyncio import AsyncIOMotorClient
 import os
 
 from models.blocklist import (
@@ -13,16 +12,20 @@ from routes.auth import get_current_user, check_permission
 
 router = APIRouter(prefix="/blocklist", tags=["Blocklist"])
 
-# MongoDB connection
-mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ.get('DB_NAME', 'test_database')]
+from database import db
 blocklist_collection = db.blocklist
 
 
 def normalize_phone(phone: str) -> str:
     """Normalize phone number for comparison"""
-    return ''.join(filter(str.isdigit, phone))[-10:]
+    if not phone:
+        return ""
+    # Remove all non-digits
+    digits = ''.join(filter(str.isdigit, phone))
+    # If it starts with 964, keep it as is, otherwise try to extract the last 10 digits
+    if digits.startswith('964'):
+        return digits
+    return digits[-10:]
 
 
 def normalize_name(name: str) -> str:
@@ -104,12 +107,22 @@ async def list_blocked_entries(
 
 
 @router.get("/count")
-async def get_blocked_count(current_user: UserInDB = Depends(get_current_user)):
-    """Get total count of blocked entries"""
+async def get_blocked_count(
+    search: Optional[str] = None,
+    current_user: UserInDB = Depends(get_current_user)
+):
+    """Get total count of blocked entries with optional search filter"""
     if not check_permission(current_user, Permission.VIEW_BLOCKLIST):
         raise HTTPException(status_code=403, detail="ليس لديك صلاحية لعرض قائمة الحظر")
     
-    count = await blocklist_collection.count_documents({"is_active": True})
+    query = {"is_active": True}
+    if search:
+        query["$or"] = [
+            {"full_name": {"$regex": search, "$options": "i"}},
+            {"phone": {"$regex": search, "$options": "i"}}
+        ]
+        
+    count = await blocklist_collection.count_documents(query)
     return {"count": count}
 
 

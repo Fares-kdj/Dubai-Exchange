@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Search, Filter, Eye, Edit, Trash2, CheckCircle, XCircle, Clock, 
+import {
+  Search, Filter, Eye, Edit, Trash2, CheckCircle, XCircle, Clock,
   MoreVertical, Download, ChevronLeft, ChevronRight, RefreshCw,
   User, Phone, DollarSign, Calendar, FileText, Ban, Printer, X,
-  MapPin, Plane, CreditCard, AlertCircle, Edit2
+  MapPin, Plane, CreditCard, AlertCircle, Edit2, Copy
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import ConfirmModal from '../ConfirmModal';
+import UniversalReceipt from './UniversalReceipt';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -28,8 +31,203 @@ const orderTypeConfig = {
   western_union: { label: 'ويسترن يونيون', icon: DollarSign, color: 'text-amber-600' },
   moneygram: { label: 'موني جرام', icon: DollarSign, color: 'text-orange-600' },
   country_based: { label: 'حسب الدولة', icon: DollarSign, color: 'text-purple-600' },
+  usdt_recharge: { label: 'USDT', icon: CreditCard, color: 'text-emerald-600' },
+  card_recharge: { label: 'شحن بطاقة', icon: CreditCard, color: 'text-pink-600' },
   usdt: { label: 'USDT', icon: CreditCard, color: 'text-emerald-600' },
   card: { label: 'شحن بطاقة', icon: CreditCard, color: 'text-pink-600' },
+};
+
+// Centralized field labels for Arabic translation
+const FIELD_LABELS_AR = {
+  // Common fields
+  'usdAmount': 'المبلغ (USD)',
+  'iqdAmount': 'المبلغ (IQD)',
+  'amount': 'المبلغ',
+  'destination': 'الوجهة',
+  'travelDate': 'تاريخ السفر',
+  'paymentMethod': 'طريقة الدفع',
+  'serviceFee': 'رسوم الخدمة',
+  'currency': 'العملة',
+
+  // Traveler specific
+  'travelType': 'نوع السفر',
+  'pickupLocation': 'مكان الاستلام',
+  'passport_number': 'رقم الجواز',
+  'mother_name': 'اسم الأم',
+  'ticket_number': 'رقم التذكرة',
+  'batch_number': 'رقم الوجبة',
+  'batch_date': 'تاريخ الوجبة',
+
+  // Transfers specific
+  'senderName': 'اسم المرسل',
+  'receiverName': 'اسم المستلم',
+  'senderPhone': 'هاتف المرسل',
+  'receiverPhone': 'هاتف المستلم',
+  'senderProvince': 'محافظة المرسل',
+  'receiverProvince': 'محافظة المستلم',
+  'senderCountry': 'دولة المرسل',
+  'receiverCountry': 'دولة المستلم',
+  'bankName': 'اسم البنك',
+  'accountNumber': 'رقم الحساب',
+  'iban': 'IBAN',
+  'swift': 'SWIFT',
+
+  // Local/Missing keys
+  'phone': 'رقم الهاتف',
+  'amountUSD': 'المبلغ (USD)',
+  'amountIQD': 'المبلغ (IQD)',
+  'receiverCurrency': 'عملة المستلم',
+  'exchangeRate': 'سعر الصرف',
+  'total': 'الإجمالي',
+
+  // Traveler - Extended
+  'travel_time': 'وقت السفر',
+  'passport_issue_date': 'تاريخ إصدار الجواز',
+  'passport_expiry_date': 'تاريخ نفاذ الجواز',
+  'travel_agency': 'مكتب السياحة',
+  'airport_id': 'رقم المطار',
+  'border_id': 'رقم المنفذ',
+  'pickupLocationName': 'مكان الاستلام',
+  'pickupStampId': 'معرف الختم',
+  'pickupStampImage': 'صورة الختم',
+  'company_stamp_id': 'ختم الشركة',
+  'signature_id': 'التوقيع المعتمد',
+
+  // USDT/Card specific
+  'networkName': 'الشبكة',
+  'walletAddress': 'عنوان المحفظة',
+  'cardType': 'نوع البطاقة',
+  'cardNumber': 'رقم البطاقة',
+  'cardName': 'الاسم على البطاقة',
+  'numberType': 'نوع الرقم',
+
+  // International - Additional
+  'countryCode': 'كود الدولة',
+  'countryName': 'الدولة',
+  'methodId': 'معرف الطريقة',
+  'methodName': 'طريقة التحويل',
+  'receiveAmount': 'المبلغ المستلم',
+  'generic_account': 'رقم الحساب أو المعرف',
+  'rip': 'رقم الحساب (RIP)',
+  // MoneyGram New Fields
+  'senderFirstName': 'الاسم الأول للمرسل',
+  'senderLastName': 'اسم الشهرة للمرسل',
+  'senderAddress': 'عنوان المرسل',
+  'senderPhone': 'رقم هاتف المرسل',
+  'senderDOB': 'تاريخ ميلاد المرسل',
+  'senderPOB': 'مكان ميلاد المرسل',
+  'receiverFirstName': 'الاسم الأول للمستلم',
+  'receiverLastName': 'اسم الشهرة للمستلم',
+  'receiverDOB': 'تاريخ ميلاد المستلم',
+  'receiverPhone': 'رقم هاتف المستلم',
+  'totalInCurrency': 'الإجمالي بالعملة',
+  // Western Union New Fields
+  'receiverAddress': 'عنوان المستلم',
+  'idType': 'نوع الهوية',
+  'purpose': 'الغرض من التحويل',
+  'mtcn': 'رقم الحوالة (MTCN)',
+  'reference_number': 'الرقم المرجعي'
+};
+
+// Centralized document type labels for Arabic translation
+const DOC_TYPES_AR = {
+  'passport': 'جواز السفر',
+  'ticket': 'التذكرة',
+  'photo': 'صورة شخصية',
+  'id': 'الهوية',
+  'id_front': 'الوجه الأمامي للهوية',
+  'id_back': 'الوجه الخلفي للهوية',
+  'residency': 'الإقامة',
+  'visa': 'التأشيرة',
+  'payment_proof': 'إثبات الدفع',
+  'other': 'أوراق أخرى'
+};
+
+// Centralized mapping for field technical values
+const VALUE_MAPPING_AR = {
+  // Payment Methods
+  'zain_cash': 'زين كاش',
+  'mastercard_rafidain': 'ماستركارد الرافدين',
+  'fib': 'FIB',
+  'vodafone_cash': 'فودافون كاش',
+
+  // Currencies
+  'USD': 'دولار أمريكي',
+  'IQD': 'دينار عراقي',
+
+  // Travel Types
+  'air': 'جوي',
+  'land': 'بري',
+
+  // Number Type (Card Recharge)
+  'card': 'رقم بطاقة (16 رقم)',
+  'account': 'رقم حساب (10 أرقام)',
+
+  // Order Types
+  'usdt_recharge': 'USDT',
+  'card_recharge': 'شحن بطاقة',
+  'usdt': 'USDT',
+
+  // Countries & Methods (Values)
+  'iraq': 'العراق',
+  'uae': 'الإمارات',
+  'saudi': 'السعودية',
+  'jordan': 'الأردن',
+  'egypt': 'مصر',
+  'turkey': 'تركيا',
+  'usa': 'الولايات المتحدة',
+  'uk': 'بريطانيا',
+  'germany': 'ألمانيا',
+  'france': 'فرنسا',
+  'canada': 'كندا',
+  'australia': 'أستراليا',
+  'india': 'الهند',
+  'pakistan': 'باكستان',
+  'lebanon': 'لبنان',
+  'syria': 'سوريا',
+  'DZ': 'الجزائر',
+  'Algeria': 'الجزائر',
+  'algeria': 'الجزائر',
+  'TR': 'تركيا',
+  'Turkey': 'تركيا',
+  'turkey': 'تركيا',
+  'TRY': 'ليرة تركية',
+  'try': 'ليرة تركية',
+  'BaridiMob': 'بريدي موب',
+  'western_union': 'ويسترن يونيون',
+  'ria': 'ريا',
+  'bank_dropdown_test': 'تحويل بنكي',
+  'Bank Transfer (Test)': 'تحويل بنكي',
+  'Bank Transfer (Dropdown Test)': 'تحويل بنكي',
+  'تحويل بنكي (تجريبي)': 'تحويل بنكي',
+  'bank_transfer': 'تحويل بنكي',
+
+  // Iraqi Provinces
+  'baghdad': 'بغداد',
+  'basra': 'البصرة',
+  'erbil': 'أربيل',
+  'sulaymaniyah': 'السليمانية',
+  'duhok': 'دهوك',
+  'nineveh': 'نينوى',
+  'kirkuk': 'كركوك',
+  'diyala': 'ديالى',
+  'anbar': 'الأنبار',
+  'najaf': 'النجف',
+  'karbala': 'كربلاء',
+  'babylon': 'بابل',
+  'wasit': 'واسط',
+  'maysan': 'ميسان',
+  'dhiqar': 'ذي قار',
+  'muthanna': 'المثنى',
+  'qadisiyyah': 'القادسية',
+  'saladin': 'صلاح الدين',
+  // ID Types
+  'passport': 'جواز سفر',
+  'national_id': 'بطاقة هوية',
+  // Purposes
+  'trade': 'تجارة',
+  'family_expenses': 'نفقات الأسرة',
+  'medical': 'علاج'
 };
 
 // Format date
@@ -49,15 +247,62 @@ const OrderDetailModal = ({ order, isOpen, onClose, onStatusChange, onBlock }) =
   const [adminData, setAdminData] = useState({});
   const [airports, setAirports] = useState([]);
   const [borders, setBorders] = useState([]);
+  const [companyStamps, setCompanyStamps] = useState([]);
+  const [signatures, setSignatures] = useState([]);
 
-  // Fetch airports and borders for traveler orders
+  // Fetch airports and borders for traveler orders, and stamps/signatures for all
   useEffect(() => {
-    if (order?.order_type === 'traveler') {
-      fetch(`${API_URL}/api/stamps/airports`).then(r => r.json()).then(setAirports).catch(() => {});
-      fetch(`${API_URL}/api/stamps/borders`).then(r => r.json()).then(setBorders).catch(() => {});
-      setAdminData(order.admin_data || {});
+    if (order) {
+      const token = localStorage.getItem('adminToken');
+      const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+
+      const currentAdminData = order.admin_data || {};
+
+      if (order.order_type === 'traveler') {
+        fetch(`${API_URL}/api/stamps/airports`, { headers }).then(r => r.json()).then(setAirports).catch(() => { });
+        fetch(`${API_URL}/api/stamps/borders`, { headers }).then(r => r.json()).then(setBorders).catch(() => { });
+      }
+
+      // Fetch company stamps and set first as default if none selected
+      fetch(`${API_URL}/api/stamps/?stamp_type=company&active_only=true`, { headers })
+        .then(r => r.json())
+        .then(data => {
+          setCompanyStamps(data);
+          if (!currentAdminData.company_stamp_id && data.length > 0) {
+            setAdminData(prev => ({ ...prev, company_stamp_id: data[0].stamp_id }));
+          }
+        }).catch(() => { });
+
+      // Fetch signatures and set first as default if none selected
+      fetch(`${API_URL}/api/stamps/?stamp_type=signature&active_only=true`, { headers })
+        .then(r => r.json())
+        .then(data => {
+          setSignatures(data);
+          if (!currentAdminData.signature_id && data.length > 0) {
+            setAdminData(prev => ({ ...prev, signature_id: data[0].stamp_id }));
+          }
+        }).catch(() => { });
+
+      setAdminData(prev => ({ ...prev, ...currentAdminData }));
     }
   }, [order]);
+
+  const handlePrint = () => {
+    const originalTitle = document.title;
+    const customerName = order.customer?.full_name || order.details?.senderName || 'عميل';
+    const typeLabel = orderTypeConfig[order.order_type]?.label || 'وصل';
+    const orderId = order.order_id || '';
+
+    // Set document title to [Name]-[Type]-[OrderID] for PDF filename
+    document.title = `${customerName}-${typeLabel}-${orderId}`;
+
+    window.print();
+
+    // Restore original title after a short delay
+    setTimeout(() => {
+      document.title = originalTitle;
+    }, 500);
+  };
 
   if (!isOpen || !order) return null;
 
@@ -66,19 +311,25 @@ const OrderDetailModal = ({ order, isOpen, onClose, onStatusChange, onBlock }) =
     try {
       const body = { status: newStatus };
       if (reason) body.rejection_reason = reason;
-      
+
       const res = await fetch(`${API_URL}/api/orders/${order.order_id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
       });
-      
+
       if (res.ok) {
+        toast.success('تم تحديث حالة الطلب بنجاح');
         onStatusChange();
         if (newStatus === 'rejected') setShowRejectInput(false);
+        onClose();
+      } else {
+        const errorData = await res.json().catch(() => ({}));
+        toast.error(errorData.detail || 'حدث خطأ أثناء تحديث الحالة');
       }
     } catch (err) {
       console.error('Error:', err);
+      toast.error('حدث خطأ بالاتصال');
     }
     setLoading(false);
   };
@@ -91,10 +342,14 @@ const OrderDetailModal = ({ order, isOpen, onClose, onStatusChange, onBlock }) =
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ admin_data: adminData })
       });
-      
+
       if (res.ok) {
-        alert('تم حفظ البيانات بنجاح');
+        toast.success('تم حفظ البيانات بنجاح');
         setShowEditForm(false);
+        // Update local order data immediately for UI feedback
+        if (order) {
+          order.admin_data = { ...adminData };
+        }
         onStatusChange();
       }
     } catch (err) {
@@ -104,35 +359,7 @@ const OrderDetailModal = ({ order, isOpen, onClose, onStatusChange, onBlock }) =
   };
 
   const handleBlock = async () => {
-    if (!window.confirm('هل أنت متأكد من حظر هذا العميل؟')) return;
-    setLoading(true);
-    try {
-      const token = localStorage.getItem('adminToken');
-      const res = await fetch(`${API_URL}/api/blocklist/`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          full_name: order.customer?.full_name || '',
-          phone: order.customer?.phone || '',
-          reason: 'suspicious_activity',
-          reason_notes: `حظر من الطلب: ${order.order_id}`
-        })
-      });
-      
-      if (res.ok) {
-        alert('تم حظر العميل بنجاح');
-        onBlock?.();
-      } else {
-        const err = await res.json();
-        alert(err.detail || 'حدث خطأ');
-      }
-    } catch (err) {
-      console.error('Error:', err);
-    }
-    setLoading(false);
+    onBlock?.();
   };
 
   return (
@@ -155,25 +382,24 @@ const OrderDetailModal = ({ order, isOpen, onClose, onStatusChange, onBlock }) =
               <span className={`px-4 py-2 rounded-full text-sm font-medium ${statusConfig[order.status]?.color || 'bg-slate-100'}`}>
                 {statusConfig[order.status]?.label || order.status}
               </span>
-              <button onClick={onClose} className="p-2 hover:bg-slate-200 rounded-lg">
-                <X className="w-5 h-5" />
+              <button onClick={onClose} className="p-2 hover:bg-red-50 text-slate-500 hover:text-red-600 rounded-lg transition-colors border-0" title="إغلاق">
+                <X className="w-6 h-6 stroke-[2.5]" />
               </button>
             </div>
           </div>
 
           {/* Tabs */}
           <div className="flex border-b border-slate-200">
-            {['details', order.order_type === 'traveler' && 'admin', 'documents', 'history'].filter(Boolean).map(tab => (
+            {['details', 'admin', 'documents', 'history'].filter(Boolean).map(tab => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`flex-1 py-3 text-sm font-medium transition-colors ${
-                  activeTab === tab 
-                    ? 'text-[#D4AF37] border-b-2 border-[#D4AF37]' 
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
+                className={`flex-1 py-3 text-sm font-medium transition-colors ${activeTab === tab
+                  ? 'text-[#D4AF37] border-b-2 border-[#D4AF37]'
+                  : 'text-slate-600 hover:text-slate-900'
+                  }`}
               >
-                {tab === 'details' ? 'البيانات' : tab === 'admin' ? 'بيانات الأدمن' : tab === 'documents' ? 'الوثائق' : 'السجل'}
+                {tab === 'details' ? 'البيانات' : tab === 'admin' ? 'بيانات الأدمن' : tab === 'documents' ? `الوثائق ${order.payment_proofs?.length > 0 ? '(+إثبات دفع)' : ''}` : 'السجل'}
               </button>
             ))}
           </div>
@@ -189,18 +415,23 @@ const OrderDetailModal = ({ order, isOpen, onClose, onStatusChange, onBlock }) =
                     بيانات العميل
                   </h3>
                   <div className="bg-slate-50 rounded-xl p-4 space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-slate-500">الاسم</span>
-                      <span className="font-medium">{order.customer?.full_name}</span>
+                    <span className="text-slate-500">الاسم</span>
+                    <div className="text-right">
+                      <span className="font-medium text-slate-900 block">{order.customer?.full_name}</span>
+                      {order.customer_blocked && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-red-100 text-red-700 text-[10px] font-bold rounded-full mt-1">
+                          <Ban className="w-3 h-3" /> عميل محظور
+                        </span>
+                      )}
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-500">الهاتف</span>
-                      <span className="font-mono">{order.customer?.phone}</span>
+                      <span className="font-mono text-slate-900" style={{ direction: 'ltr' }}>{order.customer?.phone}</span>
                     </div>
                     {order.customer?.email && (
                       <div className="flex justify-between">
                         <span className="text-slate-500">البريد</span>
-                        <span>{order.customer?.email}</span>
+                        <span className="text-slate-900">{order.customer?.email}</span>
                       </div>
                     )}
                   </div>
@@ -215,41 +446,29 @@ const OrderDetailModal = ({ order, isOpen, onClose, onStatusChange, onBlock }) =
                   <div className="bg-slate-50 rounded-xl p-4 space-y-3">
                     <div className="flex justify-between">
                       <span className="text-slate-500">النوع</span>
-                      <span className="font-medium">{orderTypeConfig[order.order_type]?.label || order.order_type}</span>
+                      <span className="font-medium text-slate-900">{orderTypeConfig[order.order_type]?.label || order.order_type}</span>
                     </div>
-                    {order.details?.usdAmount && (
+                    {(order.details?.usdAmount || order.details?.amountUSD) && (
                       <div className="flex justify-between">
                         <span className="text-slate-500">المبلغ (USD)</span>
-                        <span className="font-bold text-green-600">${order.details.usdAmount}</span>
+                        <span className="font-bold text-green-600">${Number(order.details.usdAmount || order.details.amountUSD).toFixed(2)}</span>
                       </div>
                     )}
-                    {order.details?.iqdAmount && (
+                    {(order.details?.iqdAmount || order.details?.amountIQD) && (
                       <div className="flex justify-between">
                         <span className="text-slate-500">المبلغ (IQD)</span>
-                        <span className="font-medium">{Number(order.details.iqdAmount).toLocaleString()} د.ع</span>
-                      </div>
-                    )}
-                    {order.details?.destination && (
-                      <div className="flex justify-between">
-                        <span className="text-slate-500">الوجهة</span>
-                        <span>{order.details.destination}</span>
-                      </div>
-                    )}
-                    {order.details?.travelDate && (
-                      <div className="flex justify-between">
-                        <span className="text-slate-500">تاريخ السفر</span>
-                        <span>{order.details.travelDate}</span>
+                        <span className="font-medium text-slate-900">{Math.round(Number(order.details.iqdAmount || order.details.amountIQD)).toLocaleString()} د.ع</span>
                       </div>
                     )}
                     {order.details?.paymentMethod && (
                       <div className="flex justify-between">
                         <span className="text-slate-500">طريقة الدفع</span>
-                        <span>{order.details.paymentMethod}</span>
+                        <span className="text-slate-900">{VALUE_MAPPING_AR[order.details.paymentMethod] || order.details.paymentMethod}</span>
                       </div>
                     )}
                     <div className="flex justify-between">
                       <span className="text-slate-500">التاريخ</span>
-                      <span className="text-sm">{formatDate(order.created_at)}</span>
+                      <span className="text-sm text-slate-900">{formatDate(order.created_at)}</span>
                     </div>
                   </div>
                 </div>
@@ -262,25 +481,61 @@ const OrderDetailModal = ({ order, isOpen, onClose, onStatusChange, onBlock }) =
                       معلومات إضافية
                     </h3>
                     <div className="bg-slate-50 rounded-xl p-4 grid grid-cols-2 md:grid-cols-3 gap-4">
-                      {Object.entries(order.details).filter(([k]) => !['usdAmount', 'iqdAmount', 'destination', 'travelDate', 'paymentMethod'].includes(k)).map(([key, value]) => (
-                        <div key={key}>
-                          <p className="text-xs text-slate-500">{key}</p>
-                          <p className="font-medium text-sm">{String(value)}</p>
-                        </div>
-                      ))}
+                      {Object.entries(order.details)
+                        .flatMap(([k, v]) => {
+                          if (k === 'customFields' && v && typeof v === 'object') {
+                            return Object.entries(v);
+                          }
+                          return [[k, v]];
+                        })
+                        .filter(([k, v]) => !['usdAmount', 'amountUSD', 'iqdAmount', 'amountIQD', 'paymentMethod', 'customFields', 'pickupLocation', 'pickupStampId', 'pickupStampImage'].includes(k) && v !== null && v !== undefined && v !== '')
+                        .map(([key, value]) => (
+                          <div key={key}>
+                            <p className="text-xs text-slate-500">{FIELD_LABELS_AR[key] || key}</p>
+                            {key === 'walletAddress' || key === 'generic_account' || key === 'rip' || key === 'iban' ? (
+                              <div className="flex items-center gap-2 mt-1">
+                                <p className="font-mono text-[10px] break-all flex-1 text-slate-900 leading-relaxed bg-slate-100 p-1 rounded">{String(value)}</p>
+                                <button
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(String(value));
+                                    toast.success('تم النسخ');
+                                  }}
+                                  className="p-1.5 hover:bg-slate-200 rounded-lg shrink-0 transition-colors"
+                                  title="نسخ"
+                                >
+                                  <Copy className="w-4 h-4 text-slate-500" />
+                                </button>
+                              </div>
+                            ) : (
+                              <p className={`font-medium text-sm text-slate-900 ${(key.toLowerCase().includes('phone') || String(value).startsWith('+')) ? 'inline-block' : ''}`} style={(key.toLowerCase().includes('phone') || String(value).startsWith('+')) ? { direction: 'ltr' } : {}}>
+                                {VALUE_MAPPING_AR[value] || String(value)}
+                              </p>
+                            )}
+                          </div>
+                        ))}
                     </div>
                   </div>
                 )}
               </div>
             )}
 
-            {/* Admin Data Tab - Only for Traveler orders */}
-            {activeTab === 'admin' && order.order_type === 'traveler' && (
+            {/* Admin Data Tab - For Stamps/Signatures and Traveler data */}
+            {activeTab === 'admin' && (
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-bold text-slate-900">بيانات الأدمن (حجز المسافرين)</h3>
+                  <h3 className="font-bold text-slate-900">
+                    {order.order_type === 'western_union'
+                      ? 'بيانات الأدمن (ويسترن يونيون)'
+                      : 'بيانات الأدمن (حجز المسافرين)'}
+                  </h3>
                   <button
-                    onClick={() => setShowEditForm(!showEditForm)}
+                    onClick={() => {
+                      if (showEditForm) {
+                        // Reset admin data on cancel
+                        setAdminData(order.admin_data || {});
+                      }
+                      setShowEditForm(!showEditForm);
+                    }}
                     className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                   >
                     <Edit className="w-4 h-4" />
@@ -290,105 +545,163 @@ const OrderDetailModal = ({ order, isOpen, onClose, onStatusChange, onBlock }) =
 
                 {showEditForm ? (
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {order.order_type === 'traveler' && (
+                      <>
+                        {/* traveler fields */}
+                        <div className="space-y-2">
+                          <Label>رقم الوجبة</Label>
+                          <Input
+                            value={adminData.batch_number || ''}
+                            onChange={e => setAdminData(p => ({ ...p, batch_number: e.target.value }))}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>تاريخ الوجبة</Label>
+                          <Input
+                            type="date"
+                            value={adminData.batch_date || ''}
+                            onChange={e => setAdminData(p => ({ ...p, batch_date: e.target.value }))}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>اسم الأم</Label>
+                          <Input
+                            value={adminData.mother_name || ''}
+                            onChange={e => setAdminData(p => ({ ...p, mother_name: e.target.value }))}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>رقم التذكرة</Label>
+                          <Input
+                            value={adminData.ticket_number || ''}
+                            onChange={e => setAdminData(p => ({ ...p, ticket_number: e.target.value }))}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>وقت السفر</Label>
+                          <Input
+                            type="time"
+                            value={adminData.travel_time || ''}
+                            onChange={e => setAdminData(p => ({ ...p, travel_time: e.target.value }))}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>رقم الجواز</Label>
+                          <Input
+                            value={adminData.passport_number || ''}
+                            onChange={e => setAdminData(p => ({ ...p, passport_number: e.target.value }))}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>تاريخ الإصدار</Label>
+                          <Input
+                            type="date"
+                            value={adminData.passport_issue_date || ''}
+                            onChange={e => setAdminData(p => ({ ...p, passport_issue_date: e.target.value }))}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>تاريخ النفاذ</Label>
+                          <Input
+                            type="date"
+                            value={adminData.passport_expiry_date || ''}
+                            onChange={e => setAdminData(p => ({ ...p, passport_expiry_date: e.target.value }))}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>مكتب السياحة</Label>
+                          <Input
+                            value={adminData.travel_agency || ''}
+                            onChange={e => setAdminData(p => ({ ...p, travel_agency: e.target.value }))}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>نوع السفر</Label>
+                          <Select value={adminData.travel_type || ''} onValueChange={v => setAdminData(p => ({ ...p, travel_type: v }))}>
+                            <SelectTrigger><SelectValue placeholder="اختر..." /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="air">جوي</SelectItem>
+                              <SelectItem value="land">بري</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        {adminData.travel_type === 'air' && (
+                          <div className="space-y-2">
+                            <Label>المطار</Label>
+                            <Select value={adminData.airport_id || ''} onValueChange={v => setAdminData(p => ({ ...p, airport_id: v }))}>
+                              <SelectTrigger><SelectValue placeholder="اختر المطار..." /></SelectTrigger>
+                              <SelectContent>
+                                {airports.map(a => <SelectItem key={a.stamp_id} value={a.stamp_id}>{a.name_ar}</SelectItem>)}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
+                        {adminData.travel_type === 'land' && (
+                          <div className="space-y-2">
+                            <Label>الالمنفذ الحدودي</Label>
+                            <Select value={adminData.border_id || ''} onValueChange={v => setAdminData(p => ({ ...p, border_id: v }))}>
+                              <SelectTrigger><SelectValue placeholder="اختر المنفذ..." /></SelectTrigger>
+                              <SelectContent>
+                                {borders.map(b => <SelectItem key={b.stamp_id} value={b.stamp_id}>{b.name_ar}</SelectItem>)}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
+                      </>
+                    )}
+
+                    {order.order_type === 'western_union' && (
+                      <>
+                        <div className="space-y-2">
+                          <Label>رقم الهوية / جواز السفر</Label>
+                          <Input
+                            value={adminData.id_number || ''}
+                            onChange={e => setAdminData(p => ({ ...p, id_number: e.target.value }))}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>تاريخ الإصدار</Label>
+                          <Input
+                            type="date"
+                            value={adminData.id_issue_date || ''}
+                            onChange={e => setAdminData(p => ({ ...p, id_issue_date: e.target.value }))}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>جهة الإصدار</Label>
+                          <Input
+                            value={adminData.id_issuing_authority || ''}
+                            onChange={e => setAdminData(p => ({ ...p, id_issuing_authority: e.target.value }))}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>تاريخ انتهاء الصلاحية</Label>
+                          <Input
+                            type="date"
+                            value={adminData.id_expiry_date || ''}
+                            onChange={e => setAdminData(p => ({ ...p, id_expiry_date: e.target.value }))}
+                          />
+                        </div>
+                      </>
+                    )}
                     <div className="space-y-2">
-                      <Label>رقم الوجبة</Label>
-                      <Input 
-                        value={adminData.batch_number || ''} 
-                        onChange={e => setAdminData(p => ({ ...p, batch_number: e.target.value }))} 
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>تاريخ الوجبة</Label>
-                      <Input 
-                        type="date"
-                        value={adminData.batch_date || ''} 
-                        onChange={e => setAdminData(p => ({ ...p, batch_date: e.target.value }))} 
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>اسم الأم</Label>
-                      <Input 
-                        value={adminData.mother_name || ''} 
-                        onChange={e => setAdminData(p => ({ ...p, mother_name: e.target.value }))} 
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>رقم التذكرة</Label>
-                      <Input 
-                        value={adminData.ticket_number || ''} 
-                        onChange={e => setAdminData(p => ({ ...p, ticket_number: e.target.value }))} 
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>وقت السفر</Label>
-                      <Input 
-                        type="time"
-                        value={adminData.travel_time || ''} 
-                        onChange={e => setAdminData(p => ({ ...p, travel_time: e.target.value }))} 
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>رقم الجواز</Label>
-                      <Input 
-                        value={adminData.passport_number || ''} 
-                        onChange={e => setAdminData(p => ({ ...p, passport_number: e.target.value }))} 
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>تاريخ الإصدار</Label>
-                      <Input 
-                        type="date"
-                        value={adminData.passport_issue_date || ''} 
-                        onChange={e => setAdminData(p => ({ ...p, passport_issue_date: e.target.value }))} 
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>تاريخ النفاذ</Label>
-                      <Input 
-                        type="date"
-                        value={adminData.passport_expiry_date || ''} 
-                        onChange={e => setAdminData(p => ({ ...p, passport_expiry_date: e.target.value }))} 
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>مكتب السياحة</Label>
-                      <Input 
-                        value={adminData.travel_agency || ''} 
-                        onChange={e => setAdminData(p => ({ ...p, travel_agency: e.target.value }))} 
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>نوع السفر</Label>
-                      <Select value={adminData.travel_type || ''} onValueChange={v => setAdminData(p => ({ ...p, travel_type: v }))}>
-                        <SelectTrigger><SelectValue placeholder="اختر..." /></SelectTrigger>
+                      <Label>ختم الشركة للوصول</Label>
+                      <Select value={adminData.company_stamp_id || ''} onValueChange={v => setAdminData(p => ({ ...p, company_stamp_id: v }))}>
+                        <SelectTrigger><SelectValue placeholder="اختر الختم..." /></SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="air">جوي</SelectItem>
-                          <SelectItem value="land">بري</SelectItem>
+                          {companyStamps.map(s => <SelectItem key={s.stamp_id} value={s.stamp_id}>{s.name_ar}</SelectItem>)}
                         </SelectContent>
                       </Select>
                     </div>
-                    {adminData.travel_type === 'air' && (
-                      <div className="space-y-2">
-                        <Label>المطار</Label>
-                        <Select value={adminData.airport_id || ''} onValueChange={v => setAdminData(p => ({ ...p, airport_id: v }))}>
-                          <SelectTrigger><SelectValue placeholder="اختر المطار..." /></SelectTrigger>
-                          <SelectContent>
-                            {airports.map(a => <SelectItem key={a.stamp_id} value={a.stamp_id}>{a.name_ar}</SelectItem>)}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    )}
-                    {adminData.travel_type === 'land' && (
-                      <div className="space-y-2">
-                        <Label>المنفذ الحدودي</Label>
-                        <Select value={adminData.border_id || ''} onValueChange={v => setAdminData(p => ({ ...p, border_id: v }))}>
-                          <SelectTrigger><SelectValue placeholder="اختر المنفذ..." /></SelectTrigger>
-                          <SelectContent>
-                            {borders.map(b => <SelectItem key={b.stamp_id} value={b.stamp_id}>{b.name_ar}</SelectItem>)}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    )}
+                    <div className="space-y-2">
+                      <Label>التوقيع للوصول</Label>
+                      <Select value={adminData.signature_id || ''} onValueChange={v => setAdminData(p => ({ ...p, signature_id: v }))}>
+                        <SelectTrigger><SelectValue placeholder="اختر التوقيع..." /></SelectTrigger>
+                        <SelectContent>
+                          {signatures.map(s => <SelectItem key={s.stamp_id} value={s.stamp_id}>{s.name_ar}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                    </div>
                     <div className="col-span-full flex justify-end pt-4">
                       <button
                         onClick={handleSaveAdminData}
@@ -402,23 +715,48 @@ const OrderDetailModal = ({ order, isOpen, onClose, onStatusChange, onBlock }) =
                   </div>
                 ) : (
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {[
-                      { label: 'رقم الوجبة', value: order.admin_data?.batch_number },
-                      { label: 'تاريخ الوجبة', value: order.admin_data?.batch_date },
-                      { label: 'اسم الأم', value: order.admin_data?.mother_name },
-                      { label: 'رقم التذكرة', value: order.admin_data?.ticket_number },
-                      { label: 'وقت السفر', value: order.admin_data?.travel_time },
-                      { label: 'رقم الجواز', value: order.admin_data?.passport_number },
-                      { label: 'تاريخ الإصدار', value: order.admin_data?.passport_issue_date },
-                      { label: 'تاريخ النفاذ', value: order.admin_data?.passport_expiry_date },
-                      { label: 'مكتب السياحة', value: order.admin_data?.travel_agency },
-                      { label: 'نوع السفر', value: order.admin_data?.travel_type === 'air' ? 'جوي' : order.admin_data?.travel_type === 'land' ? 'بري' : null },
-                    ].map((item, idx) => (
+                    {order.order_type === 'traveler' && [
+                      { label: 'رقم الوجبة', value: adminData.batch_number },
+                      { label: 'تاريخ الوجبة', value: adminData.batch_date },
+                      { label: 'اسم الأم', value: adminData.mother_name },
+                      { label: 'رقم التذكرة', value: adminData.ticket_number },
+                      { label: 'وقت السفر', value: adminData.travel_time },
+                      { label: 'رقم الجواز', value: adminData.passport_number },
+                      { label: 'تاريخ الإصدار', value: adminData.passport_issue_date },
+                      { label: 'تاريخ النفاذ', value: adminData.passport_expiry_date },
+                      { label: 'مكتب السياحة', value: adminData.travel_agency },
+                      { label: 'نوع السفر', value: adminData.travel_type === 'air' ? 'جوي' : adminData.travel_type === 'land' ? 'بري' : null },
+                    ].filter(item => item.value).map((item, idx) => (
                       <div key={idx} className="p-4 bg-slate-50 rounded-xl">
                         <p className="text-xs text-slate-500 mb-1">{item.label}</p>
-                        <p className="font-medium">{item.value || '-'}</p>
+                        <p className="font-medium text-slate-900">{item.value || '-'}</p>
                       </div>
                     ))}
+
+                    {order.order_type === 'western_union' && [
+                      { label: 'رقم الهوية / جواز السفر', value: adminData.id_number },
+                      { label: 'تاريخ الإصدار', value: adminData.id_issue_date },
+                      { label: 'جهة الإصدار', value: adminData.id_issuing_authority },
+                      { label: 'تاريخ انتهاء الصلاحية', value: adminData.id_expiry_date },
+                    ].filter(item => item.value).map((item, idx) => (
+                      <div key={idx} className="p-4 bg-slate-50 rounded-xl">
+                        <p className="text-xs text-slate-500 mb-1">{item.label}</p>
+                        <p className="font-medium text-slate-900">{item.value || '-'}</p>
+                      </div>
+                    ))}
+
+                    <div className="p-4 bg-slate-50 rounded-xl">
+                      <p className="text-xs text-slate-500 mb-1">ختم الشركة</p>
+                      <p className="font-medium text-slate-900">
+                        {companyStamps.find(s => s.stamp_id === adminData.company_stamp_id)?.name_ar || '-'}
+                      </p>
+                    </div>
+                    <div className="p-4 bg-slate-50 rounded-xl">
+                      <p className="text-xs text-slate-500 mb-1">التوقيع</p>
+                      <p className="font-medium text-slate-900">
+                        {signatures.find(s => s.stamp_id === adminData.signature_id)?.name_ar || '-'}
+                      </p>
+                    </div>
                   </div>
                 )}
               </div>
@@ -427,27 +765,27 @@ const OrderDetailModal = ({ order, isOpen, onClose, onStatusChange, onBlock }) =
             {activeTab === 'documents' && (
               <div className="space-y-4">
                 <h3 className="font-bold text-slate-900">الوثائق المرفوعة</h3>
-                {order.documents && Object.keys(order.documents).length > 0 ? (
+                {order.documents && order.documents.length > 0 ? (
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {Object.entries(order.documents).map(([key, url]) => url && (
-                      <a key={key} href={url} target="_blank" rel="noopener noreferrer" 
-                         className="p-4 bg-slate-50 rounded-xl text-center hover:bg-slate-100 transition-colors">
+                    {order.documents.map((doc, idx) => (
+                      <a key={idx} href={`${API_URL}${doc.file_url}`} target="_blank" rel="noopener noreferrer"
+                        className="p-4 bg-slate-50 rounded-xl text-center hover:bg-slate-100 transition-colors">
                         <FileText className="w-10 h-10 mx-auto mb-2 text-blue-600" />
-                        <span className="text-sm font-medium">{key}</span>
+                        <span className="text-sm font-medium">{DOC_TYPES_AR[doc.doc_type] || doc.doc_type}</span>
                       </a>
                     ))}
                   </div>
                 ) : (
                   <p className="text-slate-500 text-center py-8">لا توجد وثائق مرفوعة</p>
                 )}
-                
+
                 {order.payment_proofs?.length > 0 && (
                   <>
                     <h3 className="font-bold text-slate-900 mt-6">إثباتات الدفع</h3>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                       {order.payment_proofs.map((proof, idx) => (
-                        <a key={idx} href={proof} target="_blank" rel="noopener noreferrer"
-                           className="p-4 bg-green-50 rounded-xl text-center hover:bg-green-100 transition-colors">
+                        <a key={idx} href={`${API_URL}${proof.file_url || proof}`} target="_blank" rel="noopener noreferrer"
+                          className="p-4 bg-green-50 rounded-xl text-center hover:bg-green-100 transition-colors">
                           <FileText className="w-10 h-10 mx-auto mb-2 text-green-600" />
                           <span className="text-sm font-medium">إثبات {idx + 1}</span>
                         </a>
@@ -465,11 +803,10 @@ const OrderDetailModal = ({ order, isOpen, onClose, onStatusChange, onBlock }) =
                   <div className="space-y-3">
                     {order.status_history.map((entry, idx) => (
                       <div key={idx} className="flex items-start gap-4 p-4 bg-slate-50 rounded-xl">
-                        <div className={`w-3 h-3 rounded-full mt-1.5 ${
-                          entry.status === 'approved' ? 'bg-green-500' :
+                        <div className={`w-3 h-3 rounded-full mt-1.5 ${entry.status === 'approved' ? 'bg-green-500' :
                           entry.status === 'rejected' ? 'bg-red-500' :
-                          'bg-slate-400'
-                        }`} />
+                            'bg-slate-400'
+                          }`} />
                         <div className="flex-1">
                           <p className="font-medium">{statusConfig[entry.status]?.label || entry.status}</p>
                           {entry.reason && <p className="text-sm text-slate-600">السبب: {entry.reason}</p>}
@@ -544,25 +881,44 @@ const OrderDetailModal = ({ order, isOpen, onClose, onStatusChange, onBlock }) =
                 >
                   <Ban className="w-4 h-4" /> حظر العميل
                 </button>
-                <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 mr-auto">
+                <button
+                  onClick={handlePrint}
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 mr-auto"
+                >
                   <Printer className="w-4 h-4" /> طباعة
                 </button>
               </div>
             )}
           </div>
+          {order && (
+            <div className="hidden print:block">
+              <UniversalReceipt
+                order={{ ...order, admin_data: adminData }}
+                airports={airports}
+                borders={borders}
+                companyStamps={companyStamps}
+                signatures={signatures}
+              />
+            </div>
+          )}
         </motion.div>
-      </div>
-    </AnimatePresence>
+      </div >
+    </AnimatePresence >
   );
 };
 
 // Main Orders Page Component
-const BaseOrdersPage = ({ 
-  title, 
-  orderType, 
+const BaseOrdersPage = ({
+  title,
+  orderType,
   columns = ['order_id', 'customer', 'amount', 'status', 'date', 'actions'],
-  extraFilters = null 
+  extraFilters = null
 }) => {
+  const [confirmConfig, setConfirmConfig] = useState({ isOpen: false, type: 'danger', title: '', message: '', onConfirm: null });
+
+  const showConfirm = (config) => {
+    setConfirmConfig({ ...config, isOpen: true });
+  };
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [totalOrders, setTotalOrders] = useState(0);
@@ -582,18 +938,32 @@ const BaseOrdersPage = ({
     { value: 'ignored', label: 'تم التجاهل' },
   ];
 
-  const fetchOrders = async () => {
-    setLoading(true);
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('adminToken');
+    return { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) };
+  };
+
+  const fetchOrders = async (showLoading = true) => {
+    if (showLoading) setLoading(true);
     try {
       let url = `${API_URL}/api/orders?page=${page}&page_size=${pageSize}`;
       if (orderType) url += `&order_type=${orderType}`;
       if (filterStatus !== 'all') url += `&status=${filterStatus}`;
       if (searchQuery) url += `&search=${encodeURIComponent(searchQuery)}`;
 
-      const res = await fetch(url);
+      const res = await fetch(url, { headers: getAuthHeaders() });
       const data = await res.json();
-      setOrders(data.orders || []);
+      const updatedOrders = data.orders || [];
+      setOrders(updatedOrders);
       setTotalOrders(data.total || 0);
+
+      // Sync the selected order if modal is open
+      if (showDetail && selectedOrder) {
+        const updatedSelected = updatedOrders.find(o => o.order_id === selectedOrder.order_id);
+        if (updatedSelected) {
+          setSelectedOrder(updatedSelected);
+        }
+      }
     } catch (err) {
       console.error('Error:', err);
     }
@@ -609,19 +979,70 @@ const BaseOrdersPage = ({
     fetchOrders();
   };
 
-  const handleDelete = async (orderId) => {
-    if (!window.confirm('هل أنت متأكد من حذف هذا الطلب؟')) return;
-    try {
-      const res = await fetch(`${API_URL}/api/orders/${orderId}`, { method: 'DELETE' });
-      if (res.ok) fetchOrders();
-    } catch (err) {
-      console.error('Error:', err);
-    }
+  const handleDelete = (orderId) => {
+    showConfirm({
+      type: 'danger',
+      title: 'حذف الطلب',
+      message: 'هل أنت متأكد من حذف هذا الطلب نهائياً؟ لا يمكن التراجع عن هذا الإجراء.',
+      onConfirm: async () => {
+        try {
+          const res = await fetch(`${API_URL}/api/orders/${orderId}`, {
+            method: 'DELETE',
+            headers: getAuthHeaders()
+          });
+          if (res.ok) {
+            toast.success('تم حذف الطلب بنجاح');
+            fetchOrders(false);
+          }
+        } catch (err) {
+          console.error('Error:', err);
+        }
+      }
+    });
   };
 
   const openOrderDetail = (order) => {
     setSelectedOrder(order);
     setShowDetail(true);
+  };
+
+  const handleBlockOrder = (order) => {
+    showConfirm({
+      type: 'warning',
+      title: 'حظر العميل',
+      message: `هل أنت متأكد من حظر العميل ${order.customer?.full_name}؟ سيتم منعه من استخدام الخدمة مستقبلاً.`,
+      onConfirm: async () => {
+        setLoading(true);
+        try {
+          const token = localStorage.getItem('adminToken');
+          const res = await fetch(`${API_URL}/api/blocklist/`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              full_name: order.customer?.full_name || '',
+              phone: order.customer?.phone || '',
+              reason: 'suspicious_activity',
+              reason_notes: `حظر من الطلب: ${order.order_id}`
+            })
+          });
+
+          if (res.ok) {
+            toast.success('تم حظر العميل بنجاح');
+            fetchOrders(false);
+            if (showDetail) setShowDetail(false);
+          } else {
+            const err = await res.json();
+            toast.error(err.detail || 'حدث خطأ أثناء الحظر');
+          }
+        } catch (err) {
+          console.error('Error:', err);
+        }
+        setLoading(false);
+      }
+    });
   };
 
   return (
@@ -635,10 +1056,6 @@ const BaseOrdersPage = ({
         <div className="flex items-center gap-3">
           <button onClick={fetchOrders} className="p-2 hover:bg-slate-100 rounded-lg">
             <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
-          </button>
-          <button className="flex items-center gap-2 px-4 py-2 bg-[#D4AF37] text-slate-900 font-medium rounded-lg hover:bg-[#c9a431]">
-            <Download className="w-4 h-4" />
-            تصدير
           </button>
         </div>
       </div>
@@ -707,14 +1124,23 @@ const BaseOrdersPage = ({
                       <span className="font-mono font-medium text-slate-900">{order.order_id}</span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="font-medium text-slate-900">{order.customer?.full_name}</span>
+                      <div className="flex flex-col">
+                        <span className="font-medium text-slate-900">{order.customer?.full_name}</span>
+                        {order.customer_blocked && (
+                          <span className="inline-flex items-center gap-0.5 text-red-600 text-[10px] font-bold">
+                            <Ban className="w-2.5 h-2.5" /> محظور
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="text-sm text-slate-600 font-mono">{order.customer?.phone}</span>
+                      <span className="text-sm text-slate-600 font-mono" style={{ direction: 'ltr', display: 'inline-block' }}>{order.customer?.phone}</span>
                     </td>
                     <td className="px-6 py-4">
                       <span className="font-medium text-slate-900">
-                        {order.details?.usdAmount ? `$${order.details.usdAmount}` : order.details?.amount || '-'}
+                        {order.details?.usdAmount || order.details?.amountUSD ?
+                          `$${Number(order.details.usdAmount || order.details.amountUSD).toFixed(2)}` :
+                          (order.details?.amount ? Number(order.details.amount).toFixed(2) : '-')}
                       </span>
                     </td>
                     <td className="px-6 py-4" onClick={e => e.stopPropagation()}>
@@ -754,17 +1180,17 @@ const BaseOrdersPage = ({
           <div className="px-6 py-4 border-t border-slate-200 flex items-center justify-between">
             <p className="text-sm text-slate-600">عرض {orders.length} من {totalOrders} طلب</p>
             <div className="flex items-center gap-2">
-              <button 
+              <button
                 onClick={() => setPage(p => Math.max(1, p - 1))}
-                className="p-2 hover:bg-slate-100 rounded-lg disabled:opacity-50" 
+                className="p-2 hover:bg-slate-100 rounded-lg disabled:opacity-50"
                 disabled={page === 1}
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
               <span className="px-3 py-1 bg-[#D4AF37] text-slate-900 rounded-lg text-sm font-medium">{page}</span>
-              <button 
+              <button
                 onClick={() => setPage(p => p + 1)}
-                className="p-2 hover:bg-slate-100 rounded-lg disabled:opacity-50" 
+                className="p-2 hover:bg-slate-100 rounded-lg disabled:opacity-50"
                 disabled={orders.length < pageSize}
               >
                 <ChevronLeft className="w-4 h-4" />
@@ -779,10 +1205,19 @@ const BaseOrdersPage = ({
         order={selectedOrder}
         isOpen={showDetail}
         onClose={() => setShowDetail(false)}
-        onStatusChange={() => { fetchOrders(); setShowDetail(false); }}
-        onBlock={fetchOrders}
+        onStatusChange={() => fetchOrders(false)}
+        onBlock={() => handleBlockOrder(selectedOrder)}
       />
-    </div>
+
+      <ConfirmModal
+        isOpen={confirmConfig.isOpen}
+        onClose={() => setConfirmConfig({ ...confirmConfig, isOpen: false })}
+        onConfirm={confirmConfig.onConfirm}
+        title={confirmConfig.title}
+        message={confirmConfig.message}
+        type={confirmConfig.type}
+      />
+    </div >
   );
 };
 

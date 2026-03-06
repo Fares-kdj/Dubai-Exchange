@@ -1,10 +1,11 @@
 """
-UniMTX SMS Service for Dubai International Exchange
-Sends SMS notifications to Iraqi phone numbers only using Templates
+Twilio SMS Service for Dubai International Exchange
+Sends SMS notifications to Iraqi phone numbers using Twilio Content SIDs
 """
 import os
 import httpx
 import logging
+import json
 from typing import Optional
 from dotenv import load_dotenv
 from pathlib import Path
@@ -14,20 +15,20 @@ load_dotenv(Path(__file__).parent.parent / '.env')
 
 logger = logging.getLogger(__name__)
 
-# UniMTX API Configuration
-UNIMTX_API_URL = "https://api.unimtx.com"
-UNIMTX_ACCESS_KEY = os.environ.get("UNIMTX_ACCESS_KEY", "")
-UNIMTX_SENDER = os.environ.get("UNIMTX_SENDER", "DubaiExch")
+# Twilio Configuration
+TWILIO_ACCOUNT_SID = os.environ.get("TWILIO_ACCOUNT_SID", "")
+TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_AUTH_TOKEN", "")
+TWILIO_PHONE_NUMBER = os.environ.get("TWILIO_PHONE_NUMBER", "")
 
-# Template IDs from UniMTX console
-TEMPLATE_ORDER_CREATED = "14f12ba9"
-TEMPLATE_ORDER_APPROVED = "6a418afa"
-TEMPLATE_ORDER_REJECTED = "cca9a942"
+# Content SIDs from Twilio Console
+TWILIO_CONTENT_ORDER_SUBMITTED = os.environ.get("TWILIO_CONTENT_ORDER_SUBMITTED", "")
+TWILIO_CONTENT_ORDER_APPROVED = os.environ.get("TWILIO_CONTENT_ORDER_APPROVED", "")
+TWILIO_CONTENT_ORDER_REJECTED = os.environ.get("TWILIO_CONTENT_ORDER_REJECTED", "")
 
-# Default WhatsApp number (can be overridden from settings)
+# Default WhatsApp number
 DEFAULT_WHATSAPP = os.environ.get("COMPANY_WHATSAPP", "+964XXXXXXXXXX")
 
-# Iraqi phone number prefixes (country code +964)
+# Iraqi phone number prefixes
 IRAQI_PREFIXES = ["+964", "00964", "964"]
 
 
@@ -79,34 +80,34 @@ def format_iraqi_number(phone: str) -> str:
 
 
 class SMSService:
-    """Service for sending SMS via UniMTX using Templates"""
+    """Service for sending SMS via Twilio using Content SIDs"""
     
     def __init__(self):
-        self.api_url = UNIMTX_API_URL
-        self.access_key = UNIMTX_ACCESS_KEY
-        self.sender = UNIMTX_SENDER
+        self.account_sid = TWILIO_ACCOUNT_SID
+        self.auth_token = TWILIO_AUTH_TOKEN
+        self.from_phone = TWILIO_PHONE_NUMBER
         self.whatsapp = DEFAULT_WHATSAPP
-        self.enabled = bool(self.access_key)
+        self.enabled = bool(self.account_sid and self.auth_token and self.from_phone)
         
         if not self.enabled:
-            logger.warning("SMS Service disabled: UNIMTX_ACCESS_KEY not configured")
+            logger.warning("SMS Service disabled: Twilio credentials missing in .env")
         else:
-            logger.info(f"SMS Service enabled with sender: {self.sender}")
+            logger.info(f"SMS Service enabled with Twilio Account: {self.account_sid}")
     
     def set_whatsapp(self, whatsapp: str):
         """Update WhatsApp number dynamically"""
         self.whatsapp = whatsapp
         logger.info(f"WhatsApp number updated to: {whatsapp}")
     
-    async def send_template_sms(self, phone: str, template_id: str, whatsapp: str = None) -> dict:
+    async def send_content_sms(self, phone: str, content_sid: str, variables: dict = None) -> dict:
         """
-        Send SMS using a template
+        Send SMS using a Twilio Content SID
         Returns: dict with success status and details
         """
         result = {
             "success": False,
             "phone": phone,
-            "template": template_id,
+            "content_sid": content_sid,
             "error": None,
             "sent": False
         }
@@ -121,63 +122,70 @@ class SMSService:
             result["error"] = "SMS service not configured"
             logger.warning(f"SMS not sent (service disabled): {phone}")
             return result
+            
+        if not content_sid:
+            result["error"] = "Empty Content SID"
+            logger.warning(f"SMS not sent (empty SID): {phone}")
+            return result
         
         # Format the number
         formatted_phone = format_iraqi_number(phone)
         result["formatted_phone"] = formatted_phone
         
-        # Use provided whatsapp or default
-        whatsapp_number = whatsapp or self.whatsapp
+        # Default variables if none provided
+        if variables is None:
+            variables = {"1": self.whatsapp} # Default variable mapping
         
         try:
             async with httpx.AsyncClient(timeout=30.0) as client:
+                url = f"https://api.twilio.com/2010-04-01/Accounts/{self.account_sid}/Messages.json"
+                
                 # Build the request payload
                 payload = {
-                    "to": formatted_phone,
-                    "templateId": template_id,
-                    "signature": self.sender,
-                    "templateData": {
-                        "whatsapp": whatsapp_number
-                    }
+                    "To": formatted_phone,
+                    "From": self.from_phone,
+                    "ContentSid": content_sid,
+                    "ContentVariables": json.dumps(variables)
                 }
                 
                 response = await client.post(
-                    f"{self.api_url}/?action=sms.message.send&accessKeyId={self.access_key}",
-                    json=payload,
-                    headers={"Content-Type": "application/json"}
+                    url,
+                    data=payload,
+                    auth=(self.account_sid, self.auth_token)
                 )
                 
                 data = response.json()
                 
-                if data.get("code") == "0":
+                if response.status_code in [200, 201]:
                     result["success"] = True
                     result["sent"] = True
-                    messages = data.get("data", {}).get("messages", [])
-                    if messages:
-                        result["message_id"] = messages[0].get("id")
-                    logger.info(f"SMS sent successfully to {formatted_phone} using template {template_id}")
+                    result["message_sid"] = data.get("sid")
+                    logger.info(f"Twilio SMS sent successfully to {formatted_phone} using SID {content_sid}")
                 else:
-                    result["error"] = data.get("message", "Unknown error")
+                    result["error"] = data.get("message", "Twilio API Error")
                     result["error_code"] = data.get("code")
-                    logger.error(f"SMS failed: {data}")
+                    logger.error(f"Twilio SMS failed: {data}")
                     
         except Exception as e:
             result["error"] = str(e)
-            logger.exception(f"SMS exception for {phone}: {e}")
+            logger.exception(f"Twilio SMS exception for {phone}: {e}")
         
         return result
     
     async def send_order_submitted(self, phone: str, whatsapp: str = None) -> dict:
         """Send SMS when order is submitted"""
-        return await self.send_template_sms(phone, TEMPLATE_ORDER_CREATED, whatsapp)
+        vars = {"1": whatsapp or self.whatsapp}
+        return await self.send_content_sms(phone, TWILIO_CONTENT_ORDER_SUBMITTED, vars)
     
     async def send_order_approved(self, phone: str, whatsapp: str = None) -> dict:
         """Send SMS when order is approved"""
-        return await self.send_template_sms(phone, TEMPLATE_ORDER_APPROVED, whatsapp)
+        vars = {"1": whatsapp or self.whatsapp}
+        return await self.send_content_sms(phone, TWILIO_CONTENT_ORDER_APPROVED, vars)
     
     async def send_order_rejected(self, phone: str, whatsapp: str = None) -> dict:
         """Send SMS when order is rejected"""
-        return await self.send_template_sms(phone, TEMPLATE_ORDER_REJECTED, whatsapp)
+        vars = {"1": whatsapp or self.whatsapp}
+        return await self.send_content_sms(phone, TWILIO_CONTENT_ORDER_REJECTED, vars)
 
 
 # Create singleton

@@ -6,7 +6,7 @@ const UsdtOrders = () => {
   return (
     <BaseOrdersPage
       title="طلبات تعبئة USDT"
-      orderType="usdt"
+      orderType="usdt_recharge"
     />
   );
 };

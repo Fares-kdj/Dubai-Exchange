@@ -12,17 +12,13 @@ import arabic_reshaper
 import io
 import os
 from datetime import datetime, timezone
-from motor.motor_asyncio import AsyncIOMotorClient
 
 from models.user import Permission, UserInDB
 from routes.auth import get_current_user, require_permission
 
 router = APIRouter(prefix="/pdf", tags=["PDF Generator"])
 
-# MongoDB connection
-mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ.get('DB_NAME', 'test_database')]
+from database import db
 orders_collection = db.orders
 settings_collection = db.settings
 
@@ -74,7 +70,7 @@ async def generate_receipt(
     # Company name
     c.setFillColor(colors.white)
     c.setFont("Helvetica-Bold", 24)
-    c.drawCentredString(width / 2, height - 45, "Khair Baghdad Exchange")
+    c.drawCentredString(width / 2, height - 45, "Dubai International Exchange")
     
     c.setFont("Helvetica", 12)
     c.drawCentredString(width / 2, height - 65, "Financial Services & Currency Exchange")
@@ -221,8 +217,8 @@ async def generate_receipt(
     # Footer
     c.setFillColor(colors.HexColor("#94A3B8"))
     c.setFont("Helvetica", 9)
-    c.drawCentredString(width / 2, 80, "This is an official receipt from Khair Baghdad Exchange")
-    c.drawCentredString(width / 2, 65, "For inquiries: +964 XXX XXX XXXX | info@khairbaghdad.com")
+    c.drawCentredString(width / 2, 80, "This is an official receipt from Dubai International Exchange")
+    c.drawCentredString(width / 2, 65, "For inquiries: +964 XXX XXX XXXX | info@dubai-exchange.com")
     
     # Timestamp
     c.setFont("Helvetica", 8)
@@ -266,7 +262,7 @@ async def preview_receipt(order_id: str):
     
     # Simplified preview - just basic info
     c.setFont("Helvetica-Bold", 24)
-    c.drawCentredString(width / 2, height - 50, "Khair Baghdad Exchange")
+    c.drawCentredString(width / 2, height - 50, "Dubai International Exchange")
     
     c.setFont("Helvetica-Bold", 16)
     c.drawCentredString(width / 2, height - 100, "RECEIPT")

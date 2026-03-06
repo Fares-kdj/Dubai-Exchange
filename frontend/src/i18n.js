@@ -12,7 +12,7 @@ const resources = {
         contact: 'تواصل معنا'
       },
       hero: {
-        title: 'خير بغداد للصرافة',
+        title: 'دبي العالمية للصرافة',
         subtitle: 'خدمات صرافة موثوقة وسريعة',
         description: 'نوفر لك أفضل خدمات التحويلات المالية وحجز العملات بكل أمان وشفافية',
         ctaBooking: 'حجز دولار للمسافرين',
@@ -95,7 +95,7 @@ const resources = {
         contact: 'Contact Us'
       },
       hero: {
-        title: 'Khair Baghdad for Exchange',
+        title: 'Dubai International for Exchange',
         subtitle: 'Trusted and Fast Exchange Services',
         description: 'We provide the best money transfer and currency booking services with complete security and transparency',
         ctaBooking: 'Traveler USD Booking',
@@ -178,7 +178,7 @@ const resources = {
         contact: 'پەیوەندی'
       },
       hero: {
-        title: 'خەیر بەغداد بۆ گۆڕینەوە',
+        title: 'دوبەی نێودەوڵەتی بۆ گۆڕینەوە',
         subtitle: 'خزمەتگوزاریی گۆڕینەوەی متمانەپێکراو و خێرا',
         description: 'باشترین خزمەتگوزاریی گواستنەوەی پارە و حیجزکردنی دراو پێشکەش دەکەین',
         ctaBooking: 'حیجزکردنی دۆلار بۆ گەشتیاران',

@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Save, RefreshCw, Upload, Palette, Image } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
 const AdminBranding = () => {
+  const navigate = useNavigate();
   const [branding, setBranding] = useState({
     logo_url: '',
     logo_dark_url: '',
@@ -24,7 +27,18 @@ const AdminBranding = () => {
     try {
       const res = await fetch(API_URL + '/api/cms/branding');
       const data = await res.json();
-      setBranding(data);
+      // Fix relative upload URLs - prepend API_URL if path starts with /uploads/
+      const fixUrl = (url) => {
+        if (!url) return '';
+        if (url.startsWith('/uploads/')) return API_URL + url;
+        return url;
+      };
+      setBranding({
+        ...data,
+        logo_url: fixUrl(data.logo_url),
+        logo_dark_url: fixUrl(data.logo_dark_url),
+        favicon_url: fixUrl(data.favicon_url),
+      });
     } catch (err) {
       console.error('Error:', err);
     }
@@ -44,14 +58,40 @@ const AdminBranding = () => {
   const handleSave = async () => {
     setSaving(true);
     try {
-      await fetch(API_URL + '/api/cms/branding', {
+      // Convert full URLs back to relative paths for storage
+      const toRelative = (url) => {
+        if (!url) return url;
+        if (url.startsWith(API_URL + '/uploads/')) return url.replace(API_URL, '');
+        return url;
+      };
+      const payload = {
+        ...branding,
+        logo_url: toRelative(branding.logo_url),
+        logo_dark_url: toRelative(branding.logo_dark_url),
+        favicon_url: toRelative(branding.favicon_url),
+      };
+      const res = await fetch(API_URL + '/api/cms/branding', {
         method: 'PUT',
         headers: getAuthHeaders(),
-        body: JSON.stringify(branding)
+        body: JSON.stringify(payload)
       });
-      alert('تم الحفظ بنجاح!');
+      if (res.status === 401) {
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('adminUser');
+        toast.error('انتهت جلسة العمل، يرجى تسجيل الدخول مرة أخرى');
+        navigate('/admin/login');
+        return;
+      }
+      if (res.ok) {
+        toast.success('تم الحفظ بنجاح!');
+        // Notify BrandingContext to refetch immediately
+        window.dispatchEvent(new Event('branding-updated'));
+      } else {
+        toast.error('حدث خطأ أثناء الحفظ');
+      }
     } catch (err) {
       console.error('Error:', err);
+      toast.error('حدث خطأ في الاتصال');
     }
     setSaving(false);
   };
@@ -59,25 +99,53 @@ const AdminBranding = () => {
   const handleUpload = async (e, field) => {
     const file = e.target.files[0];
     if (!file) return;
-    
+
     setUploading(true);
     try {
       const formData = new FormData();
       formData.append('file', file);
-      
+
       const token = localStorage.getItem('adminToken');
       const res = await fetch(API_URL + '/api/cms/upload', {
         method: 'POST',
         headers: { 'Authorization': 'Bearer ' + token },
         body: formData
       });
-      
+
+      if (res.status === 401) {
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('adminUser');
+        toast.error('انتهت جلسة العمل، يرجى تسجيل الدخول مرة أخرى');
+        navigate('/admin/login');
+        return;
+      }
+
       if (res.ok) {
         const data = await res.json();
-        setBranding(Object.assign({}, branding, { [field]: data.url }));
+        // Prepend API_URL to relative upload path
+        const fullUrl = (data.url && data.url.startsWith('/uploads/'))
+          ? API_URL + data.url
+          : data.url;
+        setBranding(prev => ({ ...prev, [field]: fullUrl }));
+        toast.success('تم رفع الصورة بنجاح!');
+      } else {
+        let errorMsg = 'فشل رفع الصورة';
+        try {
+          const errorText = await res.text();
+          try {
+            const errorData = JSON.parse(errorText);
+            errorMsg = errorData.detail || errorMsg;
+          } catch (parseErr) {
+            errorMsg = errorText || errorMsg;
+          }
+        } catch (e) {
+          console.error('Error reading error response:', e);
+        }
+        toast.error(`${errorMsg}`);
       }
     } catch (err) {
       console.error('Error:', err);
+      toast.error('حدث خطأ في الاتصال أو حجم الملف كبير جداً');
     }
     setUploading(false);
   };
@@ -117,7 +185,7 @@ const AdminBranding = () => {
           <Image className="w-5 h-5 text-amber-500" />
           <h2 className="text-lg font-bold text-slate-900">الشعار</h2>
         </div>
-        
+
         <div className="grid grid-cols-3 gap-6">
           {/* Main Logo */}
           <div className="space-y-3">
@@ -134,7 +202,7 @@ const AdminBranding = () => {
                 <span className="text-sm text-blue-600 hover:underline">
                   {uploading ? 'جاري الرفع...' : 'رفع صورة'}
                 </span>
-                <input type="file" className="hidden" accept="image/*" onChange={function(e) { handleUpload(e, 'logo_url'); }} />
+                <input type="file" className="hidden" accept=".png,.jpg,.jpeg,.svg,.webp,.ico" onChange={function (e) { handleUpload(e, 'logo_url'); }} />
               </label>
             </div>
           </div>
@@ -152,7 +220,7 @@ const AdminBranding = () => {
               )}
               <label className="cursor-pointer">
                 <span className="text-sm text-blue-400 hover:underline">رفع صورة</span>
-                <input type="file" className="hidden" accept="image/*" onChange={function(e) { handleUpload(e, 'logo_dark_url'); }} />
+                <input type="file" className="hidden" accept=".png,.jpg,.jpeg,.svg,.webp,.ico" onChange={function (e) { handleUpload(e, 'logo_dark_url'); }} />
               </label>
             </div>
           </div>
@@ -170,92 +238,13 @@ const AdminBranding = () => {
               )}
               <label className="cursor-pointer">
                 <span className="text-sm text-blue-600 hover:underline">رفع صورة</span>
-                <input type="file" className="hidden" accept="image/*" onChange={function(e) { handleUpload(e, 'favicon_url'); }} />
+                <input type="file" className="hidden" accept=".png,.jpg,.jpeg,.svg,.webp,.ico" onChange={function (e) { handleUpload(e, 'favicon_url'); }} />
               </label>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Colors Section */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-        <div className="flex items-center gap-2 mb-6">
-          <Palette className="w-5 h-5 text-amber-500" />
-          <h2 className="text-lg font-bold text-slate-900">الألوان</h2>
-        </div>
-        
-        <div className="grid grid-cols-3 gap-6">
-          <div className="space-y-3">
-            <Label>اللون الأساسي (Primary)</Label>
-            <div className="flex gap-3">
-              <input
-                type="color"
-                value={branding.primary_color}
-                onChange={function(e) { updateColor('primary_color', e.target.value); }}
-                className="w-16 h-12 rounded cursor-pointer border-0"
-              />
-              <Input
-                value={branding.primary_color}
-                onChange={function(e) { updateColor('primary_color', e.target.value); }}
-                className="font-mono flex-1"
-              />
-            </div>
-            <div className="h-12 rounded-lg" style={{ backgroundColor: branding.primary_color }}></div>
-          </div>
-
-          <div className="space-y-3">
-            <Label>اللون الثانوي (Secondary)</Label>
-            <div className="flex gap-3">
-              <input
-                type="color"
-                value={branding.secondary_color}
-                onChange={function(e) { updateColor('secondary_color', e.target.value); }}
-                className="w-16 h-12 rounded cursor-pointer border-0"
-              />
-              <Input
-                value={branding.secondary_color}
-                onChange={function(e) { updateColor('secondary_color', e.target.value); }}
-                className="font-mono flex-1"
-              />
-            </div>
-            <div className="h-12 rounded-lg" style={{ backgroundColor: branding.secondary_color }}></div>
-          </div>
-
-          <div className="space-y-3">
-            <Label>اللون المميز (Accent)</Label>
-            <div className="flex gap-3">
-              <input
-                type="color"
-                value={branding.accent_color}
-                onChange={function(e) { updateColor('accent_color', e.target.value); }}
-                className="w-16 h-12 rounded cursor-pointer border-0"
-              />
-              <Input
-                value={branding.accent_color}
-                onChange={function(e) { updateColor('accent_color', e.target.value); }}
-                className="font-mono flex-1"
-              />
-            </div>
-            <div className="h-12 rounded-lg" style={{ backgroundColor: branding.accent_color }}></div>
-          </div>
-        </div>
-      </div>
-
-      {/* Preview */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-        <h2 className="text-lg font-bold text-slate-900 mb-4">معاينة الألوان</h2>
-        <div className="flex gap-4">
-          <button className="px-6 py-3 rounded-xl text-white font-medium" style={{ backgroundColor: branding.primary_color }}>
-            زر أساسي
-          </button>
-          <button className="px-6 py-3 rounded-xl text-white font-medium" style={{ backgroundColor: branding.secondary_color }}>
-            زر ثانوي
-          </button>
-          <button className="px-6 py-3 rounded-xl font-medium" style={{ backgroundColor: branding.accent_color }}>
-            زر مميز
-          </button>
-        </div>
-      </div>
     </div>
   );
 };

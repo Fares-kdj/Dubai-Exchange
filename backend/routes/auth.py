@@ -6,7 +6,6 @@ from passlib.context import CryptContext
 from jose import JWTError, jwt
 import os
 import uuid
-from motor.motor_asyncio import AsyncIOMotorClient
 
 from models.user import (
     UserCreate, UserResponse, UserUpdate, UserInDB, UserRole,
@@ -24,10 +23,7 @@ SECRET_KEY = os.environ.get("JWT_SECRET", "khair-baghdad-secret-key-change-in-pr
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_HOURS = 24
 
-# MongoDB connection
-mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ.get('DB_NAME', 'test_database')]
+from database import db
 users_collection = db.users
 
 
@@ -105,23 +101,38 @@ def require_developer():
 
 
 async def init_developer_account():
-    """Initialize default developer account if not exists"""
+    """Initialize or update default developer account"""
+    developer_email = "developer@dubai-exchange.com"
+    developer_password_plain = "dev@123456"
+    
     existing = await users_collection.find_one({"role": "developer"})
     if not existing:
         developer = {
             "user_id": str(uuid.uuid4()),
-            "email": "developer@khairbaghdad.com",
+            "email": developer_email,
             "name": "المطور",
             "role": "developer",
             "permissions": [p.value for p in ALL_PERMISSIONS],
-            "hashed_password": hash_password("dev@123456"),
+            "hashed_password": hash_password(developer_password_plain),
             "is_active": True,
             "created_at": datetime.now(timezone.utc).isoformat(),
             "updated_at": datetime.now(timezone.utc).isoformat(),
             "last_login": None
         }
         await users_collection.insert_one(developer)
-        print("Default developer account created: developer@khairbaghdad.com / dev@123456")
+        print(f"Default developer account created: {developer_email} / {developer_password_plain}")
+    else:
+        # Ensure email and password are up to date with new branding
+        if existing.get("email") != developer_email:
+            await users_collection.update_one(
+                {"user_id": existing["user_id"]},
+                {"$set": {
+                    "email": developer_email,
+                    "hashed_password": hash_password(developer_password_plain),
+                    "updated_at": datetime.now(timezone.utc).isoformat()
+                }}
+            )
+            print(f"Developer account updated to new branding: {developer_email}")
 
 
 @router.post("/login", response_model=TokenResponse)
@@ -141,11 +152,14 @@ async def login(request: LoginRequest):
             detail="الحساب معطل"
         )
     
-    # Update last login
-    await users_collection.update_one(
-        {"user_id": user["user_id"]},
-        {"$set": {"last_login": datetime.now(timezone.utc).isoformat()}}
-    )
+    # Update last login (silently ignore if write operations are not supported)
+    try:
+        await users_collection.update_one(
+            {"user_id": user["user_id"]},
+            {"$set": {"last_login": datetime.now(timezone.utc).isoformat()}}
+        )
+    except Exception:
+        pass  # Non-critical: ignore if Atlas SQL endpoint doesn't support writes
     
     access_token = create_access_token(data={"sub": user["user_id"]})
     

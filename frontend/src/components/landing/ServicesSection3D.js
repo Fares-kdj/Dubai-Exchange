@@ -1,16 +1,21 @@
 import React, { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
 import { useTheme } from '@/context/ThemeContext';
 import { SERVICES } from '@/config/assets';
-import { Plane, Send, CreditCard, Coins, ArrowRight } from 'lucide-react';
+import { Plane, Send, CreditCard, Coins, ArrowRight, MapPin, Globe, Package, Wallet, ArrowLeftRight } from 'lucide-react';
 
 const iconMap = {
   plane: Plane,
   send: Send,
   'credit-card': CreditCard,
-  coins: Coins
+  coins: Coins,
+  'map-pin': MapPin,
+  globe: Globe,
+  package: Package,
+  wallet: Wallet,
+  'arrow-left-right': ArrowLeftRight
 };
 
 const ServiceCard = ({ service, index, isArabic, isKurdish, isDark }) => {
@@ -42,30 +47,32 @@ const ServiceCard = ({ service, index, isArabic, isKurdish, isDark }) => {
     return service.descEn;
   };
 
-  return (
+  const isExternal = service.link?.startsWith('http');
+  const finalLink = !isExternal && service.link && !service.link.startsWith('/')
+    ? '/' + service.link
+    : service.link;
+
+  const cardContent = (
     <motion.div
       initial={{ opacity: 0, y: 50, rotateY: -15 }}
       whileInView={{ opacity: 1, y: 0, rotateY: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.6, delay: index * 0.15 }}
-      whileHover={{ 
-        scale: 1.05, 
+      whileHover={{
+        scale: 1.05,
         rotateY: 5,
-        z: 50 
+        z: 50
       }}
       style={{ transformStyle: 'preserve-3d' }}
-      className="group cursor-pointer perspective-1000"
-      onClick={() => navigate(service.link)}
-      data-testid={`service-card-${service.id}`}
+      className="group cursor-pointer perspective-1000 h-full"
     >
-      <div className={`relative backdrop-blur-xl border rounded-3xl p-8 h-full overflow-hidden transition-all duration-500 hover:shadow-2xl hover:shadow-[#D4AF37]/20 ${
-        isDark 
-          ? 'bg-white/10 border-white/20 hover:bg-white/20 hover:border-white/30'
-          : 'bg-white border-slate-200 hover:bg-slate-50 hover:border-[#D4AF37]/30 shadow-lg'
-      }`}>
+      <div className={`relative backdrop-blur-xl border rounded-3xl p-8 h-full overflow-hidden transition-all duration-500 hover:shadow-2xl hover:shadow-[#D4AF37]/20 ${isDark
+        ? 'bg-white/10 border-white/20 hover:bg-white/20 hover:border-white/30'
+        : 'bg-white border-slate-200 hover:bg-slate-50 hover:border-[#D4AF37]/30 shadow-lg'
+        }`}>
         {/* Gradient Overlay */}
         <div className={`absolute inset-0 bg-gradient-to-br ${gradients[index % 4]} opacity-0 group-hover:opacity-10 transition-opacity duration-500`} />
-        
+
         {/* Glow Effect */}
         <div className="absolute -top-20 -right-20 w-40 h-40 bg-[#D4AF37]/20 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
@@ -79,11 +86,10 @@ const ServiceCard = ({ service, index, isArabic, isKurdish, isDark }) => {
         </motion.div>
 
         {/* Title */}
-        <h3 className={`text-xl font-bold mb-3 transition-colors ${
-          isDark 
-            ? 'text-white group-hover:text-[#FCD34D]'
-            : 'text-slate-900 group-hover:text-[#B8860B]'
-        }`}>
+        <h3 className={`text-xl font-bold mb-3 transition-colors ${isDark
+          ? 'text-white group-hover:text-[#FCD34D]'
+          : 'text-slate-900 group-hover:text-[#B8860B]'
+          }`}>
           {getTitle()}
         </h3>
 
@@ -93,14 +99,27 @@ const ServiceCard = ({ service, index, isArabic, isKurdish, isDark }) => {
         </p>
 
         {/* CTA */}
-        <div className={`flex items-center gap-2 font-medium group-hover:gap-3 transition-all ${
-          isDark ? 'text-[#D4AF37]' : 'text-[#B8860B]'
-        }`}>
+        <div className={`flex items-center gap-2 font-medium group-hover:gap-3 transition-all ${isDark ? 'text-[#D4AF37]' : 'text-[#B8860B]'
+          }`}>
           <span>{isKurdish ? ctaText.ku : isArabic ? ctaText.ar : ctaText.en}</span>
           <ArrowRight className="w-4 h-4" />
         </div>
       </div>
     </motion.div>
+  );
+
+  if (isExternal) {
+    return (
+      <a href={finalLink} target="_blank" rel="noopener noreferrer" className="contents no-underline">
+        {cardContent}
+      </a>
+    );
+  }
+
+  return (
+    <Link to={finalLink || '#'} className="contents no-underline">
+      {cardContent}
+    </Link>
   );
 };
 
@@ -111,6 +130,44 @@ export const ServicesSection3D = () => {
   const isKurdish = currentLanguage === 'ku';
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
+  const [services, setServices] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+  const API_URL = process.env.REACT_APP_BACKEND_URL;
+
+  React.useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/cms/services?active_only=true`);
+        if (res.ok) {
+          const data = await res.json();
+          // Map backend data to frontend format and EXCLUDE hero pinned
+          const mapped = data
+            .filter(s => !s.is_hero_pinned)
+            .map(s => ({
+              id: s.service_id,
+              titleAr: s.name_ar,
+              titleEn: s.name_en,
+              titleKu: s.name_ku,
+              descAr: s.description_ar,
+              descEn: s.description_en,
+              descKu: s.description_ku,
+              icon: s.icon.toLowerCase(),
+              link: s.route
+            }));
+          setServices(mapped);
+        } else {
+          // Fallback to static services if API fails
+          setServices(SERVICES);
+        }
+      } catch (err) {
+        console.error('Error fetching services:', err);
+        setServices(SERVICES);
+      }
+      setLoading(false);
+    };
+
+    fetchServices();
+  }, [API_URL]);
 
   const text = {
     ar: {
@@ -133,13 +190,12 @@ export const ServicesSection3D = () => {
   const t = text[currentLanguage] || text.ar;
 
   return (
-    <section 
+    <section
       ref={sectionRef}
-      className={`relative py-24 md:py-32 overflow-hidden transition-colors duration-500 ${
-        isDark 
-          ? 'bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900'
-          : 'bg-gradient-to-b from-white via-amber-50/30 to-white'
-      }`}
+      className={`relative py-24 md:py-32 overflow-hidden transition-colors duration-500 ${isDark
+        ? 'bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900'
+        : 'bg-gradient-to-b from-white via-amber-50/30 to-white'
+        }`}
       id="services"
     >
       {/* Background Effects */}
@@ -156,23 +212,22 @@ export const ServicesSection3D = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <motion.span 
+          <motion.span
             initial={{ opacity: 0, scale: 0.8 }}
             animate={isInView ? { opacity: 1, scale: 1 } : {}}
             transition={{ delay: 0.2 }}
-            className={`inline-block px-4 py-2 mb-6 rounded-full text-sm font-medium ${
-              isDark 
-                ? 'bg-[#D4AF37]/20 border border-[#D4AF37]/30 text-[#FCD34D]'
-                : 'bg-[#D4AF37]/10 border border-[#D4AF37]/20 text-[#B8860B]'
-            }`}
+            className={`inline-block px-4 py-2 mb-6 rounded-full text-sm font-medium ${isDark
+              ? 'bg-[#D4AF37]/20 border border-[#D4AF37]/30 text-[#FCD34D]'
+              : 'bg-[#D4AF37]/10 border border-[#D4AF37]/20 text-[#B8860B]'
+              }`}
           >
             {t.badge}
           </motion.span>
-          
+
           <h2 className={`text-3xl sm:text-5xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
             {t.title}
           </h2>
-          
+
           <p className={`text-lg max-w-2xl mx-auto ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
             {t.subtitle}
           </p>
@@ -180,16 +235,23 @@ export const ServicesSection3D = () => {
 
         {/* Services Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {SERVICES.map((service, index) => (
-            <ServiceCard 
-              key={service.id} 
-              service={service} 
-              index={index}
-              isArabic={isArabic}
-              isKurdish={isKurdish}
-              isDark={isDark}
-            />
-          ))}
+          {loading ? (
+            // Loading placeholder
+            [...Array(4)].map((_, i) => (
+              <div key={i} className="h-64 rounded-3xl bg-slate-100 animate-pulse" />
+            ))
+          ) : (
+            services.map((service, index) => (
+              <ServiceCard
+                key={service.id}
+                service={service}
+                index={index}
+                isArabic={isArabic}
+                isKurdish={isKurdish}
+                isDark={isDark}
+              />
+            ))
+          )}
         </div>
       </div>
     </section>

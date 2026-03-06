@@ -3,29 +3,28 @@ from typing import Optional, List
 from datetime import datetime, timezone
 import os
 import uuid
-from motor.motor_asyncio import AsyncIOMotorClient
+from pathlib import Path
 
 from models.cms import (
     ServiceCreate, ServiceResponse, ServiceUpdate, ServiceField,
     CountryCreate, CountryResponse, CountryUpdate,
-    ContentBlock, ContentUpdate, BrandingSettings
+    ContentBlock, ContentUpdate, BrandingSettings,
+    PredefinedMethod, PredefinedMethodUpdate, WesternUnionSettings, MoneyGramSettings
 )
 from models.user import Permission, UserInDB
 from routes.auth import get_current_user, require_permission, check_permission
 
 router = APIRouter(prefix="/cms", tags=["CMS"])
 
-# MongoDB connection
-mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ.get('DB_NAME', 'test_database')]
-
+from database import db
 services_collection = db.services
 countries_collection = db.countries
 content_collection = db.content
 settings_collection = db.settings
+predefined_methods_collection = db.predefined_methods
 
-UPLOAD_DIR = "/app/uploads"
+UPLOAD_DIR = str(Path(__file__).parent.parent / "uploads")
+os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 
 # ============ Services ============
@@ -60,6 +59,7 @@ async def create_service(
     service_doc["updated_at"] = now
     
     await services_collection.insert_one(service_doc)
+    service_doc.pop("_id", None)
     return ServiceResponse(**service_doc)
 
 
@@ -139,6 +139,7 @@ async def create_country(
         raise HTTPException(status_code=400, detail="Country already exists")
     
     await countries_collection.insert_one(country_doc)
+    country_doc.pop("_id", None)
     return CountryResponse(**country_doc)
 
 
@@ -178,6 +179,66 @@ async def delete_country(
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Country not found")
     return {"message": "Country deleted"}
+
+
+# ============ Predefined Methods (Templates) ============
+
+@router.get("/predefined-methods", response_model=List[PredefinedMethod])
+async def list_predefined_methods():
+    """List all predefined method templates"""
+    cursor = predefined_methods_collection.find({}, {"_id": 0})
+    methods = await cursor.to_list(length=100)
+    return [PredefinedMethod(**m) for m in methods]
+
+
+@router.post("/predefined-methods", response_model=PredefinedMethod)
+async def create_predefined_method(
+    method: PredefinedMethod,
+    current_user: UserInDB = Depends(require_permission(Permission.MANAGE_COUNTRIES))
+):
+    """Create new predefined method template"""
+    existing = await predefined_methods_collection.find_one({"method_id": method.method_id})
+    if existing:
+        raise HTTPException(status_code=400, detail="Method template ID already exists")
+    
+    method_doc = method.model_dump()
+    await predefined_methods_collection.insert_one(method_doc)
+    method_doc.pop("_id", None)
+    return PredefinedMethod(**method_doc)
+
+
+@router.put("/predefined-methods/{method_id}", response_model=PredefinedMethod)
+async def update_predefined_method(
+    method_id: str,
+    update: PredefinedMethodUpdate,
+    current_user: UserInDB = Depends(require_permission(Permission.MANAGE_COUNTRIES))
+):
+    """Update predefined method template"""
+    update_doc = update.model_dump(exclude_unset=True)
+    
+    result = await predefined_methods_collection.find_one_and_update(
+        {"method_id": method_id},
+        {"$set": update_doc},
+        return_document=True,
+        projection={"_id": 0}
+    )
+    
+    if not result:
+        raise HTTPException(status_code=404, detail="Method template not found")
+    
+    return PredefinedMethod(**result)
+
+
+@router.delete("/predefined-methods/{method_id}")
+async def delete_predefined_method(
+    method_id: str,
+    current_user: UserInDB = Depends(require_permission(Permission.MANAGE_COUNTRIES))
+):
+    """Delete predefined method template"""
+    result = await predefined_methods_collection.delete_one({"method_id": method_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Method template not found")
+    return {"message": "Method template deleted"}
 
 
 # ============ Content Blocks ============
@@ -242,6 +303,7 @@ async def get_branding():
     settings = await settings_collection.find_one({"type": "branding"}, {"_id": 0})
     if not settings:
         return BrandingSettings()
+    settings.pop("type", None)
     return BrandingSettings(**settings)
 
 
@@ -270,21 +332,48 @@ async def upload_file(
     current_user: UserInDB = Depends(require_permission(Permission.EDIT_BRANDING))
 ):
     """Upload file (logo, images, etc.)"""
-    # Validate file type
-    allowed_types = ["image/jpeg", "image/png", "image/gif", "image/svg+xml", "image/webp"]
-    if file.content_type not in allowed_types:
-        raise HTTPException(status_code=400, detail="Invalid file type")
-    
-    # Generate filename
-    ext = file.filename.split(".")[-1] if "." in file.filename else "png"
+    # Validate by file extension (more reliable than content_type which varies by browser)
+    allowed_extensions = {"jpg", "jpeg", "png", "gif", "svg", "webp", "ico"}
+    allowed_content_types = [
+        "image/jpeg", "image/jpg", "image/png", "image/gif",
+        "image/svg+xml", "image/webp", "image/x-icon",
+        "image/vnd.microsoft.icon", "application/octet-stream",
+        "image/x-png", "image/apng", "image/pjpeg", "image/bmp", "image/x-windows-bmp",
+    ]
+
+    # Get extension from filename
+    ext = ""
+    if file.filename and "." in file.filename:
+        ext = file.filename.rsplit(".", 1)[-1].lower()
+
+    # Validate: must pass either extension check or content_type check
+    ext_ok = ext in allowed_extensions
+    ctype_ok = file.content_type in allowed_content_types if file.content_type else False
+
+    if not ext_ok and not ctype_ok:
+        raise HTTPException(
+            status_code=400,
+            detail=f"نوع الملف غير مدعوم ({file.content_type if file.content_type else 'unknown'}). الأنواع المدعومة: PNG, JPG, GIF, SVG, WebP, ICO"
+        )
+
+    # Use extension from filename or fall back to content_type hint
+    if not ext:
+        content_type_map = {
+            "image/jpeg": "jpg", "image/jpg": "jpg", "image/png": "png",
+            "image/gif": "gif", "image/svg+xml": "svg", "image/webp": "webp",
+            "image/x-png": "png",
+        }
+        ext = content_type_map.get(file.content_type, "png")
+
+    # Generate unique filename
     filename = f"{uuid.uuid4().hex}.{ext}"
     filepath = os.path.join(UPLOAD_DIR, filename)
-    
+
     # Save file
     content = await file.read()
     with open(filepath, "wb") as f:
         f.write(content)
-    
+
     return {"url": f"/uploads/{filename}", "filename": filename}
 
 
@@ -295,8 +384,16 @@ async def get_terms():
     """Get terms and conditions content (public)"""
     terms = await settings_collection.find_one({"type": "terms"}, {"_id": 0})
     if not terms:
-        return None
-    return terms.get("content", {})
+        return {
+            "ar": {"title": "الشروط والأحكام", "sections": []},
+            "en": {"title": "Terms and Conditions", "sections": []},
+            "ku": {"title": "مەرج و رێساکان", "sections": []}
+        }
+    return terms.get("content", {
+        "ar": {"title": "الشروط والأحكام", "sections": []},
+        "en": {"title": "Terms and Conditions", "sections": []},
+        "ku": {"title": "مەرج و رێساکان", "sections": []}
+    })
 
 
 @router.put("/terms")
@@ -328,8 +425,16 @@ async def get_contact():
     """Get contact information (public)"""
     contact = await settings_collection.find_one({"type": "contact"}, {"_id": 0})
     if not contact:
-        return None
-    return contact.get("content", {})
+        return {
+            "ar": {"address": "", "phone": "", "email": "", "working_hours": ""},
+            "en": {"address": "", "phone": "", "email": "", "working_hours": ""},
+            "ku": {"address": "", "phone": "", "email": "", "working_hours": ""}
+        }
+    return contact.get("content", {
+        "ar": {"address": "", "phone": "", "email": "", "working_hours": ""},
+        "en": {"address": "", "phone": "", "email": "", "working_hours": ""},
+        "ku": {"address": "", "phone": "", "email": "", "working_hours": ""}
+    })
 
 
 @router.put("/contact")
@@ -354,6 +459,68 @@ async def update_contact(
     return {"message": "Contact info updated", "content": content}
 
 
+# ============ Western Union Settings ============
+
+@router.get("/settings/western-union", response_model=WesternUnionSettings)
+async def get_wu_settings():
+    """Get Western Union settings (MTCN base)"""
+    settings = await settings_collection.find_one({"type": "western_union"}, {"_id": 0})
+    if not settings:
+        return WesternUnionSettings()
+    settings.pop("type", None)
+    return WesternUnionSettings(**settings)
+
+
+@router.put("/settings/western-union", response_model=WesternUnionSettings)
+async def update_wu_settings(
+    settings: WesternUnionSettings,
+    current_user: UserInDB = Depends(require_permission(Permission.EDIT_BRANDING))
+):
+    """Update Western Union settings"""
+    settings_doc = settings.model_dump()
+    settings_doc["type"] = "western_union"
+    settings_doc["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    await settings_collection.update_one(
+        {"type": "western_union"},
+        {"$set": settings_doc},
+        upsert=True
+    )
+    
+    return settings
+
+
+# ============ MoneyGram Settings ============
+
+@router.get("/settings/moneygram", response_model=MoneyGramSettings)
+async def get_mg_settings():
+    """Get MoneyGram settings (Reference base)"""
+    settings = await settings_collection.find_one({"type": "moneygram"}, {"_id": 0})
+    if not settings:
+        return MoneyGramSettings()
+    settings.pop("type", None)
+    return MoneyGramSettings(**settings)
+
+
+@router.put("/settings/moneygram", response_model=MoneyGramSettings)
+async def update_mg_settings(
+    settings: MoneyGramSettings,
+    current_user: UserInDB = Depends(require_permission(Permission.EDIT_BRANDING))
+):
+    """Update MoneyGram settings"""
+    settings_doc = settings.model_dump()
+    settings_doc["type"] = "moneygram"
+    settings_doc["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    await settings_collection.update_one(
+        {"type": "moneygram"},
+        {"$set": settings_doc},
+        upsert=True
+    )
+    
+    return settings
+
+
 # ============ Initialize Default Data ============
 
 async def init_default_services():
@@ -365,8 +532,10 @@ async def init_default_services():
                 "service_id": "traveler_booking",
                 "name_ar": "حجز الدولار للمسافرين",
                 "name_en": "Traveler USD Booking",
+                "name_ku": "نۆرەکردنی دۆلار بۆ گەشتیاران",
                 "description_ar": "حجز الدولار الأمريكي للسفر",
                 "description_en": "Book US dollars for travel",
+                "description_ku": "بە ئاسانی دۆلارەکانت نۆرە بکە پێش گەشتکردن",
                 "icon": "Plane",
                 "color": "#3B82F6",
                 "is_active": True,
@@ -382,8 +551,10 @@ async def init_default_services():
                 "service_id": "local_transfer",
                 "name_ar": "تحويل محلي",
                 "name_en": "Local Transfer",
+                "name_ku": "گواستنەوەی ناوخۆیی",
                 "description_ar": "تحويل أموال داخل العراق",
                 "description_en": "Money transfer within Iraq",
+                "description_ku": "گواستنەوەی پارە لەناو عێراقدا",
                 "icon": "MapPin",
                 "color": "#10B981",
                 "is_active": True,
@@ -399,8 +570,10 @@ async def init_default_services():
                 "service_id": "international_transfer",
                 "name_ar": "تحويل دولي",
                 "name_en": "International Transfer",
+                "name_ku": "گواستنەوەی نێودەوڵەتی",
                 "description_ar": "تحويل أموال دولي",
                 "description_en": "International money transfer",
+                "description_ku": "گواستنەوەی پارەی نێودەوڵەتی",
                 "icon": "Globe",
                 "color": "#8B5CF6",
                 "is_active": True,
@@ -469,3 +642,83 @@ async def init_default_countries():
         ]
         await countries_collection.insert_many(default_countries)
         print("Default countries created")
+async def init_predefined_methods():
+    """Seed predefined transfer methods if collection is empty"""
+    count = await predefined_methods_collection.count_documents({})
+    if count == 0:
+        default_methods = [
+            {
+                "method_id": "western_union",
+                "name_ar": "ويسترن يونيون",
+                "name_en": "Western Union",
+                "name_ku": "ويسترن يونيون",
+                "description": "Standard transfer via Western Union",
+                "fee_type": "percentage",
+                "fee_value": 2.0,
+                "exchange_rate": 1.0,
+                "duration": "Instant",
+                "fields": [
+                    {
+                        "field_id": "mtcn",
+                        "name_ar": "رقم الحوالة (MTCN)",
+                        "name_en": "MTCN Number",
+                        "name_ku": "ژمارەی حەواڵە (MTCN)",
+                        "field_type": "text",
+                        "required": True,
+                        "order": 1
+                    }
+                ],
+                "is_active": True
+            },
+            {
+                "method_id": "ria",
+                "name_ar": "ريا",
+                "name_en": "Ria Money Transfer",
+                "name_ku": "ريا",
+                "description": "RIA money transfer template",
+                "fee_type": "percentage",
+                "fee_value": 1.5,
+                "exchange_rate": 1.0,
+                "duration": "10-30 mins",
+                "fields": [
+                    {
+                        "field_id": "pin_code",
+                        "name_ar": "رمز التحويل (PIN)",
+                        "name_en": "Reference Number",
+                        "name_ku": "کۆدی حەواڵە (PIN)",
+                        "field_type": "text",
+                        "required": True,
+                        "order": 1
+                    }
+                ],
+                "is_active": True
+            },
+            {
+                "method_id": "bank_dropdown_test",
+                "name_ar": "تحويل بنكي",
+                "name_en": "Bank Transfer",
+                "name_ku": "گواستنەوەی بانکی",
+                "description": "Template with dropdown field",
+                "fee_type": "fixed",
+                "fee_value": 5000.0,
+                "fields": [
+                    {
+                        "field_id": "bank_name",
+                        "name_ar": "اسم البنك",
+                        "name_en": "Bank Name",
+                        "name_ku": "ناوی بانک",
+                        "field_type": "select",
+                        "required": True,
+                        "options": [
+                            {"value": "tbi", "label": "Banque de Commerce de l'Irak (TBI)"},
+                            {"value": "rafidain", "label": "Banque Rafidain"},
+                            {"value": "fib", "label": "First Iraqi Bank (FIB)"}
+                        ],
+                        "order": 1
+                    }
+                ],
+                "is_active": True
+            }
+        ]
+        await predefined_methods_collection.insert_many(default_methods)
+        print("Default predefined methods initialized")

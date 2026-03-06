@@ -6,7 +6,7 @@ const CardOrders = () => {
   return (
     <BaseOrdersPage
       title="طلبات شحن البطاقات"
-      orderType="card"
+      orderType="card_recharge"
     />
   );
 };

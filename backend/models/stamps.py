@@ -14,6 +14,7 @@ class StampType(str, Enum):
 class StampBase(BaseModel):
     name_ar: str
     name_en: Optional[str] = None
+    name_ku: Optional[str] = None
     stamp_type: StampType
     stamp_image: Optional[str] = None  # URL to uploaded image
     is_active: bool = True
@@ -27,6 +28,7 @@ class StampCreate(StampBase):
 class StampUpdate(BaseModel):
     name_ar: Optional[str] = None
     name_en: Optional[str] = None
+    name_ku: Optional[str] = None
     stamp_image: Optional[str] = None
     is_active: Optional[bool] = None
     sort_order: Optional[int] = None

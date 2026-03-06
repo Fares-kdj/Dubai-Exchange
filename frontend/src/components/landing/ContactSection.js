@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { useLanguage } from '@/context/LanguageContext';
+import { toast } from 'sonner';
 import { useTheme } from '@/context/ThemeContext';
 import { ASSETS } from '@/config/assets';
 import { Phone, Mail, MapPin, MessageCircle, Clock, Send, Facebook, Instagram, Twitter, Youtube, Linkedin } from 'lucide-react';
@@ -117,24 +118,24 @@ export const ContactSection = () => {
   // Helper to get localized data from CMS format or default format
   const getLocalizedField = (data, field) => {
     if (!data) return '';
-    
+
     // CMS format: { ar: { address: "..." }, en: { address: "..." } }
     const lang = isKurdish ? 'ku' : isArabic ? 'ar' : 'en';
     if (data[lang] && data[lang][field]) {
       return data[lang][field];
     }
-    
+
     // Fallback to ar if current lang not available
     if (data.ar && data.ar[field]) {
       return data.ar[field];
     }
-    
+
     // Default format: { field: { ar: "...", en: "..." } }
     if (data[field]) {
       if (typeof data[field] === 'string') return data[field];
       return isKurdish ? data[field].ku : isArabic ? data[field].ar : data[field].en;
     }
-    
+
     return '';
   };
 
@@ -155,7 +156,7 @@ export const ContactSection = () => {
     setTimeout(() => {
       setSending(false);
       setFormData({ name: '', phone: '', message: '' });
-      alert(isArabic ? 'تم إرسال رسالتك بنجاح!' : isKurdish ? 'نامەکەت بە سەرکەوتوویی نێردرا!' : 'Your message has been sent!');
+      toast.success(isArabic ? 'تم إرسال رسالتك بنجاح!' : isKurdish ? 'نامەکەت بە سەرکەوتوویی نێردرا!' : 'Your message has been sent!');
     }, 1000);
   };
 
@@ -196,13 +197,12 @@ export const ContactSection = () => {
   };
 
   return (
-    <section 
+    <section
       ref={sectionRef}
-      className={`relative py-24 md:py-32 overflow-hidden transition-colors duration-500 ${
-        isDark 
-          ? 'bg-slate-900'
-          : 'bg-slate-100'
-      }`}
+      className={`relative py-24 md:py-32 overflow-hidden transition-colors duration-500 ${isDark
+        ? 'bg-slate-900'
+        : 'bg-slate-100'
+        }`}
       id="contact"
     >
       {/* Background */}
@@ -219,23 +219,22 @@ export const ContactSection = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <motion.span 
+          <motion.span
             initial={{ opacity: 0, scale: 0.8 }}
             animate={isInView ? { opacity: 1, scale: 1 } : {}}
             transition={{ delay: 0.2 }}
-            className={`inline-block px-4 py-2 mb-6 rounded-full text-sm font-medium ${
-              isDark 
-                ? 'bg-[#D4AF37]/20 border border-[#D4AF37]/30 text-[#FCD34D]'
-                : 'bg-[#D4AF37]/10 border border-[#D4AF37]/20 text-[#B8860B]'
-            }`}
+            className={`inline-block px-4 py-2 mb-6 rounded-full text-sm font-medium ${isDark
+              ? 'bg-[#D4AF37]/20 border border-[#D4AF37]/30 text-[#FCD34D]'
+              : 'bg-[#D4AF37]/10 border border-[#D4AF37]/20 text-[#B8860B]'
+              }`}
           >
             {t.badge}
           </motion.span>
-          
+
           <h2 className={`text-3xl sm:text-5xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
             {t.title}
           </h2>
-          
+
           <p className={`text-lg max-w-2xl mx-auto ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
             {t.subtitle}
           </p>
@@ -255,11 +254,10 @@ export const ContactSection = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ delay: 0.1 * index }}
-                className={`p-5 rounded-2xl border flex items-start gap-4 transition-all ${
-                  isDark 
-                    ? 'bg-white/5 border-white/10 hover:bg-white/10'
-                    : 'bg-white border-slate-200 hover:shadow-lg'
-                } ${card.href ? 'cursor-pointer' : ''}`}
+                className={`p-5 rounded-2xl border flex items-start gap-4 transition-all ${isDark
+                  ? 'bg-white/5 border-white/10 hover:bg-white/10'
+                  : 'bg-white border-slate-200 hover:shadow-lg'
+                  } ${card.href ? 'cursor-pointer' : ''}`}
                 onClick={() => card.href && window.open(card.href, '_blank')}
               >
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${colorMap[card.color].bg}`}>
@@ -281,9 +279,8 @@ export const ContactSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: 0.6 }}
-              className={`p-5 rounded-2xl border ${
-                isDark ? 'bg-white/5 border-white/10' : 'bg-white border-slate-200'
-              }`}
+              className={`p-5 rounded-2xl border ${isDark ? 'bg-white/5 border-white/10' : 'bg-white border-slate-200'
+                }`}
             >
               <div className={`text-sm mb-4 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                 {t.followUs}
@@ -297,11 +294,10 @@ export const ContactSection = () => {
                     rel="noopener noreferrer"
                     whileHover={{ scale: 1.1, y: -2 }}
                     whileTap={{ scale: 0.9 }}
-                    className={`w-11 h-11 rounded-xl flex items-center justify-center transition-colors ${
-                      isDark 
-                        ? 'bg-white/10 text-slate-400'
-                        : 'bg-slate-100 text-slate-500'
-                    } ${social.color}`}
+                    className={`w-11 h-11 rounded-xl flex items-center justify-center transition-colors ${isDark
+                      ? 'bg-white/10 text-slate-400'
+                      : 'bg-slate-100 text-slate-500'
+                      } ${social.color}`}
                     aria-label={social.label}
                   >
                     <social.icon className="w-5 h-5" />
@@ -317,11 +313,10 @@ export const ContactSection = () => {
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.6 }}
           >
-            <div className={`p-8 rounded-3xl border ${
-              isDark 
-                ? 'bg-white/5 border-white/10'
-                : 'bg-white border-slate-200 shadow-xl'
-            }`}>
+            <div className={`p-8 rounded-3xl border ${isDark
+              ? 'bg-white/5 border-white/10'
+              : 'bg-white border-slate-200 shadow-xl'
+              }`}>
               <h3 className={`text-xl font-bold mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 {t.formTitle}
               </h3>
@@ -336,11 +331,10 @@ export const ContactSection = () => {
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className={`w-full px-4 py-3 rounded-xl border transition-colors ${
-                      isDark 
-                        ? 'bg-white/5 border-white/20 text-white focus:border-[#D4AF37]'
-                        : 'bg-slate-50 border-slate-200 text-slate-900 focus:border-[#D4AF37]'
-                    } outline-none`}
+                    className={`w-full px-4 py-3 rounded-xl border transition-colors ${isDark
+                      ? 'bg-white/5 border-white/20 text-white focus:border-[#D4AF37]'
+                      : 'bg-slate-50 border-slate-200 text-slate-900 focus:border-[#D4AF37]'
+                      } outline-none`}
                     data-testid="contact-name"
                   />
                 </div>
@@ -354,11 +348,10 @@ export const ContactSection = () => {
                     required
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className={`w-full px-4 py-3 rounded-xl border transition-colors ${
-                      isDark 
-                        ? 'bg-white/5 border-white/20 text-white focus:border-[#D4AF37]'
-                        : 'bg-slate-50 border-slate-200 text-slate-900 focus:border-[#D4AF37]'
-                    } outline-none`}
+                    className={`w-full px-4 py-3 rounded-xl border transition-colors ${isDark
+                      ? 'bg-white/5 border-white/20 text-white focus:border-[#D4AF37]'
+                      : 'bg-slate-50 border-slate-200 text-slate-900 focus:border-[#D4AF37]'
+                      } outline-none`}
                     data-testid="contact-phone"
                   />
                 </div>
@@ -372,11 +365,10 @@ export const ContactSection = () => {
                     rows={4}
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    className={`w-full px-4 py-3 rounded-xl border transition-colors resize-none ${
-                      isDark 
-                        ? 'bg-white/5 border-white/20 text-white focus:border-[#D4AF37]'
-                        : 'bg-slate-50 border-slate-200 text-slate-900 focus:border-[#D4AF37]'
-                    } outline-none`}
+                    className={`w-full px-4 py-3 rounded-xl border transition-colors resize-none ${isDark
+                      ? 'bg-white/5 border-white/20 text-white focus:border-[#D4AF37]'
+                      : 'bg-slate-50 border-slate-200 text-slate-900 focus:border-[#D4AF37]'
+                      } outline-none`}
                     data-testid="contact-message"
                   />
                 </div>

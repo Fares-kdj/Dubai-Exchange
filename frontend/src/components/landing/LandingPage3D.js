@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useTheme } from '@/context/ThemeContext';
 import Header3D from './Header3D';
 import { HeroSection3D } from './HeroSection3D';
@@ -18,11 +19,24 @@ gsap.registerPlugin(ScrollTrigger);
 
 const LandingPage3D = () => {
   const { isDark } = useTheme();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.hash) {
+      const targetId = location.hash.substring(1);
+      setTimeout(() => {
+        const element = document.getElementById(targetId);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 500);
+    }
+  }, [location.hash]);
 
   useEffect(() => {
     // Setup scroll triggers for sections
     const sections = document.querySelectorAll('section');
-    
+
     sections.forEach((section, index) => {
       ScrollTrigger.create({
         trigger: section,
@@ -50,37 +64,36 @@ const LandingPage3D = () => {
   }, []);
 
   return (
-    <div className={`min-h-screen overflow-x-hidden transition-colors duration-300 ${
-      isDark 
-        ? 'bg-slate-900 text-white' 
-        : 'bg-slate-50 text-slate-900'
-    }`}>
+    <div className={`min-h-screen overflow-x-hidden transition-colors duration-300 ${isDark
+      ? 'bg-slate-900 text-white'
+      : 'bg-slate-50 text-slate-900'
+      }`}>
       <Header3D />
       <main>
         {/* Hero - With CBI Building Background */}
         <HeroSection3D />
-        
+
         {/* Global - International Transfers */}
         <GlobalSection />
-        
+
         {/* Services - Service Cards */}
         <ServicesSection3D />
-        
+
         {/* Currency Converter */}
         <CurrencyConverterSection />
-        
+
         {/* Devices - Phone, iPad, Computer */}
         <DevicesSection />
-        
+
         {/* Partners - Partner Logos */}
         <PartnersSection3D />
-        
+
         {/* Trust (CBI) */}
         <TrustSection3D />
-        
+
         {/* Payments - Card & USDT */}
         <PaymentsSection3D />
-        
+
         {/* Contact */}
         <ContactSection />
       </main>

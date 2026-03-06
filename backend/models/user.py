@@ -71,9 +71,13 @@ DEFAULT_ADMIN_PERMISSIONS = [
     Permission.VIEW_BLOCKLIST,
     Permission.MANAGE_BLOCKLIST,
     Permission.VIEW_SERVICES,
+    Permission.MANAGE_SERVICES,
     Permission.VIEW_COUNTRIES,
+    Permission.MANAGE_COUNTRIES,
     Permission.VIEW_RATES,
+    Permission.MANAGE_RATES,
     Permission.VIEW_AIRPORTS,
+    Permission.MANAGE_AIRPORTS,
 ]
 
 # All permissions for developer

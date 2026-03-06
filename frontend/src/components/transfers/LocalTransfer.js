@@ -4,6 +4,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { useTheme } from '@/context/ThemeContext';
 import { motion } from 'framer-motion';
 import { MapPin, User, Phone, DollarSign, CreditCard, CheckCircle, AlertCircle, ArrowRight, ArrowLeft } from 'lucide-react';
+import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -14,6 +15,16 @@ const LocalTransfer = () => {
   const navigate = useNavigate();
   const { currentLanguage } = useLanguage();
   const { isDark } = useTheme();
+
+  const isArabic = currentLanguage === 'ar';
+  const isKurdish = currentLanguage === 'ku';
+
+  const t = (ar, en, ku) => {
+    if (isKurdish) return ku || en;
+    if (isArabic) return ar;
+    return en;
+  };
+
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
@@ -22,7 +33,8 @@ const LocalTransfer = () => {
     receiverName: '',
     senderProvince: '',
     receiverProvince: '',
-    phone: '',
+    senderPhone: '',
+    receiverPhone: '',
     amountUSD: '', // User enters amount in USD
     receiverCurrency: '', // IQD or USD
     paymentMethod: ''
@@ -30,30 +42,30 @@ const LocalTransfer = () => {
 
   // Recipient currency options for local transfer
   const receiverCurrencies = [
-    { value: 'IQD', labelAr: 'دينار عراقي', labelEn: 'Iraqi Dinar (IQD)', symbol: 'د.ع' },
-    { value: 'USD', labelAr: 'دولار أمريكي', labelEn: 'US Dollar (USD)', symbol: '$' }
+    { value: 'IQD', labelAr: 'دينار عراقي', labelEn: 'Iraqi Dinar (IQD)', symbol: 'د.ع', labelKu: 'دیناری عێراقی' },
+    { value: 'USD', labelAr: 'دولار أمريكي', labelEn: 'US Dollar (USD)', symbol: '$', labelKu: 'دۆلاری ئەمریکی' }
   ];
 
   // Iraqi provinces
   const provinces = [
-    { value: 'baghdad', labelAr: 'بغداد', labelEn: 'Baghdad' },
-    { value: 'basra', labelAr: 'البصرة', labelEn: 'Basra' },
-    { value: 'erbil', labelAr: 'أربيل', labelEn: 'Erbil' },
-    { value: 'sulaymaniyah', labelAr: 'السليمانية', labelEn: 'Sulaymaniyah' },
-    { value: 'duhok', labelAr: 'دهوك', labelEn: 'Duhok' },
-    { value: 'nineveh', labelAr: 'نينوى', labelEn: 'Nineveh' },
-    { value: 'kirkuk', labelAr: 'كركوك', labelEn: 'Kirkuk' },
-    { value: 'diyala', labelAr: 'ديالى', labelEn: 'Diyala' },
-    { value: 'anbar', labelAr: 'الأنبار', labelEn: 'Anbar' },
-    { value: 'najaf', labelAr: 'النجف', labelEn: 'Najaf' },
-    { value: 'karbala', labelAr: 'كربلاء', labelEn: 'Karbala' },
-    { value: 'babylon', labelAr: 'بابل', labelEn: 'Babylon' },
-    { value: 'wasit', labelAr: 'واسط', labelEn: 'Wasit' },
-    { value: 'maysan', labelAr: 'ميسان', labelEn: 'Maysan' },
-    { value: 'dhiqar', labelAr: 'ذي قار', labelEn: 'Dhi Qar' },
-    { value: 'muthanna', labelAr: 'المثنى', labelEn: 'Muthanna' },
-    { value: 'qadisiyyah', labelAr: 'القادسية', labelEn: 'Qadisiyyah' },
-    { value: 'saladin', labelAr: 'صلاح الدين', labelEn: 'Saladin' }
+    { value: 'baghdad', labelAr: 'بغداد', labelEn: 'Baghdad', labelKu: 'بەغداد' },
+    { value: 'basra', labelAr: 'البصرة', labelEn: 'Basra', labelKu: 'بەسڕە' },
+    { value: 'erbil', labelAr: 'أربيل', labelEn: 'Erbil', labelKu: 'هەولێر' },
+    { value: 'sulaymaniyah', labelAr: 'السليمانية', labelEn: 'Sulaymaniyah', labelKu: 'سلێمانی' },
+    { value: 'duhok', labelAr: 'دهوك', labelEn: 'Duhok', labelKu: 'دهۆک' },
+    { value: 'nineveh', labelAr: 'نينوى', labelEn: 'Nineveh', labelKu: 'نەینەوا' },
+    { value: 'kirkuk', labelAr: 'كركوك', labelEn: 'Kirkuk', labelKu: 'کەرکوک' },
+    { value: 'diyala', labelAr: 'ديالى', labelEn: 'Diyala', labelKu: 'دیالە' },
+    { value: 'anbar', labelAr: 'الأنبار', labelEn: 'Anbar', labelKu: 'ئەنبار' },
+    { value: 'najaf', labelAr: 'النجف', labelEn: 'Najaf', labelKu: 'نەجەف' },
+    { value: 'karbala', labelAr: 'كربلاء', labelEn: 'Karbala', labelKu: 'کەربەلا' },
+    { value: 'babylon', labelAr: 'بابل', labelEn: 'Babylon', labelKu: 'بابل' },
+    { value: 'wasit', labelAr: 'واسط', labelEn: 'Wasit', labelKu: 'واست' },
+    { value: 'maysan', labelAr: 'ميسان', labelEn: 'Maysan', labelKu: 'میسان' },
+    { value: 'dhiqar', labelAr: 'ذي قار', labelEn: 'Dhi Qar', labelKu: 'زیقار' },
+    { value: 'muthanna', labelAr: 'المثنى', labelEn: 'Muthanna', labelKu: 'موسەننا' },
+    { value: 'qadisiyyah', labelAr: 'القادسية', labelEn: 'Qadisiyyah', labelKu: 'قادسیە' },
+    { value: 'saladin', labelAr: 'صلاح الدين', labelEn: 'Saladin', labelKu: 'سەڵاحەددین' }
   ];
 
   const paymentMethods = [
@@ -92,14 +104,15 @@ const LocalTransfer = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.senderName.trim()) newErrors.senderName = currentLanguage === 'ar' ? 'اسم المرسل مطلوب' : 'Sender name required';
-    if (!formData.receiverName.trim()) newErrors.receiverName = currentLanguage === 'ar' ? 'اسم المستلم مطلوب' : 'Receiver name required';
-    if (!formData.senderProvince) newErrors.senderProvince = currentLanguage === 'ar' ? 'محافظة المرسل مطلوبة' : 'Sender province required';
-    if (!formData.receiverProvince) newErrors.receiverProvince = currentLanguage === 'ar' ? 'محافظة المستلم مطلوبة' : 'Receiver province required';
-    if (!formData.phone.trim()) newErrors.phone = currentLanguage === 'ar' ? 'رقم الهاتف مطلوب' : 'Phone required';
-    if (!formData.amountUSD || parseFloat(formData.amountUSD) <= 0) newErrors.amountUSD = currentLanguage === 'ar' ? 'المبلغ مطلوب' : 'Amount required';
-    if (!formData.receiverCurrency) newErrors.receiverCurrency = currentLanguage === 'ar' ? 'عملة المستلم مطلوبة' : 'Receiver currency required';
-    if (!formData.paymentMethod) newErrors.paymentMethod = currentLanguage === 'ar' ? 'طريقة الدفع مطلوبة' : 'Payment method required';
+    if (!formData.senderName.trim()) newErrors.senderName = t('رقم الهاتف مطلوب', 'Sender name required', 'ناوی نێرەر پێویستە');
+    if (!formData.receiverName.trim()) newErrors.receiverName = t('اسم المستلم مطلوب', 'Receiver name required', 'ناوی وەرگر پێویستە');
+    if (!formData.senderProvince) newErrors.senderProvince = t('محافظة المرسل مطلوبة', 'Sender province required', 'پارێزگای نێرەر پێویستە');
+    if (!formData.receiverProvince) newErrors.receiverProvince = t('محافظة المستلم مطلوبة', 'Receiver province required', 'پارێزگای وەرگر پێویستە');
+    if (!formData.senderPhone.trim()) newErrors.senderPhone = t('رقم هاتف المرسل مطلوب', 'Sender phone required', 'ژمارەی مۆبایلی نێرەر پێویستە');
+    if (!formData.receiverPhone.trim()) newErrors.receiverPhone = t('رقم هاتف المستلم مطلوب', 'Receiver phone required', 'ژمارەی مۆبایلی وەرگر پێویستە');
+    if (!formData.amountUSD || parseFloat(formData.amountUSD) <= 0) newErrors.amountUSD = t('المبلغ مطلوب', 'Amount required', 'بڕی پارە پێویستە');
+    if (!formData.receiverCurrency) newErrors.receiverCurrency = t('عملة المستلم مطلوبة', 'Receiver currency required', 'دراوی وەرگر پێویستە');
+    if (!formData.paymentMethod) newErrors.paymentMethod = t('طريقة الدفع مطلوبة', 'Payment method required', 'شێوازی پارەدان پێویستە');
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -114,20 +127,32 @@ const LocalTransfer = () => {
 
     setLoading(true);
     const API_URL = process.env.REACT_APP_BACKEND_URL;
-    
+
     try {
+      // 0. Perform Block Check for better UX
+      const blockRes = await fetch(`${API_URL}/api/blocklist/check?full_name=${encodeURIComponent(formData.senderName)}&phone=${encodeURIComponent(formData.senderPhone)}`);
+      if (blockRes.ok) {
+        const blockData = await blockRes.json();
+        if (blockData.blocked) {
+          toast.error(blockData.message || t('عذراً، لا يمكن إتمام طلبك حالياً.', 'Sorry, your request cannot be processed at this time.', 'ببوورە، داواکارییەکەت لە ئێستادا جێبەجێ ناکرێت.'));
+          setLoading(false);
+          return;
+        }
+      }
+
       const orderData = {
         order_type: 'local',
         customer: {
           full_name: formData.senderName,
-          phone: formData.phone
+          phone: formData.senderPhone
         },
         details: {
           senderName: formData.senderName,
           senderProvince: formData.senderProvince,
           receiverName: formData.receiverName,
           receiverProvince: formData.receiverProvince,
-          phone: formData.phone,
+          senderPhone: formData.senderPhone,
+          receiverPhone: formData.receiverPhone,
           amountUSD: formData.amountUSD,
           amountIQD: calculateAmountIQD(),
           receiverCurrency: formData.receiverCurrency,
@@ -137,17 +162,17 @@ const LocalTransfer = () => {
           exchangeRate: usdToIqdRate
         }
       };
-      
+
       const response = await fetch(`${API_URL}/api/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderData)
       });
-      
+
       if (response.ok) {
         const order = await response.json();
-        navigate('/transfers/success', { 
-          state: { 
+        navigate('/transfers/success', {
+          state: {
             orderData: {
               ...formData,
               type: 'local',
@@ -163,25 +188,24 @@ const LocalTransfer = () => {
       }
     } catch (err) {
       console.error('Error:', err);
-      alert(currentLanguage === 'ar' ? 'حدث خطأ. حاول مرة أخرى.' : 'An error occurred.');
+      toast.error(t('حدث خطأ. حاول مرة أخرى.', 'An error occurred.', 'هەڵەیەک ڕوویدا. دووبارە هەوڵ بدەرەوە.'));
     }
-    
+
     setLoading(false);
   };
 
   const getProvinceLabel = (value) => {
     const province = provinces.find(p => p.value === value);
-    return province ? (currentLanguage === 'ar' ? province.labelAr : province.labelEn) : value;
+    return province ? t(province.labelAr, province.labelEn, province.labelKu) : value;
   };
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${
-      isDark 
-        ? 'bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900' 
-        : 'bg-gradient-to-b from-slate-50 via-white to-slate-50'
-    }`}>
+    <div className={`min-h-screen transition-colors duration-300 ${isDark
+      ? 'bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900'
+      : 'bg-gradient-to-b from-slate-50 via-white to-slate-50'
+      }`}>
       <Header3D />
-      
+
       <main className="pt-24 pb-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           {/* Back Button */}
@@ -192,7 +216,7 @@ const LocalTransfer = () => {
             className={`flex items-center gap-2 mb-8 group ${isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'}`}
           >
             <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-            {currentLanguage === 'ar' ? 'العودة للتحويلات' : 'Back to Transfers'}
+            {t('العودة للتحويلات', 'Back to Transfers', 'گەڕانەوە بۆ گواستنەوەکان')}
           </motion.button>
 
           {/* Header */}
@@ -205,10 +229,10 @@ const LocalTransfer = () => {
               <MapPin className="w-10 h-10 text-white" />
             </div>
             <h1 className={`text-3xl md:text-4xl font-bold mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-              {currentLanguage === 'ar' ? 'تحويل محلي' : 'Local Transfer'}
+              {t('تحويل محلي', 'Local Transfer', 'گواستنەوەی ناوخۆیی')}
             </h1>
             <p className={isDark ? 'text-slate-400' : 'text-slate-600'}>
-              {currentLanguage === 'ar' ? 'تحويل أموال داخل العراق' : 'Transfer money within Iraq'}
+              {t('تحويل أموال داخل العراق', 'Transfer money within Iraq', 'گواستنەوەی پارە لەناو عێراقدا')}
             </p>
           </motion.div>
 
@@ -222,15 +246,14 @@ const LocalTransfer = () => {
             data-testid="local-transfer-form"
           >
             {/* Sender & Receiver Info */}
-            <div className={`rounded-3xl border-2 shadow-xl p-8 mb-6 ${
-              isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'
-            }`}>
+            <div className={`rounded-3xl border-2 shadow-xl p-8 mb-6 ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'
+              }`}>
               <div className="flex items-center gap-3 mb-6">
                 <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${isDark ? 'bg-blue-500/20' : 'bg-blue-100'}`}>
                   <User className="w-6 h-6 text-blue-500" />
                 </div>
                 <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                  {currentLanguage === 'ar' ? 'بيانات التحويل' : 'Transfer Details'}
+                  {t('بيانات التحويل', 'Transfer Details', 'زانیاری گواستنەوە')}
                 </h2>
               </div>
 
@@ -238,13 +261,13 @@ const LocalTransfer = () => {
                 {/* Sender Name */}
                 <div className="space-y-2">
                   <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
-                    {currentLanguage === 'ar' ? 'اسم المرسل' : 'Sender Name'} *
+                    {t('اسم المرسل', 'Sender Name', 'ناوی نێرەر')} *
                   </Label>
                   <Input
                     value={formData.senderName}
                     onChange={(e) => handleInputChange('senderName', e.target.value)}
                     className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`}
-                    placeholder={currentLanguage === 'ar' ? 'أدخل اسم المرسل' : 'Enter sender name'}
+                    placeholder={t('أدخل اسم المرسل', 'Enter sender name', 'ناوی نێرەر بنووسە')}
                     data-testid="sender-name-input"
                   />
                   {errors.senderName && (
@@ -257,13 +280,13 @@ const LocalTransfer = () => {
                 {/* Receiver Name */}
                 <div className="space-y-2">
                   <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
-                    {currentLanguage === 'ar' ? 'اسم المستلم' : 'Receiver Name'} *
+                    {t('اسم المستلم', 'Receiver Name', 'ناوی وەرگر')} *
                   </Label>
                   <Input
                     value={formData.receiverName}
                     onChange={(e) => handleInputChange('receiverName', e.target.value)}
                     className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`}
-                    placeholder={currentLanguage === 'ar' ? 'أدخل اسم المستلم' : 'Enter receiver name'}
+                    placeholder={t('أدخل اسم المستلم', 'Enter receiver name', 'ناوی وەرگر بنووسە')}
                     data-testid="receiver-name-input"
                   />
                   {errors.receiverName && (
@@ -276,11 +299,11 @@ const LocalTransfer = () => {
                 {/* Sender Province */}
                 <div className="space-y-2">
                   <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
-                    {currentLanguage === 'ar' ? 'محافظة المرسل' : 'Sender Province'} *
+                    {t('محافظة المرسل', 'Sender Province', 'پارێزگای نێرەر')} *
                   </Label>
                   <Select value={formData.senderProvince} onValueChange={(v) => handleInputChange('senderProvince', v)}>
                     <SelectTrigger className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} data-testid="sender-province-select">
-                      <SelectValue placeholder={currentLanguage === 'ar' ? 'اختر المحافظة' : 'Select province'} />
+                      <SelectValue placeholder={t('اختر المحافظة', 'Select province', 'پارێزگا هەڵبژێرە')} />
                     </SelectTrigger>
                     <SelectContent>
                       {provinces.map(p => (
@@ -300,11 +323,11 @@ const LocalTransfer = () => {
                 {/* Receiver Province */}
                 <div className="space-y-2">
                   <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
-                    {currentLanguage === 'ar' ? 'محافظة المستلم' : 'Receiver Province'} *
+                    {t('محافظة المستلم', 'Receiver Province', 'پارێزگای وەرگر')} *
                   </Label>
                   <Select value={formData.receiverProvince} onValueChange={(v) => handleInputChange('receiverProvince', v)}>
                     <SelectTrigger className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} data-testid="receiver-province-select">
-                      <SelectValue placeholder={currentLanguage === 'ar' ? 'اختر المحافظة' : 'Select province'} />
+                      <SelectValue placeholder={t('اختر المحافظة', 'Select province', 'پارێزگا هەڵبژێرە')} />
                     </SelectTrigger>
                     <SelectContent>
                       {provinces.map(p => (
@@ -321,22 +344,42 @@ const LocalTransfer = () => {
                   )}
                 </div>
 
-                {/* Phone */}
-                <div className="space-y-2 md:col-span-2">
+                {/* Sender Phone */}
+                <div className="space-y-2">
                   <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
-                    {currentLanguage === 'ar' ? 'رقم الهاتف' : 'Phone Number'} *
+                    {t('رقم هاتف المرسل', 'Sender Phone', 'ژمارەی مۆبایلی نێرەر')} *
                   </Label>
                   <Input
                     type="tel"
-                    value={formData.phone}
-                    onChange={(e) => handleInputChange('phone', e.target.value)}
+                    value={formData.senderPhone}
+                    onChange={(e) => handleInputChange('senderPhone', e.target.value)}
                     className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`}
                     placeholder="+964 7XX XXX XXXX"
-                    data-testid="phone-input"
+                    data-testid="sender-phone-input"
                   />
-                  {errors.phone && (
+                  {errors.senderPhone && (
                     <p className="text-sm text-red-500 flex items-center gap-1">
-                      <AlertCircle className="w-4 h-4" />{errors.phone}
+                      <AlertCircle className="w-4 h-4" />{errors.senderPhone}
+                    </p>
+                  )}
+                </div>
+
+                {/* Receiver Phone */}
+                <div className="space-y-2">
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
+                    {t('رقم هاتف المستلم', 'Receiver Phone', 'ژمارەی مۆبایلی وەرگر')} *
+                  </Label>
+                  <Input
+                    type="tel"
+                    value={formData.receiverPhone}
+                    onChange={(e) => handleInputChange('receiverPhone', e.target.value)}
+                    className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`}
+                    placeholder="+964 7XX XXX XXXX"
+                    data-testid="receiver-phone-input"
+                  />
+                  {errors.receiverPhone && (
+                    <p className="text-sm text-red-500 flex items-center gap-1">
+                      <AlertCircle className="w-4 h-4" />{errors.receiverPhone}
                     </p>
                   )}
                 </div>
@@ -344,15 +387,14 @@ const LocalTransfer = () => {
             </div>
 
             {/* Amount & Payment */}
-            <div className={`rounded-3xl border-2 shadow-xl p-8 mb-6 ${
-              isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'
-            }`}>
+            <div className={`rounded-3xl border-2 shadow-xl p-8 mb-6 ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'
+              }`}>
               <div className="flex items-center gap-3 mb-6">
                 <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${isDark ? 'bg-emerald-500/20' : 'bg-emerald-100'}`}>
                   <DollarSign className="w-6 h-6 text-emerald-500" />
                 </div>
                 <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                  {currentLanguage === 'ar' ? 'المبلغ والدفع' : 'Amount & Payment'}
+                  {t('المبلغ والدفع', 'Amount & Payment', 'بڕ و پارەدان')}
                 </h2>
               </div>
 
@@ -360,7 +402,7 @@ const LocalTransfer = () => {
                 {/* Amount in USD */}
                 <div className="space-y-2">
                   <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
-                    {currentLanguage === 'ar' ? 'المبلغ بالدولار (USD)' : 'Amount in USD'} *
+                    {t('المبلغ بالدولار (USD)', 'Amount in USD', 'بڕ بە دۆلار')} *
                   </Label>
                   <Input
                     type="number"
@@ -381,16 +423,16 @@ const LocalTransfer = () => {
                 {/* Receiver Currency - NEW FIELD */}
                 <div className="space-y-2">
                   <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
-                    {currentLanguage === 'ar' ? 'عملة المستلم' : 'Receiver Currency'} *
+                    {t('عملة المستلم', 'Receiver Currency', 'دراوی وەرگر')} *
                   </Label>
                   <Select value={formData.receiverCurrency} onValueChange={(v) => handleInputChange('receiverCurrency', v)}>
                     <SelectTrigger className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} data-testid="receiver-currency-select">
-                      <SelectValue placeholder={currentLanguage === 'ar' ? 'اختر العملة' : 'Select currency'} />
+                      <SelectValue placeholder={t('اختر العملة', 'Select currency', 'دراو هەڵبژێرە')} />
                     </SelectTrigger>
                     <SelectContent>
                       {receiverCurrencies.map(c => (
                         <SelectItem key={c.value} value={c.value}>
-                          {c.symbol} {currentLanguage === 'ar' ? c.labelAr : c.labelEn}
+                          {c.symbol} {t(c.labelAr, c.labelEn, c.labelKu)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -405,16 +447,16 @@ const LocalTransfer = () => {
                 {/* Payment Method */}
                 <div className="space-y-2 md:col-span-2">
                   <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
-                    {currentLanguage === 'ar' ? 'طريقة الدفع' : 'Payment Method'} *
+                    {t('طريقة الدفع', 'Payment Method', 'شێوازی پارەدان')} *
                   </Label>
                   <Select value={formData.paymentMethod} onValueChange={(v) => handleInputChange('paymentMethod', v)}>
                     <SelectTrigger className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} data-testid="payment-method-select">
-                      <SelectValue placeholder={currentLanguage === 'ar' ? 'اختر طريقة الدفع' : 'Select payment method'} />
+                      <SelectValue placeholder={t('اختر طريقة الدفع', 'Select payment method', 'شێوازی پارەدان هەڵبژێرە')} />
                     </SelectTrigger>
                     <SelectContent>
                       {paymentMethods.map(m => (
                         <SelectItem key={m.value} value={m.value}>
-                          {currentLanguage === 'ar' ? m.labelAr : m.labelEn}
+                          {t(m.labelAr, m.labelEn, m.labelKu)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -432,17 +474,16 @@ const LocalTransfer = () => {
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
-                  className={`mt-6 p-6 rounded-2xl ${
-                    isDark ? 'bg-emerald-900/30 border border-emerald-700/50' : 'bg-emerald-50 border border-emerald-200'
-                  }`}
+                  className={`mt-6 p-6 rounded-2xl ${isDark ? 'bg-emerald-900/30 border border-emerald-700/50' : 'bg-emerald-50 border border-emerald-200'
+                    }`}
                 >
                   <h4 className={`font-bold mb-4 ${isDark ? 'text-emerald-300' : 'text-emerald-900'}`}>
-                    {currentLanguage === 'ar' ? 'ملخص التحويل' : 'Transfer Summary'}
+                    {t('ملخص التحويل', 'Transfer Summary', 'پوختەی گواستنەوە')}
                   </h4>
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between">
                       <span className={isDark ? 'text-emerald-200' : 'text-emerald-800'}>
-                        {currentLanguage === 'ar' ? 'المبلغ (USD)' : 'Amount (USD)'}
+                        {t('المبلغ (USD)', 'Amount (USD)', 'بڕ (USD)')}
                       </span>
                       <span className={`font-semibold ${isDark ? 'text-white' : ''}`}>
                         ${parseFloat(formData.amountUSD).toLocaleString()}
@@ -450,7 +491,7 @@ const LocalTransfer = () => {
                     </div>
                     <div className="flex justify-between">
                       <span className={isDark ? 'text-emerald-200' : 'text-emerald-800'}>
-                        {currentLanguage === 'ar' ? 'المقابل بالدينار' : 'Amount in IQD'}
+                        {t('المقابل بالدينار', 'Amount in IQD', 'بڕ بە دینار')}
                       </span>
                       <span className={`font-semibold ${isDark ? 'text-white' : ''}`}>
                         {calculateAmountIQD().toLocaleString()} IQD
@@ -459,7 +500,7 @@ const LocalTransfer = () => {
                     {formData.receiverCurrency && (
                       <div className="flex justify-between">
                         <span className={isDark ? 'text-emerald-200' : 'text-emerald-800'}>
-                          {currentLanguage === 'ar' ? 'عملة المستلم' : 'Receiver Currency'}
+                          {t('عملة المستلم', 'Receiver Currency', 'دراوی وەرگر')}
                         </span>
                         <span className={`font-semibold ${isDark ? 'text-white' : ''}`}>
                           {formData.receiverCurrency}
@@ -468,7 +509,7 @@ const LocalTransfer = () => {
                     )}
                     <div className="flex justify-between">
                       <span className={isDark ? 'text-emerald-200' : 'text-emerald-800'}>
-                        {currentLanguage === 'ar' ? `رسوم الخدمة (${serviceFeePercent}%)` : `Service Fee (${serviceFeePercent}%)`}
+                        {t(`رسوم الخدمة (${serviceFeePercent}%)`, `Service Fee (${serviceFeePercent}%)`, `رسوومى خزمەتگوزاری (${serviceFeePercent}%)`)}
                       </span>
                       <span className="font-semibold text-amber-500">
                         {calculateFee().toLocaleString()} IQD
@@ -477,7 +518,7 @@ const LocalTransfer = () => {
                     <div className={`border-t pt-3 mt-3 ${isDark ? 'border-emerald-700/50' : 'border-emerald-300'}`}>
                       <div className="flex justify-between">
                         <span className={`font-bold ${isDark ? 'text-white' : 'text-emerald-900'}`}>
-                          {currentLanguage === 'ar' ? 'الإجمالي للدفع' : 'Total to Pay'}
+                          {t('الإجمالي للدفع', 'Total to Pay', 'کۆی گشتی بۆ پارەدان')}
                         </span>
                         <span className="font-bold text-lg text-emerald-500">
                           {calculateTotal().toLocaleString()} IQD
@@ -501,12 +542,12 @@ const LocalTransfer = () => {
               {loading ? (
                 <>
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  {currentLanguage === 'ar' ? 'جارٍ التسجيل...' : 'Submitting...'}
+                  {t('جارٍ التسجيل...', 'Submitting...', 'تۆمارکردن...')}
                 </>
               ) : (
                 <>
                   <CheckCircle className="w-5 h-5" />
-                  {currentLanguage === 'ar' ? 'تسجيل طلب التحويل' : 'Submit Transfer Request'}
+                  {t('تسجيل طلب التحويل', 'Submit Transfer Request', 'تۆمارکردنی داواکاری گواستنەوە')}
                 </>
               )}
             </motion.button>

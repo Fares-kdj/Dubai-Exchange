@@ -102,7 +102,12 @@ frontend/node_modules/.cache/default-development/2.pack_
 # Environment files
 *.env
 *.env.*
--e 
-# Environment files
-*.env
-*.env.*
+
+# Uploads and temporary data
+backend/uploads/
+uploads/
+/uploads
+memory/
+test_reports/
+test_images/
+*.log

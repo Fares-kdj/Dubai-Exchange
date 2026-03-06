@@ -10,7 +10,7 @@
     ]
   },
   "project": {
-    "name": "Khair Baghdad Exchange",
+    "name": "Dubai International Exchange",
     "type": "Fintech Landing Page & Web App",
     "theme": "Modern Trust (Light Mode)",
     "languages": ["ar", "en", "ku"],
@@ -140,5 +140,5 @@
     "Do not use transparent backgrounds for overlays/dropdowns.",
     "Ensure high contrast for text (APCA standards)."
   ],
-  "instructions_to_main_agent": "You are building the frontend for Khair Baghdad Exchange. Use the defined colors and typography. Implement the 'Modern Trust' theme. Prioritize the Currency Converter functionality with a premium glassmorphism look. Use the provided image URLs. Ensure Arabic RTL support is flawless."
+  "instructions_to_main_agent": "You are building the frontend for Dubai International Exchange. Use the defined colors and typography. Implement the 'Modern Trust' theme. Prioritize the Currency Converter functionality with a premium glassmorphism look. Use the provided image URLs. Ensure Arabic RTL support is flawless."
 }

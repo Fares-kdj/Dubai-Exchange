@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useLanguage } from '@/context/LanguageContext';
 import { useTheme } from '@/context/ThemeContext';
 import { ASSETS } from '@/config/assets';
+import { useBranding } from '@/context/BrandingContext';
 import Header3D from '../landing/Header3D';
 import Footer3D from '../landing/Footer3D';
 import { FileText, Shield, AlertTriangle, Users, Globe, CreditCard, Phone, ChevronDown } from 'lucide-react';
@@ -145,9 +146,10 @@ const iconMap = {
 const TermsPage = () => {
   const { currentLanguage } = useLanguage();
   const { isDark } = useTheme();
+  const { logoLight, logoDark } = useBranding();
   const isArabic = currentLanguage === 'ar';
   const isKurdish = currentLanguage === 'ku';
-  
+
   const [terms, setTerms] = useState(null);
   const [expandedSection, setExpandedSection] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -158,7 +160,19 @@ const TermsPage = () => {
         const response = await fetch(`${API_URL}/api/cms/terms`);
         if (response.ok) {
           const data = await response.json();
-          setTerms(data);
+          // Merge CMS data with defaults to fill missing fields (subtitle, lastUpdate, acceptance)
+          if (data) {
+            const merged = {};
+            ['ar', 'en', 'ku'].forEach(lg => {
+              merged[lg] = {
+                ...defaultTerms[lg],        // start with defaults (has subtitle, acceptance, etc.)
+                ...(data[lg] || {}),        // overlay CMS data (title, sections)
+              };
+            });
+            setTerms(merged);
+          } else {
+            setTerms(defaultTerms);
+          }
         } else {
           setTerms(defaultTerms);
         }
@@ -186,11 +200,10 @@ const TermsPage = () => {
   }
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${
-      isDark ? 'bg-slate-900 text-white' : 'bg-slate-50 text-slate-900'
-    }`}>
+    <div className={`min-h-screen transition-colors duration-300 ${isDark ? 'bg-slate-900 text-white' : 'bg-slate-50 text-slate-900'
+      }`}>
       <Header3D />
-      
+
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           {/* Hero Section */}
@@ -219,7 +232,7 @@ const TermsPage = () => {
             <h1 className={`text-4xl md:text-5xl font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
               {content.title}
             </h1>
-            
+
             <p className={`text-lg max-w-2xl mx-auto mb-4 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
               {content.subtitle}
             </p>
@@ -234,27 +247,25 @@ const TermsPage = () => {
             {content.sections?.map((section, index) => {
               const Icon = iconMap[section.icon] || FileText;
               const isExpanded = expandedSection === index;
-              
+
               return (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  className={`rounded-2xl border overflow-hidden transition-all ${
-                    isDark 
-                      ? 'bg-white/5 border-white/10 hover:border-[#D4AF37]/30'
-                      : 'bg-white border-slate-200 hover:border-[#D4AF37]/50 shadow-sm'
-                  }`}
+                  className={`rounded-2xl border overflow-hidden transition-all ${isDark
+                    ? 'bg-white/5 border-white/10 hover:border-[#D4AF37]/30'
+                    : 'bg-white border-slate-200 hover:border-[#D4AF37]/50 shadow-sm'
+                    }`}
                 >
                   <button
                     onClick={() => setExpandedSection(isExpanded ? -1 : index)}
                     className="w-full px-6 py-5 flex items-center justify-between text-left"
                   >
                     <div className="flex items-center gap-4">
-                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                        isDark ? 'bg-[#D4AF37]/20' : 'bg-[#D4AF37]/10'
-                      }`}>
+                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${isDark ? 'bg-[#D4AF37]/20' : 'bg-[#D4AF37]/10'
+                        }`}>
                         <Icon className={`w-6 h-6 ${isDark ? 'text-[#D4AF37]' : 'text-[#B8860B]'}`} />
                       </div>
                       <h3 className={`text-lg font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
@@ -268,7 +279,7 @@ const TermsPage = () => {
                       <ChevronDown className={`w-5 h-5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`} />
                     </motion.div>
                   </button>
-                  
+
                   <motion.div
                     initial={false}
                     animate={{ height: isExpanded ? 'auto' : 0, opacity: isExpanded ? 1 : 0 }}
@@ -291,11 +302,10 @@ const TermsPage = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className={`max-w-4xl mx-auto mt-12 p-8 rounded-3xl text-center ${
-              isDark 
-                ? 'bg-gradient-to-r from-[#D4AF37]/20 to-[#FCD34D]/10 border border-[#D4AF37]/30'
-                : 'bg-gradient-to-r from-[#D4AF37]/10 to-[#FCD34D]/5 border border-[#D4AF37]/20'
-            }`}
+            className={`max-w-4xl mx-auto mt-12 p-8 rounded-3xl text-center ${isDark
+              ? 'bg-gradient-to-r from-[#D4AF37]/20 to-[#FCD34D]/10 border border-[#D4AF37]/30'
+              : 'bg-gradient-to-r from-[#D4AF37]/10 to-[#FCD34D]/5 border border-[#D4AF37]/20'
+              }`}
           >
             <Shield className={`w-12 h-12 mx-auto mb-4 ${isDark ? 'text-[#D4AF37]' : 'text-[#B8860B]'}`} />
             <p className={`text-lg ${isDark ? 'text-white' : 'text-slate-900'}`}>
@@ -305,13 +315,13 @@ const TermsPage = () => {
 
           {/* Company Info */}
           <div className="max-w-4xl mx-auto mt-12 text-center">
-            <img 
-              src={isDark ? ASSETS.logoWhite : ASSETS.logoColor}
+            <img
+              src={isDark ? logoDark : logoLight}
               alt="Dubai International Exchange"
               className="h-12 mx-auto mb-4"
             />
             <p className={`text-sm ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>
-              © {new Date().getFullYear()} {isKurdish ? 'کۆمپانیای دوبەی نێودەوڵەتی بۆ ئاڵوگۆڕی دراو' : isArabic ? 'شركة دبي العالمية للصرافة' : 'Dubai International for Exchange'}. 
+              © {new Date().getFullYear()} {isKurdish ? 'کۆمپانیای دوبەی نێودەوڵەتی بۆ ئاڵوگۆڕی دراو' : isArabic ? 'شركة دبي العالمية للصرافة' : 'Dubai International for Exchange'}.
               {isKurdish ? ' هەموو مافەکان پارێزراون.' : isArabic ? ' جميع الحقوق محفوظة.' : ' All rights reserved.'}
             </p>
           </div>

@@ -1,42 +1,78 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/context/ThemeContext';
 import { motion } from 'framer-motion';
 import { Phone, MessageCircle, Mail, MapPin, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
 
+const API_URL = process.env.REACT_APP_BACKEND_URL;
+
 const Contact = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { isDark } = useTheme();
+  const lang = i18n.language || 'ar';
+
+  const [cmsContact, setCmsContact] = useState(null);
+
+  useEffect(() => {
+    const fetchContact = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/cms/contact`);
+        if (res.ok) {
+          const data = await res.json();
+          // Only use CMS data if it has at least one non-empty field
+          const hasData = data && (
+            (data.ar && (data.ar.phone || data.ar.email || data.ar.address)) ||
+            (data.en && (data.en.phone || data.en.email || data.en.address))
+          );
+          if (hasData) setCmsContact(data);
+        }
+      } catch {
+        // fallback to default values
+      }
+    };
+    fetchContact();
+  }, []);
+
+  // Helper: get localized field from CMS data
+  const getField = (field) => {
+    if (!cmsContact) return null;
+    const langData = cmsContact[lang] || cmsContact['ar'] || {};
+    return langData[field] || null;
+  };
+
+  const phone = getField('phone') || '+964 XXX XXX XXXX';
+  const email = getField('email') || 'info@dubai-exchange.com';
+  const address = getField('address') || (lang === 'en' ? 'Baghdad, Iraq' : lang === 'ku' ? 'بەغداد، عێراق' : 'بغداد، العراق');
 
   const contactInfo = [
     {
       icon: Phone,
       titleKey: 'contact.phone',
-      value: '+964 XXX XXX XXXX',
-      link: 'tel:+964XXXXXXXXX',
+      value: phone,
+      link: `tel:${phone.replace(/\s/g, '')}`,
       color: 'from-blue-500 to-cyan-500',
       bgColor: isDark ? 'bg-blue-900/30' : 'bg-blue-50'
     },
     {
       icon: MessageCircle,
       titleKey: 'contact.whatsapp',
-      value: '+964 XXX XXX XXXX',
-      link: 'https://wa.me/964XXXXXXXXX',
+      value: phone,
+      link: `https://wa.me/${phone.replace(/[^0-9]/g, '')}`,
       color: 'from-green-500 to-emerald-500',
       bgColor: isDark ? 'bg-green-900/30' : 'bg-green-50'
     },
     {
       icon: Mail,
       titleKey: 'contact.email',
-      value: 'info@khairbaghdad.com',
-      link: 'mailto:info@khairbaghdad.com',
+      value: email,
+      link: `mailto:${email}`,
       color: 'from-purple-500 to-pink-500',
       bgColor: isDark ? 'bg-purple-900/30' : 'bg-purple-50'
     },
     {
       icon: MapPin,
       titleKey: 'contact.address',
-      value: 'بغداد، العراق',
+      value: address,
       link: null,
       color: 'from-amber-500 to-orange-500',
       bgColor: isDark ? 'bg-amber-900/30' : 'bg-amber-50'
@@ -51,9 +87,8 @@ const Contact = () => {
   ];
 
   return (
-    <section id="contact" className={`py-20 md:py-32 relative overflow-hidden transition-colors duration-300 ${
-      isDark ? 'bg-slate-900' : 'bg-white'
-    }`}>
+    <section id="contact" className={`py-20 md:py-32 relative overflow-hidden transition-colors duration-300 ${isDark ? 'bg-slate-900' : 'bg-white'
+      }`}>
       {/* Background Decoration */}
       <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-purple-100/30 to-pink-100/30 rounded-full blur-3xl" />
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-100/30 to-cyan-100/30 rounded-full blur-3xl" />
@@ -88,33 +123,31 @@ const Contact = () => {
                 whileHover={{ y: -5, scale: 1.02 }}
                 data-testid={`contact-card-${index}`}
               >
-                <div className={`border-2 rounded-2xl p-6 hover:shadow-xl transition-all h-full ${
-                  isDark 
-                    ? 'bg-slate-800 border-slate-700 hover:border-slate-600'
-                    : 'bg-white border-slate-100 hover:border-slate-200'
-                }`}>
+                <div className={`border-2 rounded-2xl p-6 hover:shadow-xl transition-all h-full ${isDark
+                  ? 'bg-slate-800 border-slate-700 hover:border-slate-600'
+                  : 'bg-white border-slate-100 hover:border-slate-200'
+                  }`}>
                   <div className="flex flex-col items-center text-center">
                     {/* Icon */}
-                    <motion.div 
+                    <motion.div
                       className={`w-16 h-16 ${info.bgColor} rounded-2xl flex items-center justify-center mb-4`}
                       whileHover={{ rotate: [0, -10, 10, -10, 0] }}
                       transition={{ duration: 0.5 }}
                     >
                       <info.icon className={`w-8 h-8 ${isDark ? 'text-slate-200' : 'text-slate-700'}`} />
                     </motion.div>
-                    
+
                     {/* Title */}
                     <h3 className={`text-sm font-semibold mb-2 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                       {t(info.titleKey)}
                     </h3>
-                    
+
                     {/* Value */}
                     {info.link ? (
                       <a
                         href={info.link}
-                        className={`text-sm font-medium transition-colors ${
-                          isDark ? 'text-white hover:text-slate-300' : 'text-slate-900 hover:text-slate-700'
-                        }`}
+                        className={`text-sm font-medium transition-colors ${isDark ? 'text-white hover:text-slate-300' : 'text-slate-900 hover:text-slate-700'
+                          }`}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -149,9 +182,8 @@ const Contact = () => {
                   rel="noopener noreferrer"
                   whileHover={{ scale: 1.2, y: -5 }}
                   whileTap={{ scale: 0.9 }}
-                  className={`w-12 h-12 rounded-xl flex items-center justify-center hover:text-white ${social.color} transition-all duration-300 ${
-                    isDark ? 'bg-slate-800 text-slate-300' : 'bg-slate-100 text-slate-700'
-                  }`}
+                  className={`w-12 h-12 rounded-xl flex items-center justify-center hover:text-white ${social.color} transition-all duration-300 ${isDark ? 'bg-slate-800 text-slate-300' : 'bg-slate-100 text-slate-700'
+                    }`}
                   aria-label={social.label}
                   data-testid={`social-${social.label.toLowerCase()}`}
                 >

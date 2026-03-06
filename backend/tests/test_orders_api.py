@@ -1,5 +1,5 @@
 """
-Backend API Tests for Khair Baghdad Exchange - Orders Module
+Backend API Tests for Dubai International Exchange - Orders Module
 Tests: Create Order, Track Order, Update Order, List Orders, Stats
 """
 import pytest
@@ -29,7 +29,7 @@ class TestOrdersAPI:
         assert response.status_code == 200
         data = response.json()
         assert "message" in data
-        assert "Khair Baghdad" in data["message"]
+        assert "Dubai International" in data["message"]
     
     def test_create_order_traveler(self):
         """Test creating a traveler order"""

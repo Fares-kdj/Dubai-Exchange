@@ -3,6 +3,7 @@ from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
+from contextlib import asynccontextmanager
 import os
 import logging
 from pathlib import Path
@@ -15,6 +16,13 @@ from datetime import datetime, timezone
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
@@ -25,23 +33,44 @@ settings_collection = db.settings
 orders_collection = db.orders
 
 # Create upload directory
-UPLOAD_DIR = "/app/uploads"
+UPLOAD_DIR = str(ROOT_DIR / "uploads")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-# Create the main app without a prefix
-app = FastAPI(title="Khair Baghdad Exchange API")
-
-# Create a router with the /api prefix
-api_router = APIRouter(prefix="/api")
-
-# Import and include orders router
+# Import route modules and their init functions
 from routes.orders import router as orders_router
 from routes.auth import router as auth_router, init_developer_account
-from routes.cms import router as cms_router, init_default_services, init_default_countries
+from routes.cms import router as cms_router, init_default_services, init_default_countries, init_predefined_methods
 from routes.rates import router as rates_router, init_default_rates
 from routes.pdf import router as pdf_router
 from routes.blocklist import router as blocklist_router
 from routes.stamps import router as stamps_router, init_default_stamps
+
+# ===== LIFESPAN =====
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Application startup and shutdown lifecycle"""
+    try:
+        await client.admin.command('ping')
+        logger.info("MongoDB connection successful")
+        await init_developer_account()
+        await init_default_services()
+        await init_default_countries()
+        await init_predefined_methods()
+        await init_default_rates()
+        await init_default_stamps()
+        logger.info("Default data initialized successfully")
+    except Exception as e:
+        logger.error(f"Startup init error: {e}")
+    yield
+    # Shutdown
+    client.close()
+
+# Create the main app without a prefix
+app = FastAPI(title="Dubai International Exchange API", lifespan=lifespan)
+
+# Create a router with the /api prefix
+api_router = APIRouter(prefix="/api")
 
 api_router.include_router(orders_router)
 api_router.include_router(auth_router)
@@ -57,12 +86,12 @@ api_router.include_router(stamps_router)
 class CompanySettings(BaseModel):
     model_config = ConfigDict(extra="ignore")
     
-    company_name_ar: str = "خير بغداد للصرافة"
-    company_name_en: str = "Khair Baghdad for Exchange"
-    company_name_ku: str = "خەیر بەغداد بۆ گۆڕینەوە"
+    company_name_en: str = "Dubai International for Exchange"
+    company_name_ar: str = "شركة دبي العالمية للصرافة"
+    company_name_ku: str = "دوبەی نێودەوڵەتی بۆ گۆڕینەوە"
     phone: str = "+964 XXX XXX XXXX"
     whatsapp: str = "+964 XXX XXX XXXX"
-    email: str = "info@khairbaghdad.com"
+    email: str = "info@dubai-exchange.com"
     address_ar: str = "بغداد، العراق"
     address_en: str = "Baghdad, Iraq"
     address_ku: str = "بەغدا، عێراق"
@@ -86,11 +115,17 @@ class ExchangeRatesSettings(BaseModel):
     rates: List[CurrencyRate] = []
 
 
+class ConvertRequest(BaseModel):
+    from_currency: str
+    to_currency: str
+    amount: float
+
+
 # ===== SETTINGS ENDPOINTS =====
 
 @api_router.get("/")
 async def root():
-    return {"message": "Khair Baghdad Exchange API"}
+    return {"message": "Dubai International Exchange API"}
 
 @api_router.get("/settings/company", response_model=CompanySettings)
 async def get_company_settings():
@@ -146,8 +181,12 @@ async def update_exchange_rates(settings: ExchangeRatesSettings):
     return settings
 
 @api_router.post("/convert")
-async def convert_currency(from_currency: str, to_currency: str, amount: float):
+async def convert_currency(request: ConvertRequest):
     """Convert currency based on current rates"""
+    from_currency = request.from_currency
+    to_currency = request.to_currency
+    amount = request.amount
+
     rates_settings = await get_exchange_rates()
     
     # Find the rate
@@ -198,24 +237,3 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
-
-@app.on_event("startup")
-async def startup_event():
-    """Initialize default data on startup"""
-    await init_developer_account()
-    await init_default_services()
-    await init_default_countries()
-    await init_default_rates()
-    await init_default_stamps()
-    logger.info("Application started with default data initialized")
-
-
-@app.on_event("shutdown")
-async def shutdown_db_client():
-    client.close()

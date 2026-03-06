@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Save, RefreshCw, ChevronDown, ChevronUp, Edit2, Check, X, 
-  Globe, Type, FileText, Phone, Mail, MapPin, Settings, 
+import {
+  Save, RefreshCw, ChevronDown, ChevronUp, Edit2, Check, X, Plus,
+  Globe, Type, FileText, Phone, Mail, MapPin, Settings,
   Zap, Clock, AlertCircle
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -55,21 +55,19 @@ const AdminCMS = () => {
       const contactData = await contactRes.json();
       const rateModeData = await rateModeRes.json();
 
-      if (termsData) {
-        setTerms({
-          ar: termsData.ar || { title: 'الشروط والأحكام', sections: [] },
-          en: termsData.en || { title: 'Terms and Conditions', sections: [] },
-          ku: termsData.ku || { title: 'مەرج و رێساکان', sections: [] }
-        });
-      }
+      // Terms: merge with defaults (API may return null or partial data)
+      setTerms({
+        ar: { title: 'الشروط والأحكام', sections: [], ...(termsData?.ar || {}) },
+        en: { title: 'Terms and Conditions', sections: [], ...(termsData?.en || {}) },
+        ku: { title: 'مەرج و رێساکان', sections: [], ...(termsData?.ku || {}) }
+      });
 
-      if (contactData) {
-        setContact({
-          ar: contactData.ar || { address: '', phone: '', email: '', working_hours: '' },
-          en: contactData.en || { address: '', phone: '', email: '', working_hours: '' },
-          ku: contactData.ku || { address: '', phone: '', email: '', working_hours: '' }
-        });
-      }
+      // Contact: merge with defaults
+      setContact({
+        ar: { address: '', phone: '', email: '', working_hours: '', ...(contactData?.ar || {}) },
+        en: { address: '', phone: '', email: '', working_hours: '', ...(contactData?.en || {}) },
+        ku: { address: '', phone: '', email: '', working_hours: '', ...(contactData?.ku || {}) }
+      });
 
       if (rateModeData) {
         setRateMode({
@@ -239,8 +237,8 @@ const AdminCMS = () => {
           <h1 className="text-2xl font-bold text-slate-900">إدارة المحتوى</h1>
           <p className="text-slate-600">تعديل محتوى الموقع والإعدادات</p>
         </div>
-        <button 
-          onClick={loadData} 
+        <button
+          onClick={loadData}
           className="px-4 py-2 border border-slate-300 text-slate-700 rounded-xl flex items-center gap-2 hover:bg-slate-50"
           data-testid="refresh-btn"
         >
@@ -250,10 +248,9 @@ const AdminCMS = () => {
 
       {/* Message */}
       {message.text && (
-        <div className={`p-4 rounded-xl flex items-center gap-3 ${
-          message.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 
+        <div className={`p-4 rounded-xl flex items-center gap-3 ${message.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' :
           'bg-red-50 text-red-700 border border-red-200'
-        }`}>
+          }`}>
           {message.type === 'success' ? <Check className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
           {message.text}
         </div>
@@ -266,11 +263,10 @@ const AdminCMS = () => {
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             data-testid={`tab-${tab.id}`}
-            className={`px-4 py-2 rounded-t-lg flex items-center gap-2 transition-colors ${
-              activeTab === tab.id 
-                ? 'bg-amber-500 text-white' 
-                : 'text-slate-600 hover:bg-slate-100'
-            }`}
+            className={`px-4 py-2 rounded-t-lg flex items-center gap-2 transition-colors ${activeTab === tab.id
+              ? 'bg-amber-500 text-white'
+              : 'text-slate-600 hover:bg-slate-100'
+              }`}
           >
             <tab.icon className="w-4 h-4" />
             {tab.label}
@@ -286,8 +282,8 @@ const AdminCMS = () => {
               <FileText className="w-5 h-5 text-amber-500" />
               الشروط والأحكام
             </h2>
-            <button 
-              onClick={saveTerms} 
+            <button
+              onClick={saveTerms}
               disabled={saving}
               data-testid="save-terms-btn"
               className="px-4 py-2 bg-amber-500 text-white font-medium rounded-xl flex items-center gap-2 disabled:opacity-50 hover:bg-amber-600"
@@ -301,25 +297,24 @@ const AdminCMS = () => {
           {['ar', 'en', 'ku'].map(lang => (
             <div key={lang} className="border border-slate-200 rounded-xl p-4 space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className={`font-bold flex items-center gap-2 ${
-                  lang === 'ar' ? 'text-amber-600' : lang === 'en' ? 'text-blue-600' : 'text-green-600'
-                }`}>
+                <h3 className={`font-bold flex items-center gap-2 ${lang === 'ar' ? 'text-amber-600' : lang === 'en' ? 'text-blue-600' : 'text-green-600'
+                  }`}>
                   <Globe className="w-4 h-4" />
                   {lang === 'ar' ? 'العربية' : lang === 'en' ? 'English' : 'کوردی'}
                 </h3>
-                <button 
+                <button
                   onClick={() => addTermsSection(lang)}
-                  className="px-3 py-1 text-sm bg-slate-100 hover:bg-slate-200 rounded-lg"
+                  className="px-3 py-1 text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg flex items-center gap-1 font-medium"
                 >
-                  + إضافة قسم
+                  <Plus className="w-4 h-4" /> إضافة قسم
                 </button>
               </div>
 
               {/* Title */}
               <div className="space-y-1">
                 <Label className="text-sm text-slate-500">العنوان الرئيسي</Label>
-                <Input 
-                  value={terms[lang]?.title || ''} 
+                <Input
+                  value={terms[lang]?.title || ''}
                   onChange={e => setTerms(prev => ({
                     ...prev,
                     [lang]: { ...prev[lang], title: e.target.value }
@@ -334,22 +329,22 @@ const AdminCMS = () => {
                 <div key={idx} className="bg-slate-50 rounded-lg p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium text-slate-600">القسم {idx + 1}</span>
-                    <button 
+                    <button
                       onClick={() => removeTermsSection(lang, idx)}
                       className="p-1 text-red-500 hover:bg-red-100 rounded"
                     >
-                      <X className="w-4 h-4" />
+                      <X className="w-4 h-4 stroke-[2.5]" />
                     </button>
                   </div>
-                  <Input 
+                  <Input
                     placeholder="عنوان القسم"
-                    value={section.title || ''} 
+                    value={section.title || ''}
                     onChange={e => updateTermsSection(lang, idx, 'title', e.target.value)}
                     dir={lang === 'en' ? 'ltr' : 'rtl'}
                   />
-                  <Textarea 
+                  <Textarea
                     placeholder="محتوى القسم"
-                    value={section.content || ''} 
+                    value={section.content || ''}
                     onChange={e => updateTermsSection(lang, idx, 'content', e.target.value)}
                     dir={lang === 'en' ? 'ltr' : 'rtl'}
                     rows={4}
@@ -358,7 +353,7 @@ const AdminCMS = () => {
               ))}
 
               {(!terms[lang]?.sections || terms[lang].sections.length === 0) && (
-                <p className="text-center text-slate-400 py-4">لا توجد أقسام. انقر "إضافة قسم" لإضافة قسم جديد.</p>
+                <p className="text-center text-slate-500 py-4 italic font-medium">لا توجد أقسام. انقر "إضافة قسم" لإضافة قسم جديد.</p>
               )}
             </div>
           ))}
@@ -373,8 +368,8 @@ const AdminCMS = () => {
               <Phone className="w-5 h-5 text-amber-500" />
               معلومات الاتصال
             </h2>
-            <button 
-              onClick={saveContact} 
+            <button
+              onClick={saveContact}
               disabled={saving}
               data-testid="save-contact-btn"
               className="px-4 py-2 bg-amber-500 text-white font-medium rounded-xl flex items-center gap-2 disabled:opacity-50 hover:bg-amber-600"
@@ -387,9 +382,8 @@ const AdminCMS = () => {
           {/* Language Sections */}
           {['ar', 'en', 'ku'].map(lang => (
             <div key={lang} className="border border-slate-200 rounded-xl p-4 space-y-4">
-              <h3 className={`font-bold flex items-center gap-2 ${
-                lang === 'ar' ? 'text-amber-600' : lang === 'en' ? 'text-blue-600' : 'text-green-600'
-              }`}>
+              <h3 className={`font-bold flex items-center gap-2 ${lang === 'ar' ? 'text-amber-600' : lang === 'en' ? 'text-blue-600' : 'text-green-600'
+                }`}>
                 <Globe className="w-4 h-4" />
                 {lang === 'ar' ? 'العربية' : lang === 'en' ? 'English' : 'کوردی'}
               </h3>
@@ -399,8 +393,8 @@ const AdminCMS = () => {
                   <Label className="text-sm text-slate-500 flex items-center gap-1">
                     <MapPin className="w-3 h-3" /> العنوان
                   </Label>
-                  <Input 
-                    value={contact[lang]?.address || ''} 
+                  <Input
+                    value={contact[lang]?.address || ''}
                     onChange={e => updateContact(lang, 'address', e.target.value)}
                     dir={lang === 'en' ? 'ltr' : 'rtl'}
                     data-testid={`contact-address-${lang}`}
@@ -410,8 +404,8 @@ const AdminCMS = () => {
                   <Label className="text-sm text-slate-500 flex items-center gap-1">
                     <Phone className="w-3 h-3" /> الهاتف
                   </Label>
-                  <Input 
-                    value={contact[lang]?.phone || ''} 
+                  <Input
+                    value={contact[lang]?.phone || ''}
                     onChange={e => updateContact(lang, 'phone', e.target.value)}
                     dir="ltr"
                     data-testid={`contact-phone-${lang}`}
@@ -421,8 +415,8 @@ const AdminCMS = () => {
                   <Label className="text-sm text-slate-500 flex items-center gap-1">
                     <Mail className="w-3 h-3" /> البريد الإلكتروني
                   </Label>
-                  <Input 
-                    value={contact[lang]?.email || ''} 
+                  <Input
+                    value={contact[lang]?.email || ''}
                     onChange={e => updateContact(lang, 'email', e.target.value)}
                     dir="ltr"
                     data-testid={`contact-email-${lang}`}
@@ -432,8 +426,8 @@ const AdminCMS = () => {
                   <Label className="text-sm text-slate-500 flex items-center gap-1">
                     <Clock className="w-3 h-3" /> ساعات العمل
                   </Label>
-                  <Input 
-                    value={contact[lang]?.working_hours || ''} 
+                  <Input
+                    value={contact[lang]?.working_hours || ''}
                     onChange={e => updateContact(lang, 'working_hours', e.target.value)}
                     dir={lang === 'en' ? 'ltr' : 'rtl'}
                     data-testid={`contact-hours-${lang}`}
@@ -453,8 +447,8 @@ const AdminCMS = () => {
               <Settings className="w-5 h-5 text-amber-500" />
               إعدادات أسعار الصرف
             </h2>
-            <button 
-              onClick={saveRateMode} 
+            <button
+              onClick={saveRateMode}
               disabled={saving}
               data-testid="save-rates-btn"
               className="px-4 py-2 bg-amber-500 text-white font-medium rounded-xl flex items-center gap-2 disabled:opacity-50 hover:bg-amber-600"
@@ -471,16 +465,14 @@ const AdminCMS = () => {
               <button
                 onClick={() => setRateMode(prev => ({ ...prev, mode: 'manual' }))}
                 data-testid="mode-manual"
-                className={`p-4 rounded-xl border-2 text-right transition-all ${
-                  rateMode.mode === 'manual' 
-                    ? 'border-amber-500 bg-amber-50' 
-                    : 'border-slate-200 hover:border-slate-300'
-                }`}
+                className={`p-4 rounded-xl border-2 text-right transition-all ${rateMode.mode === 'manual'
+                  ? 'border-amber-500 bg-amber-50'
+                  : 'border-slate-200 hover:border-slate-300'
+                  }`}
               >
                 <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                    rateMode.mode === 'manual' ? 'bg-amber-500 text-white' : 'bg-slate-100 text-slate-500'
-                  }`}>
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${rateMode.mode === 'manual' ? 'bg-amber-500 text-white' : 'bg-slate-100 text-slate-500'
+                    }`}>
                     <Edit2 className="w-5 h-5" />
                   </div>
                   <div>
@@ -493,16 +485,14 @@ const AdminCMS = () => {
               <button
                 onClick={() => setRateMode(prev => ({ ...prev, mode: 'auto' }))}
                 data-testid="mode-auto"
-                className={`p-4 rounded-xl border-2 text-right transition-all ${
-                  rateMode.mode === 'auto' 
-                    ? 'border-amber-500 bg-amber-50' 
-                    : 'border-slate-200 hover:border-slate-300'
-                }`}
+                className={`p-4 rounded-xl border-2 text-right transition-all ${rateMode.mode === 'auto'
+                  ? 'border-amber-500 bg-amber-50'
+                  : 'border-slate-200 hover:border-slate-300'
+                  }`}
               >
                 <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                    rateMode.mode === 'auto' ? 'bg-amber-500 text-white' : 'bg-slate-100 text-slate-500'
-                  }`}>
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${rateMode.mode === 'auto' ? 'bg-amber-500 text-white' : 'bg-slate-100 text-slate-500'
+                    }`}>
                     <Zap className="w-5 h-5" />
                   </div>
                   <div>
@@ -520,12 +510,12 @@ const AdminCMS = () => {
               <h3 className="font-bold text-blue-800 flex items-center gap-2">
                 <Zap className="w-4 h-4" /> إعدادات الوضع التلقائي
               </h3>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <Label className="text-sm text-blue-700">مصدر API</Label>
-                  <Input 
-                    value={rateMode.api_source} 
+                  <Input
+                    value={rateMode.api_source}
                     onChange={e => setRateMode(prev => ({ ...prev, api_source: e.target.value }))}
                     className="bg-white"
                     data-testid="api-source"
@@ -533,9 +523,9 @@ const AdminCMS = () => {
                 </div>
                 <div className="space-y-1">
                   <Label className="text-sm text-blue-700">فترة التحديث (دقائق)</Label>
-                  <Input 
+                  <Input
                     type="number"
-                    value={rateMode.update_interval_minutes} 
+                    value={rateMode.update_interval_minutes}
                     onChange={e => setRateMode(prev => ({ ...prev, update_interval_minutes: parseInt(e.target.value) || 60 }))}
                     className="bg-white"
                     data-testid="update-interval"
@@ -558,7 +548,7 @@ const AdminCMS = () => {
           {/* Info Card */}
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
             <p className="text-sm text-amber-800">
-              <strong>ملاحظة:</strong> في الوضع اليدوي، يتم عرض الأسعار التي تدخلها يدوياً من صفحة "أسعار الصرف". 
+              <strong>ملاحظة:</strong> في الوضع اليدوي، يتم عرض الأسعار التي تدخلها يدوياً من صفحة "أسعار الصرف".
               في الوضع التلقائي، يتم جلب الأسعار الحية من API خارجي (exchangerate-api.com).
             </p>
           </div>
