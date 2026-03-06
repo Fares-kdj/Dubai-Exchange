@@ -180,9 +180,26 @@ export const CurrencyConverterSection = () => {
   };
 
   const getCurrencyFlag = (code) => {
-    if (code === 'IQD') return 'iq';
+    const codeMap = {
+      'USD': 'us',
+      'EUR': 'eu',
+      'GBP': 'gb',
+      'TRY': 'tr',
+      'AED': 'ae',
+      'SAR': 'sa',
+      'JOD': 'jo',
+      'LBP': 'lb',
+      'KWD': 'kw',
+      'BHD': 'bh',
+      'QAR': 'qa',
+      'OMR': 'om',
+      'EGP': 'eg',
+      'IRR': 'ir',
+      'IQD': 'iq'
+    };
+    if (codeMap[code]) return codeMap[code];
     const rate = rates.find(r => r.currency_code === code);
-    return rate?.flag || code?.toLowerCase() || 'un';
+    return rate?.flag?.toLowerCase() || code?.toLowerCase()?.substring(0, 2) || 'un';
   };
 
   const allCurrencies = [
@@ -190,7 +207,7 @@ export const CurrencyConverterSection = () => {
     ...rates.map(r => ({
       code: r.currency_code,
       name: isKurdish ? (r.currency_name_ku || r.currency_name_ar) : isArabic ? r.currency_name_ar : r.currency_name_en,
-      flag: r.flag || r.currency_code?.toLowerCase()
+      flag: getCurrencyFlag(r.currency_code)
     }))
   ];
 
@@ -437,7 +454,14 @@ export const CurrencyConverterSection = () => {
                     />
                     <div className={`absolute ${isArabic || isKurdish ? 'left-6' : 'right-6'} top-1/2 -translate-y-1/2 flex items-center gap-2 ${isDark ? 'text-slate-500' : 'text-slate-400'
                       }`}>
-                      <span className="text-xl">{getCurrencyFlag(fromCurrency)}</span>
+                      <div className="w-8 h-6 flex items-center justify-center bg-slate-100 rounded overflow-hidden border border-slate-200">
+                        <img
+                          src={`https://flagcdn.com/w40/${getCurrencyFlag(fromCurrency)}.png`}
+                          alt=""
+                          className="w-full h-full object-cover"
+                          onError={(e) => { e.target.src = 'https://flagcdn.com/w40/un.png'; }}
+                        />
+                      </div>
                       <span className="text-lg font-semibold">{getLocalizedCurrency(fromCurrency)}</span>
                     </div>
                   </motion.div>
@@ -529,13 +553,14 @@ export const CurrencyConverterSection = () => {
                         {t.result}
                       </div>
                       <div className="flex items-center gap-4">
-                        <motion.span
-                          className="text-5xl"
-                          animate={{ scale: [1, 1.1, 1] }}
-                          transition={{ duration: 0.5 }}
-                        >
-                          {getCurrencyFlag(toCurrency)}
-                        </motion.span>
+                        <div className="w-16 h-12 flex items-center justify-center bg-slate-100 rounded-lg overflow-hidden border-2 border-slate-200 shadow-sm">
+                          <img
+                            src={`https://flagcdn.com/w80/${getCurrencyFlag(toCurrency)}.png`}
+                            alt=""
+                            className="w-full h-full object-cover"
+                            onError={(e) => { e.target.src = 'https://flagcdn.com/w80/un.png'; }}
+                          />
+                        </div>
                         <div>
                           <motion.div
                             className={`text-4xl md:text-5xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}

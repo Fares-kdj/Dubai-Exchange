@@ -10,6 +10,26 @@ const TermsAndConditions = ({ onAccept }) => {
   const { isDark } = useTheme();
   const [accepted, setAccepted] = useState(false);
   const [showError, setShowError] = useState(false);
+  const [cmsTerms, setCmsTerms] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  React.useEffect(() => {
+    const fetchTerms = async () => {
+      try {
+        const API_URL = process.env.REACT_APP_BACKEND_URL;
+        const res = await fetch(`${API_URL}/api/cms/traveler-terms`);
+        if (res.ok) {
+          const data = await res.json();
+          setCmsTerms(data);
+        }
+      } catch (err) {
+        console.error('Error fetching terms:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTerms();
+  }, []);
 
   const isArabic = currentLanguage === 'ar';
   const isKurdish = currentLanguage === 'ku';
@@ -114,6 +134,22 @@ const TermsAndConditions = ({ onAccept }) => {
     }
   ];
 
+  // Map CMS terms to the component's format
+  const displayTerms = cmsTerms ? (
+    cmsTerms[currentLanguage]?.sections?.length > 0
+      ? cmsTerms[currentLanguage].sections.map(s => ({
+        titleAr: s.title,
+        titleEn: s.title,
+        titleKu: s.title,
+        pointsAr: [s.content],
+        pointsEn: [s.content],
+        pointsKu: [s.content]
+      }))
+      : terms // Fallback if sections empty
+  ) : terms;
+
+  const displayTitle = cmsTerms?.[currentLanguage]?.title || t('الشروط والأحكام', 'Terms & Conditions', 'مەرجەکان و ڕێساکان');
+
   return (
     <div className="min-h-screen pt-20">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -167,7 +203,7 @@ const TermsAndConditions = ({ onAccept }) => {
             <div className="flex items-center gap-3 mb-2">
               <FileText className="w-8 h-8 text-[#D4AF37]" />
               <h1 className="text-3xl font-bold">
-                {t('الشروط والأحكام', 'Terms & Conditions', 'مەرجەکان و ڕێساکان')}
+                {displayTitle}
               </h1>
             </div>
             <p className="text-slate-300 text-sm">
@@ -181,7 +217,13 @@ const TermsAndConditions = ({ onAccept }) => {
 
           {/* Terms Content */}
           <div className="p-8 max-h-[500px] overflow-y-auto">
-            {terms.map((section, index) => (
+            {loading ? (
+              <div className="flex flex-col gap-4 animate-pulse">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="h-24 bg-slate-100 rounded-xl" />
+                ))}
+              </div>
+            ) : displayTerms.map((section, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, x: -20 }}

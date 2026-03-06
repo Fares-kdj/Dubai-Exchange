@@ -418,6 +418,47 @@ async def update_terms(
     return {"message": "Terms updated", "content": content}
 
 
+# ============ Traveler Booking Terms ============
+
+@router.get("/traveler-terms")
+async def get_traveler_terms():
+    """Get terms and conditions content for traveler booking (public)"""
+    terms = await settings_collection.find_one({"type": "traveler_terms"}, {"_id": 0})
+    if not terms:
+        return {
+            "ar": {"title": "شروط حجز المسافرين", "sections": []},
+            "en": {"title": "Traveler Booking Terms", "sections": []},
+            "ku": {"title": "مەرجەکانی حجزکردنی گەشتیار", "sections": []}
+        }
+    return terms.get("content", {
+        "ar": {"title": "شروط حجز المسافرين", "sections": []},
+        "en": {"title": "Traveler Booking Terms", "sections": []},
+        "ku": {"title": "مەرجەکانی حجزکردنی گەشتیار", "sections": []}
+    })
+
+
+@router.put("/traveler-terms")
+async def update_traveler_terms(
+    content: dict,
+    current_user: UserInDB = Depends(require_permission(Permission.EDIT_CONTENT))
+):
+    """Update terms and conditions for traveler booking"""
+    settings_doc = {
+        "type": "traveler_terms",
+        "content": content,
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "updated_by": current_user.name
+    }
+    
+    await settings_collection.update_one(
+        {"type": "traveler_terms"},
+        {"$set": settings_doc},
+        upsert=True
+    )
+    
+    return {"message": "Traveler terms updated", "content": content}
+
+
 # ============ Contact Information ============
 
 @router.get("/contact")

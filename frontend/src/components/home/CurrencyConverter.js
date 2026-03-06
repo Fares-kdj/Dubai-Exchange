@@ -4,7 +4,6 @@ import { useLanguage } from '@/context/LanguageContext';
 import { useTheme } from '@/context/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRightLeft, TrendingUp, RefreshCw } from 'lucide-react';
-import ReactCountryFlag from 'react-country-flag';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import axios from 'axios';
@@ -28,8 +27,25 @@ const CurrencyConverter = () => {
     { code: 'USD', countryCode: 'US', symbol: '$', nameAr: 'دولار أمريكي', nameEn: 'US Dollar', nameKu: 'دۆلاری ئەمریکی' },
     { code: 'IQD', countryCode: 'IQ', symbol: 'د.ع', nameAr: 'دينار عراقي', nameEn: 'Iraqi Dinar', nameKu: 'دیناری عێراقی' },
     { code: 'EUR', countryCode: 'EU', symbol: '€', nameAr: 'يورو', nameEn: 'Euro', nameKu: 'یۆرۆ' },
-    { code: 'GBP', countryCode: 'GB', symbol: '£', nameAr: 'جنيه إسترليني', nameEn: 'British Pound', nameKu: 'پاوەندی بەریتانی' }
+    { code: 'GBP', countryCode: 'GB', symbol: '£', nameAr: 'جنيه إسترليني', nameEn: 'British Pound', nameKu: 'پاوەندی بەریتانی' },
+    { code: 'TRY', countryCode: 'TR', symbol: '₺', nameAr: 'ليرة تركية', nameEn: 'Turkish Lira', nameKu: 'لیرەی تورکی' },
+    { code: 'AED', countryCode: 'AE', symbol: 'د.إ', nameAr: 'درهم إماراتي', nameEn: 'UAE Dirham', nameKu: 'درهەمی ئیماراتی' },
+    { code: 'SAR', countryCode: 'SA', symbol: 'ر.س', nameAr: 'ريال سعودي', nameEn: 'Saudi Riyal', nameKu: 'ڕیاڵی سعودی' }
   ];
+
+  const getFlag = (code) => {
+    const currency = currencies.find(c => c.code === code);
+    if (currency) return currency.countryCode.toLowerCase();
+
+    // Fallback common mappings
+    const fallbacks = {
+      'USD': 'us', 'IQD': 'iq', 'EUR': 'eu', 'GBP': 'gb',
+      'TRY': 'tr', 'AED': 'ae', 'SAR': 'sa', 'KWD': 'kw',
+      'JOD': 'jo', 'LBP': 'lb', 'EGP': 'eg', 'QAR': 'qa',
+      'IRR': 'ir'
+    };
+    return fallbacks[code] || code.substring(0, 2).toLowerCase() || 'un';
+  };
 
   const getCurrencyName = (currency) => {
     if (currentLanguage === 'ar') return currency.nameAr;
@@ -39,13 +55,13 @@ const CurrencyConverter = () => {
 
   const handleConvert = async (from = fromCurrency, to = toCurrency) => {
     if (!amount || parseFloat(amount) <= 0) return;
-    
+
     setConverting(true);
     setLoading(true);
-    
+
     // Simulate API call delay for animation
     await new Promise(resolve => setTimeout(resolve, 800));
-    
+
     try {
       const response = await axios.post(`${API}/convert`, null, {
         params: {
@@ -54,7 +70,7 @@ const CurrencyConverter = () => {
           amount: parseFloat(amount)
         }
       });
-      
+
       setResult(response.data.result.toLocaleString());
       setLastUpdated(response.data.last_updated);
     } catch (error) {
@@ -94,11 +110,10 @@ const CurrencyConverter = () => {
   };
 
   return (
-    <section id="converter" className={`py-20 md:py-32 relative overflow-hidden transition-colors duration-300 ${
-      isDark 
-        ? 'bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900'
-        : 'bg-gradient-to-b from-white via-slate-50 to-white'
-    }`}>
+    <section id="converter" className={`py-20 md:py-32 relative overflow-hidden transition-colors duration-300 ${isDark
+      ? 'bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900'
+      : 'bg-gradient-to-b from-white via-slate-50 to-white'
+      }`}>
       {/* Background Decoration */}
       <div className="absolute top-20 right-10 w-64 h-64 bg-gradient-to-br from-[#D4AF37]/10 to-[#FCD34D]/10 rounded-full blur-3xl" />
       <div className="absolute bottom-20 left-10 w-80 h-80 bg-gradient-to-br from-blue-100/20 to-purple-100/20 rounded-full blur-3xl" />
@@ -130,21 +145,19 @@ const CurrencyConverter = () => {
           data-testid="currency-converter"
         >
           {/* Glass Card */}
-          <div className={`backdrop-blur-2xl border rounded-3xl p-8 md:p-10 shadow-2xl relative overflow-hidden ${
-            isDark 
-              ? 'bg-slate-800/70 border-slate-700/60 shadow-slate-900/50'
-              : 'bg-white/70 border-slate-200/60 shadow-slate-200/50'
-          }`}>
+          <div className={`backdrop-blur-2xl border rounded-3xl p-8 md:p-10 shadow-2xl relative overflow-hidden ${isDark
+            ? 'bg-slate-800/70 border-slate-700/60 shadow-slate-900/50'
+            : 'bg-white/70 border-slate-200/60 shadow-slate-200/50'
+            }`}>
             {/* Animated gradient overlay */}
-            <div className={`absolute inset-0 pointer-events-none ${
-              isDark ? 'bg-gradient-to-br from-slate-700/40 to-transparent' : 'bg-gradient-to-br from-white/40 to-transparent'
-            }`} />
-            
+            <div className={`absolute inset-0 pointer-events-none ${isDark ? 'bg-gradient-to-br from-slate-700/40 to-transparent' : 'bg-gradient-to-br from-white/40 to-transparent'
+              }`} />
+
             <div className="relative z-10">
               {/* Currency Inputs */}
               <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-6 mb-8">
                 {/* From Currency */}
-                <motion.div 
+                <motion.div
                   className="space-y-3"
                   whileHover={{ scale: 1.01 }}
                   transition={{ duration: 0.2 }}
@@ -152,28 +165,23 @@ const CurrencyConverter = () => {
                   <label className={`text-sm font-semibold flex items-center gap-2 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
                     {t('converter.from')}
                   </label>
-                  <div className={`border-2 rounded-2xl p-5 transition-all shadow-sm hover:shadow-md ${
-                    isDark 
-                      ? 'bg-slate-700 border-slate-600 hover:border-[#D4AF37]/50 focus-within:border-[#D4AF37]'
-                      : 'bg-white border-slate-200 hover:border-[#D4AF37]/50 focus-within:border-[#D4AF37]'
-                  }`}>
+                  <div className={`border-2 rounded-2xl p-5 transition-all shadow-sm hover:shadow-md ${isDark
+                    ? 'bg-slate-700 border-slate-600 hover:border-[#D4AF37]/50 focus-within:border-[#D4AF37]'
+                    : 'bg-white border-slate-200 hover:border-[#D4AF37]/50 focus-within:border-[#D4AF37]'
+                    }`}>
                     <div className="flex items-center gap-3 mb-4">
                       <motion.div
                         key={fromCurrency}
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         transition={{ type: "spring", duration: 0.5 }}
+                        className="w-8 h-8 rounded-full overflow-hidden border shadow-sm"
                       >
-                        <ReactCountryFlag
-                          countryCode={currencies.find(c => c.code === fromCurrency)?.countryCode || 'US'}
-                          svg
-                          style={{
-                            width: '32px',
-                            height: '32px',
-                            borderRadius: '50%',
-                            objectFit: 'cover',
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-                          }}
+                        <img
+                          src={`https://flagcdn.com/w80/${getFlag(fromCurrency)}.png`}
+                          alt=""
+                          className="w-full h-full object-cover"
+                          onError={(e) => { e.target.src = 'https://flagcdn.com/w80/un.png'; }}
                         />
                       </motion.div>
                       <Select value={fromCurrency} onValueChange={setFromCurrency}>
@@ -182,17 +190,20 @@ const CurrencyConverter = () => {
                         </SelectTrigger>
                         <SelectContent className={`border rounded-xl shadow-xl ${isDark ? 'bg-slate-800 border-slate-600' : 'bg-white border-slate-200'}`}>
                           {currencies.map((currency) => (
-                            <SelectItem 
-                              key={currency.code} 
-                              value={currency.code} 
+                            <SelectItem
+                              key={currency.code}
+                              value={currency.code}
                               className={`rounded-lg py-3 ${isDark ? 'text-white hover:bg-slate-700' : 'text-slate-900 hover:bg-slate-50'}`}
                             >
                               <div className="flex items-center gap-3">
-                                <ReactCountryFlag
-                                  countryCode={currency.countryCode}
-                                  svg
-                                  style={{ width: '24px', height: '24px', borderRadius: '50%' }}
-                                />
+                                <div className="w-6 h-6 rounded-full overflow-hidden border">
+                                  <img
+                                    src={`https://flagcdn.com/w40/${currency.countryCode.toLowerCase()}.png`}
+                                    alt=""
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => { e.target.src = 'https://flagcdn.com/w40/un.png'; }}
+                                  />
+                                </div>
                                 <span className="font-semibold">{currency.code}</span>
                                 <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>- {getCurrencyName(currency)}</span>
                               </div>
@@ -226,34 +237,29 @@ const CurrencyConverter = () => {
                 </div>
 
                 {/* To Currency */}
-                <motion.div 
+                <motion.div
                   className="space-y-3"
                   whileHover={{ scale: 1.01 }}
                   transition={{ duration: 0.2 }}
                 >
                   <label className={`text-sm font-semibold ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{t('converter.to')}</label>
-                  <div className={`border-2 rounded-2xl p-5 transition-all shadow-sm hover:shadow-md ${
-                    isDark 
-                      ? 'bg-gradient-to-br from-slate-700 to-slate-800 border-slate-600 hover:border-[#D4AF37]/50 focus-within:border-[#D4AF37]'
-                      : 'bg-gradient-to-br from-slate-50 to-white border-slate-200 hover:border-[#D4AF37]/50 focus-within:border-[#D4AF37]'
-                  }`}>
+                  <div className={`border-2 rounded-2xl p-5 transition-all shadow-sm hover:shadow-md ${isDark
+                    ? 'bg-gradient-to-br from-slate-700 to-slate-800 border-slate-600 hover:border-[#D4AF37]/50 focus-within:border-[#D4AF37]'
+                    : 'bg-gradient-to-br from-slate-50 to-white border-slate-200 hover:border-[#D4AF37]/50 focus-within:border-[#D4AF37]'
+                    }`}>
                     <div className="flex items-center gap-3 mb-4">
                       <motion.div
                         key={toCurrency}
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         transition={{ type: "spring", duration: 0.5 }}
+                        className="w-8 h-8 rounded-full overflow-hidden border shadow-sm"
                       >
-                        <ReactCountryFlag
-                          countryCode={currencies.find(c => c.code === toCurrency)?.countryCode || 'IQ'}
-                          svg
-                          style={{
-                            width: '32px',
-                            height: '32px',
-                            borderRadius: '50%',
-                            objectFit: 'cover',
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-                          }}
+                        <img
+                          src={`https://flagcdn.com/w80/${getFlag(toCurrency)}.png`}
+                          alt=""
+                          className="w-full h-full object-cover"
+                          onError={(e) => { e.target.src = 'https://flagcdn.com/w80/un.png'; }}
                         />
                       </motion.div>
                       <Select value={toCurrency} onValueChange={setToCurrency}>
@@ -262,17 +268,20 @@ const CurrencyConverter = () => {
                         </SelectTrigger>
                         <SelectContent className={`border rounded-xl shadow-xl ${isDark ? 'bg-slate-800 border-slate-600' : 'bg-white border-slate-200'}`}>
                           {currencies.map((currency) => (
-                            <SelectItem 
-                              key={currency.code} 
-                              value={currency.code} 
+                            <SelectItem
+                              key={currency.code}
+                              value={currency.code}
                               className={`rounded-lg py-3 ${isDark ? 'text-white hover:bg-slate-700' : 'text-slate-900 hover:bg-slate-50'}`}
                             >
                               <div className="flex items-center gap-3">
-                                <ReactCountryFlag
-                                  countryCode={currency.countryCode}
-                                  svg
-                                  style={{ width: '24px', height: '24px', borderRadius: '50%' }}
-                                />
+                                <div className="w-6 h-6 rounded-full overflow-hidden border">
+                                  <img
+                                    src={`https://flagcdn.com/w40/${currency.countryCode.toLowerCase()}.png`}
+                                    alt=""
+                                    className="w-full h-full object-cover"
+                                    onError={(e) => { e.target.src = 'https://flagcdn.com/w40/un.png'; }}
+                                  />
+                                </div>
                                 <span className="font-semibold">{currency.code}</span>
                                 <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>- {getCurrencyName(currency)}</span>
                               </div>
@@ -304,11 +313,10 @@ const CurrencyConverter = () => {
                 whileHover={{ scale: 1.02, y: -2 }}
                 whileTap={{ scale: 0.98 }}
                 data-testid="convert-button"
-                className={`w-full py-5 font-bold rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group ${
-                  isDark 
-                    ? 'bg-gradient-to-r from-[#D4AF37] to-[#FCD34D] text-slate-900'
-                    : 'bg-gradient-to-r from-slate-900 to-slate-700 text-white'
-                }`}
+                className={`w-full py-5 font-bold rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group ${isDark
+                  ? 'bg-gradient-to-r from-[#D4AF37] to-[#FCD34D] text-slate-900'
+                  : 'bg-gradient-to-r from-slate-900 to-slate-700 text-white'
+                  }`}
               >
                 {loading ? (
                   <>
@@ -321,9 +329,8 @@ const CurrencyConverter = () => {
                     {t('converter.convert')}
                   </>
                 )}
-                <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity ${
-                  isDark ? 'bg-gradient-to-r from-white/10 to-transparent' : 'bg-gradient-to-r from-[#D4AF37]/20 to-transparent'
-                }`} />
+                <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity ${isDark ? 'bg-gradient-to-r from-white/10 to-transparent' : 'bg-gradient-to-r from-[#D4AF37]/20 to-transparent'
+                  }`} />
               </motion.button>
 
               {/* Last Update Info */}
@@ -345,9 +352,8 @@ const CurrencyConverter = () => {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.6 }}
-            className={`mt-6 text-center text-sm border rounded-xl p-4 ${
-              isDark ? 'bg-blue-900/30 border-blue-800 text-blue-300' : 'bg-blue-50 border-blue-100 text-slate-500'
-            }`}
+            className={`mt-6 text-center text-sm border rounded-xl p-4 ${isDark ? 'bg-blue-900/30 border-blue-800 text-blue-300' : 'bg-blue-50 border-blue-100 text-slate-500'
+              }`}
           >
             💡 {currentLanguage === 'ar' ? 'الأسعار استرشادية وقابلة للتغيير حسب السوق' : 'Rates are indicative and subject to market changes'}
           </motion.div>

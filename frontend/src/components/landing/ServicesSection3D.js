@@ -140,9 +140,8 @@ export const ServicesSection3D = () => {
         const res = await fetch(`${API_URL}/api/cms/services?active_only=true`);
         if (res.ok) {
           const data = await res.json();
-          // Map backend data to frontend format and EXCLUDE hero pinned
+          // Map backend data to frontend format
           const mapped = data
-            .filter(s => !s.is_hero_pinned)
             .map(s => ({
               id: s.service_id,
               titleAr: s.name_ar,

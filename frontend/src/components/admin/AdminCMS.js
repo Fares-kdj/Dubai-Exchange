@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   Save, RefreshCw, ChevronDown, ChevronUp, Edit2, Check, X, Plus,
   Globe, Type, FileText, Phone, Mail, MapPin, Settings,
-  Zap, Clock, AlertCircle
+  Zap, Clock, AlertCircle, Plane
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,6 +17,11 @@ const AdminCMS = () => {
 
   // Terms State
   const [terms, setTerms] = useState({
+    ku: { title: '', sections: [] }
+  });
+
+  // Traveler Terms State
+  const [travelerTerms, setTravelerTerms] = useState({
     ar: { title: '', sections: [] },
     en: { title: '', sections: [] },
     ku: { title: '', sections: [] }
@@ -45,21 +50,28 @@ const AdminCMS = () => {
   const loadData = async () => {
     setLoading(true);
     try {
-      const [termsRes, contactRes, rateModeRes] = await Promise.all([
+      const [termsRes, travelerTermsRes, contactRes, rateModeRes] = await Promise.all([
         fetch(API_URL + '/api/cms/terms'),
+        fetch(API_URL + '/api/cms/traveler-terms'),
         fetch(API_URL + '/api/cms/contact'),
         fetch(API_URL + '/api/rates/settings/mode')
       ]);
 
       const termsData = await termsRes.json();
+      const travelerTermsData = await travelerTermsRes.json();
       const contactData = await contactRes.json();
       const rateModeData = await rateModeRes.json();
 
       // Terms: merge with defaults (API may return null or partial data)
       setTerms({
-        ar: { title: 'الشروط والأحكام', sections: [], ...(termsData?.ar || {}) },
-        en: { title: 'Terms and Conditions', sections: [], ...(termsData?.en || {}) },
         ku: { title: 'مەرج و رێساکان', sections: [], ...(termsData?.ku || {}) }
+      });
+
+      // Traveler Terms
+      setTravelerTerms({
+        ar: { title: 'شروط حجز المسافرين', sections: [], ...(travelerTermsData?.ar || {}) },
+        en: { title: 'Traveler Booking Terms', sections: [], ...(travelerTermsData?.en || {}) },
+        ku: { title: 'مەرجەکانی حجزکردنی گەشتیار', sections: [], ...(travelerTermsData?.ku || {}) }
       });
 
       // Contact: merge with defaults
@@ -103,7 +115,27 @@ const AdminCMS = () => {
         body: JSON.stringify(terms)
       });
       if (res.ok) {
-        showMessage('success', 'تم حفظ الشروط والأحكام بنجاح');
+        showMessage('success', 'تم حفظ الشروط العامة بنجاح');
+      } else {
+        showMessage('error', 'حدث خطأ في الحفظ');
+      }
+    } catch (err) {
+      showMessage('error', 'حدث خطأ في الاتصال');
+    }
+    setSaving(false);
+  };
+
+  // Save Traveler Terms
+  const saveTravelerTerms = async () => {
+    setSaving(true);
+    try {
+      const res = await fetch(API_URL + '/api/cms/traveler-terms', {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(travelerTerms)
+      });
+      if (res.ok) {
+        showMessage('success', 'تم حفظ شروط حجز المسافرين بنجاح');
       } else {
         showMessage('error', 'حدث خطأ في الحفظ');
       }
@@ -216,7 +248,8 @@ const AdminCMS = () => {
   };
 
   const tabs = [
-    { id: 'terms', label: 'الشروط والأحكام', icon: FileText },
+    { id: 'terms', label: 'الشروط العامة', icon: FileText },
+    { id: 'traveler_terms', label: 'شروط المسافرين', icon: Plane },
     { id: 'contact', label: 'معلومات الاتصال', icon: Phone },
     { id: 'rates', label: 'إعدادات الأسعار', icon: Settings }
   ];
@@ -360,7 +393,110 @@ const AdminCMS = () => {
         </div>
       )}
 
-      {/* Contact Tab */}
+      {/* Traveler Terms Tab */}
+      {activeTab === 'traveler_terms' && (
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-6" data-testid="traveler-terms-section">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+              <Plane className="w-5 h-5 text-amber-500" />
+              شروط وأحكام حجز المسافرين
+            </h2>
+            <button
+              onClick={saveTravelerTerms}
+              disabled={saving}
+              data-testid="save-traveler-terms-btn"
+              className="px-4 py-2 bg-amber-500 text-white font-medium rounded-xl flex items-center gap-2 disabled:opacity-50 hover:bg-amber-600"
+            >
+              <Save className="w-4 h-4" />
+              {saving ? 'جاري الحفظ...' : 'حفظ التغييرات'}
+            </button>
+          </div>
+
+          {/* Language Sections */}
+          {['ar', 'en', 'ku'].map(lang => (
+            <div key={lang} className="border border-slate-200 rounded-xl p-4 space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className={`font-bold flex items-center gap-2 ${lang === 'ar' ? 'text-amber-600' : lang === 'en' ? 'text-blue-600' : 'text-green-600'
+                  }`}>
+                  <Globe className="w-4 h-4" />
+                  {lang === 'ar' ? 'العربية' : lang === 'en' ? 'English' : 'کوردی'}
+                </h3>
+                <button
+                  onClick={() => {
+                    setTravelerTerms(prev => ({
+                      ...prev,
+                      [lang]: { ...prev[lang], sections: [...(prev[lang].sections || []), { title: '', content: '' }] }
+                    }));
+                  }}
+                  className="px-3 py-1 text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg flex items-center gap-1 font-medium"
+                >
+                  <Plus className="w-4 h-4" /> إضافة قسم
+                </button>
+              </div>
+
+              {/* Title */}
+              <div className="space-y-1">
+                <Label className="text-sm text-slate-500">العنوان الرئيسي</Label>
+                <Input
+                  value={travelerTerms[lang]?.title || ''}
+                  onChange={e => setTravelerTerms(prev => ({
+                    ...prev,
+                    [lang]: { ...prev[lang], title: e.target.value }
+                  }))}
+                  dir={lang === 'en' ? 'ltr' : 'rtl'}
+                />
+              </div>
+
+              {/* Sections */}
+              {(travelerTerms[lang]?.sections || []).map((section, idx) => (
+                <div key={idx} className="bg-slate-50 rounded-lg p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-slate-600">القسم {idx + 1}</span>
+                    <button
+                      onClick={() => {
+                        setTravelerTerms(prev => ({
+                          ...prev,
+                          [lang]: { ...prev[lang], sections: prev[lang].sections.filter((_, i) => i !== idx) }
+                        }));
+                      }}
+                      className="p-1 text-red-500 hover:bg-red-100 rounded"
+                    >
+                      <X className="w-4 h-4 stroke-[2.5]" />
+                    </button>
+                  </div>
+                  <Input
+                    placeholder="عنوان القسم"
+                    value={section.title || ''}
+                    onChange={e => {
+                      const newSections = [...travelerTerms[lang].sections];
+                      newSections[idx].title = e.target.value;
+                      setTravelerTerms(prev => ({
+                        ...prev,
+                        [lang]: { ...prev[lang], sections: newSections }
+                      }));
+                    }}
+                    dir={lang === 'en' ? 'ltr' : 'rtl'}
+                  />
+                  <Textarea
+                    placeholder="محتوى القسم"
+                    value={section.content || ''}
+                    onChange={e => {
+                      const newSections = [...travelerTerms[lang].sections];
+                      newSections[idx].content = e.target.value;
+                      setTravelerTerms(prev => ({
+                        ...prev,
+                        [lang]: { ...prev[lang], sections: newSections }
+                      }));
+                    }}
+                    dir={lang === 'en' ? 'ltr' : 'rtl'}
+                    rows={4}
+                  />
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
       {activeTab === 'contact' && (
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-6" data-testid="contact-section">
           <div className="flex items-center justify-between">
