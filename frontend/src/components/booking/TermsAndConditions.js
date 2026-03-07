@@ -141,9 +141,9 @@ const TermsAndConditions = ({ onAccept }) => {
         titleAr: s.title,
         titleEn: s.title,
         titleKu: s.title,
-        pointsAr: [s.content],
-        pointsEn: [s.content],
-        pointsKu: [s.content]
+        pointsAr: s.content?.split('\n').map(p => p.trim()).filter(p => p) || [],
+        pointsEn: s.content?.split('\n').map(p => p.trim()).filter(p => p) || [],
+        pointsKu: s.content?.split('\n').map(p => p.trim()).filter(p => p) || []
       }))
       : terms // Fallback if sections empty
   ) : terms;
