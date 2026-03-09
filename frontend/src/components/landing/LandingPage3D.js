@@ -35,15 +35,14 @@ const LandingPage3D = () => {
 
   useEffect(() => {
     // Setup scroll triggers for sections
-    const sections = document.querySelectorAll('section');
+    const sections = gsap.utils.toArray('section');
 
-    sections.forEach((section, index) => {
+    sections.forEach((section) => {
       ScrollTrigger.create({
         trigger: section,
         start: 'top 80%',
-        end: 'bottom 20%',
-        toggleClass: 'visible',
-        once: true
+        once: true,
+        onEnter: () => section.classList.add('visible')
       });
     });
 

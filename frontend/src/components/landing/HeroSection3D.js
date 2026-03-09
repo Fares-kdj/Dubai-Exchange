@@ -167,6 +167,7 @@ export const HeroSection3D = () => {
             muted
             loop
             playsInline
+            fetchpriority="high"
             className={`absolute top-0 right-0 w-full h-1/2 lg:h-full object-cover lg:object-right object-right transition-opacity duration-700 scale-100 lg:scale-100 origin-right-top ${isDark ? 'opacity-100' : 'opacity-0'}`}
           />
           {/* Light Mode Background Video */}
@@ -176,6 +177,7 @@ export const HeroSection3D = () => {
             muted
             loop
             playsInline
+            fetchpriority="high"
             className={`absolute top-0 right-0 w-full h-1/2 lg:h-full object-cover lg:object-right object-right transition-opacity duration-700 scale-100 lg:scale-100 origin-right-top ${isDark ? 'opacity-0' : 'opacity-100'}`}
           />
         </div>
@@ -209,6 +211,8 @@ export const HeroSection3D = () => {
                   <img
                     src={CBI_LOGO_URL}
                     alt="CBI"
+                    loading="eager"
+                    fetchpriority="high"
                     className="w-8 h-8 object-contain"
                   />
                   <span className="font-semibold text-sm">{t.cbiTitle}</span>
