@@ -5,13 +5,15 @@ import Header3D from './Header3D';
 import { HeroSection3D } from './HeroSection3D';
 import { GlobalSection } from './GlobalSection';
 import { ServicesSection3D } from './ServicesSection3D';
-import { CurrencyConverterSection } from './CurrencyConverterSection';
-import { DevicesSection } from './DevicesSection';
-import { PartnersSection3D } from './PartnersSection3D';
-import { TrustSection3D } from './TrustSection3D';
-import { PaymentsSection3D } from './PaymentsSection3D';
-import { ContactSection } from './ContactSection';
-import Footer3D from './Footer3D';
+
+// Lazy load sections below the fold
+const CurrencyConverterSection = React.lazy(() => import('./CurrencyConverterSection').then(m => ({ default: m.CurrencyConverterSection })));
+const DevicesSection = React.lazy(() => import('./DevicesSection').then(m => ({ default: m.DevicesSection })));
+const PartnersSection3D = React.lazy(() => import('./PartnersSection3D').then(m => ({ default: m.PartnersSection3D })));
+const TrustSection3D = React.lazy(() => import('./TrustSection3D').then(m => ({ default: m.TrustSection3D })));
+const PaymentsSection3D = React.lazy(() => import('./PaymentsSection3D').then(m => ({ default: m.PaymentsSection3D })));
+const ContactSection = React.lazy(() => import('./ContactSection').then(m => ({ default: m.ContactSection })));
+const Footer3D = React.lazy(() => import('./Footer3D'));
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -78,25 +80,29 @@ const LandingPage3D = () => {
         {/* Services - Service Cards */}
         <ServicesSection3D />
 
-        {/* Currency Converter */}
-        <CurrencyConverterSection />
+        <React.Suspense fallback={<div className="h-20" />}>
+          {/* Currency Converter */}
+          <CurrencyConverterSection />
 
-        {/* Devices - Phone, iPad, Computer */}
-        <DevicesSection />
+          {/* Devices - Phone, iPad, Computer */}
+          <DevicesSection />
 
-        {/* Partners - Partner Logos */}
-        <PartnersSection3D />
+          {/* Partners - Partner Logos */}
+          <PartnersSection3D />
 
-        {/* Trust (CBI) */}
-        <TrustSection3D />
+          {/* Trust (CBI) */}
+          <TrustSection3D />
 
-        {/* Payments - Card & USDT */}
-        <PaymentsSection3D />
+          {/* Payments - Card & USDT */}
+          <PaymentsSection3D />
 
-        {/* Contact */}
-        <ContactSection />
+          {/* Contact */}
+          <ContactSection />
+        </React.Suspense>
       </main>
-      <Footer3D />
+      <React.Suspense fallback={<div className="h-20" />}>
+        <Footer3D />
+      </React.Suspense>
     </div>
   );
 };

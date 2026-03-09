@@ -1,11 +1,11 @@
 // Asset URLs for the Landing Page
 export const ASSETS = {
   // Hero Images
-  heroAirplane: 'https://static.prod-images.emergentagent.com/jobs/88687776-cef9-451a-ac8a-aacc94344da7/images/7314ba8b91b5f4b4836cf6ff75f48969acd464ef67f61e137f36d941651eee88.png',
-  heroCardHand: 'https://static.prod-images.emergentagent.com/jobs/88687776-cef9-451a-ac8a-aacc94344da7/images/87915492b24dcf06c1d9cce0bde468a26f3dba1bd4fcd125f9595931f35b209c.png',
+  heroAirplane: '/assets/external/hero-airplane.png',
+  heroCardHand: '/assets/external/hero-card-hand.png',
 
   // USDT Image
-  usdtCoin: 'https://customer-assets.emergentagent.com/job_money-transfer-149/artifacts/232ggie3_3D%20RENDER_.png',
+  usdtCoin: '/assets/external/usdt-coin-opt.png',
 
   // Real Device Screenshots - Dark Mode
   devicePhoneDark: '/assets/device-phone-dark.png',
@@ -18,35 +18,34 @@ export const ASSETS = {
   deviceLaptopLight: '/assets/device-laptop-light.png',
 
   // Global Network
-  globalNetwork: 'https://static.prod-images.emergentagent.com/jobs/88687776-cef9-451a-ac8a-aacc94344da7/images/8588801201918d16afc252b16c090fc0a22cdac37b289e2b9fcd4583ef8c5c64.png',
+  globalNetwork: '/assets/external/global-network.png',
 
   // Company Logos
-  // Note: logoColor SVG was broken (referenced local file path), using logoBlack for light mode
-  logoColor: 'https://customer-assets.emergentagent.com/job_28ffec3b-f08f-4672-88c0-712bcb54d2bb/artifacts/13lpi34u_logo_black.svg',
-  logoWhite: 'https://customer-assets.emergentagent.com/job_28ffec3b-f08f-4672-88c0-712bcb54d2bb/artifacts/uoze1awx_logo_white.svg',
-  logoBlack: 'https://customer-assets.emergentagent.com/job_28ffec3b-f08f-4672-88c0-712bcb54d2bb/artifacts/13lpi34u_logo_black.svg',
-  iconmarkWhite: 'https://customer-assets.emergentagent.com/job_28ffec3b-f08f-4672-88c0-712bcb54d2bb/artifacts/0tukplwt_iconmark_white.svg',
-  iconmarkBlack: 'https://customer-assets.emergentagent.com/job_28ffec3b-f08f-4672-88c0-712bcb54d2bb/artifacts/f1y0egt0_iconmark_black.svg',
+  logoColor: '/assets/external/logo-black.svg',
+  logoWhite: '/assets/external/logo-white.svg',
+  logoBlack: '/assets/external/logo-black.svg',
+  iconmarkWhite: '/assets/external/iconmark-white.svg',
+  iconmarkBlack: '/assets/external/iconmark-black.svg',
 
   // Partner Logos
   partners: {
-    altayf: 'https://customer-assets.emergentagent.com/job_28ffec3b-f08f-4672-88c0-712bcb54d2bb/artifacts/1u4b8k3g_altayf.png',
-    fib: 'https://customer-assets.emergentagent.com/job_28ffec3b-f08f-4672-88c0-712bcb54d2bb/artifacts/yjqyzxwg_fib.png',
-    rasheed: 'https://customer-assets.emergentagent.com/job_28ffec3b-f08f-4672-88c0-712bcb54d2bb/artifacts/7r0xdqpf_rasheed.png',
-    tbi: 'https://customer-assets.emergentagent.com/job_28ffec3b-f08f-4672-88c0-712bcb54d2bb/artifacts/ssg7bube_tbi.png',
-    rafidain: 'https://customer-assets.emergentagent.com/job_28ffec3b-f08f-4672-88c0-712bcb54d2bb/artifacts/ssdr8yqt_rafidain.svg',
-    zaincash: 'https://customer-assets.emergentagent.com/job_28ffec3b-f08f-4672-88c0-712bcb54d2bb/artifacts/bz9sfr3h_zaincash.jpg'
+    altayf: '/assets/external/altayf.png',
+    fib: '/assets/external/fib.png',
+    rasheed: '/assets/external/rasheed.png',
+    tbi: '/assets/external/tbi.png',
+    rafidain: '/assets/external/rafidain.svg',
+    zaincash: '/assets/external/zaincash.jpg'
   },
 
   // Payment Card
-  cardSvg: 'https://customer-assets.emergentagent.com/job_28ffec3b-f08f-4672-88c0-712bcb54d2bb/artifacts/1s7j0q54_card.svg',
-  cardTexture: 'https://customer-assets.emergentagent.com/job_28ffec3b-f08f-4672-88c0-712bcb54d2bb/artifacts/igka9bm5_card_texture.png',
+  cardSvg: '/assets/external/card.svg',
+  cardTexture: '/assets/external/card-texture.png',
 
   // Central Bank of Iraq
-  cbiLogo: 'https://customer-assets.emergentagent.com/job_28ffec3b-f08f-4672-88c0-712bcb54d2bb/artifacts/996lnrr7_cbi_logo.png',
-  cbiBuilding1: 'https://customer-assets.emergentagent.com/job_28ffec3b-f08f-4672-88c0-712bcb54d2bb/artifacts/yyjprz90_cbi_building_01.webp',
-  cbiBuilding2: 'https://customer-assets.emergentagent.com/job_28ffec3b-f08f-4672-88c0-712bcb54d2bb/artifacts/v643842a_cbi_building_02.webp',
-  cbiBuilding3: 'https://customer-assets.emergentagent.com/job_28ffec3b-f08f-4672-88c0-712bcb54d2bb/artifacts/sdqwizpc_cbi_building_03.jpg'
+  cbiLogo: '/assets/external/cbi-logo.png',
+  cbiBuilding1: '/assets/external/cbi-building-01.webp',
+  cbiBuilding2: '/assets/external/cbi-building-02.webp',
+  cbiBuilding3: '/assets/external/cbi-building-03.jpg'
 };
 
 // Company Info
@@ -56,7 +55,7 @@ export const COMPANY = {
   nameKu: 'کۆمپانیای دوبەی نێودەوڵەتی بۆ ئاڵوگۆڕی دراو',
   sloganAr: 'خدمات مالية آمنة وسريعة للمسافرين والشركات',
   sloganEn: 'Secure and Fast Financial Services for Travelers and Businesses',
-  sloganKu: 'خزمەتگوزارییە دارایییە پارێزراو و خێراکان بۆ گەشتیاران و کۆمپانیاکان'
+  sloganKu: 'خزمەتگوزارییە دارایییە پارێزراو و خێراکان بۆ گەشتیاران و کۆمپانياكان'
 };
 
 // Partners list
@@ -65,8 +64,8 @@ export const PARTNERS = [
   { id: 'fib', nameAr: 'المصرف العراقي الأول', nameEn: 'First Iraqi Bank', nameKu: 'بانکی یەکەمی عێراق', logo: ASSETS.partners.fib },
   { id: 'tbi', nameAr: 'المصرف العراقي للتجارة', nameEn: 'Trade Bank of Iraq', nameKu: 'بانکی بازرگانیی عێراق', logo: ASSETS.partners.tbi },
   { id: 'altayf', nameAr: 'مصرف الطيف الإسلامي', nameEn: 'Al-Tayf Islamic Bank', nameKu: 'بانکی ئیسلامیی ئەلتەیف', logo: ASSETS.partners.altayf },
-  { id: 'rasheed', nameAr: 'مصرف الرشيد', nameEn: 'Rasheed Bank', nameKu: 'بانکی ڕەشید', logo: ASSETS.partners.rasheed },
-  { id: 'rafidain', nameAr: 'مصرف الرافدين', nameEn: 'Rafidain Bank', nameKu: 'بانکی ڕافیدەین', logo: ASSETS.partners.rafidain }
+  { id: 'rasheed', nameAr: 'مصرف الرشيد', nameEn: 'Rasheed Bank', nameKu: 'بانکی ڕەشيد', logo: ASSETS.partners.rasheed },
+  { id: 'rafidain', nameAr: 'مصرف الرافدين', nameEn: 'Rafidain Bank', nameKu: 'بانکی ڕافيدەين', logo: ASSETS.partners.rafidain }
 ];
 
 // Services
@@ -111,7 +110,7 @@ export const SERVICES = [
     titleKu: 'پڕکردنەوەی USDT',
     descAr: 'خدمات العملات الرقمية',
     descEn: 'Digital currency services',
-    descKu: 'خزمەتگوزارییەکانی دراوی دیجیتاڵ',
+    descKu: 'خزمەتگوزارییەکانی دراوی ديجيتاڵ',
     icon: 'coins',
     link: '/usdt'
   }

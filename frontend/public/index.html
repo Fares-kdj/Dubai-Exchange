@@ -11,22 +11,26 @@
     <meta name="keywords"
         content="دبي العالمية، شركة دبي العالمية للصيرفة، صرافة، تحويل مالي، حجز الدولار للمسافرين، العراق، صيرفة دبي، أسعار الدولار" />
 
+    <!-- Preload Critical Assets (Fonts & Images) for LCP/CLS -->
+    <link rel="preload" href="/assets/fonts/inter-600.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" as="image" href="/uploads/d62b69d173bc4675a61bb2fcf4eff2d1.png" fetchpriority="high">
+    <link rel="preload" as="image" href="/assets/external/logo-black.svg" fetchpriority="high">
+    <link rel="preload" as="video" href="/assets/hero-dark.mp4" fetchpriority="high">
+
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://dubai-international-iq.online/" />
     <meta property="og:title" content="شركة دبي العالمية للصرافة والتحويل المالي | Dubai International Exchange" />
     <meta property="og:description"
         content="الرائدة في التحويلات المالية وصرف العملات في العراق. حجز الدولار والخدمات المالية الفورية." />
-    <meta property="og:image"
-        content="https://customer-assets.emergentagent.com/job_28ffec3b-f08f-4672-88c0-712bcb54d2bb/artifacts/13lpi34u_logo_black.svg" />
+    <meta property="og:image" content="https://dubai-international-iq.online/assets/external/logo-black.svg" />
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content="https://dubai-international-iq.online/" />
     <meta property="twitter:title" content="شركة دبي العالمية للصرافة والتحويل المالي" />
     <meta property="twitter:description" content="أفضل خدمات الصرافة والتحويل المالي في العراق." />
-    <meta property="twitter:image"
-        content="https://customer-assets.emergentagent.com/job_28ffec3b-f08f-4672-88c0-712bcb54d2bb/artifacts/13lpi34u_logo_black.svg" />
+    <meta property="twitter:image" content="https://dubai-international-iq.online/assets/external/logo-black.svg" />
 
     <!-- Structured Data (JSON-LD) -->
     <script type="application/ld+json">
@@ -54,11 +58,9 @@
     <!-- Canonical URL -->
     <link rel="canonical" href="https://dubai-international-iq.online/" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preconnect" href="https://assets.emergent.sh" />
-    <link rel="preconnect" href="https://cdn.tailwindcss.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/assets/fonts/fonts.css" />
+
+
     <!--
         manifest.json provides metadata used when your web app is installed on a
         user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
@@ -74,21 +76,13 @@
         -->
     <title>شركة دبي العالمية للصرافة | Dubai International Exchange | أفضل شركة صيرفة في العراق</title>
 
-    <!-- Preload Critical Hero Assets for LCP -->
-    <link rel="preload" as="image"
-        href="https://customer-assets.emergentagent.com/job_28ffec3b-f08f-4672-88c0-712bcb54d2bb/artifacts/13lpi34u_logo_black.svg"
-        fetchpriority="high">
-    <link rel="preload" as="video" href="/assets/hero-dark.mp4" fetchpriority="high">
 
-    <!-- Preconnect to essential origins only -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://customer-assets.emergentagent.com">
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap" rel="stylesheet" media="print"
-        onload="this.media='all'">
 
-    <script src="https://assets.emergent.sh/scripts/emergent-main.js" defer></script>
+
+
+
+    <script src="/assets/external/emergent-main.js" defer></script>
     <!--
         These two scripts have been added for the Visual Edits, please do not edit or remove them
         -->
@@ -194,13 +188,15 @@
                 })(document, window.posthog || []);
                 posthog.init("phc_xAvL2Iq4tFmANRE7kzbKwaSqp1HJjN7x48s3vr0CMjs", {
                     api_host: "https://us.i.posthog.com",
-                    person_profiles: "identified_only", // or 'always' to create profiles for anonymous users as well,
+                    person_profiles: "identified_only",
+                    autocapture: false, // Disable autocapture to reduce listener overhead and bundle impact
+                    capture_performance: false,
                     session_recording: {
-                        recordCrossOriginIframes: true,
-                        capturePerformance: false,
+                        recordCrossOriginIframes: false,
+                        maskAllInputs: true
                     },
                 });
-            }, 3000); // Wait 3 seconds after load
+            }, 5000); // Increased delay to 5s to ensure total separation from initial load
         });
     </script>
 </body>

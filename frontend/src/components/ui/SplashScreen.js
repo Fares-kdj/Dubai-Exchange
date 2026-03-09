@@ -5,8 +5,8 @@ import { useBranding } from '@/context/BrandingContext';
 
 // Background images for splash screen
 const SPLASH_BACKGROUNDS = {
-  dark: 'https://customer-assets.emergentagent.com/job_dubai-exchange-1/artifacts/ko7emjzk_hero-dark.png',
-  light: 'https://customer-assets.emergentagent.com/job_dubai-exchange-1/artifacts/zvjalvls_hero-light.png'
+  dark: '/assets/external/hero-dark-splash-opt.jpg',
+  light: '/assets/external/hero-light-splash-opt.jpg'
 };
 
 const SplashScreen = ({ onComplete, minDuration = 2000 }) => {
@@ -205,6 +205,8 @@ const SplashScreen = ({ onComplete, minDuration = 2000 }) => {
                   <motion.img
                     src={isDark ? logoDark : logoLight}
                     alt="شعار الشركة"
+                    fetchpriority="high"
+                    loading="eager"
                     className="w-20 h-20 object-contain relative z-10"
                     initial={{ opacity: 0, scale: 0, rotate: -180 }}
                     animate={prefersReducedMotion ? { opacity: 1, scale: 1, rotate: 0 } : {

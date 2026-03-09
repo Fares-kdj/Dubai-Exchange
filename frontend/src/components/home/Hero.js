@@ -16,8 +16,8 @@ const Hero = () => {
     <section id="home" className="relative min-h-screen flex items-center pt-20 overflow-hidden">
       {/* Background Pattern */}
       <div className={`absolute inset-0 transition-colors duration-300 ${isDark
-          ? 'bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900'
-          : 'bg-gradient-to-br from-slate-50 via-white to-amber-50/30'
+        ? 'bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900'
+        : 'bg-gradient-to-br from-slate-50 via-white to-amber-50/30'
         }`}>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(212,175,55,0.1),transparent_50%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_60%,rgba(252,211,77,0.1),transparent_50%)]" />
@@ -64,8 +64,8 @@ const Hero = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border mb-8 ${isDark
-                  ? 'bg-[#D4AF37]/20 border-[#D4AF37]/30'
-                  : 'bg-gradient-to-r from-[#D4AF37]/10 to-[#FCD34D]/10 border-[#D4AF37]/20'
+                ? 'bg-[#D4AF37]/20 border-[#D4AF37]/30'
+                : 'bg-gradient-to-r from-[#D4AF37]/10 to-[#FCD34D]/10 border-[#D4AF37]/20'
                 }`}
               data-testid="hero-badge"
             >
@@ -84,8 +84,8 @@ const Hero = () => {
               data-testid="hero-title"
             >
               <span className={`bg-clip-text text-transparent ${isDark
-                  ? 'bg-gradient-to-r from-white via-slate-200 to-white'
-                  : 'bg-gradient-to-r from-slate-900 via-slate-700 to-slate-900'
+                ? 'bg-gradient-to-r from-white via-slate-200 to-white'
+                : 'bg-gradient-to-r from-slate-900 via-slate-700 to-slate-900'
                 }`}>
                 {t('hero.title')}
               </span>
@@ -116,8 +116,8 @@ const Hero = () => {
                 onClick={() => navigate('/traveler-booking')}
                 data-testid="cta-booking"
                 className={`group px-8 py-4 font-bold rounded-full shadow-xl transition-all duration-300 flex items-center justify-center gap-2 ${isDark
-                    ? 'bg-[#D4AF37] text-slate-900 hover:bg-[#FCD34D] shadow-[#D4AF37]/30'
-                    : 'bg-slate-900 text-white shadow-slate-900/30 hover:shadow-slate-900/50'
+                  ? 'bg-[#D4AF37] text-slate-900 hover:bg-[#FCD34D] shadow-[#D4AF37]/30'
+                  : 'bg-slate-900 text-white shadow-slate-900/30 hover:shadow-slate-900/50'
                   }`}
               >
                 {t('hero.ctaBooking')}
@@ -130,8 +130,8 @@ const Hero = () => {
                 onClick={() => navigate('/transfers')}
                 data-testid="cta-transfer"
                 className={`group px-8 py-4 border-2 font-bold rounded-full transition-all duration-300 flex items-center justify-center gap-2 shadow-lg ${isDark
-                    ? 'bg-slate-800 border-slate-600 text-white hover:border-[#D4AF37]'
-                    : 'bg-white border-slate-200 text-slate-900 hover:border-[#D4AF37] hover:bg-slate-50'
+                  ? 'bg-slate-800 border-slate-600 text-white hover:border-[#D4AF37]'
+                  : 'bg-white border-slate-200 text-slate-900 hover:border-[#D4AF37] hover:bg-slate-50'
                   }`}
               >
                 {t('hero.ctaTransfer')}
@@ -176,7 +176,7 @@ const Hero = () => {
                 transition={{ duration: 0.3 }}
               >
                 <img
-                  src="https://customer-assets.emergentagent.com/job_exchange-kbag/artifacts/2t5hm46y_image.png"
+                  src="/assets/external/hero-3d-fallback.png"
                   alt="Exchange Services"
                   loading="eager"
                   fetchpriority="high"
