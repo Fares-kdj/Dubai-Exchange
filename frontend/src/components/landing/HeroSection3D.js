@@ -30,7 +30,7 @@ const content = {
     licensed: 'مرخصة رسمياً',
     instant: 'خدمة فورية',
     countries: '+50 دولة',
-    cbiTitle: 'مرخصة من البنك المركزي العراقي',
+    cbiTitle: 'مرخصة من البنك المركزي العراقي - شركة دبي العالمية للصرافة',
     trackOrder: 'تتبع طلبك'
   },
   en: {
@@ -210,7 +210,7 @@ export const HeroSection3D = () => {
                 >
                   <img
                     src={CBI_LOGO_URL}
-                    alt="CBI"
+                    alt="البنك المركزي العراقي - ترخيص شركة دبي العالمية للصرافة"
                     loading="eager"
                     fetchpriority="high"
                     className="w-8 h-8 object-contain"
@@ -227,7 +227,7 @@ export const HeroSection3D = () => {
                 >
                   <img
                     src={isDark ? logoDark : logoLight}
-                    alt="شعار الشركة"
+                    alt="شعار شركة دبي العالمية للصرافة والتحويل المالي"
                     className="h-16 object-contain"
                     style={!isDark ? { filter: 'sepia(30%) saturate(150%)' } : {}}
                   />
