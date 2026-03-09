@@ -62,7 +62,6 @@ const LocalOrders = lazy(() => import('@/components/admin/orders').then(m => ({ 
 const InternationalOrders = lazy(() => import('@/components/admin/orders').then(m => ({ default: m.InternationalOrders })));
 const UsdtOrders = lazy(() => import('@/components/admin/orders').then(m => ({ default: m.UsdtOrders })));
 const CardOrders = lazy(() => import('@/components/admin/orders').then(m => ({ default: m.CardOrders })));
-const ReceiptCoordinatePicker = lazy(() => import('@/components/admin/orders/ReceiptCoordinatePicker'));
 
 import { LoadingProvider } from '@/context/LoadingContext';
 import { Toaster } from '@/components/ui/sonner';
@@ -147,7 +146,6 @@ function App() {
                       <Route path="cms" element={<AdminCMS />} />
                       <Route path="branding" element={<AdminBranding />} />
                       <Route path="users" element={<AdminUsers />} />
-                      <Route path="receipt-picker" element={<ReceiptCoordinatePicker />} />
                     </Route>
                   </Routes>
                 </Suspense>

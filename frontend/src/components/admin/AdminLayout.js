@@ -171,13 +171,6 @@ const AdminLayout = () => {
       label: 'المستخدمون',
       permission: 'manage_users'
     },
-    {
-      id: 'receipt_picker',
-      path: '/admin/receipt-picker',
-      icon: Crosshair,
-      label: 'أداة الإحداثيات',
-      permission: 'view_dashboard' // Use a common permission for now, or developer role
-    },
   ];
 
   const isActive = (path) => {
