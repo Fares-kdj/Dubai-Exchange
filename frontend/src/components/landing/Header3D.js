@@ -213,6 +213,50 @@ const Header3D = () => {
               {isDark ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5" />}
             </motion.button>
 
+            {/* Language Selector Mobile */}
+            <div className="relative">
+              <motion.button
+                onClick={() => setLangDropdownOpen(!langDropdownOpen)}
+                className={`p-2 rounded-lg hover:bg-white/10 ${isDark ? 'text-white' : 'text-slate-900'}`}
+                whileTap={{ scale: 0.9 }}
+              >
+                <Globe className={`w-5 h-5 ${isDark ? 'text-[#D4AF37]' : 'text-[#B8860B]'}`} />
+              </motion.button>
+              <AnimatePresence>
+                {langDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                    className={`absolute top-full mt-2 left-0 backdrop-blur-xl border rounded-2xl overflow-hidden shadow-xl min-w-[120px] ${isDark
+                      ? 'bg-slate-800 border-slate-700'
+                      : 'bg-white border-slate-200'
+                      }`}
+                  >
+                    {languages.map((lang) => (
+                      <button
+                        key={lang.code}
+                        onClick={() => {
+                          changeLanguage(lang.code);
+                          setLangDropdownOpen(false);
+                        }}
+                        className={`w-full px-4 py-3 text-right text-sm transition-colors ${currentLanguage === lang.code
+                          ? isDark
+                            ? 'text-[#D4AF37] bg-slate-700 font-medium'
+                            : 'text-[#B8860B] bg-slate-100 font-medium'
+                          : isDark
+                            ? 'text-slate-200 hover:bg-slate-700'
+                            : 'text-slate-600 hover:bg-slate-100'
+                          }`}
+                      >
+                        {lang.name}
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               data-testid="mobile-menu-button"
@@ -245,23 +289,6 @@ const Header3D = () => {
                   </button>
                 ))}
 
-                <div className={`flex flex-col gap-2 pt-2 border-t ${isDark ? 'border-slate-700' : 'border-slate-200'}`}>
-                  {languages.map((lang) => (
-                    <button
-                      key={lang.code}
-                      onClick={() => {
-                        changeLanguage(lang.code);
-                        setMobileMenuOpen(false);
-                      }}
-                      className={`text-left py-2 text-sm ${currentLanguage === lang.code
-                        ? isDark ? 'text-[#D4AF37] font-medium' : 'text-[#B8860B] font-medium'
-                        : isDark ? 'text-slate-400' : 'text-slate-500'
-                        }`}
-                    >
-                      {lang.name}
-                    </button>
-                  ))}
-                </div>
 
                 <button
                   onClick={() => { navigate('/traveler-booking'); setMobileMenuOpen(false); }}

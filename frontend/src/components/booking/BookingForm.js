@@ -24,6 +24,7 @@ const BookingForm = ({ onSubmit }) => {
 
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [hoveredMethod, setHoveredMethod] = useState(null);
   const [airports, setAirports] = useState([]);
   const [borders, setBorders] = useState([]);
   const [locationsLoading, setLocationsLoading] = useState(true);
@@ -529,18 +530,30 @@ const BookingForm = ({ onSubmit }) => {
                 <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                   {t('طريقة الدفع', 'Payment Method', 'شێوازی پارەدان')} *
                 </Label>
-                <Select value={formData.paymentMethod} onValueChange={(value) => handleInputChange('paymentMethod', value)}>
-                  <SelectTrigger className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} data-testid="payment-method-select">
-                    <SelectValue placeholder={t('اختر طريقة الدفع', 'Select payment method', 'شێوازی پارەدان هەڵبژێرە')} />
-                  </SelectTrigger>
-                  <SelectContent>
+                <div className={`p-6 rounded-2xl ${isDark ? 'bg-slate-700/50' : 'bg-slate-50'}`}>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                     {paymentMethods.map(method => (
-                      <SelectItem key={method.value} value={method.value}>
-                        {t(method.labelAr, method.labelEn, method.labelKu)}
-                      </SelectItem>
+                      <motion.button
+                        key={method.value}
+                        type="button"
+                        whileHover={{ scale: 1.02 }}
+                        onMouseEnter={() => setHoveredMethod(method.value)}
+                        onMouseLeave={() => setHoveredMethod(null)}
+                        onClick={() => handleInputChange('paymentMethod', method.value)}
+                        className={`p-4 rounded-xl border-2 text-center transition-colors ${formData.paymentMethod === method.value
+                          ? 'border-[#D4AF37] bg-[#D4AF37]/10'
+                          : hoveredMethod === method.value
+                            ? 'border-[#D4AF37]'
+                            : isDark ? 'border-slate-600' : 'border-slate-200'
+                          }`}
+                      >
+                        <span className={`font-bold block text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                          {t(method.labelAr, method.labelEn, method.labelKu)}
+                        </span>
+                      </motion.button>
                     ))}
-                  </SelectContent>
-                </Select>
+                  </div>
+                </div>
                 {errors.paymentMethod && <p className="text-sm text-red-600 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.paymentMethod}</p>}
               </div>
             </div>

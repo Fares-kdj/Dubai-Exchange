@@ -31,10 +31,10 @@ const orderTypeConfig = {
   western_union: { label: 'ويسترن يونيون', icon: DollarSign, color: 'text-amber-600' },
   moneygram: { label: 'موني جرام', icon: DollarSign, color: 'text-orange-600' },
   country_based: { label: 'حسب الدولة', icon: DollarSign, color: 'text-purple-600' },
-  usdt_recharge: { label: 'USDT', icon: CreditCard, color: 'text-emerald-600' },
-  card_recharge: { label: 'شحن بطاقة', icon: CreditCard, color: 'text-pink-600' },
-  usdt: { label: 'USDT', icon: CreditCard, color: 'text-emerald-600' },
-  card: { label: 'شحن بطاقة', icon: CreditCard, color: 'text-pink-600' },
+  usdt_recharge: { label: 'شحن USDT', icon: CreditCard, color: 'text-emerald-600' },
+  card_recharge: { label: 'تعبئة بطاقات', icon: CreditCard, color: 'text-pink-600' },
+  usdt: { label: 'شحن USDT', icon: CreditCard, color: 'text-emerald-600' },
+  card: { label: 'تعبئة بطاقات', icon: CreditCard, color: 'text-pink-600' },
 };
 
 // Centralized field labels for Arabic translation
@@ -110,14 +110,14 @@ const FIELD_LABELS_AR = {
   'generic_account': 'رقم الحساب أو المعرف',
   'rip': 'رقم الحساب (RIP)',
   // MoneyGram New Fields
-  'senderFirstName': 'الاسم الأول للمرسل',
-  'senderLastName': 'اسم الشهرة للمرسل',
+  'senderFirstName': 'الاسم الثلاثي للمرسل',
+  'senderLastName': 'اللقب للمرسل',
   'senderAddress': 'عنوان المرسل',
   'senderPhone': 'رقم هاتف المرسل',
   'senderDOB': 'تاريخ ميلاد المرسل',
   'senderPOB': 'مكان ميلاد المرسل',
-  'receiverFirstName': 'الاسم الأول للمستلم',
-  'receiverLastName': 'اسم الشهرة للمستلم',
+  'receiverFirstName': 'الاسم الثلاثي للمستلم',
+  'receiverLastName': 'اللقب للمستلم',
   'receiverDOB': 'تاريخ ميلاد المستلم',
   'receiverPhone': 'رقم هاتف المستلم',
   'totalInCurrency': 'الإجمالي بالعملة',
@@ -164,9 +164,9 @@ const VALUE_MAPPING_AR = {
   'account': 'رقم حساب (10 أرقام)',
 
   // Order Types
-  'usdt_recharge': 'USDT',
-  'card_recharge': 'شحن بطاقة',
-  'usdt': 'USDT',
+  'usdt_recharge': 'شحن USDT',
+  'card_recharge': 'تعبئة بطاقات',
+  'usdt': 'شحن USDT',
 
   // Countries & Methods (Values)
   'iraq': 'العراق',

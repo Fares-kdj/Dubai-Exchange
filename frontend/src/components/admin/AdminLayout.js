@@ -22,6 +22,20 @@ const AdminLayout = () => {
   const [showNotifications, setShowNotifications] = useState(false);
 
   useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1024) {
+        setSidebarOpen(false);
+      } else {
+        setSidebarOpen(true);
+      }
+    };
+
+    handleResize(); // Initial check
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
     const token = localStorage.getItem('adminToken');
     const userStr = localStorage.getItem('adminUser');
     if (!token || !userStr) {
@@ -97,8 +111,8 @@ const AdminLayout = () => {
         { path: '/admin/orders/traveler', icon: Plane, label: 'حجز المسافرين', permission: 'view_orders_traveler' },
         { path: '/admin/orders/local', icon: MapPin, label: 'التحويل المحلي', permission: 'view_orders_local' },
         { path: '/admin/orders/international', icon: ArrowLeftRight, label: 'التحويل الدولي', permission: 'view_orders_international' },
-        { path: '/admin/orders/usdt', icon: Wallet, label: 'USDT', permission: 'view_orders_usdt' },
-        { path: '/admin/orders/card', icon: CreditCard, label: 'شحن البطاقات', permission: 'view_orders_card' },
+        { path: '/admin/orders/usdt', icon: Wallet, label: 'شحن USDT', permission: 'view_orders_usdt' },
+        { path: '/admin/orders/card', icon: CreditCard, label: 'تعبئة بطاقات', permission: 'view_orders_card' },
       ]
     },
     {
@@ -164,6 +178,12 @@ const AdminLayout = () => {
     return location.pathname.startsWith(path);
   };
 
+  const handleNavClick = () => {
+    if (window.innerWidth < 1024) {
+      setSidebarOpen(false);
+    }
+  };
+
   const isSubmenuActive = (submenu) => {
     return submenu.some(item => location.pathname.startsWith(item.path));
   };
@@ -192,12 +212,29 @@ const AdminLayout = () => {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-slate-100 flex admin-panel" dir="rtl">
+    <div className="min-h-screen bg-slate-100 flex admin-panel relative" dir="rtl">
+      {/* Mobile Backdrop */}
+      <AnimatePresence>
+        {sidebarOpen && window.innerWidth < 1024 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSidebarOpen(false)}
+            className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 lg:hidden"
+          />
+        )}
+      </AnimatePresence>
+
       {/* Sidebar */}
       <motion.aside
         initial={false}
-        animate={{ width: sidebarOpen ? 280 : 80 }}
-        className="fixed inset-y-0 right-0 z-50 bg-slate-900 shadow-2xl flex flex-col"
+        animate={{
+          width: sidebarOpen ? 280 : (window.innerWidth < 1024 ? 0 : 80),
+          x: (window.innerWidth < 1024 && !sidebarOpen) ? 280 : 0
+        }}
+        className={`fixed inset-y-0 right-0 z-50 bg-slate-900 shadow-2xl flex flex-col transition-all duration-300 ${window.innerWidth < 1024 && !sidebarOpen ? 'pointer-events-none opacity-0' : 'opacity-100'
+          }`}
       >
         {/* Logo */}
         <div className="p-6 border-b border-slate-800">
@@ -254,6 +291,7 @@ const AdminLayout = () => {
                             <li key={sub.path}>
                               <Link
                                 to={sub.path}
+                                onClick={handleNavClick}
                                 className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all text-sm ${isActive(sub.path)
                                   ? 'bg-[#D4AF37] text-slate-900'
                                   : 'text-slate-400 hover:text-white hover:bg-slate-800'
@@ -271,6 +309,7 @@ const AdminLayout = () => {
                 ) : (
                   <Link
                     to={item.path}
+                    onClick={handleNavClick}
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${isActive(item.path)
                       ? 'bg-[#D4AF37] text-slate-900'
                       : 'text-slate-400 hover:text-white hover:bg-slate-800'
@@ -309,7 +348,10 @@ const AdminLayout = () => {
       </motion.aside>
 
       {/* Main Content */}
-      <main className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'mr-[280px]' : 'mr-[80px]'}`}>
+      <main className={`flex-1 transition-all duration-300 min-w-0 ${sidebarOpen
+        ? 'lg:mr-[280px] mr-0'
+        : 'lg:mr-[80px] mr-0'
+        }`}>
         {/* Top Bar */}
         <header className="sticky top-0 z-40 bg-white shadow-sm">
           <div className="flex items-center justify-between px-6 py-4">
@@ -382,8 +424,8 @@ const AdminLayout = () => {
                                           notif.order_type === 'country_based' ? 'حسب الدولة' :
                                             notif.order_type === 'traveler' ? 'حجز مسافر' :
                                               notif.order_type === 'local' ? 'تحويل محلي' :
-                                                (notif.order_type === 'usdt' || notif.order_type === 'usdt_recharge') ? 'USDT' :
-                                                  (notif.order_type === 'card' || notif.order_type === 'card_recharge') ? 'شحن بطاقة' : notif.order_type
+                                                (notif.order_type === 'usdt' || notif.order_type === 'usdt_recharge') ? 'شحن USDT' :
+                                                  (notif.order_type === 'card' || notif.order_type === 'card_recharge') ? 'تعبئة بطاقات' : notif.order_type
                                     }
                                   </p>
                                 </div>
@@ -410,7 +452,12 @@ const AdminLayout = () => {
                   )}
                 </AnimatePresence>
               </div>
-              <Link to="/" className="text-sm text-slate-600 hover:text-[#D4AF37]">
+              <Link
+                to="/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-slate-600 hover:text-[#D4AF37]"
+              >
                 عرض الموقع →
               </Link>
             </div>

@@ -52,8 +52,8 @@ const TrackOrder = () => {
     { value: 'western_union', labelAr: 'ويسترن يونيون', labelEn: 'Western Union', labelKu: 'وێستەرن یونیۆن' },
     { value: 'moneygram', labelAr: 'موني جرام', labelEn: 'MoneyGram', labelKu: 'مۆنی گرام' },
     { value: 'country_based', labelAr: 'تحويل حسب الدولة', labelEn: 'Country-based Transfer', labelKu: 'گواستنەوە بەپێی وڵات' },
-    { value: 'card_recharge', labelAr: 'شحن بطاقة', labelEn: 'Card Recharge', labelKu: 'بارگاویکردنەوەی کارت' },
-    { value: 'usdt_recharge', labelAr: 'USDT', labelEn: 'USDT Transfer', labelKu: 'گواستنەوەی USDT' }
+    { value: 'card_recharge', labelAr: 'تعبئة بطاقات', labelEn: 'Card Recharge', labelKu: 'بارگاویکردنەوەی کارت' },
+    { value: 'usdt_recharge', labelAr: 'شحن USDT', labelEn: 'USDT Transfer', labelKu: 'گواستنەوەی USDT' }
   ];
 
   const statusConfig = {
@@ -470,14 +470,14 @@ const TrackOrder = () => {
                             methodName: { ar: 'طريقة التحويل', en: 'Transfer Method', ku: 'ڕێگای گواستنەوە' },
                             receiveAmount: { ar: 'المبلغ المستلم', en: 'Receive Amount', ku: 'بڕی وەرگیراو' },
                             // MoneyGram New Fields
-                            senderFirstName: { ar: 'الاسم الأول للمرسل', en: 'Sender First Name', ku: 'ناوی یەکەمی نێرەر' },
-                            senderLastName: { ar: 'اسم الشهرة للمرسل', en: 'Sender Last Name', ku: 'ناوی باوکی نێرەر' },
+                            senderFirstName: { ar: 'الاسم الثلاثي للمرسل', en: 'Sender Full Name', ku: 'ناوی تەواوی نێرەر' },
+                            senderLastName: { ar: 'اللقب للمرسل', en: 'Sender Nickname', ku: 'نازناوی نێرەر' },
                             senderAddress: { ar: 'عنوان المرسل', en: 'Sender Address', ku: 'ناونیشانی نێرەر' },
                             senderPhone: { ar: 'رقم هاتف المرسل', en: 'Sender Phone', ku: 'مۆبایلی نێرەر' },
                             senderDOB: { ar: 'تاريخ ميلاد المرسل', en: 'Sender Date of Birth', ku: 'بەرواری لەدایکبوونی نێرەر' },
                             senderPOB: { ar: 'مكان ميلاد المرسل', en: 'Sender Place of Birth', ku: 'شوێنی لەدایکبوونی نێرەر' },
-                            receiverFirstName: { ar: 'الاسم الأول للمستلم', en: 'Receiver First Name', ku: 'ناوی یەکەمی وەرگر' },
-                            receiverLastName: { ar: 'اسم الشهرة للمستلم', en: 'Receiver Last Name', ku: 'ناوی باوکی وەرگر' },
+                            receiverFirstName: { ar: 'الاسم الثلاثي للمستلم', en: 'Receiver Full Name', ku: 'ناوی تەواوی وەرگر' },
+                            receiverLastName: { ar: 'اللقب للمستلم', en: 'Receiver Nickname', ku: 'نازناوی وەرگر' },
                             receiverDOB: { ar: 'تاريخ ميلاد المستلم', en: 'Receiver Date of Birth', ku: 'بەرواری لەدایکبوونی وەرگر' },
                             receiverPhone: { ar: 'رقم هاتف المستلم', en: 'Receiver Phone', ku: 'مۆبایلی وەرگر' },
                             // Western Union New Fields

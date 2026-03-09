@@ -18,7 +18,7 @@ export const CurrencyConverterSection = () => {
   const [loading, setLoading] = useState(true);
   const [fromCurrency, setFromCurrency] = useState('USD');
   const [toCurrency, setToCurrency] = useState('IQD');
-  const [amount, setAmount] = useState('1000');
+  const [amount, setAmount] = useState('1');
   const [result, setResult] = useState(null);
   const [source, setSource] = useState('manual');
   const [fromDropdownOpen, setFromDropdownOpen] = useState(false);
@@ -449,7 +449,7 @@ export const CurrencyConverterSection = () => {
                         ? 'bg-transparent text-white placeholder-slate-500'
                         : 'bg-transparent text-slate-900 placeholder-slate-400'
                         }`}
-                      placeholder="1,000"
+                      placeholder="1"
                       data-testid="converter-amount"
                     />
                     <div className={`absolute ${isArabic || isKurdish ? 'left-6' : 'right-6'} top-1/2 -translate-y-1/2 flex items-center gap-2 ${isDark ? 'text-slate-500' : 'text-slate-400'

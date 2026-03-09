@@ -51,9 +51,9 @@ const AdminOverview = () => {
     western_union: 'ويسترن يونيون',
     moneygram: 'موني جرام',
     country_based: 'حسب الدولة',
-    card_recharge: 'شحن بطاقة',
-    usdt_recharge: 'USDT',
-    usdt: 'USDT'
+    card_recharge: 'تعبئة بطاقات',
+    usdt_recharge: 'شحن USDT',
+    usdt: 'شحن USDT'
   };
 
   const statusConfig = {

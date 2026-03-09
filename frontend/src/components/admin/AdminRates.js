@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Save, RefreshCw, TrendingUp, TrendingDown, Clock, Edit2, Check, X } from 'lucide-react';
+import { Save, RefreshCw, TrendingUp, TrendingDown, Clock, Edit2, Check, X, Plus, Trash2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
 const AdminRates = () => {
@@ -8,6 +8,17 @@ const AdminRates = () => {
   const [saving, setSaving] = useState(false);
   const [editingRate, setEditingRate] = useState(null);
   const [editValues, setEditValues] = useState({ buy_rate: 0, sell_rate: 0 });
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [addForm, setAddForm] = useState({
+    currency_code: '',
+    currency_name_ar: '',
+    currency_name_en: '',
+    buy_rate: '',
+    sell_rate: '',
+    flag: ''
+  });
+  const [addError, setAddError] = useState('');
+  const [addSaving, setAddSaving] = useState(false);
   const API_URL = process.env.REACT_APP_BACKEND_URL;
 
   const loadRates = async () => {
@@ -76,6 +87,63 @@ const AdminRates = () => {
     setSaving(false);
   };
 
+  const handleDelete = async (currencyCode) => {
+    if (!window.confirm(`هل تريد حذف عملة ${currencyCode}؟`)) return;
+    try {
+      await fetch(API_URL + '/api/rates/' + currencyCode, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+      });
+      loadRates();
+    } catch (err) {
+      console.error('Error:', err);
+    }
+  };
+
+  const handleAddSubmit = async (e) => {
+    e.preventDefault();
+    setAddError('');
+    if (!addForm.currency_code || !addForm.currency_name_ar || !addForm.buy_rate || !addForm.sell_rate) {
+      setAddError('يرجى تعبئة جميع الحقول المطلوبة');
+      return;
+    }
+    setAddSaving(true);
+    try {
+      const payload = {
+        currency_code: addForm.currency_code.toUpperCase(),
+        currency_name_ar: addForm.currency_name_ar,
+        currency_name_en: addForm.currency_name_en || '',
+        buy_rate: parseFloat(addForm.buy_rate),
+        sell_rate: parseFloat(addForm.sell_rate),
+        flag: addForm.flag || '',
+        is_active: true,
+        order: 99
+      };
+
+      const res = await fetch(API_URL + '/api/rates', {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        let errMsg = err.detail || 'حدث خطأ أثناء الإضافة';
+        if (Array.isArray(err.detail) && err.detail.length > 0) {
+          errMsg = err.detail[0].msg;
+        }
+        setAddError(errMsg);
+      } else {
+        setShowAddForm(false);
+        setAddForm({ currency_code: '', currency_name_ar: '', currency_name_en: '', buy_rate: '', sell_rate: '', flag: '' });
+        loadRates();
+      }
+    } catch (err) {
+      console.error(err);
+      setAddError('تعذر الاتصال بالخادم');
+    }
+    setAddSaving(false);
+  };
+
   const formatTime = (dateStr) => {
     if (!dateStr) return '';
     const date = new Date(dateStr);
@@ -106,6 +174,13 @@ const AdminRates = () => {
             تحديث
           </button>
           <button
+            onClick={() => setShowAddForm(!showAddForm)}
+            className="px-4 py-2 bg-green-600 text-white font-medium rounded-xl flex items-center gap-2 hover:bg-green-700"
+          >
+            <Plus className="w-4 h-4" />
+            إضافة عملة
+          </button>
+          <button
             onClick={handleBulkSave}
             disabled={saving}
             className="px-4 py-2 bg-amber-500 text-white font-medium rounded-xl flex items-center gap-2 disabled:opacity-50"
@@ -115,6 +190,95 @@ const AdminRates = () => {
           </button>
         </div>
       </div>
+
+      {/* Add Currency Form */}
+      {showAddForm && (
+        <div className="bg-white rounded-2xl shadow-sm border border-green-200 p-6">
+          <h2 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <Plus className="w-5 h-5 text-green-600" />
+            إضافة عملة جديدة
+          </h2>
+          <form onSubmit={handleAddSubmit}>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="space-y-1">
+                <label className="text-sm font-medium text-slate-700">رمز العملة *</label>
+                <Input
+                  placeholder="مثال: EUR"
+                  value={addForm.currency_code}
+                  onChange={e => setAddForm({ ...addForm, currency_code: e.target.value.toUpperCase() })}
+                  maxLength={5}
+                  className="uppercase"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-sm font-medium text-slate-700">اسم العملة بالعربي *</label>
+                <Input
+                  placeholder="مثال: يورو"
+                  value={addForm.currency_name_ar}
+                  onChange={e => setAddForm({ ...addForm, currency_name_ar: e.target.value })}
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-sm font-medium text-slate-700">اسم العملة بالانجليزي</label>
+                <Input
+                  placeholder="مثال: Euro"
+                  value={addForm.currency_name_en}
+                  onChange={e => setAddForm({ ...addForm, currency_name_en: e.target.value })}
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-sm font-medium text-slate-700">سعر الشراء (IQD) *</label>
+                <Input
+                  type="number"
+                  placeholder="مثال: 1550"
+                  value={addForm.buy_rate}
+                  onChange={e => setAddForm({ ...addForm, buy_rate: e.target.value })}
+                  min="0"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-sm font-medium text-slate-700">سعر البيع (IQD) *</label>
+                <Input
+                  type="number"
+                  placeholder="مثال: 1560"
+                  value={addForm.sell_rate}
+                  onChange={e => setAddForm({ ...addForm, sell_rate: e.target.value })}
+                  min="0"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-sm font-medium text-slate-700">رابط العلم (اختياري)</label>
+                <Input
+                  placeholder="https://..."
+                  value={addForm.flag}
+                  onChange={e => setAddForm({ ...addForm, flag: e.target.value })}
+                />
+              </div>
+            </div>
+            {addError && (
+              <p className="mt-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{addError}</p>
+            )}
+            <div className="flex gap-3 mt-4">
+              <button
+                type="submit"
+                disabled={addSaving}
+                className="px-5 py-2 bg-green-600 text-white font-medium rounded-xl flex items-center gap-2 hover:bg-green-700 disabled:opacity-50"
+              >
+                <Check className="w-4 h-4" />
+                {addSaving ? 'جاري الحفظ...' : 'حفظ العملة'}
+              </button>
+              <button
+                type="button"
+                onClick={() => { setShowAddForm(false); setAddError(''); }}
+                className="px-5 py-2 border border-slate-300 text-slate-700 rounded-xl flex items-center gap-2 hover:bg-slate-50"
+              >
+                <X className="w-4 h-4" />
+                إلغاء
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
 
       {/* Rates Table */}
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
@@ -218,12 +382,20 @@ const AdminRates = () => {
                         </button>
                       </div>
                     ) : (
-                      <button
-                        onClick={function () { handleEdit(rate); }}
-                        className="p-2 hover:bg-blue-100 text-blue-600 rounded-lg"
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </button>
+                      <div className="flex items-center justify-center gap-2">
+                        <button
+                          onClick={function () { handleEdit(rate); }}
+                          className="p-2 hover:bg-blue-100 text-blue-600 rounded-lg"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={function () { handleDelete(rate.currency_code); }}
+                          className="p-2 hover:bg-red-100 text-red-500 rounded-lg"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     )}
                   </td>
                 </tr>

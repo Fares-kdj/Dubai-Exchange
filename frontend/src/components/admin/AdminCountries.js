@@ -87,14 +87,20 @@ const AdminCountries = () => {
 
   const handleToggleActive = async (country) => {
     try {
-      await fetch(API_URL + '/api/cms/countries/' + country.country_code, {
+      const response = await fetch(API_URL + '/api/cms/countries/' + country.country_code, {
         method: 'PUT',
         headers: getAuthHeaders(),
         body: JSON.stringify({ is_active: !country.is_active })
       });
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || 'فشل في تحديث حالة الدولة');
+      }
       loadData();
+      toast.success('تم تحديث حالة الدولة بنجاح');
     } catch (err) {
       console.error('Error:', err);
+      toast.error(err.message || 'حدث خطأ ما');
     }
   };
 
@@ -104,13 +110,19 @@ const AdminCountries = () => {
       message: 'هل أنت متأكد من حذف هذه الدولة؟ سيتم حذف جميع الربط الخاص بها.',
       onConfirm: async () => {
         try {
-          await fetch(API_URL + '/api/cms/countries/' + code, {
+          const response = await fetch(API_URL + '/api/cms/countries/' + code, {
             method: 'DELETE',
             headers: getAuthHeaders()
           });
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.detail || 'فشل في حذف الدولة');
+          }
           loadData();
+          toast.success('تم حذف الدولة بنجاح');
         } catch (err) {
           console.error('Error:', err);
+          toast.error(err.message || 'حدث خطأ ما');
         }
       }
     });
@@ -202,15 +214,20 @@ const AdminCountries = () => {
       return;
     }
     try {
-      await fetch(API_URL + '/api/cms/predefined-methods', {
+      const response = await fetch(API_URL + '/api/cms/predefined-methods', {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify(newMethod)
       });
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || 'فشل في حفظ القالب');
+      }
       toast.success('تم حفظ الطريقة كقالب بنجاح');
       loadData();
     } catch (err) {
       console.error('Error:', err);
+      toast.error(err.message || 'حدث خطأ ما');
     }
   };
 
@@ -235,20 +252,36 @@ const AdminCountries = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (formData.country_code.length !== 2) {
+      toast.error('يجب أن يتكون كود الدولة من حرفين بالضبط');
+      return;
+    }
     try {
       const url = editingCountry
         ? API_URL + '/api/cms/countries/' + editingCountry.country_code
         : API_URL + '/api/cms/countries';
-      await fetch(url, {
+
+      const response = await fetch(url, {
         method: editingCountry ? 'PUT' : 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify(formData)
       });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        const detail = errorData.detail;
+        if (detail === "Country already exists") {
+          throw new Error('هذه الدولة موجودة بالفعل');
+        }
+        throw new Error(detail || 'فشل في حفظ الدولة');
+      }
+
       toast.success(editingCountry ? 'تم تحديث الدولة بنجاح' : 'تم إضافة الدولة بنجاح');
       setShowForm(false);
       loadData();
     } catch (err) {
       console.error('Error:', err);
+      toast.error(err.message || 'حدث خطأ ما');
     }
   };
 
@@ -360,9 +393,12 @@ const AdminCountries = () => {
                   <Label>كود الدولة</Label>
                   <Input
                     value={formData.country_code}
-                    onChange={function (e) { setFormData(Object.assign({}, formData, { country_code: e.target.value.toUpperCase() })); }}
+                    onChange={function (e) { setFormData(Object.assign({}, formData, { country_code: e.target.value.toUpperCase().replace(/[^A-Z]/g, '') })); }}
                     maxLength={2}
+                    minLength={2}
+                    required
                     disabled={!!editingCountry}
+                    placeholder="e.g. TR"
                     className="text-slate-900 border-slate-300"
                   />
                 </div>

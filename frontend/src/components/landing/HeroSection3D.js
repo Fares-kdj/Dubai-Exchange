@@ -159,7 +159,7 @@ export const HeroSection3D = () => {
       {/* Background Image/Video Container */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         {/* Hero Background - Using images (easy to swap with video later) */}
-        <div className="absolute inset-0">
+        <div className={`absolute inset-0 ${isDark ? 'bg-slate-950' : 'bg-slate-100'}`}>
           {/* Dark Mode Background Video */}
           <video
             src={HERO_ASSETS.dark}
@@ -167,7 +167,7 @@ export const HeroSection3D = () => {
             muted
             loop
             playsInline
-            className={`absolute inset-0 w-full h-full object-cover object-right transition-opacity duration-700 ${isDark ? 'opacity-100' : 'opacity-0'}`}
+            className={`absolute top-0 right-0 w-full h-1/2 lg:h-full object-cover lg:object-right object-right transition-opacity duration-700 scale-100 lg:scale-100 origin-right-top ${isDark ? 'opacity-100' : 'opacity-0'}`}
           />
           {/* Light Mode Background Video */}
           <video
@@ -176,7 +176,7 @@ export const HeroSection3D = () => {
             muted
             loop
             playsInline
-            className={`absolute inset-0 w-full h-full object-cover object-right transition-opacity duration-700 ${isDark ? 'opacity-0' : 'opacity-100'}`}
+            className={`absolute top-0 right-0 w-full h-1/2 lg:h-full object-cover lg:object-right object-right transition-opacity duration-700 scale-100 lg:scale-100 origin-right-top ${isDark ? 'opacity-0' : 'opacity-100'}`}
           />
         </div>
 
@@ -219,7 +219,7 @@ export const HeroSection3D = () => {
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.3 }}
-                  className="mb-6"
+                  className="mb-6 hidden sm:block"
                 >
                   <img
                     src={isDark ? logoDark : logoLight}
@@ -251,7 +251,9 @@ export const HeroSection3D = () => {
                   {t.slogan}
                 </motion.p>
 
-                {/* Track Order Button - Prominent at Top with Strong Float */}
+                {/* ==========================================================
+                    ORIGINAL ANIMATED TRACK ORDER BUTTON (Commented out)
+                    To restore animation: uncomment this and remove the static button below
                 <motion.button
                   onClick={() => navigate('/track-order')}
                   initial={{ opacity: 0, y: 20, scale: 0.9 }}
@@ -288,7 +290,6 @@ export const HeroSection3D = () => {
                   style={{ zIndex: 30 }}
                   data-testid="hero-track-order"
                 >
-                  {/* Animated Background Pulse */}
                   <motion.div
                     className="absolute inset-0 bg-white/20"
                     animate={{
@@ -301,17 +302,14 @@ export const HeroSection3D = () => {
                     }}
                   />
 
-                  {/* Icon */}
                   <div className="w-12 h-12 rounded-xl bg-slate-900/20 flex items-center justify-center">
                     <Search className="w-6 h-6" />
                   </div>
 
                   <span className="relative z-10">{t.trackOrder}</span>
 
-                  {/* Shimmer Effect */}
                   <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-12" />
 
-                  {/* Arrow Animation */}
                   <motion.div
                     animate={{ x: [0, 5, 0] }}
                     transition={{ duration: 1.5, repeat: Infinity }}
@@ -320,6 +318,34 @@ export const HeroSection3D = () => {
                     →
                   </motion.div>
                 </motion.button>
+                ========================================================== */}
+
+                {/* Static Track Order Button */}
+                <button
+                  onClick={() => navigate('/track-order')}
+                  className={`group relative w-full flex items-center justify-center gap-4 px-6 py-5 mb-6 rounded-2xl font-bold text-lg transition-all duration-300 overflow-hidden ${isDark
+                    ? 'bg-gradient-to-r from-[#D4AF37] to-[#FCD34D] text-slate-900 hover:shadow-[#D4AF37]/50'
+                    : 'bg-gradient-to-r from-[#D4AF37] to-[#FCD34D] text-slate-900 hover:shadow-amber-500/50'
+                    } shadow-xl hover:shadow-2xl`}
+                  style={{ zIndex: 30 }}
+                  data-testid="hero-track-order"
+                >
+                  {/* Icon */}
+                  <div className="w-12 h-12 rounded-xl bg-slate-900/20 flex items-center justify-center">
+                    <Search className="w-6 h-6" />
+                  </div>
+
+                  <span className="relative z-10">{t.trackOrder}</span>
+
+                  {/* Shimmer Effect (Hover only) */}
+                  <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-12" />
+
+                  {/* Static Arrow */}
+                  <div className="text-slate-900 group-hover:translate-x-1 transition-transform">
+                    →
+                  </div>
+                </button>
+
 
                 {/* 4 Main Service Buttons with Strong Floating Effect */}
                 <div className="grid grid-cols-2 gap-4 mb-10 relative z-20">
@@ -330,100 +356,146 @@ export const HeroSection3D = () => {
                     ))
                   ) : (
                     services.map((service, index) => (
-                      <motion.button
-                        key={service.id}
-                        onClick={(e) => handleHeroServiceClick(e, service.link)}
-                        initial={{ opacity: 0, y: 30, scale: 0.9 }}
-                        animate={{
-                          opacity: 1,
-                          y: [0, -12, 0, -8, 0],
-                          scale: [1, 1.02, 1, 1.01, 1],
-                          rotate: [0, 1, 0, -1, 0]
-                        }}
-                        transition={{
-                          opacity: { delay: 0.8 + index * 0.1, duration: 0.5 },
-                          y: {
-                            delay: index * 0.3,
-                            duration: 2.5 + index * 0.3,
-                            repeat: Infinity,
-                            ease: "easeInOut"
-                          },
-                          scale: {
-                            delay: index * 0.3,
-                            duration: 2.5 + index * 0.3,
-                            repeat: Infinity,
-                            ease: "easeInOut"
-                          },
-                          rotate: {
-                            delay: index * 0.3,
-                            duration: 3 + index * 0.2,
-                            repeat: Infinity,
-                            ease: "easeInOut"
-                          }
-                        }}
-                        whileHover={{
-                          scale: 1.1,
-                          y: -20,
-                          rotate: 0,
-                          transition: { type: "spring", stiffness: 400, damping: 15 }
-                        }}
-                        whileTap={{ scale: 0.92 }}
-                        className={`group relative flex flex-col items-center gap-3 px-4 py-5 rounded-2xl font-bold transition-all duration-300 overflow-hidden ${isDark
-                          ? 'bg-slate-800/90 hover:bg-slate-700 text-white border border-slate-700/50'
-                          : 'bg-white/90 hover:bg-white text-slate-900 border border-slate-200'
-                          } backdrop-blur-md shadow-xl hover:shadow-2xl ${service.hoverGlow}`}
-                        style={{
-                          transformStyle: 'preserve-3d',
-                          perspective: '1000px',
-                          cursor: 'pointer',
-                          zIndex: 30
-                        }}
-                      >
-                        {/* Shimmer Effect */}
-                        <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12" />
+                      <React.Fragment key={service.id}>
+                        {/* ==========================================================
+                            ORIGINAL ANIMATED SERVICE BUTTON (Commented out)
+                            To restore animation: uncomment this and remove the static button below
+                        <motion.button
+                          onClick={(e) => handleHeroServiceClick(e, service.link)}
+                          initial={{ opacity: 0, y: 30, scale: 0.9 }}
+                          animate={{
+                            opacity: 1,
+                            y: [0, -12, 0, -8, 0],
+                            scale: [1, 1.02, 1, 1.01, 1],
+                            rotate: [0, 1, 0, -1, 0]
+                          }}
+                          transition={{
+                            opacity: { delay: 0.8 + index * 0.1, duration: 0.5 },
+                            y: {
+                              delay: index * 0.3,
+                              duration: 2.5 + index * 0.3,
+                              repeat: Infinity,
+                              ease: "easeInOut"
+                            },
+                            scale: {
+                              delay: index * 0.3,
+                              duration: 2.5 + index * 0.3,
+                              repeat: Infinity,
+                              ease: "easeInOut"
+                            },
+                            rotate: {
+                              delay: index * 0.3,
+                              duration: 3 + index * 0.2,
+                              repeat: Infinity,
+                              ease: "easeInOut"
+                            }
+                          }}
+                          whileHover={{
+                            scale: 1.1,
+                            y: -20,
+                            rotate: 0,
+                            transition: { type: "spring", stiffness: 400, damping: 15 }
+                          }}
+                          whileTap={{ scale: 0.92 }}
+                          className={`group relative flex flex-col items-center gap-3 px-4 py-5 rounded-2xl font-bold transition-all duration-300 overflow-hidden ${isDark
+                            ? 'bg-slate-800/90 hover:bg-slate-700 text-white border border-slate-700/50'
+                            : 'bg-white/90 hover:bg-white text-slate-900 border border-slate-200'
+                            } backdrop-blur-md shadow-xl hover:shadow-2xl ${service.hoverGlow}`}
+                          style={{
+                            transformStyle: 'preserve-3d',
+                            perspective: '1000px',
+                            cursor: 'pointer',
+                            zIndex: 30
+                          }}
+                        >
+                          <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12" />
 
-                        {/* Floating Particles Effect */}
-                        <div className="absolute inset-0 pointer-events-none">
-                          {[...Array(5)].map((_, i) => (
-                            <motion.div
-                              key={i}
-                              className={`absolute w-1 h-1 rounded-full bg-gradient-to-r ${service.gradient}`}
-                              style={{
-                                left: `${20 + i * 15}%`,
-                                top: `${30 + (i % 3) * 20}%`
-                              }}
-                              animate={{
-                                y: [-10, -30, -10],
-                                opacity: [0, 1, 0],
-                                scale: [0.5, 1, 0.5]
-                              }}
-                              transition={{
-                                duration: 2,
-                                delay: i * 0.2,
-                                repeat: Infinity
-                              }}
-                            />
-                          ))}
-                        </div>
+                          <div className="absolute inset-0 pointer-events-none">
+                            {[...Array(5)].map((_, i) => (
+                              <motion.div
+                                key={i}
+                                className={`absolute w-1 h-1 rounded-full bg-gradient-to-r ${service.gradient}`}
+                                style={{
+                                  left: `${20 + i * 15}%`,
+                                  top: `${30 + (i % 3) * 20}%`
+                                }}
+                                animate={{
+                                  y: [-10, -30, -10],
+                                  opacity: [0, 1, 0],
+                                  scale: [0.5, 1, 0.5]
+                                }}
+                                transition={{
+                                  duration: 2,
+                                  delay: i * 0.2,
+                                  repeat: Infinity
+                                }}
+                              />
+                            ))}
+                          </div>
 
-                        {/* Icon Container with Enhanced Animation */}
-                        <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${service.gradient} flex items-center justify-center shadow-lg flex-shrink-0 relative`}>
-                          <div className="absolute inset-0 rounded-2xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                          <service.icon className="w-7 h-7 text-white relative z-10" />
-                        </div>
+                          <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${service.gradient} flex items-center justify-center shadow-lg flex-shrink-0 relative`}>
+                            <div className="absolute inset-0 rounded-2xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                            <service.icon className="w-7 h-7 text-white relative z-10" />
+                          </div>
 
-                        <span className="text-sm font-bold relative z-10 text-center">
-                          {getLabel(service)}
-                        </span>
+                          <span className="text-sm font-bold relative z-10 text-center">
+                            {getLabel(service)}
+                          </span>
 
-                        {/* Bottom Border */}
-                        <motion.div
-                          className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${service.gradient} rounded-b-2xl`}
-                          initial={{ scaleX: 0, opacity: 0 }}
-                          whileHover={{ scaleX: 1, opacity: 1 }}
-                          transition={{ duration: 0.3 }}
-                        />
-                      </motion.button>
+                          <motion.div
+                            className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${service.gradient} rounded-b-2xl`}
+                            initial={{ scaleX: 0, opacity: 0 }}
+                            whileHover={{ scaleX: 1, opacity: 1 }}
+                            transition={{ duration: 0.3 }}
+                          />
+                        </motion.button>
+                        ========================================================== */}
+
+                        {/* Static Service Button */}
+                        <button
+                          onClick={(e) => handleHeroServiceClick(e, service.link)}
+                          className={`group relative flex flex-col items-center gap-3 px-4 py-5 rounded-2xl font-bold transition-all duration-300 overflow-hidden ${isDark
+                            ? 'bg-slate-800/90 hover:bg-slate-700 text-white border border-slate-700/50'
+                            : 'bg-white/90 hover:bg-white text-slate-900 border border-slate-200'
+                            } backdrop-blur-md shadow-xl hover:-translate-y-2 hover:shadow-2xl ${service.hoverGlow}`}
+                          style={{
+                            cursor: 'pointer',
+                            zIndex: 30
+                          }}
+                        >
+                          {/* Shimmer Effect (Hover only) */}
+                          <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12" />
+
+                          {/* Static particles (just for decoration, no animation) */}
+                          <div className="absolute inset-0 pointer-events-none opacity-20 group-hover:opacity-40 transition-opacity">
+                            {[...Array(3)].map((_, i) => (
+                              <div
+                                key={i}
+                                className={`absolute w-1 h-1 rounded-full bg-gradient-to-r ${service.gradient}`}
+                                style={{
+                                  left: `${30 + i * 20}%`,
+                                  top: `${40 + (i % 2) * 20}%`
+                                }}
+                              />
+                            ))}
+                          </div>
+
+                          {/* Icon Container */}
+                          <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${service.gradient} flex items-center justify-center shadow-lg flex-shrink-0 relative transition-transform group-hover:scale-110`}>
+                            <div className="absolute inset-0 rounded-2xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                            <service.icon className="w-7 h-7 text-white relative z-10" />
+                          </div>
+
+                          <span className="text-sm font-bold relative z-10 text-center">
+                            {getLabel(service)}
+                          </span>
+
+                          {/* Bottom Border */}
+                          <div
+                            className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${service.gradient} rounded-b-2xl scale-x-0 group-hover:scale-x-100 transition-transform origin-center duration-300`}
+                          />
+                        </button>
+                      </React.Fragment>
                     ))
                   )}
                 </div>

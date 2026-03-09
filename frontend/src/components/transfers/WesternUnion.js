@@ -27,6 +27,7 @@ const WesternUnion = () => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [idImage, setIdImage] = useState(null);
+  const [hoveredMethod, setHoveredMethod] = useState(null);
 
   const [formData, setFormData] = useState({
     senderName: '',
@@ -554,18 +555,30 @@ const WesternUnion = () => {
                   <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                     {t('طريقة الدفع', 'Payment Method', 'شێوازى پارەدان')} *
                   </Label>
-                  <Select value={formData.paymentMethod} onValueChange={(v) => handleInputChange('paymentMethod', v)}>
-                    <SelectTrigger className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} data-testid="payment-method">
-                      <SelectValue placeholder={t('اختر طريقة الدفع', 'Select payment method', 'شێوازى پارەدان هەڵبژێرە')} />
-                    </SelectTrigger>
-                    <SelectContent>
+                  <div className={`p-6 rounded-2xl ${isDark ? 'bg-slate-700/50' : 'bg-slate-50'}`}>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                       {paymentMethods.map(m => (
-                        <SelectItem key={m.value} value={m.value}>
-                          {t(m.labelAr, m.labelEn, m.labelKu)}
-                        </SelectItem>
+                        <motion.button
+                          key={m.value}
+                          type="button"
+                          whileHover={{ scale: 1.02 }}
+                          onMouseEnter={() => setHoveredMethod(m.value)}
+                          onMouseLeave={() => setHoveredMethod(null)}
+                          onClick={() => handleInputChange('paymentMethod', m.value)}
+                          className={`p-4 rounded-xl border-2 text-center transition-colors ${formData.paymentMethod === m.value
+                            ? 'border-yellow-400 bg-yellow-400/10'
+                            : hoveredMethod === m.value
+                              ? 'border-yellow-400'
+                              : isDark ? 'border-slate-600' : 'border-slate-200'
+                            }`}
+                        >
+                          <span className={`font-bold block text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                            {t(m.labelAr, m.labelEn, m.labelKu)}
+                          </span>
+                        </motion.button>
                       ))}
-                    </SelectContent>
-                  </Select>
+                    </div>
+                  </div>
                   {errors.paymentMethod && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.paymentMethod}</p>}
                 </div>
 

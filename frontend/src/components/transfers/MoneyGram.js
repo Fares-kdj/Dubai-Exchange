@@ -28,6 +28,7 @@ const MoneyGram = () => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [idImage, setIdImage] = useState(null);
+  const [hoveredMethod, setHoveredMethod] = useState(null);
 
   const [formData, setFormData] = useState({
     senderFirstName: '',
@@ -287,13 +288,13 @@ const MoneyGram = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{t('الاسم الأول للمرسل', 'Sender First Name', 'ناوی یەکەمی نێرەر')} *</Label>
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{t('الاسم الثلاثي للمرسل', 'Sender Full Name', 'ناوی تەواوی نێرەر')} *</Label>
                   <Input value={formData.senderFirstName} onChange={(e) => handleInputChange('senderFirstName', e.target.value)} className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} />
                   {errors.senderFirstName && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.senderFirstName}</p>}
                 </div>
 
                 <div className="space-y-2">
-                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{t('اسم الشهرة للمرسل', 'Sender Last Name', 'ناوی باوکی نێرەر')} *</Label>
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{t('اللقب للمرسل', 'Sender Nickname', 'نازناوی نێرەر')} *</Label>
                   <Input value={formData.senderLastName} onChange={(e) => handleInputChange('senderLastName', e.target.value)} className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} />
                   {errors.senderLastName && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.senderLastName}</p>}
                 </div>
@@ -329,13 +330,13 @@ const MoneyGram = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{t('الاسم الأول للمستلم', 'Receiver First Name', 'ناوی یەکەمی وەرگر')} *</Label>
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{t('الاسم الثلاثي للمستلم', 'Receiver Full Name', 'ناوی تەواوی وەرگر')} *</Label>
                   <Input value={formData.receiverFirstName} onChange={(e) => handleInputChange('receiverFirstName', e.target.value)} className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} />
                   {errors.receiverFirstName && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.receiverFirstName}</p>}
                 </div>
 
                 <div className="space-y-2">
-                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{t('اسم الشهرة للمستلم', 'Receiver Last Name', 'ناوی باوکی وەرگر')} *</Label>
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{t('اللقب للمستلم', 'Receiver Nickname', 'نازناوی وەرگر')} *</Label>
                   <Input value={formData.receiverLastName} onChange={(e) => handleInputChange('receiverLastName', e.target.value)} className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} />
                   {errors.receiverLastName && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.receiverLastName}</p>}
                 </div>
@@ -446,12 +447,30 @@ const MoneyGram = () => {
 
                 <div className="space-y-2 md:col-span-2">
                   <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{t('طريقة الدفع', 'Payment Method', 'شێوازى پارەدان')} *</Label>
-                  <Select value={formData.paymentMethod} onValueChange={(v) => handleInputChange('paymentMethod', v)}>
-                    <SelectTrigger className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} data-testid="mg-payment"><SelectValue placeholder={t('اختر', 'Select', 'هەڵبژاردن')} /></SelectTrigger>
-                    <SelectContent>
-                      {paymentMethods.map(m => (<SelectItem key={m.value} value={m.value}>{t(m.labelAr, m.labelEn, m.labelKu)}</SelectItem>))}
-                    </SelectContent>
-                  </Select>
+                  <div className={`p-6 rounded-2xl ${isDark ? 'bg-slate-700/50' : 'bg-slate-50'}`}>
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                      {paymentMethods.map(m => (
+                        <motion.button
+                          key={m.value}
+                          type="button"
+                          whileHover={{ scale: 1.02 }}
+                          onMouseEnter={() => setHoveredMethod(m.value)}
+                          onMouseLeave={() => setHoveredMethod(null)}
+                          onClick={() => handleInputChange('paymentMethod', m.value)}
+                          className={`p-4 rounded-xl border-2 text-center transition-colors ${formData.paymentMethod === m.value
+                            ? 'border-orange-500 bg-orange-500/10'
+                            : hoveredMethod === m.value
+                              ? 'border-orange-500'
+                              : isDark ? 'border-slate-600' : 'border-slate-200'
+                            }`}
+                        >
+                          <span className={`font-bold block text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                            {t(m.labelAr, m.labelEn, m.labelKu)}
+                          </span>
+                        </motion.button>
+                      ))}
+                    </div>
+                  </div>
                   {errors.paymentMethod && <p className="text-sm text-red-500"><AlertCircle className="w-4 h-4 inline" /> {errors.paymentMethod}</p>}
                 </div>
               </div>

@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Filter, Eye, Edit, Trash2, CheckCircle, XCircle, Clock, MoreVertical, Download, ChevronLeft, ChevronRight, RefreshCw } from 'lucide-react';
+import { Search, Filter, Eye, Edit, Trash2, CheckCircle, XCircle, Clock, MoreVertical, Download, ChevronLeft, ChevronRight, RefreshCw, Ban } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { toast } from 'sonner';
 import ConfirmModal from './ConfirmModal';
+import { OrderDetailModal } from './orders/BaseOrdersPage';
 
 const AdminOrders = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -16,6 +18,8 @@ const AdminOrders = () => {
   const [pageSize] = useState(20);
   const API_URL = process.env.REACT_APP_BACKEND_URL;
   const [confirmConfig, setConfirmConfig] = useState({ isOpen: false, title: '', message: '', onConfirm: null });
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [showDetail, setShowDetail] = useState(false);
 
   const showConfirm = (config) => setConfirmConfig({ ...config, isOpen: true });
 
@@ -59,8 +63,8 @@ const AdminOrders = () => {
     { value: 'western_union', label: 'ويسترن يونيون' },
     { value: 'moneygram', label: 'موني جرام' },
     { value: 'country_based', label: 'حسب الدولة' },
-    { value: 'card_recharge', label: 'شحن بطاقة' },
-    { value: 'usdt_recharge', label: 'USDT' },
+    { value: 'card_recharge', label: 'تعبئة بطاقات' },
+    { value: 'usdt_recharge', label: 'شحن USDT' },
   ];
 
   const statusOptions = [
@@ -84,9 +88,9 @@ const AdminOrders = () => {
     western_union: 'ويسترن يونيون',
     moneygram: 'موني جرام',
     country_based: 'حسب الدولة',
-    card_recharge: 'شحن بطاقة',
-    usdt_recharge: 'USDT',
-    usdt: 'USDT'
+    card_recharge: 'تعبئة بطاقات',
+    usdt_recharge: 'شحن USDT',
+    usdt: 'شحن USDT'
   };
 
   const handleStatusChange = async (orderId, newStatus) => {
@@ -124,6 +128,33 @@ const AdminOrders = () => {
     });
   };
 
+  const handleBlockOrder = async (order) => {
+    if (!order?.customer?.phone) return;
+
+    showConfirm({
+      title: 'حظر العميل',
+      message: `هل أنت متأكد من حظر العميل ${order.customer?.full_name}؟ سيتم حظر جميع طلباته الحالية والمستقبلية.`,
+      onConfirm: async () => {
+        try {
+          const res = await fetch(`${API_URL}/api/blocklist`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify({
+              phone: order.customer.phone,
+              reason: 'حظر من خلال إدارة الطلبات'
+            })
+          });
+          if (res.ok) {
+            toast.success('تم حظر العميل بنجاح');
+            fetchOrders();
+          }
+        } catch (err) {
+          console.error('Error blocking customer:', err);
+        }
+      }
+    });
+  };
+
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
     return date.toLocaleString('ar-IQ', { dateStyle: 'short', timeStyle: 'short' });
@@ -137,10 +168,6 @@ const AdminOrders = () => {
           <h1 className="text-2xl font-bold text-slate-900">إدارة الطلبات</h1>
           <p className="text-slate-600">{orders.length} طلب</p>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 bg-[#D4AF37] text-slate-900 font-medium rounded-lg hover:bg-[#c9a431]">
-          <Download className="w-4 h-4" />
-          تصدير Excel
-        </button>
       </div>
 
       {/* Filters */}
@@ -249,10 +276,18 @@ const AdminOrders = () => {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
-                        <button className="p-2 hover:bg-blue-100 rounded-lg text-blue-600" title="عرض">
+                        <button
+                          onClick={() => { setSelectedOrder(order); setShowDetail(true); }}
+                          className="p-2 hover:bg-blue-100 rounded-lg text-blue-600"
+                          title="عرض"
+                        >
                           <Eye className="w-4 h-4" />
                         </button>
-                        <button className="p-2 hover:bg-amber-100 rounded-lg text-amber-600" title="تعديل">
+                        <button
+                          onClick={() => { setSelectedOrder(order); setShowDetail(true); }}
+                          className="p-2 hover:bg-amber-100 rounded-lg text-amber-600"
+                          title="تعديل"
+                        >
                           <Edit className="w-4 h-4" />
                         </button>
                         <button onClick={() => handleDelete(order.order_id)} className="p-2 hover:bg-red-100 rounded-lg text-red-600" title="حذف">
@@ -296,6 +331,14 @@ const AdminOrders = () => {
         title={confirmConfig.title}
         message={confirmConfig.message}
         type="danger"
+      />
+
+      <OrderDetailModal
+        order={selectedOrder}
+        isOpen={showDetail}
+        onClose={() => setShowDetail(false)}
+        onStatusChange={() => fetchOrders()}
+        onBlock={() => handleBlockOrder(selectedOrder)}
       />
     </div>
   );

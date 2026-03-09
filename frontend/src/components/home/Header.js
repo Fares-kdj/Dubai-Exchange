@@ -162,6 +162,45 @@ const Header = () => {
               {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </motion.button>
 
+            {/* Language Selector Mobile */}
+            <div className="relative">
+              <motion.button
+                onClick={() => setLangDropdownOpen(!langDropdownOpen)}
+                className={`p-2 rounded-lg transition-colors ${isDark ? 'text-slate-200 hover:bg-slate-800' : 'text-slate-700 hover:bg-slate-50'
+                  }`}
+                whileTap={{ scale: 0.9 }}
+              >
+                <Globe className="w-5 h-5 text-[#D4AF37]" />
+              </motion.button>
+              <AnimatePresence>
+                {langDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                    className={`absolute top-full mt-2 left-0 backdrop-blur-xl border rounded-2xl overflow-hidden shadow-xl min-w-[120px] ${isDark ? 'bg-slate-800 border-slate-600' : 'bg-white border-slate-200'
+                      }`}
+                  >
+                    {languages.map((lang) => (
+                      <button
+                        key={lang.code}
+                        onClick={() => {
+                          changeLanguage(lang.code);
+                          setLangDropdownOpen(false);
+                        }}
+                        className={`w-full px-4 py-3 text-right text-sm transition-colors ${currentLanguage === lang.code
+                          ? 'text-[#D4AF37] font-medium ' + (isDark ? 'bg-slate-700' : 'bg-slate-50')
+                          : isDark ? 'text-slate-200 hover:bg-slate-700' : 'text-slate-700 hover:bg-slate-50'
+                          }`}
+                      >
+                        {lang.name}
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               data-testid="mobile-menu-button"
@@ -195,23 +234,6 @@ const Header = () => {
                   </a>
                 ))}
 
-                <div className={`flex flex-col gap-2 pt-2 border-t ${isDark ? 'border-slate-700' : 'border-slate-100'}`}>
-                  {languages.map((lang) => (
-                    <button
-                      key={lang.code}
-                      onClick={() => {
-                        changeLanguage(lang.code);
-                        setMobileMenuOpen(false);
-                      }}
-                      className={`text-left py-2 text-sm ${currentLanguage === lang.code
-                        ? 'text-[#D4AF37] font-medium'
-                        : isDark ? 'text-slate-400' : 'text-slate-600'
-                        }`}
-                    >
-                      {lang.name}
-                    </button>
-                  ))}
-                </div>
 
                 <button className={`w-full mt-2 px-6 py-2.5 font-semibold rounded-full shadow-lg ${isDark
                   ? 'bg-[#D4AF37] text-slate-900'

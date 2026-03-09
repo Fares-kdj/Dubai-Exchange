@@ -17,7 +17,7 @@ const CurrencyConverter = () => {
   const { isDark } = useTheme();
   const [fromCurrency, setFromCurrency] = useState('USD');
   const [toCurrency, setToCurrency] = useState('IQD');
-  const [amount, setAmount] = useState('100');
+  const [amount, setAmount] = useState('1');
   const [result, setResult] = useState('150000');
   const [loading, setLoading] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(new Date().toISOString());

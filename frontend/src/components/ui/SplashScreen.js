@@ -57,15 +57,15 @@ const SplashScreen = ({ onComplete, minDuration = 2000 }) => {
     initial: { opacity: 0 },
     animate: { opacity: 1 },
   } : {
-    initial: { opacity: 0, scale: 0.8, y: 20 },
+    initial: { opacity: 0, scale: 0.2, rotate: -15 },
     animate: {
       opacity: 1,
-      scale: [1, 1.03, 1],
-      y: [0, -3, 0],
+      scale: [0.2, 1.15, 0.95, 1.05, 1],
+      rotate: [-15, 8, -4, 2, 0],
       transition: {
-        opacity: { duration: 0.5 },
-        scale: { duration: 3, repeat: Infinity, ease: "easeInOut" },
-        y: { duration: 2.5, repeat: Infinity, ease: "easeInOut" }
+        opacity: { duration: 0.4 },
+        scale: { duration: 1, times: [0, 0.5, 0.7, 0.85, 1], ease: 'easeOut' },
+        rotate: { duration: 1, times: [0, 0.5, 0.7, 0.85, 1], ease: 'easeOut' }
       }
     }
   };
@@ -100,7 +100,7 @@ const SplashScreen = ({ onComplete, minDuration = 2000 }) => {
         <motion.div
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.4, ease: "easeInOut" }}
+          transition={{ duration: 0.7, ease: "easeInOut" }}
           className={`fixed inset-0 z-[9999] flex flex-col items-center justify-center ${isDark
             ? 'bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900'
             : 'bg-gradient-to-br from-amber-50/50 via-white to-slate-50'
@@ -157,6 +157,14 @@ const SplashScreen = ({ onComplete, minDuration = 2000 }) => {
               animate="animate"
               className="relative mb-8"
             >
+              {/* Rotating ring around logo */}
+              {!prefersReducedMotion && (
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+                  className="absolute -inset-4 rounded-full border-2 border-dashed border-[#D4AF37]/30"
+                />
+              )}
               {/* Logo Glow Effect */}
               {!prefersReducedMotion && (
                 <motion.div
@@ -194,10 +202,28 @@ const SplashScreen = ({ onComplete, minDuration = 2000 }) => {
                     className="w-10 h-10 border-4 border-amber-500/20 border-t-amber-500 rounded-full"
                   />
                 ) : (
-                  <img
+                  <motion.img
                     src={isDark ? logoDark : logoLight}
                     alt="شعار الشركة"
                     className="w-20 h-20 object-contain relative z-10"
+                    initial={{ opacity: 0, scale: 0, rotate: -180 }}
+                    animate={prefersReducedMotion ? { opacity: 1, scale: 1, rotate: 0 } : {
+                      opacity: [0, 1, 1, 1, 1],
+                      scale: [0, 1.3, 0.9, 1.08, 1],
+                      rotate: [-180, 15, -8, 5, 0],
+                      y: [0, 0, 0, 0, 0, -6, 0, -6, 0],
+                    }}
+                    transition={{
+                      duration: 1.2,
+                      times: [0, 0.4, 0.6, 0.8, 1],
+                      ease: 'easeOut',
+                      y: { duration: 2.5, repeat: Infinity, ease: 'easeInOut', delay: 1.2 }
+                    }}
+                    style={{
+                      filter: isDark
+                        ? 'drop-shadow(0 0 12px rgba(212,175,55,0.6)) drop-shadow(0 0 24px rgba(212,175,55,0.3))'
+                        : 'drop-shadow(0 4px 12px rgba(212,175,55,0.5))'
+                    }}
                   />
                 )}
 

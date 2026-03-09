@@ -222,32 +222,27 @@ async def fetch_live_rates():
                 # IQD rate per 1 USD (approximate)
                 iqd_per_usd = usd_rates.get("IQD", 1460)
                 
-                # Calculate rates for common currencies
-                live_rates = []
-                currency_map = {
-                    "USD": {"ar": "دولار أمريكي", "en": "US Dollar", "flag": "🇺🇸"},
-                    "EUR": {"ar": "يورو", "en": "Euro", "flag": "🇪🇺"},
-                    "GBP": {"ar": "جنيه إسترليني", "en": "British Pound", "flag": "🇬🇧"},
-                    "TRY": {"ar": "ليرة تركية", "en": "Turkish Lira", "flag": "🇹🇷"},
-                    "AED": {"ar": "درهم إماراتي", "en": "UAE Dirham", "flag": "🇦🇪"},
-                    "SAR": {"ar": "ريال سعودي", "en": "Saudi Riyal", "flag": "🇸🇦"},
-                    "JOD": {"ar": "دينار أردني", "en": "Jordanian Dinar", "flag": "🇯🇴"},
-                    "EGP": {"ar": "جنيه مصري", "en": "Egyptian Pound", "flag": "🇪🇬"},
-                    "KWD": {"ar": "دينار كويتي", "en": "Kuwaiti Dinar", "flag": "🇰🇼"},
-                    "IRR": {"ar": "ريال إيراني", "en": "Iranian Rial", "flag": "🇮🇷"}
-                }
+                # Fetch all existing currencies from DB so custom added ones get synced too
+                cursor = rates_collection.find({"is_active": True}, {"_id": 0})
+                existing_rates = await cursor.to_list(length=100)
                 
-                for code, info in currency_map.items():
+                # Dictionary for fast code lookup
+                db_currencies = {r["currency_code"]: r for r in existing_rates}
+                
+                # We need to make sure USD is always created if missing, and other DB currencies are updated
+                live_rates = []
+                
+                for code, db_info in db_currencies.items():
                     if code in usd_rates:
-                        # Calculate IQD per 1 unit of currency
+                        # Calculate IQD per 1 unit of currency based on USD crossover
                         rate_to_usd = usd_rates[code]
                         iqd_rate = round(iqd_per_usd / rate_to_usd, 2)
                         
                         live_rates.append({
                             "currency_code": code,
-                            "currency_name_ar": info["ar"],
-                            "currency_name_en": info["en"],
-                            "flag": info["flag"],
+                            "currency_name_ar": db_info.get("currency_name_ar", ""),
+                            "currency_name_en": db_info.get("currency_name_en", ""),
+                            "flag": db_info.get("flag", ""),
                             "buy_rate": round(iqd_rate * 0.995, 2),  # 0.5% spread
                             "sell_rate": round(iqd_rate * 1.005, 2),
                             "updated_at": datetime.now(timezone.utc).isoformat()
@@ -255,9 +250,9 @@ async def fetch_live_rates():
                     elif code == "USD":
                         live_rates.append({
                             "currency_code": "USD",
-                            "currency_name_ar": info["ar"],
-                            "currency_name_en": info["en"],
-                            "flag": info["flag"],
+                            "currency_name_ar": db_info.get("currency_name_ar", "دولار أمريكي"),
+                            "currency_name_en": db_info.get("currency_name_en", "US Dollar"),
+                            "flag": db_info.get("flag", "🇺🇸"),
                             "buy_rate": round(iqd_per_usd * 0.995, 2),
                             "sell_rate": round(iqd_per_usd * 1.005, 2),
                             "updated_at": datetime.now(timezone.utc).isoformat()

@@ -42,7 +42,7 @@ const ServiceSuccess = () => {
   const whatsappNumber = '+9647800000000'; // Company WhatsApp
   const whatsappMessage = encodeURIComponent(
     t(
-      `مرحباً، رقم طلبي هو: ${orderId}\nالنوع: ${isUSDT ? 'شحن USDT' : isCard ? 'تعبئة بطاقة' : 'تحويل'}\nالمبلغ: ${orderData.total?.toLocaleString()} IQD`,
+      `مرحباً، رقم طلبي هو: ${orderId}\nالنوع: ${isUSDT ? 'شحن USDT' : isCard ? 'تعبئة بطاقات' : 'تحويل'}\nالمبلغ: ${orderData.total?.toLocaleString()} IQD`,
       `Hello, my order ID is: ${orderId}\nType: ${isUSDT ? 'USDT Recharge' : isCard ? 'Card Recharge' : 'Transfer'}\nAmount: ${orderData.total?.toLocaleString()} IQD`,
       `سڵاو، ژمارەی داواکارییەکەم بریتییە لە: ${orderId}\nجۆر: ${isUSDT ? 'بارگاویکردنەوەی USDT' : isCard ? 'بارگاویکردنەوەی کارت' : 'گواستنەوە'}\nبڕ: ${orderData.total?.toLocaleString()} دینار`
     )

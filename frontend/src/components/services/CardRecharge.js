@@ -27,6 +27,7 @@ const CardRecharge = () => {
 
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [hoveredMethod, setHoveredMethod] = useState(null);
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -400,7 +401,7 @@ const CardRecharge = () => {
                 </h2>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-6">
                 {/* Amount in USD */}
                 <div className="space-y-2">
                   <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
@@ -418,26 +419,35 @@ const CardRecharge = () => {
                   {errors.amount && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.amount}</p>}
                 </div>
 
-                {/* Payment Method Dropdown */}
+                {/* Payment Method */}
                 <div className="space-y-2">
                   <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                     {t('طريقة الدفع', 'Payment Method', 'شێوازی پارەدان')} *
                   </Label>
-                  <Select value={formData.paymentMethod} onValueChange={(v) => handleInputChange('paymentMethod', v)}>
-                    <SelectTrigger className={`h-14 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} data-testid="payment-method-select">
-                      <SelectValue placeholder={t('اختر طريقة الدفع', 'Select payment method', 'شێوازی پارەدان هەڵبژێرە')} />
-                    </SelectTrigger>
-                    <SelectContent>
+                  <div className={`p-6 rounded-2xl ${isDark ? 'bg-slate-700/50' : 'bg-slate-50'}`}>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                       {PAYMENT_METHODS.filter(m => m.active).map(m => (
-                        <SelectItem key={m.value} value={m.value}>
-                          <span className="flex items-center gap-2">
-                            <span>{m.icon}</span>
-                            <span>{t(m.labelAr, m.labelEn, m.labelKu)}</span>
+                        <motion.button
+                          key={m.value}
+                          type="button"
+                          whileHover={{ scale: 1.02 }}
+                          onMouseEnter={() => setHoveredMethod(m.value)}
+                          onMouseLeave={() => setHoveredMethod(null)}
+                          onClick={() => handleInputChange('paymentMethod', m.value)}
+                          className={`p-4 rounded-xl border-2 text-center transition-colors ${formData.paymentMethod === m.value
+                              ? 'border-purple-500 bg-purple-500/10'
+                              : hoveredMethod === m.value
+                                ? 'border-purple-500'
+                                : isDark ? 'border-slate-600' : 'border-slate-200'
+                            }`}
+                        >
+                          <span className={`font-bold block text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                            {t(m.labelAr, m.labelEn, m.labelKu)}
                           </span>
-                        </SelectItem>
+                        </motion.button>
                       ))}
-                    </SelectContent>
-                  </Select>
+                    </div>
+                  </div>
                   {errors.paymentMethod && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.paymentMethod}</p>}
                 </div>
               </div>
