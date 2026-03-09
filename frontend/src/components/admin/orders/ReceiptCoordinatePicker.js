@@ -11,7 +11,9 @@ const ReceiptCoordinatePicker = () => {
     const [zoom, setZoom] = useState(1);
     const containerRef = useRef(null);
 
-    const template = RECEIPT_CONFIGS[selectedType]?.template;
+    const config = RECEIPT_CONFIGS[selectedType];
+    const template = config?.template;
+    const isLandscape = selectedType.toLowerCase() === 'traveler' || selectedType.toLowerCase() === 'western_union';
 
     const handleContainerClick = (e) => {
         if (!containerRef.current) return;
@@ -88,16 +90,16 @@ const ReceiptCoordinatePicker = () => {
                                 onClick={handleContainerClick}
                                 className="relative bg-white shadow-2xl cursor-crosshair overflow-hidden border border-slate-400"
                                 style={{
-                                    width: '450px',
-                                    height: '636px',
-                                    aspectRatio: '210 / 297',
+                                    width: isLandscape ? '636px' : '450px',
+                                    height: isLandscape ? '450px' : '636px',
+                                    aspectRatio: isLandscape ? '297 / 210' : '210 / 297',
                                     fontFamily: 'Cairo, sans-serif'
                                 }}
                             >
                                 <img
                                     src={template}
                                     alt="Template Preview"
-                                    className="absolute inset-0 w-full h-full object-contain pointer-events-none"
+                                    className={`absolute inset-0 w-full h-full pointer-events-none ${isLandscape ? 'object-fill' : 'object-contain'}`}
                                     draggable={false}
                                 />
 

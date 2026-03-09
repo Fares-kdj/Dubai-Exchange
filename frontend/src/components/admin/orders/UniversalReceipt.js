@@ -17,6 +17,7 @@ const UniversalReceipt = ({
 
     // Get config for this order type, fallback to traveler if not found
     const config = RECEIPT_CONFIGS[order_type] || RECEIPT_CONFIGS.traveler;
+    const shouldRotate = order_type === 'traveler' || order_type === 'western_union';
 
     // Format dates helper
     const formatDate = (dateStr) => {
@@ -73,8 +74,8 @@ const UniversalReceipt = ({
             id="universal-receipt"
             className="relative mx-auto bg-white overflow-hidden"
             style={{
-                width: '210mm',
-                height: '297mm',
+                width: shouldRotate ? '297mm' : '210mm',
+                height: shouldRotate ? '210mm' : '297mm',
                 fontFamily: 'Cairo, sans-serif',
                 direction: 'rtl',
                 color: '#1e293b'
@@ -84,7 +85,7 @@ const UniversalReceipt = ({
             <img
                 src={config.template}
                 alt="Receipt Template"
-                className="absolute inset-0 w-full h-full object-contain pointer-events-none"
+                className={`absolute inset-0 w-full h-full pointer-events-none ${shouldRotate ? 'object-fill' : 'object-contain'}`}
             />
 
             {/* Dynamic Overlay Fields */}
@@ -188,10 +189,12 @@ const UniversalReceipt = ({
                     }
                     #universal-receipt {
                         position: absolute;
-                        left: 0;
+                        left: ${shouldRotate ? '210mm' : '0'};
                         top: 0;
-                        width: 210mm;
-                        height: 297mm;
+                        width: ${shouldRotate ? '297mm' : '210mm'};
+                        height: ${shouldRotate ? '210mm' : '297mm'};
+                        transform: ${shouldRotate ? 'rotate(90deg)' : 'none'};
+                        transform-origin: top left;
                         margin: 0;
                         padding: 0;
                         box-shadow: none !important;
