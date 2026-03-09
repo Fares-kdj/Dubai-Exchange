@@ -3,6 +3,7 @@ from typing import Optional, Dict, Any, List
 from datetime import datetime, timezone
 from enum import Enum
 import uuid
+import random
 
 
 class OrderStatus(str, Enum):
@@ -37,7 +38,7 @@ def generate_order_id(order_type: OrderType) -> str:
         OrderType.USDT_RECHARGE: "USD"
     }
     prefix = prefixes.get(order_type, "ORD")
-    unique_id = str(uuid.uuid4().hex)[:8].upper()
+    unique_id = str(random.randint(10000000, 99999999))
     return f"{prefix}-{unique_id}"
 
 

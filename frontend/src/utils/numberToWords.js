@@ -52,3 +52,16 @@ export const amountToUSDWords = (amount) => {
 
     return result + ' لا غير';
 };
+
+export const amountToIQDWords = (amount) => {
+    const num = Math.floor(amount);
+
+    let result = numberToArabicWords(num) + ' دينار عراقي';
+
+    return result + ' لا غير';
+};
+
+export const amountToWords = (amount, currency) => {
+    if (currency === 'IQD') return amountToIQDWords(amount);
+    return amountToUSDWords(amount);
+};

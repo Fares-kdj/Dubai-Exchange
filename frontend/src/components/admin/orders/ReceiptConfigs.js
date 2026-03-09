@@ -5,7 +5,7 @@
  * y: distance from the top
  */
 
-import { amountToUSDWords } from '../../../utils/numberToWords';
+import { amountToWords } from '../../../utils/numberToWords';
 
 const getStatusTranslation = (status) => {
     switch (status?.toLowerCase()) {
@@ -200,8 +200,8 @@ export const RECEIPT_CONFIGS = {
             { id: 'receiver_phone', value: details?.receiverPhone, x: 29, y: 54, bold: true, size: 'text-[14px]' },
             { id: 'from_prov', value: getProvinceTranslation(details?.senderProvince), x: 74.1, y: 57.1, bold: true, size: 'text-[14px]' },
             { id: 'to_prov', value: getProvinceTranslation(details?.receiverProvince), x: 30.6, y: 57.1, bold: true, size: 'text-[14px]' },
-            { id: 'amount_usd', value: `${details?.amountUSD} USD`, x: 74.6, y: 32.8, bold: true, size: 'text-[16px]' },
-            { id: 'amount_in_words', value: amountToUSDWords(details?.amountUSD), x: 45.4, y: 32.4, bold: true, size: 'text-[13px]', width: '50%' },
+            { id: 'amount_usd', value: `${details?.amount || details?.amountUSD} ${details?.senderCurrency || 'USD'}`, x: 74.6, y: 32.8, bold: true, size: 'text-[16px]' },
+            { id: 'amount_in_words', value: amountToWords(details?.amount || details?.amountUSD, details?.senderCurrency || 'USD'), x: 45.4, y: 32.4, bold: true, size: 'text-[13px]', width: '50%' },
             { id: 'fee', value: `${details?.serviceFee?.toLocaleString()} IQD`, x: 46.7, y: 36.5, bold: true, size: 'text-[14px]' },
             { id: 'total', value: `${details?.total?.toLocaleString()} IQD`, x: 22, y: 36.5, bold: true, size: 'text-[18px]' },
             {

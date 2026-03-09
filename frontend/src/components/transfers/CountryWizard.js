@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
 import { useTheme } from '@/context/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ArrowRight, DollarSign, Globe, CreditCard, CheckCircle, AlertCircle, Search, Clock, User, Star } from 'lucide-react';
+import { ArrowLeft, ArrowRight, DollarSign, Globe, CreditCard, CheckCircle, AlertCircle, Search, Clock, User, Star, Upload, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -41,7 +41,8 @@ const CountryWizard = () => {
     receiverName: '',
     phone: '',
     purpose: '',
-    customFields: {}
+    customFields: {},
+    fieldUploads: {} // New: Store upload progress/status for dynamic fields
   });
 
   // Currency names map for display
@@ -61,7 +62,7 @@ const CountryWizard = () => {
   };
 
   // Check if selected method is bank transfer
-  const isBankTransfer = wizardData.method === 'bank';
+  const isBankTransfer = wizardData.method?.toLowerCase().includes('bank');
 
   // Get available currencies for receiver based on method
   const getAvailableCurrencies = () => {
@@ -121,13 +122,13 @@ const CountryWizard = () => {
   // Set default receiver currency when method changes
   useEffect(() => {
     if (wizardData.method && wizardData.country) {
-      const isBank = wizardData.method === 'bank';
+      const isBankType = wizardData.method.toLowerCase().includes('bank');
       const country = countries.find(c => c.country_code === wizardData.country);
 
-      if (!isBank && country?.currency) {
+      if (!isBankType && country?.currency) {
         // For non-bank, auto-set to local currency
         setWizardData(p => ({ ...p, receiverCurrency: country.currency }));
-      } else if (isBank && !wizardData.receiverCurrency) {
+      } else if (isBankType && !wizardData.receiverCurrency) {
         // For bank, default to USD
         setWizardData(p => ({ ...p, receiverCurrency: 'USD' }));
       }
@@ -177,6 +178,7 @@ const CountryWizard = () => {
     if (!wizardData.receiverName.trim()) newErrors.receiverName = t('مطلوب', 'Required', 'پێویستە');
     if (!wizardData.phone.trim()) newErrors.phone = t('مطلوب', 'Required', 'پێویستە');
     if (isBankTransfer && !wizardData.receiverCurrency) newErrors.receiverCurrency = t('اختر عملة المستلم', 'Select receiver currency', 'دراوی وەرگر هەڵبژێرە');
+    if (!wizardData.purpose) newErrors.purpose = t('مطلوب', 'Required', 'پێویستە');
 
     // Add dynamic field validation
     if (selectedMethod?.fields && selectedMethod.fields.length > 0) {
@@ -263,6 +265,62 @@ const CountryWizard = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleDynamicFileUpload = async (fieldId, file) => {
+    if (!file) return;
+
+    // Check file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error(t('حجم الملف كبير جداً (الأقصى 5 ميجابايت)', 'File too large (max 5MB)', 'قەبارەی فایلەکە زۆر گەورەیە'));
+      return;
+    }
+
+    setWizardData(p => ({
+      ...p,
+      fieldUploads: { ...p.fieldUploads, [fieldId]: { loading: true } }
+    }));
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('order_type', 'country_based');
+      formData.append('doc_type', fieldId);
+
+      const res = await fetch(`${API_URL}/api/orders/upload-document`, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setWizardData(p => ({
+          ...p,
+          customFields: { ...p.customFields, [fieldId]: data.file_url },
+          fieldUploads: { ...p.fieldUploads, [fieldId]: { loading: false, success: true, fileName: file.name } }
+        }));
+        toast.success(t('تم رفع الصورة بنجاح', 'Image uploaded successfully', 'وێنەکە بە سەرکەوتوویی بارکرا'));
+      } else {
+        throw new Error('Upload failed');
+      }
+    } catch (err) {
+      console.error('Field upload error:', err);
+      setWizardData(p => ({
+        ...p,
+        fieldUploads: { ...p.fieldUploads, [fieldId]: { loading: false, error: true } }
+      }));
+      toast.error(t('فشل رفع الصورة', 'Image upload failed', 'بارکردنی وێنەکە سەرکەوتوو نەبوو'));
+    }
+  };
+
+  const removeDynamicFile = (fieldId) => {
+    setWizardData(p => {
+      const newFields = { ...p.customFields };
+      delete newFields[fieldId];
+      const newUploads = { ...p.fieldUploads };
+      delete newUploads[fieldId];
+      return { ...p, customFields: newFields, fieldUploads: newUploads };
+    });
   };
 
   // Step indicator - Now 4 steps: Country -> Method -> Summary -> Amount & Info
@@ -547,7 +605,7 @@ const CountryWizard = () => {
                     {/* Purpose Selection */}
                     <div>
                       <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
-                        {t('الغرض من التحويل', 'Transfer Purpose', 'مەبەستی گواستنەوە')} {selectedCountry?.country_code?.toUpperCase() === 'CN' && '*'}
+                        {t('الغرض من التحويل', 'Transfer Purpose', 'مەبەستی گواستنەوە')} {selectedCountry?.country_code?.toUpperCase() === 'CN' ? '*' : '*'}
                       </Label>
                       <select
                         value={selectedCountry?.country_code?.toUpperCase() === 'CN' ? 'trade' : wizardData.purpose}
@@ -557,7 +615,7 @@ const CountryWizard = () => {
                           } disabled:opacity-50`}
                       >
                         {selectedCountry?.country_code?.toUpperCase() !== 'CN' && (
-                          <option value="">{t('اختياري', 'Optional', 'ئارەزوومەندانە')}</option>
+                          <option value="">{t('اختر الغرض', 'Select Purpose', 'مەبەست هەڵبژێرە')}</option>
                         )}
                         <option value="trade">{t('تجارة', 'Trade', 'بازرگانی')}</option>
                         {selectedCountry?.country_code?.toUpperCase() !== 'CN' && (
@@ -567,6 +625,7 @@ const CountryWizard = () => {
                           </>
                         )}
                       </select>
+                      {errors.purpose && <p className="text-red-500 text-sm mt-1">{errors.purpose}</p>}
                     </div>
                     {/* Dynamic Custom Fields */}
                     {selectedMethod?.fields && selectedMethod.fields.length > 0 ? (
@@ -591,6 +650,60 @@ const CountryWizard = () => {
                                 <option key={opt.value} value={opt.value}>{opt.label}</option>
                               ))}
                             </select>
+                          ) : field.field_type === 'file' ? (
+                            <div className="mt-2">
+                              {!wizardData.customFields[field.field_id] ? (
+                                <label className={`block border-2 border-dashed rounded-2xl p-8 transition-all cursor-pointer ${isDark ? 'border-slate-600 hover:border-[#D4AF37] hover:bg-[#D4AF37]/10' : 'border-slate-300 hover:border-[#D4AF37] hover:bg-[#D4AF37]/5'}`}>
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={e => handleDynamicFileUpload(field.field_id, e.target.files[0])}
+                                    className="hidden"
+                                    disabled={wizardData.fieldUploads[field.field_id]?.loading}
+                                  />
+                                  <div className="text-center">
+                                    {wizardData.fieldUploads[field.field_id]?.loading ? (
+                                      <div className="w-8 h-8 border-2 border-[#D4AF37] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+                                    ) : (
+                                      <Upload className={`w-8 h-8 mx-auto mb-2 ${isDark ? 'text-slate-500' : 'text-slate-400'}`} />
+                                    )}
+                                    <p className={`text-xs font-medium ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                                      {wizardData.fieldUploads[field.field_id]?.loading
+                                        ? t('جارٍ الرفع...', 'Uploading...', 'بارکردن...')
+                                        : t('اضغط لرفع الصورة', 'Click to upload image', 'بۆ بارکردنی وێنە لێرە بدە')}
+                                    </p>
+                                  </div>
+                                </label>
+                              ) : (
+                                <div className={`border-2 rounded-2xl p-3 flex items-center justify-between ${isDark ? 'bg-emerald-900/20 border-emerald-700/50' : 'bg-emerald-50 border-emerald-200'}`}>
+                                  <div className="flex items-center gap-3">
+                                    <div className="w-12 h-12 rounded-lg bg-white border border-slate-200 overflow-hidden">
+                                      <img
+                                        src={wizardData.customFields[field.field_id]}
+                                        alt="Preview"
+                                        className="w-full h-full object-cover"
+                                      />
+                                    </div>
+                                    <div className="overflow-hidden">
+                                      <p className={`text-xs font-bold truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                                        {wizardData.fieldUploads[field.field_id]?.fileName || t('صورة مرفوعة', 'Uploaded Image', 'وێنەی بارکراو')}
+                                      </p>
+                                      <p className="text-[10px] text-green-500 flex items-center gap-1">
+                                        <CheckCircle className="w-3 h-3" />
+                                        {t('جاهز', 'Ready', 'ئامادەیە')}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => removeDynamicFile(field.field_id)}
+                                    className="p-2 text-red-500 hover:bg-red-50 rounded-lg"
+                                  >
+                                    <X className="w-4 h-4" />
+                                  </button>
+                                </div>
+                              )}
+                            </div>
                           ) : (
                             <Input
                               type={field.field_type || 'text'}

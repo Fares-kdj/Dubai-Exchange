@@ -133,6 +133,7 @@ const MoneyGram = () => {
     if (!formData.currency) newErrors.currency = t('مطلوب', 'Required', 'پێویستە');
     if (!formData.amount || parseFloat(formData.amount) <= 0) newErrors.amount = t('مطلوب', 'Required', 'پێویستە');
     if (!formData.paymentMethod) newErrors.paymentMethod = t('مطلوب', 'Required', 'پێویستە');
+    if (!formData.purpose) newErrors.purpose = t('مطلوب', 'Required', 'پێویستە');
     if (!idImage) newErrors.idImage = t('مطلوب', 'Required', 'پێویستە');
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -432,10 +433,10 @@ const MoneyGram = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{t('الغرض من التحويل', 'Transfer Purpose', 'مەبەستی گواستنەوە')}</Label>
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{t('الغرض من التحويل', 'Transfer Purpose', 'مەبەستی گواستنەوە')} *</Label>
                   <Select value={formData.purpose} onValueChange={(v) => handleInputChange('purpose', v)}>
                     <SelectTrigger className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} data-testid="mg-purpose">
-                      <SelectValue placeholder={t('اختياري', 'Optional', 'ئارەزوومەندانە')} />
+                      <SelectValue placeholder={t('اختر الغرض', 'Select Purpose', 'مەبەست هەڵبژێرە')} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="trade">{t('تجارة', 'Trade', 'بازرگانی')}</SelectItem>
@@ -443,6 +444,7 @@ const MoneyGram = () => {
                       <SelectItem value="medical">{t('علاج', 'Medical Treatment', 'چارەسەری پزیشکی')}</SelectItem>
                     </SelectContent>
                   </Select>
+                  {errors.purpose && <p className="text-sm text-red-500 flex items-center gap-1 mt-1"><AlertCircle className="w-4 h-4" />{errors.purpose}</p>}
                 </div>
 
                 <div className="space-y-2 md:col-span-2">

@@ -434,6 +434,7 @@ const TrackOrder = () => {
                             phone: { ar: 'رقم الهاتف', en: 'Phone', ku: 'ژمارەی مۆبایل' },
                             senderPhone: { ar: 'هاتف المرسل', en: 'Sender Phone', ku: 'مۆبایلی نێرەر' },
                             receiverPhone: { ar: 'هاتف المستلم', en: 'Receiver Phone', ku: 'مۆبایلی وەرگرەر' },
+                            senderCurrency: { ar: 'عملة المرسل', en: 'Sender Currency', ku: 'دراوی نێرەر' },
                             receiverCurrency: { ar: 'عملة المستلم', en: 'Receiver Currency', ku: 'دراوی وەرگرەر' },
                             exchangeRate: { ar: 'سعر الصرف', en: 'Exchange Rate', ku: 'نرخی ئاڵوگۆڕ' },
                             total: { ar: 'الإجمالي', en: 'Total', ku: 'تێکڕا' },
@@ -578,6 +579,8 @@ const TrackOrder = () => {
                               // Hide internal IDs if friendly names are available
                               if (key === 'methodId' && rawDetails.methodName) return false;
                               if (key === 'countryCode' && rawDetails.countryName) return false;
+                              // Hide image URLs (they will be shown in the Documents section)
+                              if (typeof value === 'string' && (value.startsWith('/uploads/') || value.startsWith('http'))) return false;
                               return true;
                             })
                             .map(([key, value]) => {
@@ -655,6 +658,22 @@ const TrackOrder = () => {
                             <p className={`text-sm font-medium ${isDark ? 'text-amber-300' : 'text-amber-800'}`}>{t('إثبات الدفع', 'Payment Proof', 'بەڵگەی پارەدان')}</p>
                           </div>
                         )}
+
+                        {/* New: Dynamic Images from Custom Fields */}
+                        {orderResult.details && Object.entries(orderResult.details.customFields || {}).map(([key, value], idx) => {
+                          if (typeof value === 'string' && (value.startsWith('/uploads/') || value.startsWith('http'))) {
+                            return (
+                              <a key={idx} href={value.startsWith('http') ? value : `${API_URL}${value}`} target="_blank" rel="noopener noreferrer"
+                                className={`p-4 rounded-xl text-center transition-all ${isDark ? 'bg-indigo-500/20 border border-indigo-500/30 hover:bg-indigo-500/30' : 'bg-indigo-50 border border-indigo-200 hover:bg-indigo-100'}`}>
+                                <div className="w-12 h-12 mx-auto mb-2 rounded-lg overflow-hidden border border-indigo-200">
+                                  <img src={value.startsWith('http') ? value : `${API_URL}${value}`} alt="Account Code" className="w-full h-full object-cover" />
+                                </div>
+                                <p className={`text-sm font-medium ${isDark ? 'text-indigo-300' : 'text-indigo-800'}`}>{t('كود حسابك', 'Account Code', 'كۆدی ئەژمارەکەت')}</p>
+                              </a>
+                            );
+                          }
+                          return null;
+                        })}
                       </div>
                     </div>
                   </div>

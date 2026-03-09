@@ -362,7 +362,7 @@ const AdminCountries = () => {
                             <div className="flex flex-wrap gap-1 mt-2">
                               {m.fields.map(f => (
                                 <span key={f.field_id} className="px-2 py-0.5 bg-slate-100 text-[10px] rounded-full text-slate-600">
-                                  {f.name_ar}
+                                  {f.name_ar} ({f.field_type === 'file' ? 'صورة' : f.field_type})
                                 </span>
                               ))}
                             </div>
@@ -663,6 +663,7 @@ const AdminCountries = () => {
                             <option value="number">رقم (Number)</option>
                             <option value="select">قائمة منسدلة (Dropdown)</option>
                             <option value="date">تاريخ (Date)</option>
+                            <option value="file">صورة (Image)</option>
                           </select>
                           <label className="flex items-center gap-2 text-xs">
                             <input
@@ -774,7 +775,7 @@ const AdminCountries = () => {
               </div>
 
               <div className="flex-1 overflow-y-auto p-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-8 max-w-2xl mx-auto">
                   {/* Templates List */}
                   <div className="space-y-4">
                     <h3 className="font-bold text-slate-700 flex items-center gap-2">
@@ -811,12 +812,14 @@ const AdminCountries = () => {
                     </div>
                   </div>
 
+                  <hr className="border-slate-100" />
+
                   {/* Template Editor (reuses the same state as newMethod) */}
                   <div className="space-y-4">
-                    <h3 className="font-bold text-slate-700 flex items-center gap-2">
-                      <Edit className="w-4 h-4" /> {editingMethodId ? 'تعديل قالب' : 'إنشاء قالب جديد'}
+                    <h3 className="font-bold text-slate-700 flex items-center gap-2 text-lg">
+                      <Edit className="w-5 h-5" /> {editingMethodId ? 'تعديل قالب' : 'إنشاء قالب جديد'}
                     </h3>
-                    <div className="bg-slate-50 p-6 rounded-3xl border border-slate-200 space-y-4">
+                    <div className="bg-white p-6 rounded-3xl border-2 border-slate-200 shadow-sm space-y-4">
                       <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-1">
                           <Label className="text-xs">المعرف</Label>
@@ -834,9 +837,223 @@ const AdminCountries = () => {
                             placeholder="ويسترن يونيون"
                           />
                         </div>
+                        <div className="space-y-1">
+                          <Label className="text-xs">الاسم بالإنجليزي</Label>
+                          <Input
+                            value={newMethod.name_en || ''}
+                            onChange={(e) => setNewMethod({ ...newMethod, name_en: e.target.value })}
+                            placeholder="Western Union"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-xs">الاسم بالكوردي</Label>
+                          <Input
+                            value={newMethod.name_ku || ''}
+                            onChange={(e) => setNewMethod({ ...newMethod, name_ku: e.target.value })}
+                            placeholder="وێستەرن یونیۆن"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-xs">سعر الصرف</Label>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            value={newMethod.exchange_rate}
+                            onChange={(e) => setNewMethod({ ...newMethod, exchange_rate: parseFloat(e.target.value) || 0 })}
+                            placeholder="1.0"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-xs">العمولة %</Label>
+                          <Input
+                            type="number"
+                            value={newMethod.fee_value}
+                            onChange={(e) => setNewMethod({ ...newMethod, fee_value: parseFloat(e.target.value) || 0 })}
+                            placeholder="%"
+                          />
+                        </div>
+                        <div className="col-span-2 space-y-1">
+                          <Label className="text-xs">مدة التحويل</Label>
+                          <Input
+                            value={newMethod.duration || ''}
+                            onChange={(e) => setNewMethod({ ...newMethod, duration: e.target.value })}
+                            placeholder="e.g. 5-10 minutes"
+                          />
+                        </div>
                       </div>
-                      {/* ... (rest of the fields logic matches what we already have for newMethod) */}
-                      <p className="text-[10px] text-slate-500 italic">* يمكنك استخدام نفس محرر الحقول في الأسفل لتعديل حقول القالب</p>
+
+                      <div className="p-4 bg-white rounded-2xl border-2 border-slate-200">
+                        <Label className="font-bold mb-3 block">الحقول المطلوبة (الديناميكية)</Label>
+                        <div className="space-y-2 mb-3">
+                          {newMethod.fields.map((f, idx) => (
+                            <div key={idx} className="p-3 bg-slate-50 rounded-lg border text-sm space-y-1">
+                              <div className="flex items-center justify-between">
+                                <div className="flex flex-col">
+                                  <span className="font-bold">{f.name_ar}</span>
+                                  <div className="flex gap-2 text-[10px] text-slate-400">
+                                    {f.name_en && <span>EN: {f.name_en}</span>}
+                                    {f.name_ku && <span>KU: {f.name_ku}</span>}
+                                  </div>
+                                </div>
+                                <div className="flex gap-2">
+                                  <span className={`text-[10px] px-2 py-0.5 rounded-full ${f.required ? 'bg-red-100 text-red-600' : 'bg-slate-100 text-slate-600'}`}>
+                                    {f.required ? 'إلزامي' : 'اختياري'}
+                                  </span>
+                                  <span className="text-[10px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">{f.field_type}</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const updatedFields = newMethod.fields.filter((_, i) => i !== idx);
+                                      setNewMethod({ ...newMethod, fields: updatedFields });
+                                    }}
+                                    className="text-red-500 hover:bg-red-50 p-1 rounded"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+
+                        <div className="space-y-3 p-3 bg-slate-50 rounded-lg border">
+                          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+                            <div className="space-y-1">
+                              <Label className="text-[10px]">المعرف</Label>
+                              <Input
+                                placeholder="e.g. rip"
+                                className="text-xs h-8"
+                                value={newField.id}
+                                onChange={(e) => setNewField({ ...newField, id: e.target.value })}
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              <Label className="text-[10px]">الاسم بالعربي</Label>
+                              <Input
+                                placeholder="الاسم بالعربي"
+                                className="text-xs h-8"
+                                value={newField.name_ar}
+                                onChange={(e) => setNewField({ ...newField, name_ar: e.target.value })}
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              <Label className="text-[10px]">الاسم بالإنجليزي</Label>
+                              <Input
+                                placeholder="English Name"
+                                className="text-xs h-8"
+                                value={newField.name_en}
+                                onChange={(e) => setNewField({ ...newField, name_en: e.target.value })}
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              <Label className="text-[10px]">الاسم بالكوردي</Label>
+                              <Input
+                                placeholder="Nav"
+                                className="text-xs h-8"
+                                value={newField.name_ku}
+                                onChange={(e) => setNewField({ ...newField, name_ku: e.target.value })}
+                              />
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
+                            <div className="space-y-1">
+                              <Label className="text-[10px]">Place Holder بالعربي</Label>
+                              <Input
+                                placeholder="أدخل الرقم..."
+                                className="text-xs h-8"
+                                value={newField.placeholder_ar}
+                                onChange={(e) => setNewField({ ...newField, placeholder_ar: e.target.value })}
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              <Label className="text-[10px]">Place Holder بالإنكليزي</Label>
+                              <Input
+                                placeholder="Enter number..."
+                                className="text-xs h-8"
+                                value={newField.placeholder_en}
+                                onChange={(e) => setNewField({ ...newField, placeholder_en: e.target.value })}
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              <Label className="text-[10px]">Place Holder بالكوردي</Label>
+                              <Input
+                                placeholder="داخل بكرا..."
+                                className="text-xs h-8"
+                                value={newField.placeholder_ku}
+                                onChange={(e) => setNewField({ ...newField, placeholder_ku: e.target.value })}
+                              />
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-2">
+                            <select
+                              className="w-full h-8 text-[10px] rounded-md border border-slate-200 bg-white px-2"
+                              value={newField.field_type}
+                              onChange={(e) => setNewField({ ...newField, field_type: e.target.value })}
+                            >
+                              <option value="text">نص (Text)</option>
+                              <option value="number">رقم (Number)</option>
+                              <option value="select">قائمة منسدلة (Dropdown)</option>
+                              <option value="date">تاريخ (Date)</option>
+                              <option value="file">صورة (Image)</option>
+                            </select>
+                            <label className="flex items-center gap-2 text-[10px]">
+                              <input
+                                type="checkbox"
+                                checked={newField.required}
+                                onChange={(e) => setNewField({ ...newField, required: e.target.checked })}
+                              />
+                              حقل إلزامي
+                            </label>
+                          </div>
+                          {newField.field_type === 'select' && (
+                            <div className="space-y-1">
+                              <Label className="text-[10px]">الخيارات (افصل بينها بفاصلة)</Label>
+                              <Input
+                                placeholder="خيار 1, خيار 2, خيار 3"
+                                className="text-xs h-8"
+                                value={newField.options}
+                                onChange={(e) => setNewField({ ...newField, options: e.target.value })}
+                              />
+                            </div>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (newField.id && newField.name_ar) {
+                                const options = newField.field_type === 'select'
+                                  ? newField.options.split(',').map(o => ({ value: o.trim().toLowerCase(), label: o.trim() }))
+                                  : [];
+
+                                const field = {
+                                  field_id: newField.id.toLowerCase(),
+                                  name_ar: newField.name_ar,
+                                  name_en: newField.name_en || newField.id,
+                                  name_ku: newField.name_ku,
+                                  placeholder_ar: newField.placeholder_ar,
+                                  placeholder_en: newField.placeholder_en,
+                                  placeholder_ku: newField.placeholder_ku,
+                                  field_type: newField.field_type,
+                                  required: newField.required,
+                                  options: options,
+                                  order: newMethod.fields.length + 1
+                                };
+
+                                setNewMethod({ ...newMethod, fields: [...newMethod.fields, field] });
+                                setNewField({
+                                  id: '', name_ar: '', name_en: '', name_ku: '',
+                                  placeholder_ar: '', placeholder_en: '', placeholder_ku: '',
+                                  field_type: 'text', required: true, options: ''
+                                });
+                              }
+                            }}
+                            className="w-full bg-slate-900 text-white h-8 rounded-lg text-[10px]"
+                          >
+                            إضافة حقل
+                          </button>
+                        </div>
+                      </div>
 
                       <button
                         onClick={async () => {

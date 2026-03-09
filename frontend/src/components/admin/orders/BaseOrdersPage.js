@@ -77,6 +77,7 @@ const FIELD_LABELS_AR = {
   'amountUSD': 'المبلغ (USD)',
   'amountIQD': 'المبلغ (IQD)',
   'receiverCurrency': 'عملة المستلم',
+  'senderCurrency': 'عملة المرسل',
   'exchangeRate': 'سعر الصرف',
   'total': 'الإجمالي',
 
@@ -506,6 +507,21 @@ const OrderDetailModal = ({ order, isOpen, onClose, onStatusChange, onBlock }) =
                                   <Copy className="w-4 h-4 text-slate-500" />
                                 </button>
                               </div>
+                            ) : (typeof value === 'string' && (value.startsWith('/uploads/') || value.startsWith('http'))) ? (
+                              <div className="mt-1">
+                                <a
+                                  href={value.startsWith('http') ? value : `${process.env.REACT_APP_BACKEND_URL}${value}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="block w-16 h-16 rounded-lg border border-slate-200 overflow-hidden hover:ring-2 hover:ring-[#D4AF37] transition-all"
+                                >
+                                  <img
+                                    src={value.startsWith('http') ? value : `${process.env.REACT_APP_BACKEND_URL}${value}`}
+                                    alt="Field attachment"
+                                    className="w-full h-full object-cover"
+                                  />
+                                </a>
+                              </div>
                             ) : (
                               <p className={`font-medium text-sm text-slate-900 ${(key.toLowerCase().includes('phone') || String(value).startsWith('+')) ? 'inline-block' : ''}`} style={(key.toLowerCase().includes('phone') || String(value).startsWith('+')) ? { direction: 'ltr' } : {}}>
                                 {VALUE_MAPPING_AR[value] || String(value)}
@@ -790,6 +806,26 @@ const OrderDetailModal = ({ order, isOpen, onClose, onStatusChange, onBlock }) =
                           <span className="text-sm font-medium">إثبات {idx + 1}</span>
                         </a>
                       ))}
+                    </div>
+                  </>
+                )}
+
+                {/* New: Show custom field images in Documents tab */}
+                {order.details?.customFields && Object.values(order.details.customFields).some(v => typeof v === 'string' && (v.startsWith('/uploads/') || v.startsWith('http'))) && (
+                  <>
+                    <h3 className="font-bold text-slate-900 mt-6">صور الحقول الإضافية</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      {Object.entries(order.details.customFields)
+                        .filter(([_, v]) => typeof v === 'string' && (v.startsWith('/uploads/') || v.startsWith('http')))
+                        .map(([key, value], idx) => (
+                          <a key={idx} href={value.startsWith('http') ? value : `${API_URL}${value}`} target="_blank" rel="noopener noreferrer"
+                            className="p-4 bg-purple-50 rounded-xl text-center hover:bg-purple-100 transition-colors border border-purple-100">
+                            <div className="w-16 h-16 mx-auto mb-2 rounded-lg overflow-hidden border border-purple-200">
+                              <img src={value.startsWith('http') ? value : `${API_URL}${value}`} alt="Image" className="w-full h-full object-cover" />
+                            </div>
+                            <span className="text-xs font-medium block truncate">{FIELD_LABELS_AR[key] || key}</span>
+                          </a>
+                        ))}
                     </div>
                   </>
                 )}

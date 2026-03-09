@@ -154,6 +154,7 @@ const WesternUnion = () => {
     if (!formData.amount || parseFloat(formData.amount) <= 0) newErrors.amount = t('المبلغ مطلوب', 'Amount required', 'بڕ پێویستە');
     if (!formData.paymentMethod) newErrors.paymentMethod = t('طريقة الدفع مطلوبة', 'Payment method required', 'شێوازى پارەدان پێویستە');
     if (!formData.idType) newErrors.idType = t('نوع الهوية مطلوب', 'ID type required', 'جۆری ناسنامە پێویستە');
+    if (!formData.purpose) newErrors.purpose = t('الغرض من التحويل مطلوب', 'Transfer purpose required', 'مەبەستی گواستنەوە پێویستە');
     if (!idImage) newErrors.idImage = t('صورة الهوية مطلوبة', 'ID image required', 'وێنەی ناسنامە پێویستە');
 
     setErrors(newErrors);
@@ -584,11 +585,11 @@ const WesternUnion = () => {
 
                 <div className="space-y-2">
                   <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
-                    {t('الغرض من التحويل', 'Transfer Purpose', 'مەبەستی گواستنەوە')}
+                    {t('الغرض من التحويل', 'Transfer Purpose', 'مەبەستی گواستنەوە')} *
                   </Label>
                   <Select value={formData.purpose} onValueChange={(v) => handleInputChange('purpose', v)}>
                     <SelectTrigger className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} data-testid="purpose">
-                      <SelectValue placeholder={t('اختياري', 'Optional', 'ئارەزوومەندانە')} />
+                      <SelectValue placeholder={t('اختر الغرض', 'Select Purpose', 'مەبەست هەڵبژێرە')} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="trade">{t('تجارة', 'Trade', 'بازرگانی')}</SelectItem>
@@ -596,6 +597,7 @@ const WesternUnion = () => {
                       <SelectItem value="medical">{t('علاج', 'Medical Treatment', 'چاره‌سەری پزیشکی')}</SelectItem>
                     </SelectContent>
                   </Select>
+                  {errors.purpose && <p className="text-sm text-red-500 flex items-center gap-1 mt-1"><AlertCircle className="w-4 h-4" />{errors.purpose}</p>}
                 </div>
               </div>
 
