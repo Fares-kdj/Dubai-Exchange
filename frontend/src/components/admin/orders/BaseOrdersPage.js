@@ -251,10 +251,12 @@ const OrderDetailModal = ({ order, isOpen, onClose, onStatusChange, onBlock }) =
   const [borders, setBorders] = useState([]);
   const [companyStamps, setCompanyStamps] = useState([]);
   const [signatures, setSignatures] = useState([]);
+  const [receiptLoaded, setReceiptLoaded] = useState(false);
 
   // Fetch airports and borders for traveler orders, and stamps/signatures for all
   useEffect(() => {
     if (order) {
+      setReceiptLoaded(false);
       const token = localStorage.getItem('adminToken');
       const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
 
@@ -920,9 +922,10 @@ const OrderDetailModal = ({ order, isOpen, onClose, onStatusChange, onBlock }) =
                 </button>
                 <button
                   onClick={handlePrint}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 mr-auto"
+                  disabled={!receiptLoaded || loading}
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-slate-400 disabled:cursor-not-allowed mr-auto transition-colors"
                 >
-                  <Printer className="w-4 h-4" /> طباعة
+                  <Printer className="w-4 h-4" /> {receiptLoaded ? 'طباعة' : 'جاري تجهيز الوصل...'}
                 </button>
               </div>
             )}
@@ -935,6 +938,7 @@ const OrderDetailModal = ({ order, isOpen, onClose, onStatusChange, onBlock }) =
                 borders={borders}
                 companyStamps={companyStamps}
                 signatures={signatures}
+                onImageLoad={() => setReceiptLoaded(true)}
               />
             </div>
           )}

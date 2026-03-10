@@ -8,7 +8,8 @@ const UniversalReceipt = ({
     airports = [],
     borders = [],
     companyStamps = [],
-    signatures = []
+    signatures = [],
+    onImageLoad = () => { }
 }) => {
     if (!order) return null;
 
@@ -85,6 +86,7 @@ const UniversalReceipt = ({
             <img
                 src={config.template}
                 alt="Receipt Template"
+                onLoad={onImageLoad}
                 className={`absolute inset-0 w-full h-full pointer-events-none ${shouldRotate ? 'object-fill' : 'object-contain'}`}
             />
 
