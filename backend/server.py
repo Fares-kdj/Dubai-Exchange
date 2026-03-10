@@ -40,7 +40,7 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 from routes.orders import router as orders_router
 from routes.auth import router as auth_router, init_developer_account
 from routes.cms import router as cms_router, init_default_services, init_default_countries, init_predefined_methods
-from routes.rates import router as rates_router, init_default_rates
+from routes.rates import router as rates_router, init_default_rates, ensure_usd_locked
 from routes.pdf import router as pdf_router
 from routes.blocklist import router as blocklist_router
 from routes.stamps import router as stamps_router, init_default_stamps
@@ -58,6 +58,7 @@ async def lifespan(app: FastAPI):
         await init_default_countries()
         await init_predefined_methods()
         await init_default_rates()
+        await ensure_usd_locked()
         await init_default_stamps()
         logger.info("Default data initialized successfully")
     except Exception as e:

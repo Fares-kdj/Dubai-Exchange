@@ -24,6 +24,7 @@ class ExchangeRate(BaseModel):
     sell_rate: float  # سعر البيع
     is_active: bool = True
     order: int = 0
+    locked: bool = False  # إذا كان True يتجاهل المزامنة التلقائية
 
 
 class RateUpdate(BaseModel):
@@ -95,6 +96,11 @@ async def bulk_update_rates(
     for rate_data in data.rates:
         code = rate_data.get("currency_code", "").upper()
         if not code:
+            continue
+        
+        # Skip locked currencies
+        existing = await rates_collection.find_one({"currency_code": code}, {"_id": 0})
+        if existing and existing.get("locked", False):
             continue
         
         update_doc = {
@@ -276,18 +282,26 @@ async def fetch_live_rates():
 async def sync_live_rates(
     current_user: UserInDB = Depends(require_permission(Permission.MANAGE_RATES))
 ):
-    """Sync live rates to database (admin only)"""
+    """Sync live rates to database (admin only). Skips currencies with locked=True."""
     try:
         live_data = await fetch_live_rates()
         if live_data.get("source") != "live":
             return {"message": "Could not fetch live rates", "synced": 0}
         
         synced = 0
+        skipped = 0
         now = datetime.now(timezone.utc).isoformat()
         
         for rate in live_data.get("rates", []):
+            code = rate["currency_code"]
+            # Check if currency is locked
+            existing = await rates_collection.find_one({"currency_code": code}, {"_id": 0})
+            if existing and existing.get("locked", False):
+                skipped += 1
+                continue
+
             await rates_collection.update_one(
-                {"currency_code": rate["currency_code"]},
+                {"currency_code": code},
                 {"$set": {
                     **rate,
                     "updated_at": now,
@@ -298,7 +312,7 @@ async def sync_live_rates(
             )
             synced += 1
         
-        return {"message": f"Synced {synced} rates from live API", "synced": synced}
+        return {"message": f"Synced {synced} rates, skipped {skipped} locked.", "synced": synced, "skipped": skipped}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Sync failed: {str(e)}")
 
@@ -314,9 +328,10 @@ async def init_default_rates():
                 "currency_name_ar": "دولار أمريكي",
                 "currency_name_en": "US Dollar",
                 "flag": "🇺🇸",
-                "buy_rate": 1460,
-                "sell_rate": 1470,
+                "buy_rate": 1300,
+                "sell_rate": 1320,
                 "is_active": True,
+                "locked": True,
                 "order": 1,
                 "updated_at": datetime.now(timezone.utc).isoformat(),
                 "updated_by": "System"
@@ -408,3 +423,19 @@ async def init_default_rates():
         ]
         await rates_collection.insert_many(default_rates)
         print("Default exchange rates created")
+
+
+async def ensure_usd_locked():
+    """Ensure USD rate is fixed at buy=1300, sell=1320 and locked against live sync."""
+    from datetime import datetime, timezone
+    await rates_collection.update_one(
+        {"currency_code": "USD"},
+        {"$set": {
+            "buy_rate": 1300,
+            "sell_rate": 1320,
+            "locked": True,
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "updated_by": "System"
+        }}
+    )
+    print("USD rate locked at buy=1300, sell=1320")

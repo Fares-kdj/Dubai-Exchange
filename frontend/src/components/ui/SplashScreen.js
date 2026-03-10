@@ -57,16 +57,10 @@ const SplashScreen = ({ onComplete, minDuration = 2000 }) => {
     initial: { opacity: 0 },
     animate: { opacity: 1 },
   } : {
-    initial: { opacity: 0, scale: 0.2, rotate: -15 },
+    initial: { opacity: 0 },
     animate: {
       opacity: 1,
-      scale: [0.2, 1.15, 0.95, 1.05, 1],
-      rotate: [-15, 8, -4, 2, 0],
-      transition: {
-        opacity: { duration: 0.4 },
-        scale: { duration: 1, times: [0, 0.5, 0.7, 0.85, 1], ease: 'easeOut' },
-        rotate: { duration: 1, times: [0, 0.5, 0.7, 0.85, 1], ease: 'easeOut' }
-      }
+      transition: { duration: 0.6 }
     }
   };
 
@@ -150,7 +144,7 @@ const SplashScreen = ({ onComplete, minDuration = 2000 }) => {
 
           {/* Content Container */}
           <div className="relative z-10 flex flex-col items-center text-center px-6">
-            {/* 3D Logo */}
+            {/* Logo - Full Size No Background */}
             <motion.div
               variants={logoVariants}
               initial="initial"
@@ -162,76 +156,50 @@ const SplashScreen = ({ onComplete, minDuration = 2000 }) => {
                 <motion.div
                   animate={{ rotate: 360 }}
                   transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
-                  className="absolute -inset-4 rounded-full border-2 border-dashed border-[#D4AF37]/30"
+                  className="absolute -inset-8 rounded-full border-2 border-dashed border-[#D4AF37]/30"
                 />
               )}
-              {/* Logo Glow Effect */}
-              {!prefersReducedMotion && (
+
+              {isBrandingLoading ? (
                 <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                  className="w-16 h-16 border-4 border-amber-500/20 border-t-amber-500 rounded-full"
+                />
+              ) : (
+                <motion.img
+                  src={isDark ? logoDark : logoLight}
+                  alt="شعار الشركة"
+                  fetchpriority="high"
+                  loading="eager"
+                  className="w-52 h-52 object-contain relative z-10"
+                  initial={{ opacity: 0, scale: 0, y: -20 }}
                   animate={{
-                    boxShadow: [
-                      '0 0 30px rgba(212, 175, 55, 0.3)',
-                      '0 0 60px rgba(212, 175, 55, 0.5)',
-                      '0 0 30px rgba(212, 175, 55, 0.3)'
-                    ]
+                    opacity: 1,
+                    scale: 1,
+                    y: [0, -10, 0],
                   }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  className="absolute inset-0 rounded-3xl"
+                  transition={{
+                    opacity: { duration: 0.5, ease: 'easeOut' },
+                    scale: {
+                      duration: 0.9,
+                      ease: [0.16, 1, 0.3, 1], // expo out - fast rise, soft land
+                    },
+                    y: {
+                      delay: 0.9,
+                      duration: 3.5,
+                      repeat: Infinity,
+                      ease: 'easeInOut',
+                      repeatType: 'mirror',
+                    }
+                  }}
+                  style={{
+                    filter: isDark
+                      ? 'drop-shadow(0 0 32px rgba(212,175,55,0.7)) drop-shadow(0 0 64px rgba(212,175,55,0.35))'
+                      : 'drop-shadow(0 8px 24px rgba(212,175,55,0.6)) drop-shadow(0 0 48px rgba(212,175,55,0.3))'
+                  }}
                 />
               )}
-
-              {/* Logo Container */}
-              <div
-                className={`relative w-28 h-28 rounded-3xl flex items-center justify-center ${isDark
-                  ? 'shadow-[0_8px_32px_rgba(212,175,55,0.4),0_4px_16px_rgba(0,0,0,0.3)]'
-                  : 'shadow-[0_8px_32px_rgba(212,175,55,0.3),0_4px_16px_rgba(0,0,0,0.1)]'
-                  }`}
-                style={{
-                  background: isDark ? '#1e293b' : '#fff',
-                  transform: 'perspective(500px) rotateX(5deg)',
-                  transformStyle: 'preserve-3d'
-                }}
-              >
-                {/* Inner Highlight */}
-                <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-white/10 to-transparent opacity-50" />
-
-                {isBrandingLoading ? (
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                    className="w-10 h-10 border-4 border-amber-500/20 border-t-amber-500 rounded-full"
-                  />
-                ) : (
-                  <motion.img
-                    src={isDark ? logoDark : logoLight}
-                    alt="شعار الشركة"
-                    fetchpriority="high"
-                    loading="eager"
-                    className="w-20 h-20 object-contain relative z-10"
-                    initial={{ opacity: 0, scale: 0, rotate: -180 }}
-                    animate={prefersReducedMotion ? { opacity: 1, scale: 1, rotate: 0 } : {
-                      opacity: [0, 1, 1, 1, 1],
-                      scale: [0, 1.3, 0.9, 1.08, 1],
-                      rotate: [-180, 15, -8, 5, 0],
-                      y: [0, 0, 0, 0, 0, -6, 0, -6, 0],
-                    }}
-                    transition={{
-                      duration: 1.2,
-                      times: [0, 0.4, 0.6, 0.8, 1],
-                      ease: 'easeOut',
-                      y: { duration: 2.5, repeat: Infinity, ease: 'easeInOut', delay: 1.2 }
-                    }}
-                    style={{
-                      filter: isDark
-                        ? 'drop-shadow(0 0 12px rgba(212,175,55,0.6)) drop-shadow(0 0 24px rgba(212,175,55,0.3))'
-                        : 'drop-shadow(0 4px 12px rgba(212,175,55,0.5))'
-                    }}
-                  />
-                )}
-
-                {/* Bottom Shadow for 3D depth */}
-                <div className="absolute -bottom-2 left-2 right-2 h-4 bg-[#8B6914]/30 rounded-b-3xl blur-md -z-10" />
-              </div>
             </motion.div>
 
             {/* Welcome Headline */}

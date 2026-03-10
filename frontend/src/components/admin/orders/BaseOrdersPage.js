@@ -65,6 +65,7 @@ const FIELD_LABELS_AR = {
   'receiverPhone': 'هاتف المستلم',
   'senderProvince': 'محافظة المرسل',
   'receiverProvince': 'محافظة المستلم',
+  'receiverDistrict': 'القضاء',
   'senderCountry': 'دولة المرسل',
   'receiverCountry': 'دولة المستلم',
   'bankName': 'اسم البنك',

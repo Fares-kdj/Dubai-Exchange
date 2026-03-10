@@ -160,15 +160,15 @@ const AdminRates = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">أسعار الصرف</h1>
           <p className="text-slate-600">إدارة أسعار شراء وبيع العملات</p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-2 sm:gap-3">
           <button
             onClick={loadRates}
-            className="px-4 py-2 border border-slate-300 text-slate-700 rounded-xl flex items-center gap-2 hover:bg-slate-50"
+            className="flex-1 sm:flex-none justify-center px-4 py-2 border border-slate-300 text-slate-700 rounded-xl flex items-center gap-2 hover:bg-slate-50"
           >
             <RefreshCw className="w-4 h-4" />
             تحديث
@@ -281,8 +281,8 @@ const AdminRates = () => {
       )}
 
       {/* Rates Table */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        <table className="w-full">
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden overflow-x-auto">
+        <table className="w-full min-w-[800px]">
           <thead className="bg-slate-50 border-b border-slate-200">
             <tr>
               <th className="px-6 py-4 text-right text-sm font-semibold text-slate-600">العملة</th>

@@ -136,6 +136,32 @@ const TransferSuccess = () => {
     return country ? t(country.ar, country.en, country.ku) : countryCode;
   };
 
+  const getProvinceLabel = (province) => {
+    if (!province) return '';
+    const provinces = {
+      baghdad: { ar: 'بغداد', en: 'Baghdad', ku: 'بەغداد' },
+      basra: { ar: 'البصرة', en: 'Basra', ku: 'بەسڕە' },
+      erbil: { ar: 'أربيل', en: 'Erbil', ku: 'هەولێر' },
+      sulaymaniyah: { ar: 'السليمانية', en: 'Sulaymaniyah', ku: 'سلێمانی' },
+      duhok: { ar: 'دهوك', en: 'Duhok', ku: 'دهۆک' },
+      nineveh: { ar: 'نينوى', en: 'Nineveh', ku: 'نەینەوا' },
+      kirkuk: { ar: 'كركوك', en: 'Kirkuk', ku: 'کەرکوک' },
+      diyala: { ar: 'ديالى', en: 'Diyala', ku: 'دیالە' },
+      anbar: { ar: 'الأنبار', en: 'Anbar', ku: 'ئەنبار' },
+      najaf: { ar: 'النجف', en: 'Najaf', ku: 'نەجەف' },
+      karbala: { ar: 'كربلاء', en: 'Karbala', ku: 'کەربەلا' },
+      babylon: { ar: 'بابل', en: 'Babylon', ku: 'بابل' },
+      wasit: { ar: 'واسط', en: 'Wasit', ku: 'واست' },
+      maysan: { ar: 'ميسان', en: 'Maysan', ku: 'میسان' },
+      dhiqar: { ar: 'ذي قار', en: 'Dhi Qar', ku: 'زیقار' },
+      muthanna: { ar: 'المثنى', en: 'Muthanna', ku: 'موسەننا' },
+      qadisiyyah: { ar: 'القادسية', en: 'Qadisiyyah', ku: 'قادسیە' },
+      saladin: { ar: 'صلاح الدين', en: 'Saladin', ku: 'سەڵاحەددین' },
+    };
+    const p = provinces[province.toLowerCase()];
+    return p ? t(p.ar, p.en, p.ku) : province;
+  };
+
   const getTypeColor = () => {
     const colors = {
       local: 'from-emerald-500 to-teal-600',
@@ -238,42 +264,116 @@ const TransferSuccess = () => {
                 </h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Sender Name */}
                   {orderData.senderName && (
                     <div className="flex items-start gap-3">
                       <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-blue-500/20' : 'bg-blue-100'}`}>
                         <User className="w-5 h-5 text-blue-600" />
                       </div>
                       <div>
-                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('المرسل', 'Sender', 'نێرەر')}</p>
+                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('اسم المرسل', 'Sender Name', 'ناوی نێرەر')}</p>
                         <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{orderData.senderName}</p>
                       </div>
                     </div>
                   )}
 
+                  {/* Receiver Name */}
                   {orderData.receiverName && (
                     <div className="flex items-start gap-3">
                       <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-green-500/20' : 'bg-green-100'}`}>
                         <User className="w-5 h-5 text-green-600" />
                       </div>
                       <div>
-                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('المستلم', 'Receiver', 'وەرگر')}</p>
+                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('اسم المستلم', 'Receiver Name', 'ناوی وەرگر')}</p>
                         <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{orderData.receiverName}</p>
                       </div>
                     </div>
                   )}
 
-                  {orderData.phone && (
+                  {/* Sender Province */}
+                  {orderData.senderProvince && (
+                    <div className="flex items-start gap-3">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-teal-500/20' : 'bg-teal-100'}`}>
+                        <MapPin className="w-5 h-5 text-teal-600" />
+                      </div>
+                      <div>
+                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('محافظة المرسل', 'Sender Province', 'پارێزگای نێرەر')}</p>
+                        <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{getProvinceLabel(orderData.senderProvince)}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Receiver Province */}
+                  {orderData.receiverProvince && (
+                    <div className="flex items-start gap-3">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-emerald-500/20' : 'bg-emerald-100'}`}>
+                        <MapPin className="w-5 h-5 text-emerald-600" />
+                      </div>
+                      <div>
+                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('محافظة المستلم', 'Receiver Province', 'پارێزگای وەرگر')}</p>
+                        <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{getProvinceLabel(orderData.receiverProvince)}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Receiver District */}
+                  {orderData.receiverDistrict && (
+                    <div className="flex items-start gap-3">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-amber-500/20' : 'bg-amber-100'}`}>
+                        <MapPin className="w-5 h-5 text-amber-600" />
+                      </div>
+                      <div>
+                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('القضاء', 'District', 'قەزا')}</p>
+                        <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{orderData.receiverDistrict}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Sender Phone */}
+                  {orderData.senderPhone && (
                     <div className="flex items-start gap-3">
                       <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-purple-500/20' : 'bg-purple-100'}`}>
                         <Phone className="w-5 h-5 text-purple-600" />
                       </div>
                       <div>
-                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('الهاتف', 'Phone', 'مۆبایل')}</p>
-                        <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{orderData.phone}</p>
+                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('هاتف المرسل', 'Sender Phone', 'مۆبایلی نێرەر')}</p>
+                        <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`} dir="ltr">{orderData.senderPhone}</p>
                       </div>
                     </div>
                   )}
 
+                  {/* Receiver Phone */}
+                  {orderData.receiverPhone && (
+                    <div className="flex items-start gap-3">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-pink-500/20' : 'bg-pink-100'}`}>
+                        <Phone className="w-5 h-5 text-pink-600" />
+                      </div>
+                      <div>
+                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('هاتف المستلم', 'Receiver Phone', 'مۆبایلی وەرگر')}</p>
+                        <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`} dir="ltr">{orderData.receiverPhone}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Payment Method */}
+                  {orderData.paymentMethod && (
+                    <div className="flex items-start gap-3">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-slate-500/20' : 'bg-slate-100'}`}>
+                        <CreditCard className="w-5 h-5 text-slate-600" />
+                      </div>
+                      <div>
+                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('طريقة الدفع', 'Payment Method', 'شێوازی پارەدان')}</p>
+                        <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                          {orderData.paymentMethod === 'zain_cash' ? t('زين كاش', 'Zain Cash', 'زەین کاش')
+                            : orderData.paymentMethod === 'mastercard_rafidain' ? t('ماستركارد الرافدين', 'Mastercard Al-Rafidain', 'ماستەرکارد ڕافیدەین')
+                              : orderData.paymentMethod === 'fib' ? 'FIB'
+                                : orderData.paymentMethod}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Country (for international transfers) */}
                   {(orderData.receiverCountry || orderData.countryName) && (
                     <div className="flex items-start gap-3">
                       <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-indigo-500/20' : 'bg-indigo-100'}`}>
@@ -284,6 +384,19 @@ const TransferSuccess = () => {
                         <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>
                           {orderData.countryName || getCountryLabel(orderData.receiverCountry)}
                         </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Phone fallback for non-local types */}
+                  {orderData.phone && !orderData.senderPhone && (
+                    <div className="flex items-start gap-3">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-purple-500/20' : 'bg-purple-100'}`}>
+                        <Phone className="w-5 h-5 text-purple-600" />
+                      </div>
+                      <div>
+                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('الهاتف', 'Phone', 'مۆبایل')}</p>
+                        <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{orderData.phone}</p>
                       </div>
                     </div>
                   )}

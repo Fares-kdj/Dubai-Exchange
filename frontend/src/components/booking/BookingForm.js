@@ -491,20 +491,35 @@ const BookingForm = ({ onSubmit }) => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="usdAmount" className={isDark ? 'text-slate-300' : 'text-slate-700'}>
+              <div className="space-y-3 md:col-span-2">
+                <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                   {t('المبلغ بالدولار (USD)', 'Amount in USD', 'بڕ بە دۆلار')} *
                 </Label>
-                <Input
-                  id="usdAmount"
-                  type="number"
-                  value={formData.usdAmount}
-                  onChange={(e) => handleInputChange('usdAmount', e.target.value)}
-                  className={`h-12 focus:border-[#D4AF37] !text-white ${isDark ? 'bg-slate-700 border-slate-600' : 'border-slate-300 !text-slate-900'}`}
-                  placeholder="1000"
-                  min="1"
-                  data-testid="usd-amount-input"
-                />
+                <div className="grid grid-cols-2 gap-4">
+                  {[3000, 5000].map((amount) => (
+                    <motion.button
+                      key={amount}
+                      type="button"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => handleInputChange('usdAmount', String(amount))}
+                      data-testid={`usd-amount-${amount}`}
+                      className={`p-5 rounded-2xl border-2 text-center transition-all ${formData.usdAmount === String(amount)
+                          ? 'border-[#D4AF37] bg-[#D4AF37]/10'
+                          : isDark
+                            ? 'border-slate-600 hover:border-[#D4AF37]'
+                            : 'border-slate-200 hover:border-[#D4AF37]'
+                        }`}
+                    >
+                      <p className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                        ${amount.toLocaleString()}
+                      </p>
+                      <p className={`text-sm mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                        {t('دولار أمريكي', 'US Dollar', 'دۆلاری ئەمریکی')}
+                      </p>
+                    </motion.button>
+                  ))}
+                </div>
                 {errors.usdAmount && <p className="text-sm text-red-600 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.usdAmount}</p>}
               </div>
 

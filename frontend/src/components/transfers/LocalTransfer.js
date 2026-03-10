@@ -34,6 +34,7 @@ const LocalTransfer = () => {
     receiverName: '',
     senderProvince: '',
     receiverProvince: '',
+    receiverDistrict: '',
     senderPhone: '',
     receiverPhone: '',
     amountUSD: '', // Keep for backward compatibility or rename if safe, but user said "as we did for receiver"
@@ -115,6 +116,7 @@ const LocalTransfer = () => {
     if (!formData.receiverName.trim()) newErrors.receiverName = t('اسم المستلم مطلوب', 'Receiver name required', 'ناوی وەرگر پێویستە');
     if (!formData.senderProvince) newErrors.senderProvince = t('محافظة المرسل مطلوبة', 'Sender province required', 'پارێزگای نێرەر پێویستە');
     if (!formData.receiverProvince) newErrors.receiverProvince = t('محافظة المستلم مطلوبة', 'Receiver province required', 'پارێزگای وەرگر پێویستە');
+    if (!formData.receiverDistrict.trim()) newErrors.receiverDistrict = t('القضاء مطلوب', 'District required', 'قەزا پێویستە');
     if (!formData.senderPhone.trim()) newErrors.senderPhone = t('رقم هاتف المرسل مطلوب', 'Sender phone required', 'ژمارەی مۆبایلی نێرەر پێویستە');
     if (!formData.receiverPhone.trim()) newErrors.receiverPhone = t('رقم هاتف المستلم مطلوب', 'Receiver phone required', 'ژمارەی مۆبایلی وەرگر پێویستە');
     if (!formData.amount || parseFloat(formData.amount) <= 0) newErrors.amount = t('المبلغ مطلوب', 'Amount required', 'بڕی پارە پێويستە');
@@ -159,6 +161,7 @@ const LocalTransfer = () => {
           senderProvince: formData.senderProvince,
           receiverName: formData.receiverName,
           receiverProvince: formData.receiverProvince,
+          receiverDistrict: formData.receiverDistrict,
           senderPhone: formData.senderPhone,
           receiverPhone: formData.receiverPhone,
           amount: formData.amount,
@@ -354,7 +357,7 @@ const LocalTransfer = () => {
                   )}
                 </div>
 
-                {/* Sender Phone */}
+                {/* Sender Phone - moved beside District */}
                 <div className="space-y-2">
                   <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                     {t('رقم هاتف المرسل', 'Sender Phone', 'ژمارەی مۆبایلی نێرەر')} *
@@ -370,6 +373,25 @@ const LocalTransfer = () => {
                   {errors.senderPhone && (
                     <p className="text-sm text-red-500 flex items-center gap-1">
                       <AlertCircle className="w-4 h-4" />{errors.senderPhone}
+                    </p>
+                  )}
+                </div>
+
+                {/* Receiver District - beside Sender Phone */}
+                <div className="space-y-2">
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
+                    {t('القضاء', 'District', 'قەزا')} *
+                  </Label>
+                  <Input
+                    value={formData.receiverDistrict}
+                    onChange={(e) => handleInputChange('receiverDistrict', e.target.value)}
+                    className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`}
+                    placeholder={t('أدخل القضاء', 'Enter district', 'ناوی قەزا بنووسە')}
+                    data-testid="receiver-district-input"
+                  />
+                  {errors.receiverDistrict && (
+                    <p className="text-sm text-red-500 flex items-center gap-1">
+                      <AlertCircle className="w-4 h-4" />{errors.receiverDistrict}
                     </p>
                   )}
                 </div>

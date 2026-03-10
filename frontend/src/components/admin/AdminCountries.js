@@ -295,17 +295,17 @@ const AdminCountries = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">إدارة الدول</h1>
           <p className="text-slate-600">دول التحويل الدولي</p>
         </div>
-        <div className="flex gap-2">
-          <button onClick={() => setShowTemplates(true)} className="px-4 py-2 border-2 border-slate-200 text-slate-700 font-medium rounded-xl flex items-center gap-2 hover:bg-slate-50">
+        <div className="flex flex-wrap gap-2">
+          <button onClick={() => setShowTemplates(true)} className="flex-1 sm:flex-none justify-center px-4 py-2 border-2 border-slate-200 text-slate-700 font-medium rounded-xl flex items-center gap-2 hover:bg-slate-50">
             <RefreshCw className="w-5 h-5" />
             إدارة القوالب
           </button>
-          <button onClick={handleNew} className="px-4 py-2 bg-amber-500 text-white font-medium rounded-xl flex items-center gap-2 shadow-lg shadow-amber-500/20">
+          <button onClick={handleNew} className="flex-1 sm:flex-none justify-center px-4 py-2 bg-amber-500 text-white font-medium rounded-xl flex items-center gap-2 shadow-lg shadow-amber-500/20">
             <Plus className="w-5 h-5" />
             إضافة دولة
           </button>
@@ -320,24 +320,26 @@ const AdminCountries = () => {
 
           return (
             <div key={country.country_code} className={isActive ? 'rounded-xl border-2 border-slate-200' : 'rounded-xl border-2 border-slate-100 opacity-60'}>
-              <div className="flex items-center gap-4 p-4">
-                <div className="w-12 h-12 flex items-center justify-center bg-slate-100 rounded-xl overflow-hidden shadow-inner border border-slate-200">
-                  <img
-                    src={country.flag && country.flag.startsWith('http') ? country.flag : `https://flagcdn.com/w80/${country.country_code.toLowerCase()}.png`}
-                    alt={country.name_en}
-                    className="w-full h-full object-cover"
-                    onError={(e) => { e.target.src = 'https://flagcdn.com/w80/un.png'; }}
-                  />
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4 p-4">
+                <div className="flex items-center gap-4 flex-1">
+                  <div className="w-12 h-12 flex items-center justify-center bg-slate-100 rounded-xl overflow-hidden shadow-inner border border-slate-200 flex-shrink-0">
+                    <img
+                      src={country.flag && country.flag.startsWith('http') ? country.flag : `https://flagcdn.com/w80/${country.country_code.toLowerCase()}.png`}
+                      alt={country.name_en}
+                      className="w-full h-full object-cover"
+                      onError={(e) => { e.target.src = 'https://flagcdn.com/w80/un.png'; }}
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-slate-900 truncate">{country.name_ar}</h3>
+                    <p className="text-sm text-slate-500 truncate">{country.name_en} • {country.currency} • {methods.length} طرق</p>
+                  </div>
                 </div>
-                <div className="flex-1">
-                  <h3 className="font-bold text-slate-900">{country.name_ar}</h3>
-                  <p className="text-sm text-slate-500">{country.name_en} • {country.currency} • {methods.length} طرق</p>
-                </div>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end mt-2 sm:mt-0 pt-3 sm:pt-0 border-t border-dashed sm:border-0 border-slate-200">
                   <button onClick={function () { setExpandedCountry(isExpanded ? null : country.country_code); }} className="p-2 hover:bg-slate-100 rounded-lg">
                     {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
                   </button>
-                  <button onClick={function () { handleToggleActive(country); }} className={isActive ? 'p-2 rounded-lg text-green-600' : 'p-2 rounded-lg text-slate-400'}>
+                  <button onClick={function () { handleToggleActive(country); }} className={isActive ? 'p-2 rounded-lg text-green-600' : 'p-2 rounded-lg text-slate-400 hover:bg-red-50'}>
                     {isActive ? <ToggleRight className="w-6 h-6" /> : <ToggleLeft className="w-6 h-6" />}
                   </button>
                   <button onClick={function () { handleEdit(country); }} className="p-2 hover:bg-blue-100 rounded-lg text-blue-600">

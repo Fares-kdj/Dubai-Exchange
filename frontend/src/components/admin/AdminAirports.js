@@ -233,19 +233,19 @@ const AdminAirports = () => {
       </div>
 
       {/* Tabs */}
-      <div className="bg-white rounded-2xl p-2 shadow-sm border border-slate-200">
-        <div className="flex gap-2">
+      <div className="bg-white rounded-2xl p-2 shadow-sm border border-slate-200 overflow-hidden">
+        <div className="flex gap-2 overflow-x-auto pb-1 hide-scrollbar" style={{ WebkitOverflowScrolling: 'touch' }}>
           {tabs.map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-medium transition-all ${activeTab === tab.id
+              className={`flex-none flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-medium transition-all ${activeTab === tab.id
                 ? 'bg-blue-600 text-white'
                 : 'text-slate-600 hover:bg-slate-100'
                 }`}
             >
-              <tab.icon className="w-4 h-4" />
-              {tab.label}
+              <tab.icon className="w-4 h-4 flex-shrink-0" />
+              <span className="whitespace-nowrap">{tab.label}</span>
             </button>
           ))}
         </div>

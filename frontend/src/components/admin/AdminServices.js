@@ -248,7 +248,7 @@ const AdminServices = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">إدارة الخدمات</h1>
           <p className="text-slate-600">إدارة خدمات الموقع وتحديد الخدمات الرئيسية</p>
@@ -523,42 +523,54 @@ const ServiceCard = ({ service, isHero, onToggleActive, onToggleHero, onEdit, on
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`flex items-center gap-4 p-4 rounded-xl border-2 transition-all ${service.is_active
+      className={`flex flex-col sm:flex-row sm:items-center gap-4 p-4 rounded-xl border-2 transition-all ${service.is_active
         ? isHero ? 'border-amber-300 bg-white' : 'border-slate-200 bg-white'
         : 'border-slate-100 bg-slate-50 opacity-60'
         }`}
     >
-      {/* Drag Handle */}
-      <div className="flex flex-col gap-1">
-        <button onClick={() => onMove(service.service_id, 'up')} className="p-1 hover:bg-slate-100 rounded text-slate-400 hover:text-slate-600">
-          <ChevronUp className="w-4 h-4" />
-        </button>
-        <button onClick={() => onMove(service.service_id, 'down')} className="p-1 hover:bg-slate-100 rounded text-slate-400 hover:text-slate-600">
-          <ChevronDown className="w-4 h-4" />
-        </button>
-      </div>
-
-      {/* Icon */}
-      <div
-        className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-        style={{ backgroundColor: service.color + '20' }}
-      >
-        <IconComponent name={service.icon} style={{ color: service.color }} />
-      </div>
-
-      {/* Info */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
-          <h3 className="font-bold text-slate-900 truncate">{service.name_ar}</h3>
-          {isProtectedHero && (
-            <span className="px-2 py-0.5 bg-amber-100 text-amber-700 text-xs rounded-full">محمي</span>
-          )}
+      <div className="flex items-center gap-4 w-full sm:w-auto flex-1">
+        {/* Drag Handle */}
+        <div className="flex flex-col gap-1 hidden sm:flex">
+          <button onClick={() => onMove(service.service_id, 'up')} className="p-1 hover:bg-slate-100 rounded text-slate-400 hover:text-slate-600">
+            <ChevronUp className="w-4 h-4" />
+          </button>
+          <button onClick={() => onMove(service.service_id, 'down')} className="p-1 hover:bg-slate-100 rounded text-slate-400 hover:text-slate-600">
+            <ChevronDown className="w-4 h-4" />
+          </button>
         </div>
-        <p className="text-sm text-slate-500 truncate">{service.name_en} • {service.route}</p>
+
+        {/* Icon */}
+        <div
+          className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+          style={{ backgroundColor: service.color + '20' }}
+        >
+          <IconComponent name={service.icon} style={{ color: service.color }} />
+        </div>
+
+        {/* Info */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <h3 className="font-bold text-slate-900 truncate">{service.name_ar}</h3>
+            {isProtectedHero && (
+              <span className="px-2 py-0.5 bg-amber-100 text-amber-700 text-xs rounded-full whitespace-nowrap">محمي</span>
+            )}
+          </div>
+          <p className="text-sm text-slate-500 truncate">{service.name_en} • {service.route}</p>
+        </div>
       </div>
 
       {/* Actions */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center flex-wrap gap-2 w-full sm:w-auto justify-end mt-2 sm:mt-0 pt-3 sm:pt-0 border-t border-dashed sm:border-0 border-slate-200">
+        {/* Mobile Drag Handles */}
+        <div className="flex sm:hidden ml-auto gap-1">
+          <button onClick={() => onMove(service.service_id, 'up')} className="p-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-500">
+            <ChevronUp className="w-4 h-4" />
+          </button>
+          <button onClick={() => onMove(service.service_id, 'down')} className="p-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-slate-500">
+            <ChevronDown className="w-4 h-4" />
+          </button>
+        </div>
+
         {/* Hero Toggle */}
         <button
           onClick={() => onToggleHero(service)}
@@ -571,7 +583,7 @@ const ServiceCard = ({ service, isHero, onToggleActive, onToggleHero, onEdit, on
         {/* Active Toggle */}
         <button
           onClick={() => onToggleActive(service)}
-          className={`p-2 rounded-lg ${service.is_active ? 'text-green-600' : 'text-slate-400'}`}
+          className={`p-2 rounded-lg ${service.is_active ? 'text-green-600' : 'text-slate-400 hover:bg-slate-100'}`}
           title={service.is_active ? 'تعطيل' : 'تفعيل'}
         >
           {service.is_active ? <ToggleRight className="w-6 h-6" /> : <ToggleLeft className="w-6 h-6" />}
