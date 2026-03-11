@@ -131,7 +131,9 @@ const FIELD_LABELS_AR = {
   'purpose': 'الغرض من التحويل',
   'mtcn': 'رقم الحوالة (MTCN)',
   'reference_number': 'الرقم المرجعي',
-  'address': 'عنوان العميل'
+  'address': 'عنوان العميل',
+  'senderDistrict': 'قضاء المرسل',
+  'receiverDistrict': 'قضاء المستلم'
 };
 
 // Centralized document type labels for Arabic translation

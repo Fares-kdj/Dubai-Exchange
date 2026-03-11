@@ -486,6 +486,8 @@ const TrackOrder = () => {
                             address: { ar: 'عنوان العميل', en: 'Customer Address', ku: 'ناونیشانی کڕیار' },
                             idType: { ar: 'نوع الهوية', en: 'ID Type', ku: 'جۆری ناسنامە' },
                             purpose: { ar: 'الغرض من التحويل', en: 'Transfer Purpose', ku: 'مەبەستی گواستنەوە' },
+                            senderDistrict: { ar: 'قضاء المرسل', en: 'Sender District', ku: 'قەزای نێرەر' },
+                            receiverDistrict: { ar: 'قضاء المستلم', en: 'Receiver District', ku: 'قەزای وەرگر' },
                             pickupLocationName: { ar: 'مكان الاستلام', en: 'Pickup Location', ku: 'شوێنی وەرگرتن' }
                           };
 

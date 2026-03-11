@@ -34,6 +34,7 @@ const LocalTransfer = () => {
     receiverName: '',
     senderProvince: '',
     receiverProvince: '',
+    senderDistrict: '',
     receiverDistrict: '',
     senderPhone: '',
     receiverPhone: '',
@@ -133,7 +134,8 @@ const LocalTransfer = () => {
     if (!formData.receiverName.trim()) newErrors.receiverName = t('اسم المستلم مطلوب', 'Receiver name required', 'ناوی وەرگر پێویستە');
     if (!formData.senderProvince) newErrors.senderProvince = t('محافظة المرسل مطلوبة', 'Sender province required', 'پارێزگای نێرەر پێویستە');
     if (!formData.receiverProvince) newErrors.receiverProvince = t('محافظة المستلم مطلوبة', 'Receiver province required', 'پارێزگای وەرگر پێویستە');
-    if (!formData.receiverDistrict.trim()) newErrors.receiverDistrict = t('القضاء مطلوب', 'District required', 'قەزا پێویستە');
+    if (!formData.senderDistrict.trim()) newErrors.senderDistrict = t('قضاء المرسل مطلوب', 'Sender district required', 'قەزای نێرەر پێویستە');
+    if (!formData.receiverDistrict.trim()) newErrors.receiverDistrict = t('قضاء المستلم مطلوب', 'Receiver district required', 'قەزای وەرگر پێویستە');
     if (!formData.senderPhone.trim()) newErrors.senderPhone = t('رقم هاتف المرسل مطلوب', 'Sender phone required', 'ژمارەی مۆبایلی نێرەر پێویستە');
     if (!formData.receiverPhone.trim()) newErrors.receiverPhone = t('رقم هاتف المستلم مطلوب', 'Receiver phone required', 'ژمارەی مۆبایلی وەرگر پێویستە');
     if (!formData.amount || parseFloat(formData.amount) <= 0) newErrors.amount = t('المبلغ مطلوب', 'Amount required', 'بڕی پارە پێويستە');
@@ -178,6 +180,7 @@ const LocalTransfer = () => {
           senderProvince: formData.senderProvince,
           receiverName: formData.receiverName,
           receiverProvince: formData.receiverProvince,
+          senderDistrict: formData.senderDistrict,
           receiverDistrict: formData.receiverDistrict,
           senderPhone: formData.senderPhone,
           receiverPhone: formData.receiverPhone,
@@ -394,16 +397,34 @@ const LocalTransfer = () => {
                   )}
                 </div>
 
-                {/* Receiver District - beside Sender Phone */}
+                {/* Sender District */}
                 <div className="space-y-2">
                   <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
-                    {t('القضاء', 'District', 'قەزا')} *
+                    {t('قضاء المرسل', 'Sender District', 'قەزای نێرەر')} *
+                  </Label>
+                  <Input
+                    value={formData.senderDistrict}
+                    onChange={(e) => handleInputChange('senderDistrict', e.target.value)}
+                    className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`}
+                    placeholder={t('أدخل قضاء المرسل', 'Enter sender district', 'ناوی قەزای نێرەر بنووسە')}
+                  />
+                  {errors.senderDistrict && (
+                    <p className="text-sm text-red-500 flex items-center gap-1">
+                      <AlertCircle className="w-4 h-4" />{errors.senderDistrict}
+                    </p>
+                  )}
+                </div>
+
+                {/* Receiver District */}
+                <div className="space-y-2">
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
+                    {t('قضاء المستلم', 'Receiver District', 'قەزای وەرگر')} *
                   </Label>
                   <Input
                     value={formData.receiverDistrict}
                     onChange={(e) => handleInputChange('receiverDistrict', e.target.value)}
                     className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`}
-                    placeholder={t('أدخل القضاء', 'Enter district', 'ناوی قەزا بنووسە')}
+                    placeholder={t('أدخل قضاء المستلم', 'Enter receiver district', 'ناوی قەزای وەرگر بنووسە')}
                     data-testid="receiver-district-input"
                   />
                   {errors.receiverDistrict && (

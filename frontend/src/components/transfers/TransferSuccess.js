@@ -316,6 +316,19 @@ const TransferSuccess = () => {
                     </div>
                   )}
 
+                  {/* Sender District */}
+                  {orderData.senderDistrict && (
+                    <div className="flex items-start gap-3">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-orange-500/20' : 'bg-orange-100'}`}>
+                        <MapPin className="w-5 h-5 text-orange-600" />
+                      </div>
+                      <div>
+                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('قضاء المرسل', 'Sender District', 'قەزای نێرەر')}</p>
+                        <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{orderData.senderDistrict}</p>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Receiver District */}
                   {orderData.receiverDistrict && (
                     <div className="flex items-start gap-3">
@@ -323,7 +336,7 @@ const TransferSuccess = () => {
                         <MapPin className="w-5 h-5 text-amber-600" />
                       </div>
                       <div>
-                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('القضاء', 'District', 'قەزا')}</p>
+                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('قضاء المستلم', 'Receiver District', 'قەزای وەرگر')}</p>
                         <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{orderData.receiverDistrict}</p>
                       </div>
                     </div>
