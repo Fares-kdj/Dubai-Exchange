@@ -81,8 +81,7 @@ const MoneyGram = () => {
   const paymentMethods = [
     { value: 'zain_cash', labelAr: 'زين كاش', labelEn: 'Zain Cash', labelKu: 'زەین کاش' },
     { value: 'mastercard_rafidain', labelAr: 'ماستركارد الرافدين', labelEn: 'Mastercard Al-Rafidain', labelKu: 'ماستەرکارد الڕافدین' },
-    { value: 'fib', labelAr: 'FIB', labelEn: 'FIB', labelKu: 'FIB' },
-    { value: 'vodafone_cash', labelAr: 'فودافون كاش', labelEn: 'Vodafone Cash', labelKu: 'فۆدافۆن کاش' }
+    { value: 'fib', labelAr: 'FIB', labelEn: 'FIB', labelKu: 'FIB' }
   ];
 
   const [exchangeRates, setExchangeRates] = useState({});
@@ -504,7 +503,7 @@ const MoneyGram = () => {
                 <div className="space-y-2 md:col-span-2">
                   <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{t('طريقة الدفع', 'Payment Method', 'شێوازى پارەدان')} *</Label>
                   <div className={`p-6 rounded-2xl ${isDark ? 'bg-slate-700/50' : 'bg-slate-50'}`}>
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
                       {paymentMethods.map(m => (
                         <motion.button
                           key={m.value}

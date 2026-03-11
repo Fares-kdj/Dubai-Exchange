@@ -574,7 +574,7 @@ const TransferSuccess = () => {
                 <div className={`space-y-3 text-sm ${isDark ? 'text-blue-300' : 'text-blue-800'}`}>
                   <p className="flex items-start gap-2">
                     <span className="font-bold">1.</span>
-                    {t('قم بالدفع في أحد فروعنا', 'Pay at our branch', 'لە یەکێک لە لقەکانمان پارە بدە')}
+                    {t('قم بالدفع من حسابك او من احد الوكلاء في منطقتك', 'Pay from your account or a local agent', 'لە هەژمارەکەتەوە یان لە بریکارێکی ناوخۆیی پارە بدە')}
                   </p>
                   <p className="flex items-start gap-2">
                     <span className="font-bold">2.</span>

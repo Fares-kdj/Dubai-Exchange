@@ -38,7 +38,7 @@ def generate_order_id(order_type: OrderType) -> str:
         OrderType.USDT_RECHARGE: "USD"
     }
     prefix = prefixes.get(order_type, "ORD")
-    unique_id = str(random.randint(10000000, 99999999))
+    unique_id = str(random.randint(10000, 99999))
     return f"{prefix}-{unique_id}"
 
 
