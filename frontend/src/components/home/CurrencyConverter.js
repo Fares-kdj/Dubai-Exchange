@@ -77,7 +77,7 @@ const CurrencyConverter = () => {
       console.error('Conversion error:', error);
       // Fallback calculation with basic rates
       const fallbackRates = {
-        'USD_IQD': 1500, 'IQD_USD': 0.00067,
+        'USD_IQD': 1320, 'IQD_USD': 0.00075,
         'EUR_IQD': 1620, 'IQD_EUR': 0.00062,
         'GBP_IQD': 1890, 'IQD_GBP': 0.00053,
         'USD_EUR': 0.92, 'EUR_USD': 1.08,

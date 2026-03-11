@@ -28,21 +28,30 @@ const BookingForm = ({ onSubmit }) => {
   const [airports, setAirports] = useState([]);
   const [borders, setBorders] = useState([]);
   const [locationsLoading, setLocationsLoading] = useState(true);
+  const [usdRate, setUsdRate] = useState(1500); // Fallback rate
 
-  // Fetch airports and borders from API
+  // Fetch airports, borders, and exchange rates from API
   useEffect(() => {
     const fetchLocations = async () => {
       setLocationsLoading(true);
       try {
-        const [airRes, borderRes] = await Promise.all([
+        const [airRes, borderRes, ratesRes] = await Promise.all([
           fetch(`${API_URL}/api/stamps/airports?active_only=true`),
-          fetch(`${API_URL}/api/stamps/borders?active_only=true`)
+          fetch(`${API_URL}/api/stamps/borders?active_only=true`),
+          fetch(`${API_URL}/api/rates?active_only=true`)
         ]);
         if (airRes.ok) setAirports(await airRes.json());
         if (borderRes.ok) setBorders(await borderRes.json());
+        if (ratesRes.ok) {
+          const ratesData = await ratesRes.json();
+          const usdData = ratesData.find(r => r.currency_code === 'USD');
+          if (usdData && usdData.sell_rate) {
+            setUsdRate(usdData.sell_rate);
+          }
+        }
       } catch (err) {
-        console.error('Failed to fetch locations:', err);
-        toast.error(t('فشل تحميل المواقع. حاول مرة أخرى.', 'Failed to load locations. Please try again.', 'نەتوانرا شوێنەکان باربکرێن. تکایە دووبارە هەوڵبدەرەوە.'));
+        console.error('Failed to fetch initial data:', err);
+        toast.error(t('فشل تحميل البيانات. حاول مرة أخرى.', 'Failed to load data. Please try again.', 'نەتوانرا زانیارییەکان باربکرێن. تکایە دووبارە هەوڵبدەرەوە.'));
       }
       setLocationsLoading(false);
     };
@@ -96,8 +105,7 @@ const BookingForm = ({ onSubmit }) => {
 
     // Auto-calculate IQD when USD changes
     if (field === 'usdAmount' && value) {
-      const rate = 1500; // This should come from API
-      setFormData(prev => ({ ...prev, iqdAmount: (parseFloat(value) * rate).toFixed(0) }));
+      setFormData(prev => ({ ...prev, iqdAmount: (parseFloat(value) * usdRate).toFixed(0) }));
     }
 
     // When travel type changes, reset pickup location and its related info

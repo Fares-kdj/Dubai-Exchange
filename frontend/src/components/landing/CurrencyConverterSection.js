@@ -94,20 +94,14 @@ export const CurrencyConverterSection = () => {
   const fetchRates = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_URL}/api/rates/live/fetch`);
+      const response = await fetch(`${API_URL}/api/rates?active_only=true`);
       const data = await response.json();
-      setRates(data.rates || []);
-      setSource(data.source || 'manual');
+      setRates(data || []);
+      
+      const hasLiveSync = data.some(r => r.updated_by === 'Live Sync');
+      setSource(hasLiveSync ? 'live' : 'manual');
     } catch (error) {
       console.error('Failed to fetch rates:', error);
-      try {
-        const fallback = await fetch(`${API_URL}/api/rates`);
-        const fallbackData = await fallback.json();
-        setRates(fallbackData || []);
-        setSource('manual');
-      } catch (e) {
-        console.error('Fallback failed:', e);
-      }
     } finally {
       setLoading(false);
     }
@@ -129,13 +123,16 @@ export const CurrencyConverterSection = () => {
     } else if (fromCurrency !== 'IQD' && toCurrency === 'IQD') {
       const fromRate = rates.find(r => r.currency_code === fromCurrency);
       if (fromRate) {
-        setResult((numAmount * fromRate.buy_rate).toFixed(0));
+        // Convert to IQD using selling price
+        setResult((numAmount * fromRate.sell_rate).toFixed(2));
       }
     } else if (fromCurrency !== 'IQD' && toCurrency !== 'IQD') {
       const fromRate = rates.find(r => r.currency_code === fromCurrency);
       const toRate = rates.find(r => r.currency_code === toCurrency);
       if (fromRate && toRate) {
-        const iqd = numAmount * fromRate.buy_rate;
+        // 1. Convert initial amount to IQD using FROM currency's selling rate
+        const iqd = numAmount * fromRate.sell_rate;
+        // 2. Convert IQD to target currency using TO currency's selling rate
         setResult((iqd / toRate.sell_rate).toFixed(2));
       }
     } else {

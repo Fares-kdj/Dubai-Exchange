@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
 import { toast } from 'sonner';
@@ -41,8 +41,26 @@ const CardRecharge = () => {
     paymentMethod: ''
   });
 
-  // Exchange rate (USD to IQD)
-  const usdToIQD = 1480;
+  const [usdToIQD, setUsdToIQD] = useState(1480);
+
+  // Fetch exchange rate on mount
+  useEffect(() => {
+    const fetchRate = async () => {
+      try {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/rates?active_only=true`);
+        if (response.ok) {
+          const ratesData = await response.json();
+          const usdData = ratesData.find(r => r.currency_code === 'USD');
+          if (usdData && usdData.sell_rate) {
+            setUsdToIQD(usdData.sell_rate);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch exchange rate:', err);
+      }
+    };
+    fetchRate();
+  }, []);
   const serviceFee = SERVICE_FEES.card_recharge; // 2%
 
   const handleInputChange = (field, value) => {

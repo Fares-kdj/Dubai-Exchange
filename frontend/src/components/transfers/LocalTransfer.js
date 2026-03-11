@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
 import { useTheme } from '@/context/ThemeContext';
@@ -81,8 +81,25 @@ const LocalTransfer = () => {
   ];
 
   const serviceFeePercent = 2; // This would come from admin settings
-  const usdToIqdRate = 1480; // Example rate - would come from API
+  const [usdToIqdRate, setUsdToIqdRate] = useState(1480); // Fallback rate
 
+  useEffect(() => {
+    const fetchRates = async () => {
+      try {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/rates?active_only=true`);
+        if (response.ok) {
+          const ratesData = await response.json();
+          const usdRate = ratesData.find(r => r.currency_code === 'USD');
+          if (usdRate && usdRate.sell_rate) {
+            setUsdToIqdRate(usdRate.sell_rate);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching exchange rates:', err);
+      }
+    };
+    fetchRates();
+  }, []);
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     if (errors[field]) {

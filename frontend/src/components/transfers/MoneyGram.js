@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
 import { useTheme } from '@/context/ThemeContext';
@@ -82,7 +82,26 @@ const MoneyGram = () => {
     { value: 'vodafone_cash', labelAr: 'فودافون كاش', labelEn: 'Vodafone Cash', labelKu: 'فۆدافۆن کاش' }
   ];
 
-  const exchangeRates = { USD: 1500, EUR: 1600, GBP: 1900, AED: 410, SAR: 400 };
+  const [exchangeRates, setExchangeRates] = useState({});
+
+  useEffect(() => {
+    const fetchRates = async () => {
+      try {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/rates?active_only=true`);
+        if (response.ok) {
+          const ratesData = await response.json();
+          const ratesMap = {};
+          ratesData.forEach(r => {
+            if (r.sell_rate) ratesMap[r.currency_code] = r.sell_rate;
+          });
+          setExchangeRates(ratesMap);
+        }
+      } catch (err) {
+        console.error('Error fetching exchange rates:', err);
+      }
+    };
+    fetchRates();
+  }, []);
   const serviceFeePercent = 2;
 
   const calculateIQD = () => {

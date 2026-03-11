@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
 import { toast } from 'sonner';
@@ -111,8 +111,26 @@ const USDTRecharge = () => {
 
   const paymentMethods = PAYMENT_METHODS.filter(m => m.active);
 
-  // Exchange rate
-  const usdtToIQD = 1480;
+  const [usdtToIQD, setUsdtToIQD] = useState(1480);
+
+  // Fetch exchange rate on mount
+  useEffect(() => {
+    const fetchRate = async () => {
+      try {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/rates?active_only=true`);
+        if (response.ok) {
+          const ratesData = await response.json();
+          const usdData = ratesData.find(r => r.currency_code === 'USD');
+          if (usdData && usdData.sell_rate) {
+            setUsdtToIQD(usdData.sell_rate);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch exchange rate:', err);
+      }
+    };
+    fetchRate();
+  }, []);
   const serviceFeePercent = SERVICE_FEES.usdt_recharge; // 2%
 
   const handleInputChange = (field, value) => {

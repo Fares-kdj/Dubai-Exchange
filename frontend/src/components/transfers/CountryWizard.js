@@ -30,6 +30,7 @@ const CountryWizard = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [countries, setCountries] = useState([]);
   const [methods, setMethods] = useState([]);
+  const [exchangeRates, setExchangeRates] = useState({});
   const API_URL = process.env.REACT_APP_BACKEND_URL;
 
   const [wizardData, setWizardData] = useState({
@@ -91,22 +92,35 @@ const CountryWizard = () => {
     }
   };
 
-  // Load countries data from API
+  // Load countries and exchange rates data from API
   useEffect(() => {
-    const fetchCountries = async () => {
+    const fetchData = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`${API_URL}/api/cms/countries?active_only=true`);
-        if (res.ok) {
-          const data = await res.json();
+        const [countriesRes, ratesRes] = await Promise.all([
+          fetch(`${API_URL}/api/cms/countries?active_only=true`),
+          fetch(`${API_URL}/api/rates?active_only=true`)
+        ]);
+        
+        if (countriesRes.ok) {
+          const data = await countriesRes.json();
           setCountries(data);
         }
+        
+        if (ratesRes.ok) {
+          const ratesData = await ratesRes.json();
+          const ratesMap = {};
+          ratesData.forEach(r => {
+            if (r.sell_rate) ratesMap[r.currency_code] = r.sell_rate;
+          });
+          setExchangeRates(ratesMap);
+        }
       } catch (err) {
-        console.error('Error fetching countries:', err);
+        console.error('Error fetching data:', err);
       }
       setLoading(false);
     };
-    fetchCountries();
+    fetchData();
   }, [API_URL]);
 
   // Load methods when country changes
@@ -146,7 +160,9 @@ const CountryWizard = () => {
 
   const calculateReceiveAmount = () => {
     if (!wizardData.amount || !selectedMethod) return 0;
-    return Math.round(parseFloat(wizardData.amount) * (selectedMethod.exchange_rate || 1));
+    // Prefer global exchange rate for receiver currency, fallback to method rate
+    const rate = exchangeRates[wizardData.receiverCurrency] || selectedMethod.exchange_rate || 1;
+    return Math.round(parseFloat(wizardData.amount) * rate);
   };
 
   const handleNext = () => {
@@ -499,8 +515,8 @@ const CountryWizard = () => {
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className={isDark ? 'text-slate-300' : 'text-slate-600'}>{t('سعر الصرف', 'Exchange Rate', 'نرخی ئاڵوگۆڕ')}</span>
-                      <span className="font-bold text-emerald-500">1$ = {selectedMethod.exchange_rate}</span>
+                      <span className={isDark ? 'text-slate-300' : 'text-slate-600'}>{t('سعر الصرف', 'Exchange Rate', 'نرخی ئاڵوگۆڕ')} ({wizardData.receiverCurrency})</span>
+                      <span className="font-bold text-emerald-500">1$ = {exchangeRates[wizardData.receiverCurrency] || selectedMethod.exchange_rate || 1}</span>
                     </div>
                   </div>
                   <motion.button onClick={handleNext} whileHover={{ scale: 1.02 }}
