@@ -40,7 +40,8 @@ const CountryWizard = () => {
     receiverCurrency: '', // New: Receiver's currency
     senderName: '',
     receiverName: '',
-    phone: '',
+    senderPhone: '',
+    receiverPhone: '',
     purpose: '',
     customFields: {},
     fieldUploads: {} // New: Store upload progress/status for dynamic fields
@@ -192,7 +193,8 @@ const CountryWizard = () => {
     if (!wizardData.amount || parseFloat(wizardData.amount) <= 0) newErrors.amount = t('أدخل المبلغ', 'Enter amount', 'بڕی پارە بنووسە');
     if (!wizardData.senderName.trim()) newErrors.senderName = t('مطلوب', 'Required', 'پێویستە');
     if (!wizardData.receiverName.trim()) newErrors.receiverName = t('مطلوب', 'Required', 'پێویستە');
-    if (!wizardData.phone.trim()) newErrors.phone = t('مطلوب', 'Required', 'پێویستە');
+    if (!wizardData.senderPhone.trim()) newErrors.senderPhone = t('مطلوب', 'Required', 'پێویستە');
+    if (!wizardData.receiverPhone.trim()) newErrors.receiverPhone = t('مطلوب', 'Required', 'پێویستە');
     if (isBankTransfer && !wizardData.receiverCurrency) newErrors.receiverCurrency = t('اختر عملة المستلم', 'Select receiver currency', 'دراوی وەرگر هەڵبژێرە');
     if (!wizardData.purpose) newErrors.purpose = t('مطلوب', 'Required', 'پێویستە');
 
@@ -218,7 +220,7 @@ const CountryWizard = () => {
     setLoading(true);
     try {
       // 1. Perform Block Check for better UX
-      const blockRes = await fetch(`${API_URL}/api/blocklist/check?full_name=${encodeURIComponent(wizardData.senderName)}&phone=${encodeURIComponent(wizardData.phone)}`);
+      const blockRes = await fetch(`${API_URL}/api/blocklist/check?full_name=${encodeURIComponent(wizardData.senderName)}&phone=${encodeURIComponent(wizardData.senderPhone)}`);
       if (blockRes.ok) {
         const blockData = await blockRes.json();
         if (blockData.blocked) {
@@ -233,13 +235,14 @@ const CountryWizard = () => {
         order_type: 'country_based',
         customer: {
           full_name: wizardData.senderName,
-          phone: wizardData.phone
+          phone: wizardData.senderPhone
         },
         details: {
           amount: wizardData.amount,
           senderName: wizardData.senderName,
           receiverName: wizardData.receiverName,
-          phone: wizardData.phone,
+          senderPhone: wizardData.senderPhone,
+          receiverPhone: wizardData.receiverPhone,
           countryCode: wizardData.country,
           countryName: selectedCountry ? (isArabic ? selectedCountry.name_ar : selectedCountry.name_en) : '',
           methodId: wizardData.method,
@@ -610,12 +613,26 @@ const CountryWizard = () => {
                       <Input value={wizardData.receiverName} onChange={e => setWizardData(p => ({ ...p, receiverName: e.target.value }))}
                         className={`h-12 mt-2 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : ''}`} />
                       {errors.receiverName && <p className="text-red-500 text-sm mt-1">{errors.receiverName}</p>}
+                      {isBankTransfer && (
+                        <p className={`text-xs mt-2 ${isDark ? 'text-amber-400/80' : 'text-amber-600'} font-medium flex items-center gap-1`}>
+                          <AlertCircle className="w-3 h-3" />
+                          {t('يجب ان يكون المستلم صاحب الحساب نفسه', 'Receiver must be the account holder', 'پێویستە وەرگر خاوەنی هەژمارەکە بێت')}
+                        </p>
+                      )}
                     </div>
-                    <div>
-                      <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{t('رقم الهاتف', 'Phone', 'مۆبایل')} *</Label>
-                      <Input value={wizardData.phone} onChange={e => setWizardData(p => ({ ...p, phone: e.target.value }))}
-                        className={`h-12 mt-2 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : ''}`} placeholder="+964" />
-                      {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{t('رقم هاتف المرسل', 'Sender Phone', 'مۆبایلی نێرەر')} *</Label>
+                        <Input value={wizardData.senderPhone} onChange={e => setWizardData(p => ({ ...p, senderPhone: e.target.value }))}
+                          className={`h-12 mt-2 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : ''}`} placeholder="+964" />
+                        {errors.senderPhone && <p className="text-red-500 text-sm mt-1">{errors.senderPhone}</p>}
+                      </div>
+                      <div>
+                        <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{t('رقم هاتف المستلم', 'Receiver Phone', 'مۆبایلی وەرگرەر')} *</Label>
+                        <Input value={wizardData.receiverPhone} onChange={e => setWizardData(p => ({ ...p, receiverPhone: e.target.value }))}
+                          className={`h-12 mt-2 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : ''}`} placeholder="+964" />
+                        {errors.receiverPhone && <p className="text-red-500 text-sm mt-1">{errors.receiverPhone}</p>}
+                      </div>
                     </div>
 
                     {/* Purpose Selection */}
