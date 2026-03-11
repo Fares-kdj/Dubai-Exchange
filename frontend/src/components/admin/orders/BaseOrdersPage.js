@@ -130,7 +130,8 @@ const FIELD_LABELS_AR = {
   'idType': 'نوع الهوية',
   'purpose': 'الغرض من التحويل',
   'mtcn': 'رقم الحوالة (MTCN)',
-  'reference_number': 'الرقم المرجعي'
+  'reference_number': 'الرقم المرجعي',
+  'address': 'عنوان العميل'
 };
 
 // Centralized document type labels for Arabic translation
@@ -438,6 +439,12 @@ const OrderDetailModal = ({ order, isOpen, onClose, onStatusChange, onBlock }) =
                       <div className="flex justify-between">
                         <span className="text-slate-500">البريد</span>
                         <span className="text-slate-900">{order.customer?.email}</span>
+                      </div>
+                    )}
+                    {order.customer?.address && (
+                      <div className="space-y-1">
+                        <span className="text-slate-500 text-xs block">العنوان</span>
+                        <span className="text-slate-900 text-sm font-medium">{order.customer?.address}</span>
                       </div>
                     )}
                   </div>

@@ -458,10 +458,10 @@ const USDTRecharge = () => {
                           onMouseLeave={() => setHoveredMethod(null)}
                           onClick={() => handleInputChange('paymentMethod', m.value)}
                           className={`p-4 rounded-xl border-2 text-center transition-colors ${formData.paymentMethod === m.value
-                              ? 'border-teal-500 bg-teal-500/10'
-                              : hoveredMethod === m.value
-                                ? 'border-teal-500'
-                                : isDark ? 'border-slate-600' : 'border-slate-200'
+                            ? 'border-teal-500 bg-teal-500/10'
+                            : hoveredMethod === m.value
+                              ? 'border-teal-500'
+                              : isDark ? 'border-slate-600' : 'border-slate-200'
                             }`}
                         >
                           <span className={`font-bold block text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>

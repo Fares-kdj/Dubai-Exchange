@@ -483,8 +483,10 @@ const TrackOrder = () => {
                             receiverPhone: { ar: 'رقم هاتف المستلم', en: 'Receiver Phone', ku: 'مۆبایلی وەرگر' },
                             // Western Union New Fields
                             receiverAddress: { ar: 'عنوان المستلم', en: 'Receiver Address', ku: 'ناونیشانی وەرگر' },
+                            address: { ar: 'عنوان العميل', en: 'Customer Address', ku: 'ناونیشانی کڕیار' },
                             idType: { ar: 'نوع الهوية', en: 'ID Type', ku: 'جۆری ناسنامە' },
-                            purpose: { ar: 'الغرض من التحويل', en: 'Transfer Purpose', ku: 'مەبەستی گواستنەوە' }
+                            purpose: { ar: 'الغرض من التحويل', en: 'Transfer Purpose', ku: 'مەبەستی گواستنەوە' },
+                            pickupLocationName: { ar: 'مكان الاستلام', en: 'Pickup Location', ku: 'شوێنی وەرگرتن' }
                           };
 
                           const valueMappings = {
@@ -579,8 +581,11 @@ const TrackOrder = () => {
                               // Hide internal IDs if friendly names are available
                               if (key === 'methodId' && rawDetails.methodName) return false;
                               if (key === 'countryCode' && rawDetails.countryName) return false;
+                              if (key === 'pickupLocation' && rawDetails.pickupLocationName) return false;
+                              // Hide internal tracking/stamping fields
+                              if (key === 'pickupStampId' || key === 'pickupStampImage') return false;
                               // Hide image URLs (they will be shown in the Documents section)
-                              if (typeof value === 'string' && (value.startsWith('/uploads/') || value.startsWith('http'))) return false;
+                              if (typeof value === 'string' && (value.startsWith('/uploads/') || value.startsWith('http') || value.startsWith('data:image'))) return false;
                               return true;
                             })
                             .map(([key, value]) => {

@@ -63,6 +63,7 @@ const BookingForm = ({ onSubmit }) => {
   const [formData, setFormData] = useState({
     fullName: '',
     phone: '',
+    address: '',
     travelType: '',
     destination: '',
     travelDate: '',
@@ -175,6 +176,7 @@ const BookingForm = ({ onSubmit }) => {
 
     if (!formData.fullName.trim()) newErrors.fullName = t('الاسم مطلوب', 'Name required', 'ناو پێویستە');
     if (!formData.phone.trim()) newErrors.phone = t('رقم الهاتف مطلوب', 'Phone required', 'ژمارەی مۆبایل پێویستە');
+    if (!formData.address.trim()) newErrors.address = t('عنوان العميل مطلوب', 'Customer address required', 'ناونیشانی کڕیار پێویستە');
     if (!formData.travelType) newErrors.travelType = t('نوع السفر مطلوب', 'Travel type required', 'جۆری گەشت پێویستە');
     if (!formData.destination.trim()) newErrors.destination = t('وجهة السفر مطلوبة', 'Destination required', 'شوێنی مەبەست پێویستە');
     if (!formData.travelDate) newErrors.travelDate = t('تاريخ السفر مطلوب', 'Travel date required', 'ڕێکەوتی گەشت پێویستە');
@@ -222,6 +224,17 @@ const BookingForm = ({ onSubmit }) => {
     const API_URL = process.env.REACT_APP_BACKEND_URL;
 
     try {
+      // 0. Perform Block Check for better UX
+      const blockRes = await fetch(`${API_URL}/api/blocklist/check?full_name=${encodeURIComponent(formData.fullName)}&phone=${encodeURIComponent(formData.phone)}`);
+      if (blockRes.ok) {
+        const blockData = await blockRes.json();
+        if (blockData.blocked) {
+          toast.error(blockData.message || t('عذراً، لا يمكن إتمام طلبك حالياً.', 'Sorry, your request cannot be processed at this time.', 'ببوورە، داواکارییەکەت لە ئێستادا جێبەجێ ناکرێت.'));
+          setLoading(false);
+          return;
+        }
+      }
+
       // 1. Upload documents first
       const docs = [];
 
@@ -239,7 +252,8 @@ const BookingForm = ({ onSubmit }) => {
         order_type: 'traveler',
         customer: {
           full_name: formData.fullName,
-          phone: formData.phone
+          phone: formData.phone,
+          address: formData.address
         },
         details: {
           travelType: formData.travelType,
@@ -375,6 +389,26 @@ const BookingForm = ({ onSubmit }) => {
                   <p className="text-sm text-red-500 flex items-center gap-1">
                     <AlertCircle className="w-4 h-4" />
                     {errors.phone}
+                  </p>
+                )}
+              </div>
+
+              <div className="md:col-span-2 space-y-2">
+                <Label htmlFor="address" className={isDark ? 'text-slate-300' : 'text-slate-700'}>
+                  {t('عنوان العميل', 'Customer Address', 'ناونیشانی کڕیار')} *
+                </Label>
+                <Input
+                  id="address"
+                  value={formData.address}
+                  onChange={(e) => handleInputChange('address', e.target.value)}
+                  className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'} focus:border-[#D4AF37]`}
+                  placeholder={t('أدخل عنوان السكن الحالي', 'Enter current residential address', 'ناونیشانی نیشتەجێبوونی ئێستا بنووسە')}
+                  data-testid="address-input"
+                />
+                {errors.address && (
+                  <p className="text-sm text-red-500 flex items-center gap-1">
+                    <AlertCircle className="w-4 h-4" />
+                    {errors.address}
                   </p>
                 )}
               </div>
@@ -514,10 +548,10 @@ const BookingForm = ({ onSubmit }) => {
                       onClick={() => handleInputChange('usdAmount', String(amount))}
                       data-testid={`usd-amount-${amount}`}
                       className={`p-5 rounded-2xl border-2 text-center transition-all ${formData.usdAmount === String(amount)
-                          ? 'border-[#D4AF37] bg-[#D4AF37]/10'
-                          : isDark
-                            ? 'border-slate-600 hover:border-[#D4AF37]'
-                            : 'border-slate-200 hover:border-[#D4AF37]'
+                        ? 'border-[#D4AF37] bg-[#D4AF37]/10'
+                        : isDark
+                          ? 'border-slate-600 hover:border-[#D4AF37]'
+                          : 'border-slate-200 hover:border-[#D4AF37]'
                         }`}
                     >
                       <p className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>

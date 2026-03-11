@@ -17,15 +17,17 @@ blocklist_collection = db.blocklist
 
 
 def normalize_phone(phone: str) -> str:
-    """Normalize phone number for comparison"""
+    """Normalize phone number to a standard format (last 10 digits)"""
     if not phone:
         return ""
-    # Remove all non-digits
-    digits = ''.join(filter(str.isdigit, phone))
-    # If it starts with 964, keep it as is, otherwise try to extract the last 10 digits
-    if digits.startswith('964'):
-        return digits
-    return digits[-10:]
+    # Remove all non-numeric characters
+    clean = "".join(filter(str.isdigit, phone))
+    
+    # In Iraq, we usually care about the last 10 digits (7XX XXX XXXX)
+    # whether it starts with 07XXX, 9647XXX, or +9647XXX
+    if len(clean) >= 10:
+        return clean[-10:]
+    return clean
 
 
 def normalize_name(name: str) -> str:

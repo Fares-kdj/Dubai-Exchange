@@ -92,7 +92,7 @@ const SuccessPage = ({ orderData }) => {
       setPaymentProofs([]);
     } catch (err) {
       console.error('Upload error:', err);
-      toast.error(t('حدث خطأ أثناء الرفع', 'Error uploading proof', 'کێشەیەک لە کاتی بەرزکردنەوەدا دروست بوو'));
+      toast.error(t('حدث خطأ أثناء الرفع', 'Error uploading proof', 'کێشەیەک لە کاتي بەرزکردنەوەدا دروست بوو'));
     }
 
     setUploading(false);
@@ -100,6 +100,9 @@ const SuccessPage = ({ orderData }) => {
 
   // Get pickup location label
   const getPickupLabel = (value) => {
+    // If we have a friendly name from the order data, use it
+    if (orderData?.pickupLocationName) return orderData.pickupLocationName;
+    
     const locations = {
       'baghdad': { ar: 'مطار بغداد الدولي', en: 'Baghdad International Airport', ku: 'فڕۆکەخانەی نێودەوڵەتی بەغدا' },
       'erbil': { ar: 'مطار أربيل الدولي', en: 'Erbil International Airport', ku: 'فڕۆکەخانەی نێودەوڵەتی هەولێر' },
@@ -257,6 +260,13 @@ const SuccessPage = ({ orderData }) => {
                   label={t('رقم الهاتف', 'Phone', 'ژمارەی مۆبایل')}
                   value={orderData?.phone || '---'}
                   color="green"
+                />
+                <InfoItem
+                  icon={MapPin}
+                  label={t('عنوان السكن', 'Residential Address', 'ناونیشانی نیشتەجێبوون')}
+                  value={orderData?.address || '---'}
+                  color="purple"
+                  className="md:col-span-2"
                 />
               </div>
             </motion.div>

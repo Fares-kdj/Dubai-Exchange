@@ -48,6 +48,7 @@ class CustomerInfo(BaseModel):
     full_name: str
     phone: str
     email: Optional[str] = None
+    address: Optional[str] = None
 
 
 class Document(BaseModel):

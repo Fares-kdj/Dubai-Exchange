@@ -111,6 +111,7 @@ export const RECEIPT_CONFIGS = {
             { id: 'full_name', value: customer?.full_name, x: 81.3, y: 38.1, bold: true, width: '20%' },
             { id: 'mother_name', value: admin_data?.mother_name, x: 39.1, y: 38.1, bold: true, width: '20%' },
             { id: 'phone', value: customer?.phone, x: 31.2, y: 41.2, bold: true, width: '15%' },
+            { id: 'address', value: customer?.address, x: 81.3, y: 41.2, bold: true, width: '20%' },
             { id: 'ticket_number', value: admin_data?.ticket_number || details?.ticket_number, x: 82.2, y: 44.5, bold: true, width: '10%' },
             { id: 'travel_date', value: details?.travelDate, x: 54.3, y: 44.5, bold: true, width: '15%' },
             { id: 'travel_time', value: admin_data?.travel_time, x: 32.1, y: 44.5, bold: true, width: '10%' },
@@ -122,7 +123,7 @@ export const RECEIPT_CONFIGS = {
             { id: 'outlet_name', value: details?.pickupLocationName || admin_data?.travel_agency || 'وكيل المطار', x: 81.5, y: 54.2, bold: true, width: '20%' },
             { id: 'amount_usd', value: parseFloat(details?.usdAmount || details?.amountUSD || 0).toLocaleString(), x: 86, y: 57.4, bold: true, width: '10%' },
             { id: 'selling_rate', value: Math.round(parseFloat(details?.iqdAmount || 0) / parseFloat(details?.usdAmount || 1)).toLocaleString(), x: 83.9, y: 60.6, bold: true, width: '9%' },
-            { id: 'commission', value: Math.round(parseFloat(details?.iqdAmount || 0) * 0.02).toLocaleString(), x: 71, y: 60.5, bold: true, width: '7%' },
+            { id: 'commission', value: '0', x: 71, y: 60.5, bold: true, width: '7%' },
             { id: 'total_iqd_final', value: parseFloat(details?.iqdAmount || 0).toLocaleString(), x: 32.8, y: 60.5, bold: true, width: '10%' },
         ],
         stamps: {

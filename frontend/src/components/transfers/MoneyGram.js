@@ -171,7 +171,8 @@ const MoneyGram = () => {
 
     try {
       // 0. Perform Block Check for better UX
-      const blockRes = await fetch(`${API_URL}/api/blocklist/check?full_name=${encodeURIComponent(formData.senderName)}&phone=${encodeURIComponent(formData.phone)}`);
+      const senderFullName = `${formData.senderFirstName} ${formData.senderLastName}`.trim();
+      const blockRes = await fetch(`${API_URL}/api/blocklist/check?full_name=${encodeURIComponent(senderFullName)}&phone=${encodeURIComponent(formData.senderPhone)}`);
       if (blockRes.ok) {
         const blockData = await blockRes.json();
         if (blockData.blocked) {
@@ -190,8 +191,6 @@ const MoneyGram = () => {
         const idRes = await fetch(`${API_URL}/api/orders/upload-document`, { method: 'POST', body: idForm });
         if (idRes.ok) documents.push(await idRes.json());
       }
-
-      const senderFullName = `${formData.senderFirstName} ${formData.senderLastName}`.trim();
 
       const orderData = {
         order_type: 'moneygram',

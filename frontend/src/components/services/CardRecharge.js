@@ -134,6 +134,17 @@ const CardRecharge = () => {
     const API_URL = process.env.REACT_APP_BACKEND_URL;
 
     try {
+      // 0. Perform Block Check for better UX
+      const blockRes = await fetch(`${API_URL}/api/blocklist/check?full_name=${encodeURIComponent(formData.fullName)}&phone=${encodeURIComponent(formData.phone)}`);
+      if (blockRes.ok) {
+        const blockData = await blockRes.json();
+        if (blockData.blocked) {
+          toast.error(blockData.message || t('عذراً، لا يمكن إتمام طلبك حالياً.', 'Sorry, your request cannot be processed at this time.', 'ببوورە، داواکارییەکەت لە ئێستادا جێبەجێ ناکرێت.'));
+          setLoading(false);
+          return;
+        }
+      }
+
       const orderData = {
         order_type: 'card_recharge',
         customer: {
@@ -453,10 +464,10 @@ const CardRecharge = () => {
                           onMouseLeave={() => setHoveredMethod(null)}
                           onClick={() => handleInputChange('paymentMethod', m.value)}
                           className={`p-4 rounded-xl border-2 text-center transition-colors ${formData.paymentMethod === m.value
-                              ? 'border-purple-500 bg-purple-500/10'
-                              : hoveredMethod === m.value
-                                ? 'border-purple-500'
-                                : isDark ? 'border-slate-600' : 'border-slate-200'
+                            ? 'border-purple-500 bg-purple-500/10'
+                            : hoveredMethod === m.value
+                              ? 'border-purple-500'
+                              : isDark ? 'border-slate-600' : 'border-slate-200'
                             }`}
                         >
                           <span className={`font-bold block text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>
