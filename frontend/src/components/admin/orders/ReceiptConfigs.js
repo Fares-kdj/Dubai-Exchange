@@ -5,7 +5,7 @@
  * y: distance from the top
  */
 
-import { amountToWords } from '../../../utils/numberToWords';
+import { amountToWords, amountToUSDWords } from '../../../utils/numberToWords';
 
 const getStatusTranslation = (status) => {
     switch (status?.toLowerCase()) {

@@ -4,7 +4,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { toast } from 'sonner';
 import { useTheme } from '@/context/ThemeContext';
 import { motion } from 'framer-motion';
-import { CheckCircle, Copy, Download, Upload, X, Clock, MapPin, DollarSign, CreditCard, Phone, User, Globe, ArrowRight } from 'lucide-react';
+import { CheckCircle, Copy, Download, Upload, X, Clock, MapPin, DollarSign, CreditCard, Phone, User, Globe, ArrowRight, FileText } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import Header3D from '../landing/Header3D';
 import Footer3D from '../landing/Footer3D';
@@ -364,6 +364,21 @@ const TransferSuccess = () => {
                       <div>
                         <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('هاتف المستلم', 'Receiver Phone', 'مۆبایلی وەرگر')}</p>
                         <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`} dir="ltr">{orderData.receiverPhone}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* ID Type */}
+                  {orderData.idType && (
+                    <div className="flex items-start gap-3">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-purple-500/20' : 'bg-purple-100'}`}>
+                        <FileText className="w-5 h-5 text-purple-600" />
+                      </div>
+                      <div>
+                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('نوع الهوية', 'ID Type', 'جۆری ناسنامە')}</p>
+                        <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                          {orderData.idType === 'passport' ? t('جواز سفر', 'Passport', 'پاسپۆرت') : t('بطاقة هوية', 'National ID Card', 'کارتی ناسنامە')}
+                        </p>
                       </div>
                     </div>
                   )}

@@ -45,6 +45,7 @@ const MoneyGram = () => {
     receiverPhone: '',
     senderCountry: 'iraq',
     receiverCountry: '',
+    idType: '',
     currency: '',
     amount: '',
     purpose: '',
@@ -155,6 +156,7 @@ const MoneyGram = () => {
     if (!formData.amount || parseFloat(formData.amount) <= 0) newErrors.amount = t('مطلوب', 'Required', 'پێویستە');
     if (!formData.paymentMethod) newErrors.paymentMethod = t('مطلوب', 'Required', 'پێویستە');
     if (!formData.purpose) newErrors.purpose = t('مطلوب', 'Required', 'پێویستە');
+    if (!formData.idType) newErrors.idType = t('نوع الهوية مطلوب', 'ID type required', 'جۆری ناسنامە پێویستە');
     if (!idImage) newErrors.idImage = t('مطلوب', 'Required', 'پێویستە');
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -208,6 +210,7 @@ const MoneyGram = () => {
           receiverPhone: formData.receiverPhone,
           senderCountry: formData.senderCountry,
           receiverCountry: formData.receiverCountry,
+          idType: formData.idType,
           currency: formData.currency,
           amount: formData.amount,
           iqdAmount: calculateIQD(),
@@ -410,7 +413,24 @@ const MoneyGram = () => {
                 <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${isDark ? 'bg-purple-500/20' : 'bg-purple-100'}`}>
                   <FileText className="w-6 h-6 text-purple-600" />
                 </div>
-                <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('صورة الهوية', 'ID Image', 'وێنەی ناسنامە')}</h2>
+                <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('الهوية', 'Identity Document', 'ناسنامەی کەسی')}</h2>
+              </div>
+
+              {/* ID Type Selector */}
+              <div className="space-y-2 mb-6">
+                <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
+                  {t('نوع الهوية', 'ID Type', 'جۆری ناسنامە')} *
+                </Label>
+                <Select value={formData.idType} onValueChange={(v) => handleInputChange('idType', v)}>
+                  <SelectTrigger className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} data-testid="mg-id-type">
+                    <SelectValue placeholder={t('اختر نوع الهوية', 'Select ID type', 'جۆری ناسنامە هەڵبژێرە')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="passport">{t('جواز سفر', 'Passport', 'پاسپۆرت')}</SelectItem>
+                    <SelectItem value="national_id">{t('بطاقة هوية', 'National ID Card', 'کارتی ناسنامە')}</SelectItem>
+                  </SelectContent>
+                </Select>
+                {errors.idType && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.idType}</p>}
               </div>
 
               {!idImage ? (
