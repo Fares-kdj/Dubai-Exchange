@@ -1,6 +1,5 @@
-import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { AlertTriangle, Info, Trash2, X } from 'lucide-react';
+import { useEffect } from 'react';
 
 const ConfirmModal = ({
     isOpen,
@@ -12,6 +11,28 @@ const ConfirmModal = ({
     cancelText = 'إلغاء',
     type = 'danger' // danger, warning, info
 }) => {
+    // Handle history for back button to close modal
+    useEffect(() => {
+        if (isOpen) {
+            const state = { confirmModalOpen: true };
+            window.history.pushState(state, '');
+
+            const handlePopState = () => {
+                if (isOpen) {
+                    onClose();
+                }
+            };
+
+            window.addEventListener('popstate', handlePopState);
+            return () => {
+                window.removeEventListener('popstate', handlePopState);
+                if (window.history.state?.confirmModalOpen) {
+                    window.history.back();
+                }
+            };
+        }
+    }, [isOpen, onClose]);
+
     if (!isOpen) return null;
 
     const themes = {

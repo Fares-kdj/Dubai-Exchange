@@ -296,6 +296,28 @@ const OrderDetailModal = ({ order, isOpen, onClose, onStatusChange, onBlock }) =
     }
   }, [order]);
 
+  // Handle history for back button to close modal
+  useEffect(() => {
+    if (isOpen) {
+      const state = { modalOpen: true };
+      window.history.pushState(state, '');
+
+      const handlePopState = () => {
+        if (isOpen) {
+          onClose();
+        }
+      };
+
+      window.addEventListener('popstate', handlePopState);
+      return () => {
+        window.removeEventListener('popstate', handlePopState);
+        if (window.history.state?.modalOpen) {
+          window.history.back();
+        }
+      };
+    }
+  }, [isOpen, onClose]);
+
   const handlePrint = () => {
     const originalTitle = document.title;
     const customerName = order.customer?.full_name || order.details?.senderName || 'عميل';

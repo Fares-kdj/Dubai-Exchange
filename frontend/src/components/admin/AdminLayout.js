@@ -35,6 +35,31 @@ const AdminLayout = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // History management for mobile sidebar
+  useEffect(() => {
+    if (sidebarOpen && window.innerWidth < 1024) {
+      // Small delay to ensure we are not in a middle of a transition
+      const state = { sidebarOpen: true };
+      window.history.pushState(state, '');
+
+      const handlePopState = (e) => {
+        if (sidebarOpen) {
+          setSidebarOpen(false);
+          // Don't prevent default, just let the state update
+        }
+      };
+
+      window.addEventListener('popstate', handlePopState);
+      return () => {
+        window.removeEventListener('popstate', handlePopState);
+        // If we close manually (X button or backdrop), we should pop the state if it's still there
+        if (window.history.state?.sidebarOpen) {
+          window.history.back();
+        }
+      };
+    }
+  }, [sidebarOpen]);
+
   useEffect(() => {
     const token = localStorage.getItem('adminToken');
     const userStr = localStorage.getItem('adminUser');
