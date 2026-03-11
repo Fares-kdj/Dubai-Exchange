@@ -8,6 +8,8 @@ import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { DatePicker } from '@/components/ui/DatePicker';
+import { format } from 'date-fns';
 import Header3D from '../landing/Header3D';
 import Footer3D from '../landing/Footer3D';
 
@@ -321,7 +323,14 @@ const MoneyGram = () => {
 
                 <div className="space-y-2">
                   <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{t('تاريخ ميلاد المرسل', 'Sender Date of Birth', 'بەرواری لەدایکبوونی نێرەر')} *</Label>
-                  <Input type="date" value={formData.senderDOB} onChange={(e) => handleInputChange('senderDOB', e.target.value)} className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} />
+                  <DatePicker
+                    date={formData.senderDOB ? new Date(formData.senderDOB) : undefined}
+                    setDate={(date) => {
+                      handleInputChange('senderDOB', date ? format(date, 'yyyy-MM-dd') : '');
+                    }}
+                    maxDate={new Date()}
+                    placeholder={t('اختر السنة/الشهر/اليوم', 'Select YYYY/MM/DD', 'بەروار هەڵبژێرە')}
+                  />
                   {errors.senderDOB && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.senderDOB}</p>}
                 </div>
 
@@ -363,7 +372,14 @@ const MoneyGram = () => {
 
                 <div className="space-y-2">
                   <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{t('تاريخ ميلاد المستلم', 'Receiver Date of Birth', 'بەرواری لەدایکبوونی وەرگر')} *</Label>
-                  <Input type="date" value={formData.receiverDOB} onChange={(e) => handleInputChange('receiverDOB', e.target.value)} className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} />
+                  <DatePicker
+                    date={formData.receiverDOB ? new Date(formData.receiverDOB) : undefined}
+                    setDate={(date) => {
+                      handleInputChange('receiverDOB', date ? format(date, 'yyyy-MM-dd') : '');
+                    }}
+                    maxDate={new Date()}
+                    placeholder={t('اختر السنة/الشهر/اليوم', 'Select YYYY/MM/DD', 'بەروار هەڵبژێرە')}
+                  />
                   {errors.receiverDOB && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.receiverDOB}</p>}
                 </div>
 

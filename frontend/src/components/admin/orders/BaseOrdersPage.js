@@ -9,6 +9,8 @@ import {
 import { toast } from 'sonner';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { DatePicker } from '@/components/ui/DatePicker';
+import { format } from 'date-fns';
 import { Label } from '@/components/ui/label';
 import ConfirmModal from '../ConfirmModal';
 import UniversalReceipt from './UniversalReceipt';
@@ -576,10 +578,10 @@ const OrderDetailModal = ({ order, isOpen, onClose, onStatusChange, onBlock }) =
                         </div>
                         <div className="space-y-2">
                           <Label>تاريخ الوجبة</Label>
-                          <Input
-                            type="date"
-                            value={adminData.batch_date || ''}
-                            onChange={e => setAdminData(p => ({ ...p, batch_date: e.target.value }))}
+                          <DatePicker
+                            date={adminData.batch_date ? new Date(adminData.batch_date) : undefined}
+                            setDate={(date) => setAdminData(p => ({ ...p, batch_date: date ? format(date, 'yyyy-MM-dd') : '' }))}
+                            placeholder="اختر تاريخ..."
                           />
                         </div>
                         <div className="space-y-2">
@@ -613,18 +615,18 @@ const OrderDetailModal = ({ order, isOpen, onClose, onStatusChange, onBlock }) =
                         </div>
                         <div className="space-y-2">
                           <Label>تاريخ الإصدار</Label>
-                          <Input
-                            type="date"
-                            value={adminData.passport_issue_date || ''}
-                            onChange={e => setAdminData(p => ({ ...p, passport_issue_date: e.target.value }))}
+                          <DatePicker
+                            date={adminData.passport_issue_date ? new Date(adminData.passport_issue_date) : undefined}
+                            setDate={(date) => setAdminData(p => ({ ...p, passport_issue_date: date ? format(date, 'yyyy-MM-dd') : '' }))}
+                            placeholder="اختر تاريخ..."
                           />
                         </div>
                         <div className="space-y-2">
                           <Label>تاريخ النفاذ</Label>
-                          <Input
-                            type="date"
-                            value={adminData.passport_expiry_date || ''}
-                            onChange={e => setAdminData(p => ({ ...p, passport_expiry_date: e.target.value }))}
+                          <DatePicker
+                            date={adminData.passport_expiry_date ? new Date(adminData.passport_expiry_date) : undefined}
+                            setDate={(date) => setAdminData(p => ({ ...p, passport_expiry_date: date ? format(date, 'yyyy-MM-dd') : '' }))}
+                            placeholder="اختر تاريخ..."
                           />
                         </div>
                         <div className="space-y-2">
@@ -680,10 +682,10 @@ const OrderDetailModal = ({ order, isOpen, onClose, onStatusChange, onBlock }) =
                         </div>
                         <div className="space-y-2">
                           <Label>تاريخ الإصدار</Label>
-                          <Input
-                            type="date"
-                            value={adminData.id_issue_date || ''}
-                            onChange={e => setAdminData(p => ({ ...p, id_issue_date: e.target.value }))}
+                          <DatePicker
+                            date={adminData.id_issue_date ? new Date(adminData.id_issue_date) : undefined}
+                            setDate={(date) => setAdminData(p => ({ ...p, id_issue_date: date ? format(date, 'yyyy-MM-dd') : '' }))}
+                            placeholder="اختر تاريخ..."
                           />
                         </div>
                         <div className="space-y-2">
@@ -695,10 +697,10 @@ const OrderDetailModal = ({ order, isOpen, onClose, onStatusChange, onBlock }) =
                         </div>
                         <div className="space-y-2">
                           <Label>تاريخ انتهاء الصلاحية</Label>
-                          <Input
-                            type="date"
-                            value={adminData.id_expiry_date || ''}
-                            onChange={e => setAdminData(p => ({ ...p, id_expiry_date: e.target.value }))}
+                          <DatePicker
+                            date={adminData.id_expiry_date ? new Date(adminData.id_expiry_date) : undefined}
+                            setDate={(date) => setAdminData(p => ({ ...p, id_expiry_date: date ? format(date, 'yyyy-MM-dd') : '' }))}
+                            placeholder="اختر تاريخ..."
                           />
                         </div>
                       </>

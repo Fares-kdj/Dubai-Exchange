@@ -1,9 +1,16 @@
 import * as React from "react"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react"
 import { DayPicker } from "react-day-picker"
 
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 function Calendar({
   className,
@@ -14,12 +21,18 @@ function Calendar({
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
-      className={cn("p-3", className)}
+      className={cn("p-2", className)}
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",
         caption: "flex justify-center pt-1 relative items-center",
         caption_label: "text-sm font-medium",
+        caption_dropdowns: "flex justify-center gap-0.5",
+        dropdown: "text-sm focus:outline-none bg-transparent appearance-none rounded-md px-2 py-1 border border-transparent hover:bg-accent hover:text-accent-foreground disabled:opacity-50 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-accent-foreground",
+        dropdown_month: "flex [&>div]:hidden",
+        dropdown_year: "flex [&>div]:hidden",
+        dropdown_icon: "",
+        vhidden: "sr-only",
         nav: "space-x-1 flex items-center",
         nav_button: cn(
           buttonVariants({ variant: "outline" }),
@@ -62,6 +75,41 @@ function Calendar({
         IconRight: ({ className, ...props }) => (
           <ChevronRight className={cn("h-4 w-4", className)} {...props} />
         ),
+        IconDropdown: ({ className, ...props }) => (
+          <ChevronDown className={cn("h-4 w-4 ml-1", className)} {...props} />
+        ),
+        Dropdown: ({ value, onChange, children, ...props }) => {
+          const options = React.Children.toArray(children);
+          const selected = options.find((child) => child.props.value === value);
+          const handleChange = (value) => {
+            const changeEvent = {
+              target: { value },
+            };
+            onChange?.(changeEvent);
+          };
+          return (
+            <Select
+              value={value?.toString()}
+              onValueChange={(value) => {
+                handleChange(value);
+              }}
+            >
+              <SelectTrigger className="h-8 pr-2 focus:ring-0 font-medium border-none shadow-none hover:bg-accent hover:text-accent-foreground transition-colors">
+                <SelectValue>{selected?.props?.children}</SelectValue>
+              </SelectTrigger>
+              <SelectContent position="popper" className="max-h-60 overflow-y-auto">
+                {options.map((option, id) => (
+                  <SelectItem
+                    key={`${option.props.value}-${id}`}
+                    value={option.props.value?.toString() ?? ""}
+                  >
+                    {option.props.children}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          );
+        },
       }}
       {...props} />
   );

@@ -7,6 +7,8 @@ import { User, Phone, Plane, MapPin, Calendar, DollarSign, CreditCard, Upload, X
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { DatePicker } from '@/components/ui/DatePicker';
+import { format } from 'date-fns';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -429,14 +431,13 @@ const BookingForm = ({ onSubmit }) => {
                 <Label htmlFor="travelDate" className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                   {t('تاريخ السفر', 'Travel Date', 'ڕێکەوتی گەشت')} *
                 </Label>
-                <Input
-                  id="travelDate"
-                  type="date"
-                  value={formData.travelDate}
-                  onChange={(e) => handleInputChange('travelDate', e.target.value)}
-                  className={`h-12 focus:border-[#D4AF37] !text-white ${isDark ? 'bg-slate-700 border-slate-600' : 'border-slate-300 !text-slate-900'}`}
-                  min={new Date().toISOString().split('T')[0]}
-                  data-testid="travel-date-input"
+                <DatePicker
+                  date={formData.travelDate ? new Date(formData.travelDate) : undefined}
+                  setDate={(date) => {
+                    handleInputChange('travelDate', date ? format(date, 'yyyy-MM-dd') : '');
+                  }}
+                  minDate={new Date()}
+                  placeholder={t('اختر تاريخ السفر', 'Select travel date', 'ڕێکەوتی گەشت هەڵبژێرە')}
                 />
                 {errors.travelDate && <p className="text-sm text-red-600 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.travelDate}</p>}
               </div>
