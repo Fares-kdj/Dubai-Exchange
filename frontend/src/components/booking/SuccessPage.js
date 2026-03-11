@@ -355,7 +355,10 @@ const SuccessPage = ({ orderData }) => {
 
               <div className="bg-slate-50 p-6 rounded-2xl mb-4 inline-block">
                 <QRCodeSVG
-                  value={orderId}
+                  value={`رقم الطلب: ${orderId}
+الاسم: ${orderData?.fullName || ''}
+التاريخ: ${orderDate}
+http://dubai-international-iq.online/track-order?id=${orderId}`}
                   size={180}
                   level="H"
                   includeMargin={true}

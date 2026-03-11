@@ -693,7 +693,15 @@ const TrackOrder = () => {
                         {t('رمز QR للطلب', 'Order QR Code', 'کۆدی QRی داواکاری')}
                       </h3>
                       <div className={`p-6 rounded-2xl inline-block ${isDark ? 'bg-white' : 'bg-slate-50'}`}>
-                        <QRCodeSVG value={orderResult.orderId} size={150} level="H" />
+                        <QRCodeSVG
+                          value={`رقم الطلب: ${orderResult.orderId}
+الاسم: ${orderResult.customer.fullName}
+التاريخ: ${formatDate(orderResult.createdAt)}
+http://dubai-international-iq.online/track-order?id=${orderResult.orderId}`}
+                          size={150}
+                          level="H"
+                          includeMargin={true}
+                        />
                       </div>
                       <p className={`text-xs mt-4 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                         {t('للتحقق عند الاستلام', 'For verification at pickup', 'بۆ دڵنیابوونەوە لە کاتی وەرگرتن')}

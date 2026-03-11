@@ -167,7 +167,10 @@ const UniversalReceipt = ({
                     }}
                 >
                     <QRCodeSVG
-                        value={`https://iraq-exchange.com/track-order?id=${order_id}`}
+                        value={`رقم الطلب: ${order_id}
+الاسم: ${customer?.full_name || ''}
+التاريخ: ${formatDate(created_at)}
+http://dubai-international-iq.online/track-order?id=${order_id}`}
                         size={config.qr.size || 130}
                         level="H"
                         marginSize={0}

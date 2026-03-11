@@ -479,7 +479,10 @@ const ServiceSuccess = () => {
                   transition={{ type: "spring" }}
                 >
                   <QRCodeSVG
-                    value={`DIE-ORDER:${orderId}`}
+                    value={`رقم الطلب: ${orderId}
+الاسم: ${orderData.fullName || ''}
+التاريخ: ${new Date().toLocaleString(isKurdish ? 'ku-IQ' : (isArabic ? 'ar-IQ' : 'en-US'))}
+http://dubai-international-iq.online/track-order?id=${orderId}`}
                     size={160}
                     level="H"
                     includeMargin={true}

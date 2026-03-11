@@ -498,7 +498,15 @@ const TransferSuccess = () => {
                 </h3>
 
                 <div className={`p-6 rounded-2xl mb-4 inline-block ${isDark ? 'bg-white' : 'bg-slate-50'}`}>
-                  <QRCodeSVG value={orderId} size={160} level="H" includeMargin={true} />
+                  <QRCodeSVG
+                    value={`رقم الطلب: ${orderId}
+الاسم: ${orderData.senderName || orderData.senderFirstName || (orderData.details?.senderName) || ''}
+التاريخ: ${orderDate}
+http://dubai-international-iq.online/track-order?id=${orderId}`}
+                    size={160}
+                    level="H"
+                    includeMargin={true}
+                  />
                 </div>
 
                 <p className={`text-xs mb-4 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
