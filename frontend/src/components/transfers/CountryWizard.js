@@ -112,7 +112,7 @@ const CountryWizard = () => {
           const ratesData = await ratesRes.json();
           const ratesMap = {};
           ratesData.forEach(r => {
-            if (r.sell_rate) ratesMap[r.currency_code] = r.sell_rate;
+            ratesMap[r.currency_code] = r;
           });
           setExchangeRates(ratesMap);
         }
@@ -159,24 +159,27 @@ const CountryWizard = () => {
   const selectedCountry = countries.find(c => c.country_code === wizardData.country);
   const selectedMethod = methods.find(m => m.method_id === wizardData.method);
 
-  // Customer always inputs USD. Rates in admin panel are IQD per 1 unit of currency.
-  // Formula: receive_amount = (usd_amount × USD_sell_rate_IQD) ÷ receiver_sell_rate_IQD
+  // Formulas match CurrencyConverterSection.js
   const effectiveCurrency = wizardData.receiverCurrency || selectedCountry?.currency;
 
-  const usdRateIQD = exchangeRates['USD'] ?? null;                          // IQD per $1
-  const receiverRateIQD = effectiveCurrency ? (exchangeRates[effectiveCurrency] ?? null) : null; // IQD per 1 receiver unit
+  const usdRateObj = exchangeRates['USD'] ?? null;
+  const receiverRateObj = effectiveCurrency ? (exchangeRates[effectiveCurrency] ?? null) : null;
 
   // Has rate only when BOTH USD rate and receiver currency rate exist in admin panel
-  const hasRateForCurrency = usdRateIQD !== null && receiverRateIQD !== null;
+  const hasRateForCurrency = usdRateObj !== null && receiverRateObj !== null;
 
-  // Cross-rate: how many receiver-currency units per 1 USD
+  // Evaluate the IQD conversion step using the "sell" rate logic
+  // crossRate represents how many target currency units for 1 USD
   const crossRate = hasRateForCurrency
-    ? (effectiveCurrency === 'USD' ? 1 : parseFloat((usdRateIQD / receiverRateIQD).toFixed(4)))
+    ? (effectiveCurrency === 'USD' ? 1 : parseFloat((usdRateObj.sell_rate / receiverRateObj.sell_rate).toFixed(4)))
     : null;
 
   const calculateReceiveAmount = () => {
     if (!wizardData.amount || !hasRateForCurrency || !crossRate) return 0;
-    return parseFloat((parseFloat(wizardData.amount) * crossRate).toFixed(2));
+    // (Amount in USD * USD_to_IQD) / IQD_to_Target
+    const iqdAmount = parseFloat(wizardData.amount) * usdRateObj.sell_rate;
+    const finalAmount = iqdAmount / receiverRateObj.sell_rate;
+    return parseFloat(finalAmount.toFixed(2));
   };
 
   const handleNext = () => {
@@ -544,7 +547,7 @@ const CountryWizard = () => {
                         <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
                         <div>
                           <p className="text-red-700 font-semibold text-sm">
-                            {!usdRateIQD
+                            {!usdRateObj
                               ? t('سعر صرف الدولار غير موجود في لوحة التحكم', 'USD exchange rate is missing in admin panel', 'نرخی دۆلار لە پانێلی کۆنترۆڵدا نییە')
                               : t(
                                   `سعر الصرف لعملة ${effectiveCurrency} غير متوفر في لوحة التحكم`,
