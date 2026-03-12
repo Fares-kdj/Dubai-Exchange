@@ -111,7 +111,7 @@ const ServiceSuccess = () => {
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDark
       ? 'bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900'
-      : 'bg-gradient-to-b from-green-50 via-white to-slate-50'
+      : 'bg-gradient-to-b from-blue-50 via-white to-slate-50'
       }`}>
       <Header3D />
 
@@ -125,12 +125,12 @@ const ServiceSuccess = () => {
             className="text-center mb-12"
           >
             <motion.div
-              className={`w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl ${isDark ? 'bg-green-600' : 'bg-green-500'
+              className={`w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl ${isDark ? 'bg-[#D4AF37]' : 'bg-[#D4AF37]'
                 }`}
               animate={{
                 boxShadow: [
-                  '0 0 0 0 rgba(34, 197, 94, 0.4)',
-                  '0 0 0 20px rgba(34, 197, 94, 0)',
+                  '0 0 0 0 rgba(212, 175, 55, 0.4)',
+                  '0 0 0 20px rgba(212, 175, 55, 0)',
                 ]
               }}
               transition={{ duration: 1.5, repeat: Infinity }}
@@ -178,7 +178,7 @@ const ServiceSuccess = () => {
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                       className={`p-3 rounded-xl transition-all ${copied
-                        ? 'bg-green-500 text-white'
+                        ? 'bg-[#D4AF37] text-white'
                         : isDark
                           ? 'bg-slate-700 hover:bg-slate-600 text-slate-300'
                           : 'bg-white hover:bg-slate-100 text-slate-600'
@@ -218,8 +218,8 @@ const ServiceSuccess = () => {
 
                   {orderData.phone && (
                     <div className="flex items-start gap-3">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-green-500/20' : 'bg-green-100'}`}>
-                        <Phone className="w-5 h-5 text-green-500" />
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-blue-500/20' : 'bg-blue-100'}`}>
+                        <Phone className="w-5 h-5 text-blue-500" />
                       </div>
                       <div>
                         <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('الهاتف', 'Phone', 'مۆبایل')}</p>
@@ -284,32 +284,32 @@ const ServiceSuccess = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
                 className={`rounded-3xl border-2 shadow-xl p-8 ${isDark
-                  ? 'bg-emerald-900/20 border-emerald-700/50'
-                  : 'bg-gradient-to-br from-emerald-50 to-teal-50 border-emerald-200'
+                  ? 'bg-blue-900/20 border-blue-700/50'
+                  : 'bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200'
                   }`}
               >
                 <h3 className={`text-2xl font-bold mb-6 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                  <DollarSign className="w-6 h-6 text-emerald-500" />
+                  <DollarSign className="w-6 h-6 text-[#D4AF37]" />
                   {t('تفاصيل المبلغ', 'Amount Details', 'زانیاری بڕی پارە')}
                 </h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className={`rounded-2xl p-6 border-2 ${isDark ? 'bg-slate-800/50 border-emerald-700/50' : 'bg-white border-emerald-200'
+                  <div className={`rounded-2xl p-6 border-2 ${isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-slate-200'
                     }`}>
                     <p className={`text-sm mb-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                       {isUSDT ? 'USDT' : t('المبلغ', 'Amount', 'بڕ')}
                     </p>
-                    <p className="text-3xl font-bold text-emerald-500">
+                    <p className="text-3xl font-bold text-[#D4AF37]">
                       {isUSDT ? `${orderData.amount} USDT` : `${Number(orderData.amount || 0).toLocaleString()} IQD`}
                     </p>
                   </div>
 
-                  <div className={`rounded-2xl p-6 border-2 ${isDark ? 'bg-slate-800/50 border-teal-700/50' : 'bg-white border-teal-200'
+                  <div className={`rounded-2xl p-6 border-2 ${isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-slate-200'
                     }`}>
                     <p className={`text-sm mb-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                       {t('الإجمالي للدفع', 'Total to Pay', 'کۆی گشتی بۆ پارەدان')}
                     </p>
-                    <p className="text-3xl font-bold text-teal-500">
+                    <p className="text-3xl font-bold text-[#D4AF37]">
                       {Number(orderData.total || 0).toLocaleString()} IQD
                     </p>
                   </div>
@@ -388,7 +388,7 @@ const ServiceSuccess = () => {
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.9 }}
                       className={`rounded-2xl border-2 p-4 ${uploadSuccess
-                        ? 'border-green-500 bg-green-500/10'
+                        ? 'border-[#D4AF37] bg-[#D4AF37]/10'
                         : isDark
                           ? 'border-slate-600 bg-slate-700/50'
                           : 'border-slate-200 bg-slate-50'
@@ -405,7 +405,7 @@ const ServiceSuccess = () => {
                             {proofImage.name}
                           </p>
                           {uploadSuccess ? (
-                            <p className="text-sm text-green-500 flex items-center gap-1 mt-1">
+                            <p className="text-sm text-[#D4AF37] flex items-center gap-1 mt-1">
                               <CheckCircle className="w-4 h-4" />
                               {t('تم الرفع بنجاح!', 'Uploaded successfully!', 'بە سەرکەوتوویی بارکرا!')}
                             </p>
@@ -500,15 +500,15 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.55 }}
-                className={`rounded-3xl border-2 shadow-xl p-6 ${isDark ? 'bg-green-900/20 border-green-700/50' : 'bg-green-50 border-green-200'
+                className={`rounded-3xl border-2 shadow-xl p-6 ${isDark ? 'bg-blue-900/20 border-blue-700/50' : 'bg-blue-50 border-blue-200'
                   }`}
               >
-                <h3 className={`text-lg font-bold mb-4 flex items-center gap-2 ${isDark ? 'text-green-400' : 'text-green-800'}`}>
+                <h3 className={`text-lg font-bold mb-4 flex items-center gap-2 ${isDark ? 'text-blue-400' : 'text-blue-900'}`}>
                   <MessageCircle className="w-5 h-5" />
                   {t('تواصل عبر واتساب', 'WhatsApp Support', 'پشتیوانی واتسئەپ')}
                 </h3>
 
-                <p className={`text-sm mb-4 ${isDark ? 'text-green-300' : 'text-green-700'}`}>
+                <p className={`text-sm mb-4 ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>
                   {t(
                     'هل لديك استفسار؟ تواصل معنا مباشرة عبر واتساب',
                     'Have a question? Contact us directly via WhatsApp',
@@ -522,7 +522,7 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
                   rel="noopener noreferrer"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="flex items-center justify-center gap-2 w-full py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl transition-colors"
+                  className="flex items-center justify-center gap-2 w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-colors"
                   data-testid="whatsapp-link"
                 >
                   <MessageCircle className="w-5 h-5" />

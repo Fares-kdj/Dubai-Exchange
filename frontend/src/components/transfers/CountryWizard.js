@@ -347,11 +347,11 @@ const CountryWizard = () => {
     <div className="flex items-center justify-center gap-2 mb-8">
       {[1, 2, 3, 4].map(s => (
         <React.Fragment key={s}>
-          <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-colors ${s < step ? 'bg-green-500 text-white' : s === step ? 'bg-[#D4AF37] text-white shadow-lg' : isDark ? 'bg-slate-700 text-slate-400' : 'bg-slate-200 text-slate-500'
+          <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-colors ${s < step ? 'bg-[#D4AF37] text-white' : s === step ? 'bg-[#D4AF37] text-white shadow-lg' : isDark ? 'bg-slate-700 text-slate-400' : 'bg-slate-200 text-slate-500'
             }`}>
             {s < step ? <CheckCircle className="w-5 h-5" /> : s}
           </div>
-          {s < 4 && <div className={`w-8 h-1 rounded ${s < step ? 'bg-green-500' : isDark ? 'bg-slate-700' : 'bg-slate-200'}`} />}
+          {s < 4 && <div className={`w-8 h-1 rounded ${s < step ? 'bg-[#D4AF37]' : isDark ? 'bg-slate-700' : 'bg-slate-200'}`} />}
         </React.Fragment>
       ))}
     </div>
@@ -470,7 +470,7 @@ const CountryWizard = () => {
                           </div>
                           <div className="text-right">
                             <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('السعر', 'Rate', 'نرخ')}</p>
-                            <p className="font-bold text-emerald-500">{m.exchange_rate}</p>
+                            <p className="font-bold text-[#D4AF37]">{m.exchange_rate}</p>
                           </div>
                         </div>
                       </motion.button>
@@ -519,7 +519,7 @@ const CountryWizard = () => {
                     </div>
                     <div className="flex justify-between">
                       <span className={isDark ? 'text-slate-300' : 'text-slate-600'}>{t('سعر الصرف', 'Exchange Rate', 'نرخی ئاڵوگۆڕ')} ({wizardData.receiverCurrency})</span>
-                      <span className="font-bold text-emerald-500">1$ = {exchangeRates[wizardData.receiverCurrency] || selectedMethod.exchange_rate || 1}</span>
+                      <span className="font-bold text-[#D4AF37]">1$ = {exchangeRates[wizardData.receiverCurrency] || selectedMethod.exchange_rate || 1}</span>
                     </div>
                   </div>
                   <motion.button onClick={handleNext} whileHover={{ scale: 1.02 }}
@@ -554,7 +554,7 @@ const CountryWizard = () => {
                     {wizardData.amount && selectedMethod && (
                       <div className={`mt-4 p-4 rounded-xl ${isDark ? 'bg-slate-700/50' : 'bg-white'}`}>
                         <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{t('المستلم سيحصل على', 'Receiver will get', 'وەرگر دەستیدەکەوێت')}</p>
-                        <p className="text-2xl font-bold text-emerald-500">{calculateReceiveAmount().toLocaleString()} {wizardData.receiverCurrency}</p>
+                        <p className="text-2xl font-bold text-[#D4AF37]">{calculateReceiveAmount().toLocaleString()} {wizardData.receiverCurrency}</p>
                       </div>
                     )}
                   </div>

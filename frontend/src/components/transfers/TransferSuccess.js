@@ -164,7 +164,7 @@ const TransferSuccess = () => {
 
   const getTypeColor = () => {
     const colors = {
-      local: 'from-emerald-500 to-teal-600',
+      local: 'from-blue-500 to-indigo-600',
       western_union: 'from-yellow-400 to-yellow-600',
       moneygram: 'from-orange-500 to-red-500',
       country_based: 'from-indigo-500 to-purple-600'
@@ -175,7 +175,7 @@ const TransferSuccess = () => {
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDark
       ? 'bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900'
-      : 'bg-gradient-to-b from-green-50 via-white to-slate-50'
+      : 'bg-gradient-to-b from-blue-50 via-white to-slate-50'
       }`}>
       <Header3D />
 
@@ -188,7 +188,7 @@ const TransferSuccess = () => {
             transition={{ type: "spring", duration: 0.6 }}
             className="text-center mb-12"
           >
-            <div className={`w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl ${isDark ? 'bg-green-600' : 'bg-green-500'
+            <div className={`w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl ${isDark ? 'bg-[#D4AF37]' : 'bg-[#D4AF37]'
               }`}>
               <CheckCircle className="w-14 h-14 text-white" />
             </div>
@@ -280,8 +280,8 @@ const TransferSuccess = () => {
                   {/* Receiver Name */}
                   {orderData.receiverName && (
                     <div className="flex items-start gap-3">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-green-500/20' : 'bg-green-100'}`}>
-                        <User className="w-5 h-5 text-green-600" />
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-blue-500/20' : 'bg-blue-100'}`}>
+                        <User className="w-5 h-5 text-blue-600" />
                       </div>
                       <div>
                         <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('اسم المستلم', 'Receiver Name', 'ناوی وەرگر')}</p>
@@ -306,8 +306,8 @@ const TransferSuccess = () => {
                   {/* Receiver Province */}
                   {orderData.receiverProvince && (
                     <div className="flex items-start gap-3">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-emerald-500/20' : 'bg-emerald-100'}`}>
-                        <MapPin className="w-5 h-5 text-emerald-600" />
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-teal-500/20' : 'bg-teal-100'}`}>
+                        <MapPin className="w-5 h-5 text-teal-600" />
                       </div>
                       <div>
                         <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('محافظة المستلم', 'Receiver Province', 'پارێزگای وەرگر')}</p>
@@ -437,35 +437,35 @@ const TransferSuccess = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
                 className={`rounded-3xl border-2 shadow-xl p-8 ${isDark
-                  ? 'bg-emerald-900/20 border-emerald-700/50'
-                  : 'bg-gradient-to-br from-emerald-50 to-teal-50 border-emerald-200'
+                  ? 'bg-blue-900/20 border-blue-700/50'
+                  : 'bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200'
                   }`}
               >
                 <h3 className={`text-2xl font-bold mb-6 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                  <DollarSign className="w-6 h-6 text-emerald-600" />
+                  <DollarSign className="w-6 h-6 text-[#D4AF37]" />
                   {t('تفاصيل المبلغ', 'Amount Details', 'زانیاری بڕی پارە')}
                 </h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {orderData.amount && (
-                    <div className={`rounded-2xl p-6 border-2 ${isDark ? 'bg-slate-800/50 border-emerald-700/50' : 'bg-white border-emerald-200'
+                    <div className={`rounded-2xl p-6 border-2 ${isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-slate-200'
                       }`}>
                       <p className={`text-sm mb-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                         {t('المبلغ', 'Amount', 'بڕ')}
                       </p>
-                      <p className="text-3xl font-bold text-emerald-600">
+                      <p className="text-3xl font-bold text-[#D4AF37]">
                         {orderData.currency ? `${orderData.amount} ${orderData.currency}` : `${Number(orderData.amount).toLocaleString()} ${t('د.ع', 'IQD', 'د.ع')}`}
                       </p>
                     </div>
                   )}
 
                   {(orderData.total || orderData.iqdAmount) && (
-                    <div className={`rounded-2xl p-6 border-2 ${isDark ? 'bg-slate-800/50 border-teal-700/50' : 'bg-white border-teal-200'
+                    <div className={`rounded-2xl p-6 border-2 ${isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-slate-200'
                       }`}>
                       <p className={`text-sm mb-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                         {t('الإجمالي للدفع', 'Total to Pay', 'کۆی گشتی بۆ پارەدان')}
                       </p>
-                      <p className="text-3xl font-bold text-teal-600">
+                      <p className="text-3xl font-bold text-[#D4AF37]">
                         {Number(orderData.total || orderData.iqdAmount).toLocaleString()} {t('د.ع', 'IQD', 'د.ع')}
                       </p>
                     </div>
@@ -519,7 +519,7 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.55 }}
-                className="bg-gradient-to-br from-green-500 to-green-600 rounded-3xl p-6 text-white shadow-xl"
+                className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-6 text-white shadow-xl"
                 data-testid="transfer-whatsapp-contact"
               >
                 <div className="flex items-center gap-3 mb-4">
@@ -561,7 +561,7 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
                   href="https://wa.me/9647501234567"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block w-full py-3 bg-white text-green-600 font-bold rounded-xl text-center hover:bg-green-50 transition-colors"
+                  className="block w-full py-3 bg-white text-blue-600 font-bold rounded-xl text-center hover:bg-blue-50 transition-colors"
                 >
                   {t('فتح واتساب', 'Open WhatsApp', 'واتسئەپ بکەرەوە')}
                 </a>
@@ -626,7 +626,7 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
                 ) : (
                   <div className="space-y-3">
                     {paymentProofs.map((proof) => (
-                      <div key={proof.id} className={`flex items-center gap-3 rounded-xl p-3 ${isDark ? 'bg-green-900/30 border border-green-700/50' : 'bg-green-50 border border-green-200'
+                      <div key={proof.id} className={`flex items-center gap-3 rounded-xl p-3 ${isDark ? 'bg-blue-900/30 border border-blue-700/50' : 'bg-blue-50 border border-blue-200'
                         }`}>
                         <img src={proof.preview} alt="proof" className="w-12 h-12 rounded-lg object-cover" />
                         <div className="flex-1 min-w-0">
@@ -641,7 +641,7 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
                     <button
                       onClick={submitPaymentProof}
                       disabled={uploading}
-                      className="w-full py-3 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 disabled:opacity-50 flex items-center justify-center gap-2"
+                      className="w-full py-3 bg-[#D4AF37] text-white font-bold rounded-xl hover:bg-[#B8962E] disabled:opacity-50 flex items-center justify-center gap-2"
                     >
                       {uploading ? (
                         <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />{t('جارٍ...', 'Submitting...', 'تۆمارکردن...')}</>

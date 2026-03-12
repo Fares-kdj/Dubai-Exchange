@@ -60,7 +60,7 @@ const TrackOrder = () => {
     waiting_payment: { labelAr: 'في انتظار الدفع', labelEn: 'Waiting for Payment', labelKu: 'لە چاوەڕوانی پارەدان', color: 'bg-amber-500', icon: Clock },
     pending_review: { labelAr: 'قيد المراجعة', labelEn: 'Pending Review', labelKu: 'لەژێر پێداچوونەوە', color: 'bg-yellow-500', icon: Search },
     under_review: { labelAr: 'قيد المراجعة', labelEn: 'Under Review', labelKu: 'لەژێر پێداچوونەوە', color: 'bg-yellow-500', icon: Search },
-    approved: { labelAr: 'تم القبول', labelEn: 'Approved', labelKu: 'قبوڵکرا', color: 'bg-green-500', icon: CheckCircle },
+    approved: { labelAr: 'تم القبول', labelEn: 'Approved', labelKu: 'قبوڵکرا', color: 'bg-[#D4AF37]', icon: CheckCircle },
     rejected: { labelAr: 'تم الرفض', labelEn: 'Rejected', labelKu: 'ڕەتکرایەوە', color: 'bg-red-500', icon: AlertCircle },
     ignored: { labelAr: 'تم التجاهل', labelEn: 'Ignored', labelKu: 'پشتگوێ خرا', color: 'bg-slate-500', icon: Ban }
   };
@@ -303,7 +303,7 @@ const TrackOrder = () => {
                       <div className="flex items-center gap-3">
                         <h2 className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{orderResult.orderId}</h2>
                         <button onClick={copyOrderId} className={`p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-white/10' : 'hover:bg-slate-100'}`}>
-                          {copied ? <CheckCircle className="w-5 h-5 text-green-400" /> : <Copy className={`w-5 h-5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`} />}
+                          {copied ? <CheckCircle className={`w-5 h-5 text-[#D4AF37]`} /> : <Copy className={`w-5 h-5 ${isDark ? 'text-slate-400' : 'text-slate-500'}`} />}
                         </button>
                       </div>
                       <div className="flex items-center gap-4 mt-3">
@@ -393,8 +393,8 @@ const TrackOrder = () => {
                           </div>
                         </div>
                         <div className="flex items-start gap-3">
-                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-green-500/20' : 'bg-green-100'}`}>
-                            <Phone className="w-5 h-5 text-green-600" />
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-blue-500/20' : 'bg-blue-100'}`}>
+                            <Phone className="w-5 h-5 text-blue-600" />
                           </div>
                           <div>
                             <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('الهاتف', 'Phone', 'مۆبایل')}</p>
@@ -642,9 +642,9 @@ const TrackOrder = () => {
                       </h3>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         {orderResult.documents.passport && (
-                          <div className={`p-4 rounded-xl text-center ${isDark ? 'bg-green-500/20 border border-green-500/30' : 'bg-green-50 border border-green-200'}`}>
-                            <FileText className={`w-8 h-8 mx-auto mb-2 ${isDark ? 'text-green-400' : 'text-green-600'}`} />
-                            <p className={`text-sm font-medium ${isDark ? 'text-green-300' : 'text-green-800'}`}>{t('جواز السفر', 'Passport', 'جواز سەفەر')}</p>
+                          <div className={`p-4 rounded-xl text-center ${isDark ? 'bg-amber-500/20 border border-amber-500/30' : 'bg-amber-50 border border-amber-200'}`}>
+                            <FileText className={`w-8 h-8 mx-auto mb-2 ${isDark ? 'text-amber-400' : 'text-amber-600'}`} />
+                            <p className={`text-sm font-medium ${isDark ? 'text-amber-300' : 'text-amber-800'}`}>{t('جواز السفر', 'Passport', 'جواز سەفەر')}</p>
                           </div>
                         )}
                         {orderResult.documents.ticket && (
@@ -734,7 +734,7 @@ http://dubai-international-iq.online/track-order?id=${orderResult.orderId}`}
                         ) : (
                           <div className="space-y-3">
                             {paymentProofs.map(p => (
-                              <div key={p.id} className={`flex items-center gap-3 rounded-xl p-3 ${isDark ? 'bg-green-500/20 border border-green-500/30' : 'bg-green-50 border border-green-200'}`}>
+                              <div key={p.id} className={`flex items-center gap-3 rounded-xl p-3 ${isDark ? 'bg-blue-500/20 border border-blue-500/30' : 'bg-blue-50 border border-blue-200'}`}>
                                 <img src={p.preview} alt="proof" className="w-12 h-12 rounded-lg object-cover" />
                                 <span className={`flex-1 text-sm truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>{p.name}</span>
                                 <button onClick={() => removeProof(p.id)} className={`p-1 rounded ${isDark ? 'hover:bg-red-500/20' : 'hover:bg-red-100'}`}>
@@ -745,7 +745,7 @@ http://dubai-international-iq.online/track-order?id=${orderResult.orderId}`}
                             <button
                               onClick={submitPaymentProof}
                               disabled={uploading}
-                              className="w-full py-3 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 disabled:opacity-50 flex items-center justify-center gap-2"
+                              className="w-full py-3 bg-[#D4AF37] text-white font-bold rounded-xl hover:bg-[#B8962E] disabled:opacity-50 flex items-center justify-center gap-2"
                             >
                               {uploading ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <><CheckCircle className="w-5 h-5" />{t('إرسال', 'Submit', 'ناردن')}</>}
                             </button>

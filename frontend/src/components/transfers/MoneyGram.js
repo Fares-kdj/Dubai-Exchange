@@ -441,12 +441,12 @@ const MoneyGram = () => {
                   </div>
                 </label>
               ) : (
-                <div className="border-2 border-green-200 bg-green-50 rounded-2xl p-4 flex items-center justify-between">
+                <div className="border-2 border-[#D4AF37]/50 bg-[#D4AF37]/10 rounded-2xl p-4 flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <img src={idImage.preview} alt="ID" className="w-16 h-16 rounded-lg object-cover" />
                     <div>
                       <p className="text-sm font-medium text-slate-900">{idImage.name}</p>
-                      <p className="text-xs text-green-600 flex items-center gap-1"><CheckCircle className="w-3 h-3" />{t('تم', 'Done', 'تەواو')}</p>
+                      <p className="text-xs text-[#D4AF37] flex items-center gap-1"><CheckCircle className="w-3 h-3" />{t('تم', 'Done', 'تەواو')}</p>
                     </div>
                   </div>
                   <button type="button" onClick={() => setIdImage(null)} className="p-2 hover:bg-red-100 rounded-lg">

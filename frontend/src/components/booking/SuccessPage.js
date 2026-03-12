@@ -102,7 +102,7 @@ const SuccessPage = ({ orderData }) => {
   const getPickupLabel = (value) => {
     // If we have a friendly name from the order data, use it
     if (orderData?.pickupLocationName) return orderData.pickupLocationName;
-    
+
     const locations = {
       'baghdad': { ar: 'مطار بغداد الدولي', en: 'Baghdad International Airport', ku: 'فڕۆکەخانەی نێودەوڵەتی بەغدا' },
       'erbil': { ar: 'مطار أربيل الدولي', en: 'Erbil International Airport', ku: 'فڕۆکەخانەی نێودەوڵەتی هەولێر' },
@@ -129,7 +129,7 @@ const SuccessPage = ({ orderData }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-50 via-white to-slate-50 pt-20">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-slate-50 pt-20">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Progress Indicator */}
         <motion.div
@@ -139,25 +139,25 @@ const SuccessPage = ({ orderData }) => {
         >
           <div className="flex items-center justify-center gap-4">
             <div className="flex items-center gap-2 opacity-40">
-              <div className="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold">
+              <div className="w-8 h-8 rounded-full bg-[#D4AF37] text-white flex items-center justify-center text-sm font-bold">
                 <CheckCircle className="w-5 h-5" />
               </div>
               <span className="text-sm font-medium text-slate-500">
                 {t('الشروط', 'Terms', 'مەرجەکان')}
               </span>
             </div>
-            <div className="w-16 h-1 bg-green-500 rounded"></div>
+            <div className="w-16 h-1 bg-[#D4AF37] rounded"></div>
             <div className="flex items-center gap-2 opacity-40">
-              <div className="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold">
+              <div className="w-8 h-8 rounded-full bg-[#D4AF37] text-white flex items-center justify-center text-sm font-bold">
                 <CheckCircle className="w-5 h-5" />
               </div>
               <span className="text-sm font-medium text-slate-500">
                 {t('معلومات الحجز', 'Booking Details', 'زانیارییەکانی حجزکردن')}
               </span>
             </div>
-            <div className="w-16 h-1 bg-green-500 rounded"></div>
+            <div className="w-16 h-1 bg-[#D4AF37] rounded"></div>
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-bold">
+              <div className="w-8 h-8 rounded-full bg-[#D4AF37] text-white flex items-center justify-center text-sm font-bold">
                 <CheckCircle className="w-5 h-5" />
               </div>
               <span className="text-sm font-medium text-slate-900">
@@ -174,7 +174,7 @@ const SuccessPage = ({ orderData }) => {
           transition={{ type: "spring", duration: 0.6 }}
           className="text-center mb-12"
         >
-          <div className="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl">
+          <div className="w-24 h-24 bg-[#D4AF37] rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl">
             <CheckCircle className="w-14 h-14 text-white" />
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-3">
@@ -215,7 +215,7 @@ const SuccessPage = ({ orderData }) => {
                   data-testid="copy-order-id"
                 >
                   {copied ? (
-                    <CheckCircle className="w-6 h-6 text-green-400" />
+                    <CheckCircle className="w-6 h-6 text-[#D4AF37]" />
                   ) : (
                     <Copy className="w-6 h-6" />
                   )}
@@ -259,7 +259,7 @@ const SuccessPage = ({ orderData }) => {
                   icon={Phone}
                   label={t('رقم الهاتف', 'Phone', 'ژمارەی مۆبایل')}
                   value={orderData?.phone || '---'}
-                  color="green"
+                  color="blue"
                 />
                 <InfoItem
                   icon={MapPin}
@@ -310,23 +310,23 @@ const SuccessPage = ({ orderData }) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-3xl border-2 border-emerald-200 shadow-xl p-8"
+              className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl border-2 border-blue-200 shadow-xl p-8"
             >
               <h3 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2">
-                <DollarSign className="w-6 h-6 text-emerald-600" />
+                <DollarSign className="w-6 h-6 text-[#D4AF37]" />
                 {t('المبلغ المحجوز', 'Booking Amount', 'بڕی حجزکراو')}
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-white rounded-2xl p-6 border-2 border-emerald-200">
+                <div className="bg-white rounded-2xl p-6 border-2 border-slate-200">
                   <p className="text-sm text-slate-500 mb-1">{t('بالدولار', 'In USD', 'بە دۆلار')}</p>
-                  <p className="text-3xl font-bold text-emerald-600">
+                  <p className="text-3xl font-bold text-[#D4AF37]">
                     ${orderData?.usdAmount || '0'}
                   </p>
                 </div>
-                <div className="bg-white rounded-2xl p-6 border-2 border-teal-200">
+                <div className="bg-white rounded-2xl p-6 border-2 border-slate-200">
                   <p className="text-sm text-slate-500 mb-1">{t('بالدينار', 'In IQD', 'بە دینار')}</p>
-                  <p className="text-3xl font-bold text-teal-600">
+                  <p className="text-3xl font-bold text-[#D4AF37]">
                     {orderData?.iqdAmount ? Number(orderData.iqdAmount).toLocaleString() : '0'} {t('د.ع', 'IQD', 'د.ع')}
                   </p>
                 </div>
@@ -384,7 +384,7 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.65 }}
-              className="bg-gradient-to-br from-green-500 to-green-600 rounded-3xl p-6 text-white shadow-xl"
+              className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-6 text-white shadow-xl"
               data-testid="whatsapp-contact"
             >
               <div className="flex items-center gap-3 mb-4">
@@ -426,7 +426,7 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
                 href="https://wa.me/9647501234567"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block w-full py-3 bg-white text-green-600 font-bold rounded-xl text-center hover:bg-green-50 transition-colors"
+                className="block w-full py-3 bg-white text-blue-600 font-bold rounded-xl text-center hover:bg-blue-50 transition-colors"
               >
                 {t('فتح واتساب', 'Open WhatsApp', 'کردنەوەی واتسئەپ')}
               </a>
@@ -507,11 +507,11 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
               ) : (
                 <div className="space-y-3">
                   {paymentProofs.map((proof) => (
-                    <div key={proof.id} className="flex items-center gap-3 bg-green-50 border border-green-200 rounded-xl p-3">
+                    <div key={proof.id} className="flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-xl p-3">
                       <img src={proof.preview} alt="proof" className="w-12 h-12 rounded-lg object-cover" />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-slate-900 truncate">{proof.name}</p>
-                        <p className="text-xs text-green-600">
+                        <p className="text-xs text-blue-600">
                           {t('جاهز للإرسال', 'Ready to submit', 'ئامادەیە بۆ ناردن')}
                         </p>
                       </div>
@@ -527,7 +527,7 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
                   <button
                     onClick={submitPaymentProof}
                     disabled={uploading}
-                    className="w-full py-3 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                    className="w-full py-3 bg-[#D4AF37] text-white font-bold rounded-xl hover:bg-[#B8962E] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
                     data-testid="submit-payment-proof"
                   >
                     {uploading ? (
@@ -598,11 +598,11 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
 const InfoItem = ({ icon: Icon, label, value, color }) => {
   const colorClasses = {
     blue: 'bg-blue-100 text-blue-600',
-    green: 'bg-green-100 text-green-600',
+    green: 'bg-blue-100 text-blue-600',
     purple: 'bg-purple-100 text-purple-600',
     pink: 'bg-pink-100 text-pink-600',
     indigo: 'bg-indigo-100 text-indigo-600',
-    emerald: 'bg-emerald-100 text-emerald-600'
+    emerald: 'bg-blue-100 text-blue-600'
   };
 
   return (
