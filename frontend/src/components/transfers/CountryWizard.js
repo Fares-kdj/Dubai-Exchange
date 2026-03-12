@@ -159,16 +159,24 @@ const CountryWizard = () => {
   const selectedCountry = countries.find(c => c.country_code === wizardData.country);
   const selectedMethod = methods.find(m => m.method_id === wizardData.method);
 
-  // Determine the effective currency to price against
+  // Customer always inputs USD. Rates in admin panel are IQD per 1 unit of currency.
+  // Formula: receive_amount = (usd_amount × USD_sell_rate_IQD) ÷ receiver_sell_rate_IQD
   const effectiveCurrency = wizardData.receiverCurrency || selectedCountry?.currency;
 
-  // Rate from admin panel — null if not found (no silent fallback)
-  const adminRate = effectiveCurrency ? (exchangeRates[effectiveCurrency] ?? null) : null;
-  const hasRateForCurrency = adminRate !== null;
+  const usdRateIQD = exchangeRates['USD'] ?? null;                          // IQD per $1
+  const receiverRateIQD = effectiveCurrency ? (exchangeRates[effectiveCurrency] ?? null) : null; // IQD per 1 receiver unit
+
+  // Has rate only when BOTH USD rate and receiver currency rate exist in admin panel
+  const hasRateForCurrency = usdRateIQD !== null && receiverRateIQD !== null;
+
+  // Cross-rate: how many receiver-currency units per 1 USD
+  const crossRate = hasRateForCurrency
+    ? (effectiveCurrency === 'USD' ? 1 : parseFloat((usdRateIQD / receiverRateIQD).toFixed(4)))
+    : null;
 
   const calculateReceiveAmount = () => {
-    if (!wizardData.amount || !hasRateForCurrency) return 0;
-    return Math.round(parseFloat(wizardData.amount) * adminRate);
+    if (!wizardData.amount || !hasRateForCurrency || !crossRate) return 0;
+    return parseFloat((parseFloat(wizardData.amount) * crossRate).toFixed(2));
   };
 
   const handleNext = () => {
@@ -523,9 +531,9 @@ const CountryWizard = () => {
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className={isDark ? 'text-slate-300' : 'text-slate-600'}>{t('سعر الصرف', 'Exchange Rate', 'نرخی ئاڵوگۆڕ')} ({effectiveCurrency})</span>
+                      <span className={isDark ? 'text-slate-300' : 'text-slate-600'}>{t('سعر الصرف', 'Exchange Rate', 'نرخی ئاڵوگۆڕ')}</span>
                       {hasRateForCurrency
-                        ? <span className="font-bold text-[#D4AF37]">1$ = {adminRate}</span>
+                        ? <span className="font-bold text-[#D4AF37]">1 USD = {crossRate} {effectiveCurrency}</span>
                         : <span className="font-bold text-red-500">{t('غير متوفر', 'Not available', 'بەردەست نییە')}</span>
                       }
                     </div>
@@ -536,11 +544,14 @@ const CountryWizard = () => {
                         <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
                         <div>
                           <p className="text-red-700 font-semibold text-sm">
-                            {t(
-                              `سعر الصرف لعملة ${effectiveCurrency} غير متوفر في لوحة التحكم`,
-                              `Exchange rate for ${effectiveCurrency} is not set in the admin panel`,
-                              `نرخی ${effectiveCurrency} لە پانێلی کۆنترۆڵدا دانەنراوە`
-                            )}
+                            {!usdRateIQD
+                              ? t('سعر صرف الدولار غير موجود في لوحة التحكم', 'USD exchange rate is missing in admin panel', 'نرخی دۆلار لە پانێلی کۆنترۆڵدا نییە')
+                              : t(
+                                  `سعر الصرف لعملة ${effectiveCurrency} غير متوفر في لوحة التحكم`,
+                                  `Exchange rate for ${effectiveCurrency} is not set in the admin panel`,
+                                  `نرخی ${effectiveCurrency} لە پانێلی کۆنترۆڵدا دانەنراوە`
+                                )
+                            }
                           </p>
                           <p className="text-red-600 text-xs mt-1">
                             {t(
