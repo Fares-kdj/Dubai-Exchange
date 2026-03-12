@@ -19,6 +19,8 @@ const AdminLayout = () => {
   const [user, setUser] = useState(null);
   const [expandedMenus, setExpandedMenus] = useState(['orders']); // Default expanded
   const [notifications, setNotifications] = useState([]);
+  const [readIds, setReadIds] = useState(new Set());
+  const [deletedIds, setDeletedIds] = useState(new Set());
   const [showNotifications, setShowNotifications] = useState(false);
 
   useEffect(() => {
@@ -74,28 +76,47 @@ const AdminLayout = () => {
     const fetchNotifications = async () => {
       const token = localStorage.getItem('adminToken');
       if (!token) return;
-
       try {
-        const res = await fetch(`${API_URL}/api/orders?page_size=10`, {
+        const res = await fetch(`${API_URL}/api/orders?page_size=20`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (res.ok) {
           const data = await res.json();
-          // Filter for "New/Actionable" statuses
-          const actionable = (data.orders || []).filter(o =>
-            o.status === 'waiting_payment' || o.status === 'pending_review'
-          ).slice(0, 5);
-          setNotifications(actionable);
+          const sorted = (data.orders || []).slice(0, 4); // last 4 orders
+          setNotifications(sorted);
         }
       } catch (err) {
         console.error('Error fetching notifications:', err);
       }
     };
-
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, 60000); // Check every minute
+    const interval = setInterval(fetchNotifications, 60000);
     return () => clearInterval(interval);
   }, []);
+
+  const visibleNotifications = notifications.filter(n => !deletedIds.has(n.order_id));
+  const unreadCount = visibleNotifications.filter(n => !readIds.has(n.order_id)).length;
+
+  const markRead = (id) => setReadIds(prev => new Set([...prev, id]));
+  const deleteNotif = (id) => setDeletedIds(prev => new Set([...prev, id]));
+  const markAllRead = () => setReadIds(new Set(visibleNotifications.map(n => n.order_id)));
+
+  const getOrderTypeName = (type) => {
+    const map = {
+      western_union: 'ويسترن يونيون', moneygram: 'موني جرام',
+      country_based: 'حسب الدولة', traveler: 'حجز مسافر',
+      local: 'تحويل محلي', usdt: 'شحن USDT', usdt_recharge: 'شحن USDT',
+      card: 'تعبئة بطاقات', card_recharge: 'تعبئة بطاقات',
+    };
+    return map[type] || type;
+  };
+
+  const getOrderLink = (type) => {
+    if (['western_union', 'moneygram', 'country_based'].includes(type)) return '/admin/orders/international';
+    if (['usdt', 'usdt_recharge'].includes(type)) return '/admin/orders/usdt';
+    if (['card', 'card_recharge'].includes(type)) return '/admin/orders/card';
+    return `/admin/orders/${type}`;
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('adminToken');
@@ -398,80 +419,118 @@ const AdminLayout = () => {
             </div>
 
             <div className="flex items-center gap-4">
-              <div className="relative">
+              {/* Notifications – desktop only */}
+              <div className="relative hidden md:block">
                 <button
                   onClick={() => setShowNotifications(!showNotifications)}
                   className="relative p-2 hover:bg-slate-100 rounded-lg"
                 >
                   <Bell className="w-5 h-5 text-slate-600" />
-                  {notifications.length > 0 && (
-                    <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                  {unreadCount > 0 && (
+                    <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white rounded-full text-[9px] font-bold flex items-center justify-center">
+                      {unreadCount}
+                    </span>
                   )}
                 </button>
 
                 <AnimatePresence>
                   {showNotifications && (
                     <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 10 }}
-                      className="absolute left-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden z-50"
+                      initial={{ opacity: 0, y: 10, scale: 0.97 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.97 }}
+                      className="absolute left-0 mt-2 w-96 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden z-50"
                     >
-                      <div className="p-4 border-b border-slate-100 flex items-center justify-between">
-                        <h3 className="font-bold text-slate-900">الإشعارات</h3>
-                        <span className="text-xs text-slate-500">{notifications.length} طلبات جديدة</span>
-                      </div>
-                      <div className="max-h-96 overflow-y-auto">
-                        {notifications.length > 0 ? (
-                          notifications.map(notif => (
-                            <Link
-                              key={notif.order_id}
-                              to={`/admin/orders/${['western_union', 'moneygram', 'country_based'].includes(notif.order_type) ? 'international' :
-                                ['usdt_recharge', 'usdt'].includes(notif.order_type) ? 'usdt' :
-                                  ['card_recharge', 'card'].includes(notif.order_type) ? 'card' :
-                                    notif.order_type
-                                }`}
-                              onClick={() => setShowNotifications(false)}
-                              className="block p-4 hover:bg-slate-50 border-b border-slate-50 last:border-0 transition-colors"
-                            >
-                              <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center">
-                                  <Clock className="w-5 h-5 text-yellow-600" />
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-sm font-bold text-slate-900 truncate">
-                                    طلب {notif.order_id} جديد
-                                  </p>
-                                  <p className="text-xs text-slate-500">
-                                    {notif.customer?.full_name} - {
-                                      notif.order_type === 'western_union' ? 'ويسترن يونيون' :
-                                        notif.order_type === 'moneygram' ? 'موني جرام' :
-                                          notif.order_type === 'country_based' ? 'حسب الدولة' :
-                                            notif.order_type === 'traveler' ? 'حجز مسافر' :
-                                              notif.order_type === 'local' ? 'تحويل محلي' :
-                                                (notif.order_type === 'usdt' || notif.order_type === 'usdt_recharge') ? 'شحن USDT' :
-                                                  (notif.order_type === 'card' || notif.order_type === 'card_recharge') ? 'تعبئة بطاقات' : notif.order_type
-                                    }
-                                  </p>
-                                </div>
-                              </div>
-                            </Link>
-                          ))
-                        ) : (
-                          <div className="p-8 text-center text-slate-500">
-                            <Bell className="w-8 h-8 mx-auto mb-2 opacity-20" />
-                            <p className="text-sm">لا توجد إشعارات جديدة</p>
-                          </div>
+                      {/* Header */}
+                      <div className="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-bold text-slate-900">الإشعارات</h3>
+                          {unreadCount > 0 && (
+                            <span className="text-xs bg-red-100 text-red-600 font-bold px-2 py-0.5 rounded-full">{unreadCount} غير مقروء</span>
+                          )}
+                        </div>
+                        {unreadCount > 0 && (
+                          <button
+                            onClick={markAllRead}
+                            className="text-xs text-[#D4AF37] font-medium hover:underline"
+                          >
+                            قراءة الكل
+                          </button>
                         )}
                       </div>
-                      {notifications.length > 0 && (
-                        <Link
-                          to="/admin/orders"
-                          onClick={() => setShowNotifications(false)}
-                          className="block p-3 text-center text-sm text-[#D4AF37] font-medium hover:bg-slate-50"
-                        >
-                          عرض كل الطلبات
-                        </Link>
+
+                      {/* Notification list */}
+                      <div className="divide-y divide-slate-50">
+                        {visibleNotifications.length === 0 ? (
+                          <div className="p-8 text-center text-slate-400">
+                            <Bell className="w-8 h-8 mx-auto mb-2 opacity-20" />
+                            <p className="text-sm">لا توجد إشعارات</p>
+                          </div>
+                        ) : (
+                          visibleNotifications.map(notif => {
+                            const isRead = readIds.has(notif.order_id);
+                            return (
+                              <div
+                                key={notif.order_id}
+                                className={`flex items-start gap-3 px-4 py-3 transition-colors ${isRead ? 'bg-white' : 'bg-amber-50/60'}`}
+                              >
+                                {/* Unread dot */}
+                                <div className="pt-1 flex-shrink-0">
+                                  {!isRead
+                                    ? <span className="w-2 h-2 bg-[#D4AF37] rounded-full block mt-1" />
+                                    : <span className="w-2 h-2 rounded-full block" />}
+                                </div>
+
+                                {/* Content – clickable */}
+                                <Link
+                                  to={getOrderLink(notif.order_type)}
+                                  onClick={() => { markRead(notif.order_id); setShowNotifications(false); }}
+                                  className="flex-1 min-w-0"
+                                >
+                                  <p className={`text-sm font-semibold truncate ${isRead ? 'text-slate-600' : 'text-slate-900'}`}>
+                                    طلب #{notif.order_id?.slice(0, 8)}
+                                  </p>
+                                  <p className="text-xs text-slate-500 mt-0.5">
+                                    {notif.customer?.full_name} &mdash; {getOrderTypeName(notif.order_type)}
+                                  </p>
+                                </Link>
+
+                                {/* Action buttons */}
+                                <div className="flex items-center gap-1 flex-shrink-0">
+                                  {!isRead && (
+                                    <button
+                                      onClick={() => markRead(notif.order_id)}
+                                      title="تعيين كمقروء"
+                                      className="p-1 rounded hover:bg-slate-100 text-slate-400 hover:text-[#D4AF37] transition-colors"
+                                    >
+                                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                                    </button>
+                                  )}
+                                  <button
+                                    onClick={() => deleteNotif(notif.order_id)}
+                                    title="حذف"
+                                    className="p-1 rounded hover:bg-red-50 text-slate-300 hover:text-red-500 transition-colors"
+                                  >
+                                    <X className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                              </div>
+                            );
+                          })
+                        )}
+                      </div>
+
+                      {/* Footer */}
+                      {visibleNotifications.length > 0 && (
+                        <div className="border-t border-slate-100 px-4 py-2 text-center">
+                          <Link
+                            to="/admin/orders"
+                            onClick={() => setShowNotifications(false)}
+                            className="text-sm text-[#D4AF37] font-medium hover:underline"
+                          >
+                            عرض كل الطلبات →
+                          </Link>
+                        </div>
                       )}
                     </motion.div>
                   )}
