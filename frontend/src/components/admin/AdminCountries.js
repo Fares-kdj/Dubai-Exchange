@@ -530,7 +530,7 @@ const AdminCountries = () => {
                       <Label className="text-[10px] text-slate-500">سعر الصرف</Label>
                       <Input
                         type="number"
-                        step="0.01"
+                        step="0.00001"
                         value={newMethod.exchange_rate}
                         onChange={function (e) { setNewMethod(Object.assign({}, newMethod, { exchange_rate: parseFloat(e.target.value) || 0 })); }}
                         placeholder="1.0"

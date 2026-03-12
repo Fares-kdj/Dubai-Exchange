@@ -234,6 +234,7 @@ const AdminRates = () => {
                   value={addForm.buy_rate}
                   onChange={e => setAddForm({ ...addForm, buy_rate: e.target.value })}
                   min="0"
+                  step="0.00001"
                 />
               </div>
               <div className="space-y-1">
@@ -244,6 +245,7 @@ const AdminRates = () => {
                   value={addForm.sell_rate}
                   onChange={e => setAddForm({ ...addForm, sell_rate: e.target.value })}
                   min="0"
+                  step="0.00001"
                 />
               </div>
               <div className="space-y-1">
@@ -333,9 +335,10 @@ const AdminRates = () => {
                         value={editValues.buy_rate}
                         onChange={function (e) { setEditValues(Object.assign({}, editValues, { buy_rate: parseFloat(e.target.value) || 0 })); }}
                         className="w-28 mx-auto text-center"
+                        step="0.00001"
                       />
                     ) : (
-                      <span className="font-mono text-lg font-semibold text-green-600">{rate.buy_rate.toLocaleString()}</span>
+                      <span className="font-mono text-lg font-semibold text-green-600">{rate.buy_rate.toLocaleString(undefined, { maximumFractionDigits: 5 })}</span>
                     )}
                   </td>
                   <td className="px-6 py-4 text-center">
@@ -345,14 +348,15 @@ const AdminRates = () => {
                         value={editValues.sell_rate}
                         onChange={function (e) { setEditValues(Object.assign({}, editValues, { sell_rate: parseFloat(e.target.value) || 0 })); }}
                         className="w-28 mx-auto text-center"
+                        step="0.00001"
                       />
                     ) : (
-                      <span className="font-mono text-lg font-semibold text-red-600">{rate.sell_rate.toLocaleString()}</span>
+                      <span className="font-mono text-lg font-semibold text-red-600">{rate.sell_rate.toLocaleString(undefined, { maximumFractionDigits: 5 })}</span>
                     )}
                   </td>
                   <td className="px-6 py-4 text-center">
                     <span className="px-2 py-1 bg-amber-100 text-amber-700 text-sm rounded-full font-mono">
-                      {spread.toLocaleString()}
+                      {spread.toLocaleString(undefined, { maximumFractionDigits: 5 })}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-center">
