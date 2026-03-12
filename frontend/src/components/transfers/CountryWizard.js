@@ -159,11 +159,16 @@ const CountryWizard = () => {
   const selectedCountry = countries.find(c => c.country_code === wizardData.country);
   const selectedMethod = methods.find(m => m.method_id === wizardData.method);
 
+  // Determine the effective currency to price against
+  const effectiveCurrency = wizardData.receiverCurrency || selectedCountry?.currency;
+
+  // Rate from admin panel — null if not found (no silent fallback)
+  const adminRate = effectiveCurrency ? (exchangeRates[effectiveCurrency] ?? null) : null;
+  const hasRateForCurrency = adminRate !== null;
+
   const calculateReceiveAmount = () => {
-    if (!wizardData.amount || !selectedMethod) return 0;
-    // Prefer global exchange rate for receiver currency, fallback to method rate
-    const rate = exchangeRates[wizardData.receiverCurrency] || selectedMethod.exchange_rate || 1;
-    return Math.round(parseFloat(wizardData.amount) * rate);
+    if (!wizardData.amount || !hasRateForCurrency) return 0;
+    return Math.round(parseFloat(wizardData.amount) * adminRate);
   };
 
   const handleNext = () => {
@@ -518,13 +523,45 @@ const CountryWizard = () => {
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className={isDark ? 'text-slate-300' : 'text-slate-600'}>{t('سعر الصرف', 'Exchange Rate', 'نرخی ئاڵوگۆڕ')} ({wizardData.receiverCurrency})</span>
-                      <span className="font-bold text-[#D4AF37]">1$ = {exchangeRates[wizardData.receiverCurrency] || selectedMethod.exchange_rate || 1}</span>
+                      <span className={isDark ? 'text-slate-300' : 'text-slate-600'}>{t('سعر الصرف', 'Exchange Rate', 'نرخی ئاڵوگۆڕ')} ({effectiveCurrency})</span>
+                      {hasRateForCurrency
+                        ? <span className="font-bold text-[#D4AF37]">1$ = {adminRate}</span>
+                        : <span className="font-bold text-red-500">{t('غير متوفر', 'Not available', 'بەردەست نییە')}</span>
+                      }
                     </div>
+
+                    {/* No-rate warning */}
+                    {!hasRateForCurrency && (
+                      <div className="mt-4 p-4 rounded-xl bg-red-50 border border-red-200 flex items-start gap-3">
+                        <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <p className="text-red-700 font-semibold text-sm">
+                            {t(
+                              `سعر الصرف لعملة ${effectiveCurrency} غير متوفر في لوحة التحكم`,
+                              `Exchange rate for ${effectiveCurrency} is not set in the admin panel`,
+                              `نرخی ${effectiveCurrency} لە پانێلی کۆنترۆڵدا دانەنراوە`
+                            )}
+                          </p>
+                          <p className="text-red-600 text-xs mt-1">
+                            {t(
+                              'يرجى التواصل مع الإدارة لإضافة سعر هذه العملة.',
+                              'Please contact the admin to add this currency rate.',
+                              'تکایە پەیوەندی بە ئەدمینەوە بکە بۆ زیادکردنی نرخی ئەم دراوە.'
+                            )}
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  <motion.button onClick={handleNext} whileHover={{ scale: 1.02 }}
-                    className={`w-full mt-8 py-4 font-bold rounded-2xl flex items-center justify-center gap-2 ${isDark ? 'bg-[#D4AF37] text-slate-900 hover:bg-[#FCD34D]' : 'bg-slate-900 text-white hover:bg-slate-800'
-                      }`}>
+                  <motion.button
+                    onClick={hasRateForCurrency ? handleNext : undefined}
+                    disabled={!hasRateForCurrency}
+                    whileHover={hasRateForCurrency ? { scale: 1.02 } : {}}
+                    className={`w-full mt-8 py-4 font-bold rounded-2xl flex items-center justify-center gap-2 transition-opacity ${
+                      hasRateForCurrency
+                        ? isDark ? 'bg-[#D4AF37] text-slate-900 hover:bg-[#FCD34D]' : 'bg-slate-900 text-white hover:bg-slate-800'
+                        : 'bg-slate-300 text-slate-500 cursor-not-allowed opacity-60'
+                    }`}>
                     {t('المتابعة', 'Continue', 'بەردەوام بە')} <ArrowRight className="w-5 h-5" />
                   </motion.button>
                 </motion.div>
