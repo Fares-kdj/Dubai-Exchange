@@ -47,14 +47,13 @@ const AdminOrders = () => {
   };
 
   useEffect(() => {
-    fetchOrders();
+    const timer = setTimeout(() => {
+      setPage(1);
+      fetchOrders();
+    }, 300);
+    return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, filterStatus, filterType]);
-
-  const handleSearch = () => {
-    setPage(1);
-    fetchOrders();
-  };
+  }, [searchQuery]);
 
   const orderTypes = [
     { value: 'all', label: 'جميع الأنواع' },
@@ -178,7 +177,6 @@ const AdminOrders = () => {
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
               placeholder="بحث برقم الطلب أو اسم العميل..."
               className="pl-10"
             />
