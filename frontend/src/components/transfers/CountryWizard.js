@@ -182,6 +182,19 @@ const CountryWizard = () => {
     return parseFloat(finalAmount.toFixed(2));
   };
 
+  const calculateIQD = () => {
+    if (!wizardData.amount || !usdRateObj) return 0;
+    return Math.round(parseFloat(wizardData.amount) * usdRateObj.sell_rate);
+  };
+
+  const calculateFee = () => {
+    return Math.round(calculateIQD() * 0.02); // 2% service fee
+  };
+
+  const calculateTotal = () => {
+    return calculateIQD() + calculateFee();
+  };
+
   const handleNext = () => {
     // Step 1: Select Country
     if (step === 1 && !wizardData.country) {
@@ -265,6 +278,9 @@ const CountryWizard = () => {
           methodName: selectedMethod ? t(selectedMethod.name_ar, selectedMethod.name_en, selectedMethod.name_ku) : '',
           receiverCurrency: wizardData.receiverCurrency,
           receiveAmount: calculateReceiveAmount(),
+          amountIQD: calculateIQD(),
+          serviceFee: calculateFee(),
+          total: calculateTotal(),
           purpose: selectedCountry?.country_code?.toUpperCase() === 'CN' ? 'trade' : wizardData.purpose,
           customFields: wizardData.customFields
         }
@@ -422,7 +438,31 @@ const CountryWizard = () => {
                       className={`h-12 pl-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : ''}`}
                       placeholder={t('ابحث...', 'Search...', 'گەڕان...')} />
                   </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                  
+                  <style>
+                    {`
+                      .custom-scrollbar::-webkit-scrollbar {
+                        width: 6px;
+                      }
+                      .custom-scrollbar::-webkit-scrollbar-track {
+                        background: transparent;
+                      }
+                      .custom-scrollbar::-webkit-scrollbar-thumb {
+                        background-color: ${isDark ? '#475569' : '#cbd5e1'};
+                        border-radius: 20px;
+                      }
+                      @media (max-width: 639px) {
+                        .custom-scrollbar::-webkit-scrollbar {
+                          display: none;
+                        }
+                        .custom-scrollbar {
+                          -ms-overflow-style: none;
+                          scrollbar-width: none;
+                        }
+                      }
+                    `}
+                  </style>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 max-h-[360px] overflow-y-auto overflow-x-hidden pr-2 custom-scrollbar">
                     {filteredCountries.map(c => (
                       <motion.button key={c.country_code} type="button" whileHover={{ scale: 1.05 }}
                         onClick={() => setWizardData(p => ({ ...p, country: c.country_code, method: null }))}
@@ -609,6 +649,53 @@ const CountryWizard = () => {
                       </div>
                     )}
                   </div>
+
+                  {/* Summary Block */}
+                  {wizardData.amount && parseFloat(wizardData.amount) > 0 && usdRateObj && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      className={`mb-6 p-6 rounded-2xl ${isDark ? 'bg-teal-900/20 border border-teal-700/50' : 'bg-teal-50 border border-teal-200'}`}
+                    >
+                      <h4 className={`font-bold mb-4 ${isDark ? 'text-teal-400' : 'text-teal-800'}`}>
+                        {t('ملخص الطلب', 'Order Summary', 'پوختەی داواکاری')}
+                      </h4>
+                      <div className="space-y-3 text-sm">
+                        <div className="flex justify-between">
+                          <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>{t('المبلغ', 'Amount', 'بڕ')} (USD)</span>
+                          <span className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                            ${parseFloat(wizardData.amount).toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>{t('سعر الصرف', 'Exchange Rate', 'نرخی ئاڵوگۆڕ')}</span>
+                          <span className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                            1 USD = {usdRateObj.sell_rate.toLocaleString()} IQD
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>{t('المقابل بالدينار', 'Amount in IQD', 'بڕ بە دینار')}</span>
+                          <span className={`font-semibold ${isDark ? 'text-white' : ''}`}>
+                            {calculateIQD().toLocaleString()} IQD
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>{t('رسوم الخدمة (2%)', 'Service Fee (2%)', 'رسوومى خزمەتگوزاری (2%)')}</span>
+                          <span className="font-semibold text-amber-500">
+                            {calculateFee().toLocaleString()} IQD
+                          </span>
+                        </div>
+                        <div className={`border-t pt-3 mt-3 ${isDark ? 'border-teal-700/50' : 'border-teal-200'}`}>
+                          <div className="flex justify-between items-center">
+                            <span className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('الإجمالي للدفع', 'Total to Pay', 'تێکڕای پارەدان')}</span>
+                            <span className="font-bold text-lg text-teal-500">
+                              {calculateTotal().toLocaleString()} IQD
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
 
                   {/* Receiver Currency Selection - For Bank Transfers Only */}
                   {isBankTransfer && (

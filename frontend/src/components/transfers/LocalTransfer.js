@@ -576,7 +576,7 @@ const LocalTransfer = () => {
               </div>
 
               {/* Summary with USD → IQD conversion */}
-              {formData.amountUSD && parseFloat(formData.amountUSD) > 0 && (
+              {formData.amount && parseFloat(formData.amount) > 0 && (
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
