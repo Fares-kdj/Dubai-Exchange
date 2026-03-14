@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 # Twilio Configuration
 TWILIO_ACCOUNT_SID = os.environ.get("TWILIO_ACCOUNT_SID", "")
 TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_AUTH_TOKEN", "")
-TWILIO_PHONE_NUMBER = os.environ.get("TWILIO_PHONE_NUMBER", "")
+TWILIO_MESSAGING_SERVICE_SID = os.environ.get("TWILIO_SERVICE", "")
 
 # Content SIDs from Twilio Console
 TWILIO_CONTENT_ORDER_SUBMITTED = os.environ.get("TWILIO_CONTENT_ORDER_SUBMITTED", "")
@@ -85,9 +85,9 @@ class SMSService:
     def __init__(self):
         self.account_sid = TWILIO_ACCOUNT_SID
         self.auth_token = TWILIO_AUTH_TOKEN
-        self.from_phone = TWILIO_PHONE_NUMBER
+        self.messaging_service_sid = TWILIO_MESSAGING_SERVICE_SID
         self.whatsapp = DEFAULT_WHATSAPP
-        self.enabled = bool(self.account_sid and self.auth_token and self.from_phone)
+        self.enabled = bool(self.account_sid and self.auth_token and self.messaging_service_sid)
         
         if not self.enabled:
             logger.warning("SMS Service disabled: Twilio credentials missing in .env")
@@ -143,7 +143,7 @@ class SMSService:
                 # Build the request payload
                 payload = {
                     "To": formatted_phone,
-                    "From": self.from_phone,
+                    "MessagingServiceSid": self.messaging_service_sid,
                     "ContentSid": content_sid,
                     "ContentVariables": json.dumps(variables)
                 }
