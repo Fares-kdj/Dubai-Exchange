@@ -8,6 +8,7 @@ import {
   Building2, ChevronDown, ChevronLeft, Crosshair, Clock
 } from 'lucide-react';
 import { useBranding } from '@/context/BrandingContext';
+import { toast } from 'sonner';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -70,6 +71,30 @@ const AdminLayout = () => {
       return;
     }
     setUser(JSON.parse(userStr));
+
+    // Global fetch interceptor to catch 401 Unauthorized
+    const originalFetch = window.fetch;
+    window.fetch = async function (...args) {
+      try {
+        const response = await originalFetch.apply(this, args);
+        if (response.status === 401) {
+          // Check if already in login page to prevent duplicate toasts
+          if (window.location.pathname !== '/admin/login') {
+            toast.error('انتهت الجلسة. يرجى تسجيل الدخول مجدداً.');
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('adminUser');
+            navigate('/admin/login');
+          }
+        }
+        return response;
+      } catch (error) {
+        throw error;
+      }
+    };
+
+    return () => {
+      window.fetch = originalFetch;
+    };
   }, [navigate]);
 
   useEffect(() => {
