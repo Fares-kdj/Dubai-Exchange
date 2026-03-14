@@ -8,9 +8,9 @@ export const ASSETS = {
   usdtCoin: '/assets/external/usdt-coin-opt.png',
 
   // Real Device Screenshots - Dark Mode
-  devicePhoneDark: '/assets/device-phone-dark.png',
-  deviceTabletDark: '/assets/device-tablet-dark.png',
-  deviceLaptopDark: '/assets/device-laptop-dark.png',
+  devicePhoneDark: '/assets/device-phone-dark.webp',
+  deviceTabletDark: '/assets/device-tablet-dark.webp',
+  deviceLaptopDark: '/assets/device-laptop-dark.webp',
 
   // Real Device Screenshots - Light Mode
   devicePhoneLight: '/assets/device-phone-light.png',
@@ -18,7 +18,7 @@ export const ASSETS = {
   deviceLaptopLight: '/assets/device-laptop-light.png',
 
   // Global Network
-  globalNetwork: '/assets/external/global-network.png',
+  globalNetwork: '/assets/external/global-network.webp',
 
   // Company Logos
   logoColor: '/assets/external/logo-black.svg',
@@ -32,9 +32,9 @@ export const ASSETS = {
     altayf: '/assets/external/altayf.png',
     fib: '/assets/external/fib.png',
     rasheed: '/assets/external/rasheed.png',
-    tbi: '/assets/external/tbi.png',
+    tbi: '/assets/external/tbi.webpi',
     rafidain: '/assets/external/rafidain.svg',
-    zaincash: '/assets/external/zaincash.jpg'
+    zaincash: '/assets/external/zaincash.webp'
   },
 
   // Payment Card
