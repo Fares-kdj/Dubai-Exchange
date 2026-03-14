@@ -160,46 +160,38 @@ const SplashScreen = ({ onComplete, minDuration = 2000 }) => {
                 />
               )}
 
-              {isBrandingLoading ? (
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                  className="w-16 h-16 border-4 border-amber-500/20 border-t-amber-500 rounded-full"
-                />
-              ) : (
-                <motion.img
-                  src={isDark ? logoDark : logoLight}
-                  alt="شعار الشركة"
-                  fetchpriority="high"
-                  loading="eager"
-                  className="w-52 h-52 object-contain relative z-10"
-                  initial={{ opacity: 0, scale: 0, y: -20 }}
-                  animate={{
-                    opacity: 1,
-                    scale: 1,
-                    y: [0, -10, 0],
-                  }}
-                  transition={{
-                    opacity: { duration: 0.5, ease: 'easeOut' },
-                    scale: {
-                      duration: 0.9,
-                      ease: [0.16, 1, 0.3, 1], // expo out - fast rise, soft land
-                    },
-                    y: {
-                      delay: 0.9,
-                      duration: 3.5,
-                      repeat: Infinity,
-                      ease: 'easeInOut',
-                      repeatType: 'mirror',
-                    }
-                  }}
-                  style={{
-                    filter: isDark
-                      ? 'drop-shadow(0 0 32px rgba(212,175,55,0.7)) drop-shadow(0 0 64px rgba(212,175,55,0.35))'
-                      : 'drop-shadow(0 8px 24px rgba(212,175,55,0.6)) drop-shadow(0 0 48px rgba(212,175,55,0.3))'
-                  }}
-                />
-              )}
+              <motion.img
+                src={isDark ? logoDark : logoLight}
+                alt="شعار الشركة"
+                fetchpriority="high"
+                loading="eager"
+                className="w-52 h-52 object-contain relative z-10"
+                initial={{ opacity: 0, scale: 0, y: -20 }}
+                animate={{
+                  opacity: 1,
+                  scale: 1,
+                  y: [0, -10, 0],
+                }}
+                transition={{
+                  opacity: { duration: 0.5, ease: 'easeOut' },
+                  scale: {
+                    duration: 0.9,
+                    ease: [0.16, 1, 0.3, 1], // expo out - fast rise, soft land
+                  },
+                  y: {
+                    delay: 0.9,
+                    duration: 3.5,
+                    repeat: Infinity,
+                    ease: 'easeInOut',
+                    repeatType: 'mirror',
+                  }
+                }}
+                style={{
+                  filter: isDark
+                    ? 'drop-shadow(0 0 32px rgba(212,175,55,0.7)) drop-shadow(0 0 64px rgba(212,175,55,0.35))'
+                    : 'drop-shadow(0 8px 24px rgba(212,175,55,0.6)) drop-shadow(0 0 48px rgba(212,175,55,0.3))'
+                }}
+              />
             </motion.div>
 
             {/* Welcome Headline */}
