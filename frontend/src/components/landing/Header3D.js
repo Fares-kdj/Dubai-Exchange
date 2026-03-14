@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
 import { useTheme } from '@/context/ThemeContext';
 import { useBranding } from '@/context/BrandingContext';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useMotionValueEvent } from 'framer-motion';
 import { Menu, X, Globe, Sun, Moon } from 'lucide-react';
 
 const Header3D = () => {
@@ -21,13 +21,11 @@ const Header3D = () => {
   const isRTL = isArabic || isKurdish;
   const isLandingPage = location.pathname === '/';
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  const { scrollY } = useScroll();
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    setScrolled(latest > 50);
+  });
 
   const navItems = [
     { key: 'home', href: '/', labelAr: 'الرئيسية', labelEn: 'Home', labelKu: 'سەرەکی' },

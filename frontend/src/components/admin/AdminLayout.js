@@ -25,17 +25,27 @@ const AdminLayout = () => {
   const [showNotifications, setShowNotifications] = useState(false);
 
   useEffect(() => {
+    let timeoutId = null;
     const handleResize = () => {
-      if (window.innerWidth < 1024) {
-        setSidebarOpen(false);
-      } else {
-        setSidebarOpen(true);
-      }
+      // Throttle state updates
+      if (timeoutId) return;
+
+      timeoutId = setTimeout(() => {
+        if (window.innerWidth < 1024) {
+          setSidebarOpen(false);
+        } else {
+          setSidebarOpen(true);
+        }
+        timeoutId = null;
+      }, 150);
     };
 
     handleResize(); // Initial check
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, []);
 
   // History management for mobile sidebar

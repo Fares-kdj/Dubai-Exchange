@@ -36,28 +36,12 @@ const LandingPage3D = () => {
   }, [location.hash]);
 
   useEffect(() => {
-    // Setup scroll triggers for sections
-    const sections = gsap.utils.toArray('section');
-
-    sections.forEach((section) => {
-      ScrollTrigger.create({
-        trigger: section,
-        start: 'top 80%',
-        once: true,
-        onEnter: () => section.classList.add('visible')
-      });
-    });
-
-    // Smooth scroll for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-          target.scrollIntoView({ behavior: 'smooth' });
-        }
-      });
-    });
+    // Note: Individual sections (HeroSection3D, ServicesSection3D, etc.) 
+    // already handle their own 'in-view' animations using framer-motion's useInView
+    // which is more performant than global ScrollTrigger class injections.
+    
+    // Refresh ScrollTrigger as a courtesy for lazy-loaded content
+    ScrollTrigger.refresh();
 
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
