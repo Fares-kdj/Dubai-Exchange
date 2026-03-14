@@ -38,6 +38,7 @@ const CountryWizard = () => {
     country: null,
     method: null,
     receiverCurrency: '', // New: Receiver's currency
+    customCurrencyName: '', // New: Free-text currency name for "Other Countries"
     senderName: '',
     receiverName: '',
     senderPhone: '',
@@ -46,6 +47,9 @@ const CountryWizard = () => {
     customFields: {},
     fieldUploads: {} // New: Store upload progress/status for dynamic fields
   });
+
+  // Check if selected country is "Other Countries"
+  const isOtherCountry = wizardData.country === 'OTHER';
 
   // Currency names map for display
   const currencyNames = {
@@ -64,7 +68,7 @@ const CountryWizard = () => {
   };
 
   // Check if selected method is bank transfer
-  const isBankTransfer = wizardData.method?.toLowerCase().includes('bank');
+  const isBankTransfer = wizardData.method?.toLowerCase().includes('bank') || wizardData.method === 'bank_transfer_other';
 
   // Get available currencies for receiver based on method
   const getAvailableCurrencies = () => {
@@ -102,12 +106,12 @@ const CountryWizard = () => {
           fetch(`${API_URL}/api/cms/countries?active_only=true`),
           fetch(`${API_URL}/api/rates?active_only=true`)
         ]);
-        
+
         if (countriesRes.ok) {
           const data = await countriesRes.json();
           setCountries(data);
         }
-        
+
         if (ratesRes.ok) {
           const ratesData = await ratesRes.json();
           const ratesMap = {};
@@ -128,6 +132,20 @@ const CountryWizard = () => {
   useEffect(() => {
     if (!wizardData.country) {
       setMethods([]);
+      return;
+    }
+    if (wizardData.country === 'OTHER') {
+      // For "Other Countries", only bank transfer is available
+      setMethods([{
+        method_id: 'bank_transfer_other',
+        name_ar: 'تحويل بنكي',
+        name_en: 'Bank Transfer',
+        name_ku: 'گواستنەوەی بانکی',
+        duration: '',
+        exchange_rate: ''
+      }]);
+      // Auto-select bank transfer
+      setWizardData(p => ({ ...p, method: 'bank_transfer_other' }));
       return;
     }
     const country = countries.find(c => c.country_code === wizardData.country);
@@ -156,7 +174,18 @@ const CountryWizard = () => {
     (c.name_ku && c.name_ku.includes(searchQuery))
   );
 
-  const selectedCountry = countries.find(c => c.country_code === wizardData.country);
+  // "Other Countries" pseudo-country object
+  const otherCountryCard = {
+    country_code: 'OTHER',
+    name_ar: 'دول أخرى',
+    name_en: 'Other Countries',
+    name_ku: 'وڵاتی تر',
+    flag: null
+  };
+
+  const selectedCountry = wizardData.country === 'OTHER'
+    ? otherCountryCard
+    : countries.find(c => c.country_code === wizardData.country);
   const selectedMethod = methods.find(m => m.method_id === wizardData.method);
 
   // Formulas match CurrencyConverterSection.js
@@ -224,7 +253,8 @@ const CountryWizard = () => {
     if (!wizardData.receiverName.trim()) newErrors.receiverName = t('مطلوب', 'Required', 'پێویستە');
     if (!wizardData.senderPhone.trim()) newErrors.senderPhone = t('مطلوب', 'Required', 'پێویستە');
     if (!wizardData.receiverPhone.trim()) newErrors.receiverPhone = t('مطلوب', 'Required', 'پێویستە');
-    if (isBankTransfer && !wizardData.receiverCurrency) newErrors.receiverCurrency = t('اختر عملة المستلم', 'Select receiver currency', 'دراوی وەرگر هەڵبژێرە');
+    if (isOtherCountry && !wizardData.customCurrencyName.trim()) newErrors.customCurrencyName = t('أدخل اسم العملة', 'Enter currency name', 'ناوی دراو بنووسە');
+    if (!isOtherCountry && isBankTransfer && !wizardData.receiverCurrency) newErrors.receiverCurrency = t('اختر عملة المستلم', 'Select receiver currency', 'دراوی وەرگر هەڵبژێرە');
     if (!wizardData.purpose) newErrors.purpose = t('مطلوب', 'Required', 'پێویستە');
 
     // Add dynamic field validation
@@ -273,11 +303,14 @@ const CountryWizard = () => {
           senderPhone: wizardData.senderPhone,
           receiverPhone: wizardData.receiverPhone,
           countryCode: wizardData.country,
-          countryName: selectedCountry ? (isArabic ? selectedCountry.name_ar : selectedCountry.name_en) : '',
+          countryName: isOtherCountry
+            ? t('دول أخرى', 'Other Countries', 'وڵاتی تر')
+            : (selectedCountry ? (isArabic ? selectedCountry.name_ar : selectedCountry.name_en) : ''),
           methodId: wizardData.method,
           methodName: selectedMethod ? t(selectedMethod.name_ar, selectedMethod.name_en, selectedMethod.name_ku) : '',
-          receiverCurrency: wizardData.receiverCurrency,
-          receiveAmount: calculateReceiveAmount(),
+          receiverCurrency: isOtherCountry ? '' : wizardData.receiverCurrency,
+          customCurrencyName: isOtherCountry ? wizardData.customCurrencyName : '',
+          receiveAmount: isOtherCountry ? '' : calculateReceiveAmount(),
           amountIQD: calculateIQD(),
           serviceFee: calculateFee(),
           total: calculateTotal(),
@@ -301,7 +334,9 @@ const CountryWizard = () => {
             orderData: {
               ...orderData.details,
               type: 'country_based',
-              receiverCurrencyName: selectedCurrency ? (isArabic ? selectedCurrency.nameAr : selectedCurrency.nameEn) : '',
+              receiverCurrencyName: isOtherCountry
+                ? wizardData.customCurrencyName
+                : (selectedCurrency ? (isArabic ? selectedCurrency.nameAr : selectedCurrency.nameEn) : ''),
               orderId: order.order_id
             }
           }
@@ -438,7 +473,7 @@ const CountryWizard = () => {
                       className={`h-12 pl-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : ''}`}
                       placeholder={t('ابحث...', 'Search...', 'گەڕان...')} />
                   </div>
-                  
+
                   <style>
                     {`
                       .custom-scrollbar::-webkit-scrollbar {
@@ -465,7 +500,7 @@ const CountryWizard = () => {
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 max-h-[360px] overflow-y-auto overflow-x-hidden pr-2 custom-scrollbar">
                     {filteredCountries.map(c => (
                       <motion.button key={c.country_code} type="button" whileHover={{ scale: 1.05 }}
-                        onClick={() => setWizardData(p => ({ ...p, country: c.country_code, method: null }))}
+                        onClick={() => setWizardData(p => ({ ...p, country: c.country_code, method: null, customCurrencyName: '' }))}
                         className={`p-4 rounded-2xl border-2 text-center transition-colors ${wizardData.country === c.country_code
                           ? 'border-[#D4AF37] bg-[#D4AF37]/10'
                           : isDark ? 'border-slate-600 hover:border-slate-500' : 'border-slate-200 hover:border-slate-300'
@@ -485,6 +520,31 @@ const CountryWizard = () => {
                         </span>
                       </motion.button>
                     ))}
+
+                    {/* "Other Countries" card - always visible */}
+                    <motion.button
+                      type="button"
+                      whileHover={{ scale: 1.05 }}
+                      onClick={() => setWizardData(p => ({ ...p, country: 'OTHER', method: null, customCurrencyName: '' }))}
+                      className={`p-4 rounded-2xl border-2 text-center transition-colors ${
+                        wizardData.country === 'OTHER'
+                          ? 'border-[#D4AF37] bg-[#D4AF37]/10'
+                          : isDark ? 'border-indigo-600/60 hover:border-indigo-500 bg-indigo-900/10' : 'border-indigo-300 hover:border-indigo-400 bg-indigo-50/50'
+                      }`}
+                    >
+                      <div className="flex justify-center mb-2">
+                        <div className={`w-12 h-10 flex items-center justify-center rounded-lg border text-xl ${
+                          isDark ? 'bg-indigo-900/30 border-indigo-700/50' : 'bg-indigo-100 border-indigo-200'
+                        }`}>
+                          🌐
+                        </div>
+                      </div>
+                      <span className={`text-sm font-medium ${
+                        isDark ? 'text-indigo-300' : 'text-indigo-700'
+                      }`}>
+                        {t('دول أخرى', 'Other Countries', 'وڵاتی تر')}
+                      </span>
+                    </motion.button>
                   </div>
                   {errors.country && <p className="text-red-500 mt-4"><AlertCircle className="w-4 h-4 inline" /> {errors.country}</p>}
                   <motion.button onClick={handleNext} whileHover={{ scale: 1.02 }}
@@ -542,7 +602,7 @@ const CountryWizard = () => {
               )}
 
               {/* Step 3: Summary */}
-              {step === 3 && selectedCountry && selectedMethod && (
+              {step === 3 && selectedCountry && (selectedMethod || isOtherCountry) && (
                 <motion.div key="s3" initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -50 }}
                   className={`rounded-3xl border-2 shadow-xl p-8 ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'
                     }`}>
@@ -573,16 +633,18 @@ const CountryWizard = () => {
                         {t(selectedMethod.name_ar, selectedMethod.name_en, selectedMethod.name_ku)}
                       </span>
                     </div>
+                    {!isOtherCountry && (
                     <div className="flex justify-between">
                       <span className={isDark ? 'text-slate-300' : 'text-slate-600'}>{t('سعر الصرف', 'Exchange Rate', 'نرخی ئاڵوگۆڕ')}</span>
                       {hasRateForCurrency
-                        ? <span className="font-bold text-[#D4AF37]">1 USD = {crossRate} {effectiveCurrency}</span>
+                        ? <span dir="ltr" className="font-bold text-[#D4AF37]">1 USD = {crossRate} {effectiveCurrency}</span>
                         : <span className="font-bold text-red-500">{t('غير متوفر', 'Not available', 'بەردەست نییە')}</span>
                       }
                     </div>
+                    )}
 
-                    {/* No-rate warning */}
-                    {!hasRateForCurrency && (
+                    {/* No-rate warning - only for regular countries */}
+                    {!isOtherCountry && !hasRateForCurrency && (
                       <div className="mt-4 p-4 rounded-xl bg-red-50 border border-red-200 flex items-start gap-3">
                         <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
                         <div>
@@ -590,10 +652,10 @@ const CountryWizard = () => {
                             {!usdRateObj
                               ? t('سعر صرف الدولار غير موجود في لوحة التحكم', 'USD exchange rate is missing in admin panel', 'نرخی دۆلار لە پانێلی کۆنترۆڵدا نییە')
                               : t(
-                                  `سعر الصرف لعملة ${effectiveCurrency} غير متوفر في لوحة التحكم`,
-                                  `Exchange rate for ${effectiveCurrency} is not set in the admin panel`,
-                                  `نرخی ${effectiveCurrency} لە پانێلی کۆنترۆڵدا دانەنراوە`
-                                )
+                                `سعر الصرف لعملة ${effectiveCurrency} غير متوفر في لوحة التحكم`,
+                                `Exchange rate for ${effectiveCurrency} is not set in the admin panel`,
+                                `نرخی ${effectiveCurrency} لە پانێلی کۆنترۆڵدا دانەنراوە`
+                              )
                             }
                           </p>
                           <p className="text-red-600 text-xs mt-1">
@@ -606,16 +668,28 @@ const CountryWizard = () => {
                         </div>
                       </div>
                     )}
+                    {/* Info note for "Other Countries" */}
+                    {isOtherCountry && (
+                      <div className="mt-4 p-4 rounded-xl bg-indigo-50 border border-indigo-200 flex items-start gap-3">
+                        <Globe className="w-5 h-5 text-indigo-500 flex-shrink-0 mt-0.5" />
+                        <p className="text-indigo-700 text-sm">
+                          {t(
+                            'طريقة التحويل: تحويل بنكي فقط. سيتم تحديد العملة والسعر عند التواصل معك.',
+                            'Transfer method: Bank transfer only. Currency and rate will be specified when we contact you.',
+                            'ڕێگای گواستنەوە: گواستنەوەی بانکی تەنها. دراو و نرخ لە کاتی پەیوەندиکردنەوە دیاری دەکرێت.'
+                          )}
+                        </p>
+                      </div>
+                    )}
                   </div>
                   <motion.button
-                    onClick={hasRateForCurrency ? handleNext : undefined}
-                    disabled={!hasRateForCurrency}
-                    whileHover={hasRateForCurrency ? { scale: 1.02 } : {}}
-                    className={`w-full mt-8 py-4 font-bold rounded-2xl flex items-center justify-center gap-2 transition-opacity ${
-                      hasRateForCurrency
+                    onClick={(isOtherCountry || hasRateForCurrency) ? handleNext : undefined}
+                    disabled={!isOtherCountry && !hasRateForCurrency}
+                    whileHover={(isOtherCountry || hasRateForCurrency) ? { scale: 1.02 } : {}}
+                    className={`w-full mt-8 py-4 font-bold rounded-2xl flex items-center justify-center gap-2 transition-opacity ${(isOtherCountry || hasRateForCurrency)
                         ? isDark ? 'bg-[#D4AF37] text-slate-900 hover:bg-[#FCD34D]' : 'bg-slate-900 text-white hover:bg-slate-800'
                         : 'bg-slate-300 text-slate-500 cursor-not-allowed opacity-60'
-                    }`}>
+                      }`}>
                     {t('المتابعة', 'Continue', 'بەردەوام بە')} <ArrowRight className="w-5 h-5" />
                   </motion.button>
                 </motion.div>
@@ -637,6 +711,7 @@ const CountryWizard = () => {
                   <div className={`rounded-2xl p-6 mb-6 ${isDark ? 'bg-emerald-900/20 border border-emerald-700/50' : 'bg-emerald-50 border border-emerald-200'}`}>
                     <Label className={`text-lg font-bold ${isDark ? 'text-emerald-400' : 'text-emerald-700'}`}>{t('المبلغ بالدولار ($)', 'Amount in USD ($)', 'بڕ بە دۆلار ($)')}</Label>
                     <Input type="number" value={wizardData.amount}
+                      onWheel={(e) => e.target.blur()}
                       onChange={e => setWizardData(p => ({ ...p, amount: e.target.value }))}
                       className={`h-16 text-3xl font-bold mt-2 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : ''}`}
                       placeholder="100" min="1" />
@@ -650,55 +725,32 @@ const CountryWizard = () => {
                     )}
                   </div>
 
-                  {/* Summary Block */}
-                  {wizardData.amount && parseFloat(wizardData.amount) > 0 && usdRateObj && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      className={`mb-6 p-6 rounded-2xl ${isDark ? 'bg-teal-900/20 border border-teal-700/50' : 'bg-teal-50 border border-teal-200'}`}
-                    >
-                      <h4 className={`font-bold mb-4 ${isDark ? 'text-teal-400' : 'text-teal-800'}`}>
-                        {t('ملخص الطلب', 'Order Summary', 'پوختەی داواکاری')}
-                      </h4>
-                      <div className="space-y-3 text-sm">
-                        <div className="flex justify-between">
-                          <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>{t('المبلغ', 'Amount', 'بڕ')} (USD)</span>
-                          <span className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                            ${parseFloat(wizardData.amount).toLocaleString()}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>{t('سعر الصرف', 'Exchange Rate', 'نرخی ئاڵوگۆڕ')}</span>
-                          <span className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                            1 USD = {usdRateObj.sell_rate.toLocaleString()} IQD
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>{t('المقابل بالدينار', 'Amount in IQD', 'بڕ بە دینار')}</span>
-                          <span className={`font-semibold ${isDark ? 'text-white' : ''}`}>
-                            {calculateIQD().toLocaleString()} IQD
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>{t('رسوم الخدمة (2%)', 'Service Fee (2%)', 'رسوومى خزمەتگوزاری (2%)')}</span>
-                          <span className="font-semibold text-amber-500">
-                            {calculateFee().toLocaleString()} IQD
-                          </span>
-                        </div>
-                        <div className={`border-t pt-3 mt-3 ${isDark ? 'border-teal-700/50' : 'border-teal-200'}`}>
-                          <div className="flex justify-between items-center">
-                            <span className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('الإجمالي للدفع', 'Total to Pay', 'تێکڕای پارەدان')}</span>
-                            <span className="font-bold text-lg text-teal-500">
-                              {calculateTotal().toLocaleString()} IQD
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
+
+                  {/* Currency Name Field - For "Other Countries" (free text) */}
+                  {isOtherCountry && (
+                    <div className={`rounded-2xl p-6 mb-6 ${isDark ? 'bg-indigo-900/20 border border-indigo-700/50' : 'bg-indigo-50 border border-indigo-200'}`}>
+                      <Label className={`text-lg font-bold mb-2 block ${isDark ? 'text-indigo-400' : 'text-indigo-700'}`}>
+                        {t('اسم العملة', 'Currency Name', 'ناوی دراو')} *
+                      </Label>
+                      <p className={`text-xs mb-3 ${isDark ? 'text-indigo-300' : 'text-indigo-600'}`}>
+                        {t(
+                          'أدخل اسم العملة التي تريد استلام المبلغ بها (مثال: يورو، دولار كندي، ريال سعودي...)',
+                          'Enter the currency name you want to receive the amount in (e.g. Euro, CAD, Saudi Riyal...)',
+                          'ناوی دراوێک بنووسە کە دەتەوێت بڕەکە پێیدا وەربگیری (بۆ نموونە: یۆرۆ، دۆلاری کەنەدی...)'
+                        )}
+                      </p>
+                      <Input
+                        value={wizardData.customCurrencyName}
+                        onChange={e => setWizardData(p => ({ ...p, customCurrencyName: e.target.value }))}
+                        className={`h-12 mt-1 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : ''}`}
+                        placeholder={t('مثال: يورو، ريال سعودي...', 'e.g. Euro, SAR...', 'بۆ نموونە: یۆرۆ، دۆلار...')}
+                      />
+                      {errors.customCurrencyName && <p className="text-red-500 mt-2"><AlertCircle className="w-4 h-4 inline" /> {errors.customCurrencyName}</p>}
+                    </div>
                   )}
 
-                  {/* Receiver Currency Selection - For Bank Transfers Only */}
-                  {isBankTransfer && (
+                  {/* Receiver Currency Selection - For Bank Transfers of regular countries */}
+                  {isBankTransfer && !isOtherCountry && (
                     <div className={`rounded-2xl p-6 mb-6 ${isDark ? 'bg-blue-900/20 border border-blue-700/50' : 'bg-blue-50 border border-blue-200'}`}>
                       <Label className={`text-lg font-bold mb-4 block ${isDark ? 'text-blue-400' : 'text-blue-700'}`}>
                         {t('عملة المستلم', 'Receiver Currency', 'دراوی وەرگر')} *
@@ -725,7 +777,7 @@ const CountryWizard = () => {
                   )}
 
                   {/* Non-Bank: Show fixed currency info */}
-                  {!isBankTransfer && wizardData.country && (
+                  {!isBankTransfer && !isOtherCountry && wizardData.country && (
                     <div className={`rounded-2xl p-4 mb-6 ${isDark ? 'bg-amber-900/20 border border-amber-700/50' : 'bg-amber-50 border border-amber-200'}`}>
                       <p className={`text-sm ${isDark ? 'text-amber-300' : 'text-amber-800'}`}>
                         <AlertCircle className="w-4 h-4 inline ml-1" />
@@ -907,6 +959,53 @@ const CountryWizard = () => {
                       </div>
                     )}
                   </div>
+
+                  {/* Summary Block - shown last before submit */}
+                  {wizardData.amount && parseFloat(wizardData.amount) > 0 && usdRateObj && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      className={`mt-6 p-6 rounded-2xl ${isDark ? 'bg-teal-900/20 border border-teal-700/50' : 'bg-teal-50 border border-teal-200'}`}
+                    >
+                      <h4 className={`font-bold mb-4 ${isDark ? 'text-teal-400' : 'text-teal-800'}`}>
+                        {t('ملخص الطلب', 'Order Summary', 'پوختەی داواکاری')}
+                      </h4>
+                      <div className="space-y-3 text-sm">
+                        <div className="flex justify-between">
+                          <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>{t('المبلغ', 'Amount', 'بڕ')} (USD)</span>
+                          <span className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                            ${parseFloat(wizardData.amount).toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>{t('سعر الصرف', 'Exchange Rate', 'نرخی ئاڵوگۆڕ')}</span>
+                          <span dir="ltr" className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                            1 USD = {usdRateObj.sell_rate.toLocaleString()} IQD
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>{t('المقابل بالدينار', 'Amount in IQD', 'بڕ بە دینار')}</span>
+                          <span dir="ltr" className={`font-semibold ${isDark ? 'text-white' : ''}`}>
+                            {calculateIQD().toLocaleString()} IQD
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>{t('رسوم الخدمة (2%)', 'Service Fee (2%)', 'رسوومى خزمەتگوزاری (2%)')}</span>
+                          <span dir="ltr" className="font-semibold text-amber-500">
+                            {calculateFee().toLocaleString()} IQD
+                          </span>
+                        </div>
+                        <div className={`border-t pt-3 mt-3 ${isDark ? 'border-teal-700/50' : 'border-teal-200'}`}>
+                          <div className="flex justify-between items-center">
+                            <span className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('الإجمالي للدفع', 'Total to Pay', 'تێکڕای پارەدان')}</span>
+                            <span dir="ltr" className="font-bold text-lg text-teal-500">
+                              {calculateTotal().toLocaleString()} IQD
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
 
                   <motion.button onClick={handleSubmit} disabled={loading} whileHover={{ scale: 1.02 }}
                     className="w-full mt-8 py-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold rounded-2xl flex items-center justify-center gap-2 disabled:opacity-50">

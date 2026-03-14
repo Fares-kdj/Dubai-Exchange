@@ -488,7 +488,9 @@ const TrackOrder = () => {
                             purpose: { ar: 'الغرض من التحويل', en: 'Transfer Purpose', ku: 'مەبەستی گواستنەوە' },
                             senderDistrict: { ar: 'قضاء المرسل', en: 'Sender District', ku: 'قەزای نێرەر' },
                             receiverDistrict: { ar: 'قضاء المستلم', en: 'Receiver District', ku: 'قەزای وەرگر' },
-                            pickupLocationName: { ar: 'مكان الاستلام', en: 'Pickup Location', ku: 'شوێنی وەرگرتن' }
+                            pickupLocationName: { ar: 'مكان الاستلام', en: 'Pickup Location', ku: 'شوێنی وەرگرتن' },
+                            // Other Countries - custom currency
+                            customCurrencyName: { ar: 'اسم العملة المطلوبة', en: 'Requested Currency Name', ku: 'ناوی دراوی داواکراو' }
                           };
 
                           const valueMappings = {

@@ -439,6 +439,7 @@ const CardRecharge = () => {
                   <Input
                     type="number"
                     value={formData.amount}
+                    onWheel={(e) => e.target.blur()}
                     onChange={(e) => handleInputChange('amount', e.target.value)}
                     className={`h-14 text-xl font-bold ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`}
                     placeholder="100"
@@ -494,20 +495,20 @@ const CardRecharge = () => {
                   <div className="space-y-3">
                     <div className="flex justify-between">
                       <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>{t('المبلغ USD', 'Amount USD', 'بڕ بە دۆلار')}</span>
-                      <span className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>${formData.amount}</span>
+                      <span dir="ltr" className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>${formData.amount}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>{t('المقابل بالدينار', 'Amount in IQD', 'بڕ بە دینار')}</span>
-                      <span className={`font-semibold ${isDark ? 'text-white' : ''}`}>{calculateIQD().toLocaleString()} IQD</span>
+                      <span dir="ltr" className={`font-semibold ${isDark ? 'text-white' : ''}`}>{calculateIQD().toLocaleString()} IQD</span>
                     </div>
                     <div className="flex justify-between">
                       <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>{t(`رسوم الخدمة (${serviceFee}%)`, `Service Fee (${serviceFee}%)`, `رسوومی خزمەتگوزاری (${serviceFee}%)`)}</span>
-                      <span className="font-semibold text-amber-500">{calculateFeeAmount().toLocaleString()} IQD</span>
+                      <span dir="ltr" className="font-semibold text-amber-500">{calculateFeeAmount().toLocaleString()} IQD</span>
                     </div>
                     <div className={`border-t pt-3 mt-3 ${isDark ? 'border-emerald-700/50' : 'border-emerald-200'}`}>
                       <div className="flex justify-between items-center">
                         <span className={`font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{t('الإجمالي للدفع', 'Total to Pay', 'تێکڕای پارەدان')}</span>
-                        <span className="font-bold text-2xl text-emerald-500">{calculateTotalAmount().toLocaleString()} IQD</span>
+                        <span dir="ltr" className="font-bold text-2xl text-emerald-500">{calculateTotalAmount().toLocaleString()} IQD</span>
                       </div>
                     </div>
                   </div>

@@ -553,6 +553,7 @@ const WesternUnion = () => {
                   <Input
                     type="number"
                     value={formData.amount}
+                    onWheel={(e) => e.target.blur()}
                     onChange={(e) => handleInputChange('amount', e.target.value)}
                     className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`}
                     placeholder="1000"
@@ -624,32 +625,32 @@ const WesternUnion = () => {
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className={isDark ? 'text-yellow-200' : 'text-yellow-800'}>{t('المبلغ المرسل', 'Amount to Send', 'بڕی نێردراو')}</span>
-                      <span className={`font-semibold ${isDark ? 'text-white' : ''}`}>{formData.amount} {formData.currency}</span>
+                      <span dir="ltr" className={`font-semibold ${isDark ? 'text-white' : ''}`}>{formData.amount} {formData.currency}</span>
                     </div>
                     {formData.currency !== 'USD' && (
                       <>
                         <div className="flex justify-between">
                           <span className={isDark ? 'text-yellow-200' : 'text-yellow-800'}>{t('سعر الصرف (مقابل الدولار)', 'Exchange Rate (vs USD)', 'ڕێژەی گۆڕین (بەرامبەر دۆلار)')}</span>
-                          <span className={`font-semibold ${isDark ? 'text-white' : ''}`}>{calculateExchangeRateToUSD().toFixed(4)}</span>
+                          <span dir="ltr" className={`font-semibold ${isDark ? 'text-white' : ''}`}>{calculateExchangeRateToUSD().toFixed(4)}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className={isDark ? 'text-yellow-200' : 'text-yellow-800'}>{t('المبلغ بالدولار', 'Amount in USD', 'بڕ بە دۆلار')}</span>
-                          <span className={`font-semibold ${isDark ? 'text-white' : ''}`}>{calculateUSDAmount().toFixed(2)} $</span>
+                          <span dir="ltr" className={`font-semibold ${isDark ? 'text-white' : ''}`}>{calculateUSDAmount().toFixed(2)} $</span>
                         </div>
                       </>
                     )}
                     <div className="flex justify-between">
                       <span className={isDark ? 'text-yellow-200' : 'text-yellow-800'}>{t('المقابل بالدينار', 'Amount in IQD', 'بڕ بە دینار')}</span>
-                      <span className={`font-semibold ${isDark ? 'text-white' : ''}`}>{calculateIQD().toLocaleString()} {t('د.ع', 'IQD', 'IQD')}</span>
+                      <span dir="ltr" className={`font-semibold ${isDark ? 'text-white' : ''}`}>{calculateIQD().toLocaleString()} {t('د.ع', 'IQD', 'IQD')}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className={isDark ? 'text-yellow-200' : 'text-yellow-800'}>{t(`رسوم الخدمة (${serviceFeePercent}%)`, `Service Fee (${serviceFeePercent}%)`, `رسوومی خزمەتگوزاری (${serviceFeePercent}%)`)}</span>
-                      <span className="font-semibold text-amber-500">{calculateFee().toLocaleString()} {t('د.ع', 'IQD', 'IQD')}</span>
+                      <span dir="ltr" className="font-semibold text-amber-500">{calculateFee().toLocaleString()} {t('د.ع', 'IQD', 'IQD')}</span>
                     </div>
                     <div className={`border-t pt-2 mt-2 ${isDark ? 'border-yellow-700/50' : 'border-yellow-300'}`}>
                       <div className="flex justify-between">
                         <span className={`font-bold ${isDark ? 'text-white' : 'text-yellow-900'}`}>{t('الإجمالي للدفع', 'Total to Pay', 'تێکڕای پارەدان')}</span>
-                        <span className="font-bold text-lg text-yellow-500">{calculateTotal().toLocaleString()} {t('د.ع', 'IQD', 'IQD')}</span>
+                        <span dir="ltr" className="font-bold text-lg text-yellow-500">{calculateTotal().toLocaleString()} {t('د.ع', 'IQD', 'IQD')}</span>
                       </div>
                     </div>
                   </div>

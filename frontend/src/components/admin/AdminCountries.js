@@ -358,7 +358,7 @@ const AdminCountries = () => {
                         <div key={m.method_id} className="text-sm bg-white p-3 rounded border border-slate-200 shadow-sm">
                           <div className="flex justify-between font-bold mb-1">
                             <span>{m.name_ar}</span>
-                            <span className="text-slate-500 font-normal">{m.exchange_rate} • {m.fee_value}% • {m.duration}</span>
+                            <span dir="ltr" className="text-slate-500 font-normal">{m.exchange_rate} • {m.fee_value}% • {m.duration}</span>
                           </div>
                           {m.fields && m.fields.length > 0 && (
                             <div className="flex flex-wrap gap-1 mt-2">
@@ -475,7 +475,7 @@ const AdminCountries = () => {
                     <div key={m.method_id} className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
                       <div className="flex-1">
                         <p className="font-medium">{m.name_ar}</p>
-                        <p className="text-sm text-slate-500">{m.exchange_rate} • {m.fee_value}% • {m.duration}</p>
+                        <p dir="ltr" className="text-sm text-slate-500">{m.exchange_rate} • {m.fee_value}% • {m.duration}</p>
                       </div>
                       <div className="flex gap-2">
                         <button type="button" onClick={function () { handleEditMethod(m); }} className="text-blue-500 p-1 hover:bg-blue-50 rounded">

@@ -477,6 +477,7 @@ const LocalTransfer = () => {
                   <Input
                     type="number"
                     value={formData.amount}
+                    onWheel={(e) => e.target.blur()}
                     onChange={(e) => handleInputChange('amount', e.target.value)}
                     className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`}
                     placeholder="100"
@@ -591,7 +592,7 @@ const LocalTransfer = () => {
                       <span className={isDark ? 'text-emerald-200' : 'text-emerald-800'}>
                         {t('المبلغ', 'Amount', 'بڕ')} ({formData.senderCurrency})
                       </span>
-                      <span className={`font-semibold ${isDark ? 'text-white' : ''}`}>
+                      <span dir="ltr" className={`font-semibold ${isDark ? 'text-white' : ''}`}>
                         {formData.senderCurrency === 'USD' ? '$' : ''}{parseFloat(formData.amount).toLocaleString()} {formData.senderCurrency === 'IQD' ? 'IQD' : ''}
                       </span>
                     </div>
@@ -600,7 +601,7 @@ const LocalTransfer = () => {
                         <span className={isDark ? 'text-emerald-200' : 'text-emerald-800'}>
                           {t('المقابل بالدينار', 'Amount in IQD', 'بڕ بە دینار')}
                         </span>
-                        <span className={`font-semibold ${isDark ? 'text-white' : ''}`}>
+                        <span dir="ltr" className={`font-semibold ${isDark ? 'text-white' : ''}`}>
                           {calculateAmountIQD().toLocaleString()} IQD
                         </span>
                       </div>
@@ -619,7 +620,7 @@ const LocalTransfer = () => {
                       <span className={isDark ? 'text-emerald-200' : 'text-emerald-800'}>
                         {t(`رسوم الخدمة (${serviceFeePercent}%)`, `Service Fee (${serviceFeePercent}%)`, `رسوومى خزمەتگوزاری (${serviceFeePercent}%)`)}
                       </span>
-                      <span className="font-semibold text-amber-500">
+                      <span dir="ltr" className="font-semibold text-amber-500">
                         {calculateFee().toLocaleString()} IQD
                       </span>
                     </div>
@@ -628,7 +629,7 @@ const LocalTransfer = () => {
                         <span className={`font-bold ${isDark ? 'text-white' : 'text-emerald-900'}`}>
                           {t('الإجمالي للدفع', 'Total to Pay', 'کۆی گشتی بۆ پارەدان')}
                         </span>
-                        <span className="font-bold text-lg text-emerald-500">
+                        <span dir="ltr" className="font-bold text-lg text-emerald-500">
                           {calculateTotal().toLocaleString()} IQD
                         </span>
                       </div>

@@ -164,7 +164,13 @@ export const CurrencyConverterSection = () => {
       'AED': { ar: 'درهم', en: 'AED', ku: 'درهەم' },
       'SAR': { ar: 'ريال', en: 'SAR', ku: 'ڕیاڵ' },
       'JOD': { ar: 'دينار', en: 'JOD', ku: 'دینار' },
-      'LBP': { ar: 'ليرة', en: 'LBP', ku: 'لیرە' }
+      'LBP': { ar: 'ليرة', en: 'LBP', ku: 'لیرە' },
+      'KWD': { ar: 'دينار كويتي', en: 'KWD', ku: 'دیناری کوەیتی' },
+      'BHD': { ar: 'دينار بحريني', en: 'BHD', ku: 'دیناری بەحرەینی' },
+      'QAR': { ar: 'ريال قطري', en: 'QAR', ku: 'ڕیاڵی قەتەری' },
+      'OMR': { ar: 'ريال عماني', en: 'OMR', ku: 'ڕیاڵی عومانی' },
+      'EGP': { ar: 'جنيه مصري', en: 'EGP', ku: 'پاوەندی میسری' },
+      'IRR': { ar: 'تومان', en: 'IRR', ku: 'تومەن' }
     };
 
     const mapping = currencyMappings[code];
@@ -566,11 +572,11 @@ export const CurrencyConverterSection = () => {
                             animate={{ opacity: 1, x: 0 }}
                             key={result}
                           >
-                            {parseFloat(result).toLocaleString()}
+                            {parseFloat(result).toLocaleString('en-US')}
                             <span className={`text-2xl ${isDark ? 'text-slate-400' : 'text-slate-500'}`}> {getLocalizedCurrency(toCurrency)}</span>
                           </motion.div>
                           <div className={`text-sm mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                            {parseFloat(amount).toLocaleString()} {getLocalizedCurrency(fromCurrency)} = {parseFloat(result).toLocaleString()} {getLocalizedCurrency(toCurrency)}
+                            <span>1 {getLocalizedCurrency(fromCurrency)} = {amount && parseFloat(amount) > 0 ? (parseFloat(result) / parseFloat(amount)).toLocaleString('en-US', { maximumFractionDigits: 4 }) : 0} {getLocalizedCurrency(toCurrency)}</span>
                           </div>
                         </div>
                       </div>
@@ -636,7 +642,7 @@ export const CurrencyConverterSection = () => {
                     {rate.currency_code}
                   </div>
                   <div className={`text-sm font-semibold mt-1 ${isDark ? 'text-[#D4AF37]' : 'text-[#B8860B]'}`}>
-                    {rate.buy_rate?.toLocaleString()} IQD
+                    {rate.buy_rate?.toLocaleString('en-US')} IQD
                   </div>
                   <div className={`flex items-center justify-center gap-1 mt-2 text-xs ${isDark ? 'text-slate-500' : 'text-slate-400'
                     }`}>

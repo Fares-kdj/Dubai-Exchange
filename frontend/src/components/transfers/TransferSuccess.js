@@ -416,6 +416,19 @@ const TransferSuccess = () => {
                     </div>
                   )}
 
+                  {/* Custom Currency Name (for "Other Countries") */}
+                  {orderData.customCurrencyName && (
+                    <div className="flex items-start gap-3">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-indigo-500/20' : 'bg-indigo-100'}`}>
+                        <Globe className="w-5 h-5 text-indigo-600" />
+                      </div>
+                      <div>
+                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('اسم العملة المطلوبة', 'Requested Currency', 'ناوی دراوی داواکراو')}</p>
+                        <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{orderData.customCurrencyName}</p>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Phone fallback for non-local types */}
                   {orderData.phone && !orderData.senderPhone && (
                     <div className="flex items-start gap-3">

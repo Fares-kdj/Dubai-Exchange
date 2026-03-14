@@ -554,7 +554,7 @@ const BookingForm = ({ onSubmit }) => {
                           : 'border-slate-200 hover:border-[#D4AF37]'
                         }`}
                     >
-                      <p className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                      <p dir="ltr" className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
                         ${amount.toLocaleString()}
                       </p>
                       <p className={`text-sm mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
@@ -573,6 +573,7 @@ const BookingForm = ({ onSubmit }) => {
                 <Input
                   id="iqdAmount"
                   type="text"
+                  dir="ltr"
                   value={formData.iqdAmount}
                   readOnly
                   className={`h-12 font-bold ${isDark ? 'bg-slate-600 border-slate-500 text-slate-300' : 'bg-slate-50 border-slate-300 text-slate-700'}`}

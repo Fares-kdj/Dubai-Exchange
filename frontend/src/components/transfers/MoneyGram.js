@@ -481,7 +481,7 @@ const MoneyGram = () => {
 
                 <div className="space-y-2">
                   <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{t('المبلغ', 'Amount', 'بڕ')} *</Label>
-                  <Input type="number" value={formData.amount} onChange={(e) => handleInputChange('amount', e.target.value)} className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} min="1" data-testid="mg-amount" />
+                  <Input type="number" value={formData.amount} onWheel={(e) => e.target.blur()} onChange={(e) => handleInputChange('amount', e.target.value)} className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} min="1" data-testid="mg-amount" />
                   {errors.amount && <p className="text-sm text-red-500"><AlertCircle className="w-4 h-4 inline" /> {errors.amount}</p>}
                 </div>
 
@@ -534,10 +534,10 @@ const MoneyGram = () => {
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={`mt-6 p-4 rounded-2xl ${isDark ? 'bg-orange-900/30 border border-orange-700/50' : 'bg-orange-50 border border-orange-200'}`}>
                   <h4 className={`font-bold mb-3 ${isDark ? 'text-orange-300' : 'text-orange-900'}`}>{t('ملخص', 'Summary', 'پوختە')}</h4>
                   <div className="space-y-2 text-sm">
-                    <div className="flex justify-between"><span className={isDark ? 'text-orange-200' : 'text-orange-800'}>{t('المبلغ', 'Amount', 'بڕ')}</span><span className={`font-semibold ${isDark ? 'text-white' : ''}`}>{formData.amount} {formData.currency}</span></div>
-                    <div className="flex justify-between"><span className={isDark ? 'text-orange-200' : 'text-orange-800'}>{t('بالدينار', 'In IQD', 'بە دینار')}</span><span className={`font-semibold ${isDark ? 'text-white' : ''}`}>{calculateIQD().toLocaleString()}</span></div>
-                    <div className="flex justify-between"><span className={isDark ? 'text-orange-200' : 'text-orange-800'}>{t(`الرسوم (${serviceFeePercent}%)`, `Fee (${serviceFeePercent}%)`, `رسووم (${serviceFeePercent}%)`)}</span><span className="text-amber-500 font-semibold">{calculateFee().toLocaleString()}</span></div>
-                    <div className={`border-t pt-2 ${isDark ? 'border-orange-700/50' : 'border-orange-200'}`}><div className="flex justify-between font-bold"><span className={isDark ? 'text-white' : 'text-orange-900'}>{t('الإجمالي', 'Total', 'کۆی گشتی')}</span><span className="text-orange-500">{calculateTotal().toLocaleString()} {t('د.ع', 'IQD', 'IQD')}</span></div></div>
+                    <div className="flex justify-between"><span className={isDark ? 'text-orange-200' : 'text-orange-800'}>{t('المبلغ', 'Amount', 'بڕ')}</span><span dir="ltr" className={`font-semibold ${isDark ? 'text-white' : ''}`}>{formData.amount} {formData.currency}</span></div>
+                    <div className="flex justify-between"><span className={isDark ? 'text-orange-200' : 'text-orange-800'}>{t('بالدينار', 'In IQD', 'بە دینار')}</span><span dir="ltr" className={`font-semibold ${isDark ? 'text-white' : ''}`}>{calculateIQD().toLocaleString()}</span></div>
+                    <div className="flex justify-between"><span className={isDark ? 'text-orange-200' : 'text-orange-800'}>{t(`الرسوم (${serviceFeePercent}%)`, `Fee (${serviceFeePercent}%)`, `رسووم (${serviceFeePercent}%)`)}</span><span dir="ltr" className="text-amber-500 font-semibold">{calculateFee().toLocaleString()}</span></div>
+                    <div className={`border-t pt-2 ${isDark ? 'border-orange-700/50' : 'border-orange-200'}`}><div className="flex justify-between font-bold"><span className={isDark ? 'text-white' : 'text-orange-900'}>{t('الإجمالي', 'Total', 'کۆی گشتی')}</span><span dir="ltr" className="text-orange-500">{calculateTotal().toLocaleString()} {t('د.ع', 'IQD', 'IQD')}</span></div></div>
                   </div>
                 </motion.div>
               )}
