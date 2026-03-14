@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from '@/context/LanguageContext';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { BrandingProvider } from '@/context/BrandingContext';
-import LightSplashScreen from '@/components/ui/LightSplashScreen';
+import SplashScreen from '@/components/ui/SplashScreen';
 
 // Landing Page (Stay static for SEO and instant load)
 import LandingPage3D from '@/components/landing/LandingPage3D';
@@ -93,10 +93,10 @@ function App() {
         <LanguageProvider>
           <LoadingProvider>
             <div className="App">
-              {showSplash && <LightSplashScreen onComplete={handleSplashComplete} />}
+              {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
               <BrowserRouter>
                 <ScrollToTop />
-                <Suspense fallback={null}>
+                <Suspense fallback={<PageLoader />}>
                   <Routes>
                     <Route path="/" element={<LandingPage3D />} />
                     <Route path="/traveler-booking" element={<TravelerBooking />} />
