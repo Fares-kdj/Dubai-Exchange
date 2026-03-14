@@ -300,7 +300,7 @@ const ServiceSuccess = () => {
                       {isUSDT ? 'USDT' : t('المبلغ', 'Amount', 'بڕ')}
                     </p>
                     <p className="text-3xl font-bold text-[#D4AF37]">
-                      {isUSDT ? `${orderData.amount} USDT` : `${Number(orderData.amount || 0).toLocaleString()} IQD`}
+                      {isUSDT ? `${orderData.amount} USDT` : `${Number(orderData.amountIQD || orderData.amount || 0).toLocaleString()} IQD`}
                     </p>
                   </div>
 
@@ -546,7 +546,7 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
                 <div className={`space-y-3 text-sm ${isDark ? 'text-blue-300' : 'text-blue-800'}`}>
                   <p className="flex items-start gap-2">
                     <span className="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">1</span>
-                    {t('قم بالدفع في أحد فروعنا أو عبر التحويل', 'Pay at our branch or via transfer', 'لە یەکێک لە لقەکانمان یان لە ڕێگەی گواستنەوەوە پارە بدە')}
+                    {t('قم بالدفع من حسابك او من احد الوكلاء في منطقتك', 'Pay from your account or a local agent', 'لە هەژمارەکەتەوە یان لە بریکارێکی ناوخۆیی پارە بدە')}
                   </p>
                   <p className="flex items-start gap-2">
                     <span className="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">2</span>

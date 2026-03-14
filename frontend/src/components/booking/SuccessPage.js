@@ -446,11 +446,7 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
               <div className="space-y-3 text-sm text-blue-800">
                 <p className="flex items-start gap-2">
                   <span className="font-bold">1.</span>
-                  {t(
-                    'قم بالدفع في أحد فروعنا أو عبر التحويل البنكي',
-                    'Pay at our branch or via bank transfer',
-                    'پارەکە لە یەکێک لە لقەکانمان یان لە ڕێگەی گواستنەوەی بانکی بدە'
-                  )}
+                  {t('قم بالدفع من حسابك او من احد الوكلاء في منطقتك', 'Pay from your account or a local agent', 'لە هەژمارەکەتەوە یان لە بریکارێکی ناوخۆیی پارە بدە')}
                 </p>
                 <p className="flex items-start gap-2">
                   <span className="font-bold">2.</span>
