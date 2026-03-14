@@ -76,7 +76,7 @@ const PageLoader = () => (
 );
 
 function App() {
-  const [showSplash, setShowSplash] = useState(true);
+  const [showSplash, setShowSplash] = useState(false);
   const [appReady, setAppReady] = useState(false);
 
   useEffect(() => {
@@ -92,16 +92,10 @@ function App() {
       <BrandingProvider>
         <LanguageProvider>
           <LoadingProvider>
-            {showSplash && (
-              <SplashScreen
-                onComplete={handleSplashComplete}
-                minDuration={2000}
-              />
-            )}
-            <div className="App" style={{ opacity: showSplash ? 0 : 1, transition: 'opacity 0.3s ease' }}>
+            <div className="App">
               <BrowserRouter>
                 <ScrollToTop />
-                <Suspense fallback={<PageLoader />}>
+                <Suspense fallback={null}>
                   <Routes>
                     <Route path="/" element={<LandingPage3D />} />
                     <Route path="/traveler-booking" element={<TravelerBooking />} />

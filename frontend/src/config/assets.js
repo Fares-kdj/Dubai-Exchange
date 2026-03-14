@@ -32,7 +32,7 @@ export const ASSETS = {
     altayf: '/assets/external/altayf.png',
     fib: '/assets/external/fib.png',
     rasheed: '/assets/external/rasheed.png',
-    tbi: '/assets/external/tbi.webpi',
+    tbi: '/assets/external/tbi.webp',
     rafidain: '/assets/external/rafidain.svg',
     zaincash: '/assets/external/zaincash.webp'
   },
