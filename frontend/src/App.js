@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from '@/context/LanguageContext';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { BrandingProvider } from '@/context/BrandingContext';
-import SplashScreen from '@/components/ui/SplashScreen';
+import LightSplashScreen from '@/components/ui/LightSplashScreen';
 
 // Landing Page (Stay static for SEO and instant load)
 import LandingPage3D from '@/components/landing/LandingPage3D';
@@ -76,7 +76,7 @@ const PageLoader = () => (
 );
 
 function App() {
-  const [showSplash, setShowSplash] = useState(false);
+  const [showSplash, setShowSplash] = useState(true);
   const [appReady, setAppReady] = useState(false);
 
   useEffect(() => {
@@ -93,6 +93,7 @@ function App() {
         <LanguageProvider>
           <LoadingProvider>
             <div className="App">
+              {showSplash && <LightSplashScreen onComplete={handleSplashComplete} />}
               <BrowserRouter>
                 <ScrollToTop />
                 <Suspense fallback={null}>
