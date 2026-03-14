@@ -13,7 +13,7 @@ const HERO_ASSETS = {
   light: '/assets/hero-light.mp4'
 };
 
-const CBI_LOGO_URL = '/assets/cbi-logo.png';
+const CBI_LOGO_URL = '/assets/external/cbi-logo.png';
 
 // USDT Icon Component
 const USDTIcon = ({ className }) => (

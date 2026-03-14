@@ -95,7 +95,7 @@ function App() {
             {showSplash && (
               <SplashScreen
                 onComplete={handleSplashComplete}
-                minDuration={4000}
+                minDuration={2000}
               />
             )}
             <div className="App" style={{ opacity: showSplash ? 0 : 1, transition: 'opacity 0.3s ease' }}>
