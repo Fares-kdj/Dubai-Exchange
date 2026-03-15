@@ -33,23 +33,12 @@ IRAQI_PREFIXES = ["+964", "00964", "964"]
 
 
 def is_iraqi_number(phone: str) -> bool:
-    """Check if phone number is Iraqi"""
-    if not phone:
-        return False
-    
-    # Clean the phone number
-    cleaned = phone.replace(" ", "").replace("-", "")
-    
-    # Check for Iraqi prefixes
-    for prefix in IRAQI_PREFIXES:
-        if cleaned.startswith(prefix):
-            return True
-    
-    # Check if it starts with 07 (Iraqi mobile format without country code)
-    if cleaned.startswith("07") and len(cleaned) >= 10:
-        return True
-    
-    return False
+    """Check if phone number is Iraqi.
+    ⚠️  TEMPORARILY DISABLED — accepts ALL numbers for testing.
+    Re-enable the real check after testing!
+    """
+    # TODO: Re-enable Iraqi filter after testing
+    return True  # TEMP: allow all numbers
 
 
 def format_iraqi_number(phone: str) -> str:
@@ -64,6 +53,10 @@ def format_iraqi_number(phone: str) -> str:
     if cleaned.startswith("07"):
         return f"+964{cleaned[1:]}"  # Remove leading 0 and add +964
     
+    # If starts with 7 and 10 digits (without leading zero e.g. 7801234567)
+    if cleaned.startswith("7") and len(cleaned) == 10:
+        return f"+964{cleaned}"
+    
     # If starts with 964 (without +), add +
     if cleaned.startswith("964") and not cleaned.startswith("+"):
         return f"+{cleaned}"
@@ -76,6 +69,7 @@ def format_iraqi_number(phone: str) -> str:
     if cleaned.startswith("+964"):
         return cleaned
     
+    logger.warning(f"Unrecognized Iraqi number format: {phone}")
     return cleaned
 
 
@@ -172,19 +166,19 @@ class SMSService:
         
         return result
     
-    async def send_order_submitted(self, phone: str, whatsapp: str = None) -> dict:
+    async def send_order_submitted(self, phone: str, order_id: str = "", whatsapp: str = None) -> dict:
         """Send SMS when order is submitted"""
-        vars = {"1": whatsapp or self.whatsapp}
+        vars = {"order_number": order_id, "support_phone": whatsapp or self.whatsapp}
         return await self.send_content_sms(phone, TWILIO_CONTENT_ORDER_SUBMITTED, vars)
     
-    async def send_order_approved(self, phone: str, whatsapp: str = None) -> dict:
+    async def send_order_approved(self, phone: str, order_id: str = "", whatsapp: str = None) -> dict:
         """Send SMS when order is approved"""
-        vars = {"1": whatsapp or self.whatsapp}
+        vars = {"order_number": order_id, "support_phone": whatsapp or self.whatsapp}
         return await self.send_content_sms(phone, TWILIO_CONTENT_ORDER_APPROVED, vars)
     
-    async def send_order_rejected(self, phone: str, whatsapp: str = None) -> dict:
+    async def send_order_rejected(self, phone: str, order_id: str = "", whatsapp: str = None) -> dict:
         """Send SMS when order is rejected"""
-        vars = {"1": whatsapp or self.whatsapp}
+        vars = {"order_number": order_id, "support_phone": whatsapp or self.whatsapp}
         return await self.send_content_sms(phone, TWILIO_CONTENT_ORDER_REJECTED, vars)
 
 

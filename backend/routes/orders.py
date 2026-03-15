@@ -111,7 +111,7 @@ async def create_order(order: OrderCreate, background_tasks: BackgroundTasks):
     
     # Send SMS notification for order submission (in background)
     phone = order.customer.phone
-    background_tasks.add_task(sms_service.send_order_submitted, phone)
+    background_tasks.add_task(sms_service.send_order_submitted, phone, order_id)
     logger.info(f"Order created: {order_id}, SMS queued for {phone}")
     
     return OrderResponse(**serialize_order(order_doc))
@@ -286,11 +286,11 @@ async def update_order(order_id: str, update: OrderUpdate, background_tasks: Bac
         phone = current_order.get("customer", {}).get("phone", "")
         
         if new_status == "approved":
-            background_tasks.add_task(sms_service.send_order_approved, phone)
+            background_tasks.add_task(sms_service.send_order_approved, phone, order_id)
             logger.info(f"Order {order_id} approved, SMS queued for {phone}")
         
         elif new_status == "rejected":
-            background_tasks.add_task(sms_service.send_order_rejected, phone)
+            background_tasks.add_task(sms_service.send_order_rejected, phone, order_id)
             logger.info(f"Order {order_id} rejected, SMS queued for {phone}")
     
     return OrderResponse(**result)
