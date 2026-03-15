@@ -4,13 +4,23 @@ import { ASSETS } from '@/config/assets';
 const BrandingContext = createContext(null);
 
 export const BrandingProvider = ({ children }) => {
-  const [branding, setBranding] = useState({
-    logoLight: ASSETS.logoBlack,   // light mode default
-    logoDark: ASSETS.logoWhite,    // dark mode default
-    faviconUrl: null,
-    primaryColor: '#d45535',
-    secondaryColor: '#221d3a',
-    accentColor: '#6bfd4e',
+  const [branding, setBranding] = useState(() => {
+    const saved = localStorage.getItem('app_branding');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error('Failed to parse cached branding', e);
+      }
+    }
+    return {
+      logoLight: ASSETS.logoBlack,
+      logoDark: ASSETS.logoWhite,
+      faviconUrl: null,
+      primaryColor: '#d45535',
+      secondaryColor: '#221d3a',
+      accentColor: '#6bfd4e',
+    };
   });
   const [isBrandingLoading, setIsBrandingLoading] = useState(true);
 
@@ -32,15 +42,17 @@ export const BrandingProvider = ({ children }) => {
       const logoUrl = fixUrl(data.logo_url);
       const logoDarkUrl = fixUrl(data.logo_dark_url);
 
-      setBranding({
-        // Smart Fallback: If one is uploaded, use it for both unless two different ones exist
+      const newBranding = {
         logoLight: logoUrl || logoDarkUrl || ASSETS.logoBlack,
         logoDark: logoDarkUrl || logoUrl || ASSETS.logoWhite,
         faviconUrl: fixUrl(data.favicon_url),
         primaryColor: data.primary_color || '#D4AF37',
         secondaryColor: data.secondary_color || '#1E293B',
         accentColor: data.accent_color || '#FCD34D',
-      });
+      };
+
+      setBranding(newBranding);
+      localStorage.setItem('app_branding', JSON.stringify(newBranding));
 
       if (data.favicon_url) {
         applyFavicon(fixUrl(data.favicon_url));
