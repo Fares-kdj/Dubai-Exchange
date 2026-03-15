@@ -105,6 +105,7 @@ class CountryResponse(CountryConfig):
 class CountryUpdate(BaseModel):
     name_ar: Optional[str] = None
     name_en: Optional[str] = None
+    name_ku: Optional[str] = None
     flag: Optional[str] = None
     currency: Optional[str] = None
     is_active: Optional[bool] = None

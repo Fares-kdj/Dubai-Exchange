@@ -640,13 +640,14 @@ async def init_default_countries():
                 "country_code": "TR",
                 "name_ar": "تركيا",
                 "name_en": "Turkey",
+                "name_ku": "تورکیا",
                 "flag": "🇹🇷",
                 "currency": "TRY",
                 "is_active": True,
                 "transfer_methods": [
-                    {"method_id": "papara", "name_ar": "باباره", "name_en": "Papara", "is_active": True, "fields": [], "fee_type": "percentage", "fee_value": 2},
-                    {"method_id": "eft", "name_ar": "EFT", "name_en": "EFT", "is_active": True, "fields": [], "fee_type": "percentage", "fee_value": 2.5},
-                    {"method_id": "bank", "name_ar": "تحويل بنكي", "name_en": "Bank Transfer", "is_active": True, "fields": [], "fee_type": "percentage", "fee_value": 3}
+                    {"method_id": "papara", "name_ar": "باباره", "name_en": "Papara", "name_ku": "پاپارا", "is_active": True, "fields": [], "fee_type": "percentage", "fee_value": 2},
+                    {"method_id": "eft", "name_ar": "EFT", "name_en": "EFT", "name_ku": "EFT", "is_active": True, "fields": [], "fee_type": "percentage", "fee_value": 2.5},
+                    {"method_id": "bank", "name_ar": "تحويل بنكي", "name_en": "Bank Transfer", "name_ku": "گواستنەوەی بانکی", "is_active": True, "fields": [], "fee_type": "percentage", "fee_value": 3}
                 ],
                 "created_at": datetime.now(timezone.utc).isoformat(),
                 "updated_at": datetime.now(timezone.utc).isoformat()
@@ -655,13 +656,14 @@ async def init_default_countries():
                 "country_code": "EG",
                 "name_ar": "مصر",
                 "name_en": "Egypt",
+                "name_ku": "میسر",
                 "flag": "🇪🇬",
                 "currency": "EGP",
                 "is_active": True,
                 "transfer_methods": [
-                    {"method_id": "vodafone_cash", "name_ar": "فودافون كاش", "name_en": "Vodafone Cash", "is_active": True, "fields": [], "fee_type": "percentage", "fee_value": 1.5},
-                    {"method_id": "instapay", "name_ar": "إنستاباي", "name_en": "InstaPay", "is_active": True, "fields": [], "fee_type": "percentage", "fee_value": 2},
-                    {"method_id": "bank", "name_ar": "تحويل بنكي", "name_en": "Bank Transfer", "is_active": True, "fields": [], "fee_type": "percentage", "fee_value": 3}
+                    {"method_id": "vodafone_cash", "name_ar": "فودافون كاش", "name_en": "Vodafone Cash", "name_ku": "ڤۆدافۆن کاش", "is_active": True, "fields": [], "fee_type": "percentage", "fee_value": 1.5},
+                    {"method_id": "instapay", "name_ar": "إنستاباي", "name_en": "InstaPay", "name_ku": "ئینستا پەي", "is_active": True, "fields": [], "fee_type": "percentage", "fee_value": 2},
+                    {"method_id": "bank", "name_ar": "تحويل بنكي", "name_en": "Bank Transfer", "name_ku": "گواستنەوەی بانکی", "is_active": True, "fields": [], "fee_type": "percentage", "fee_value": 3}
                 ],
                 "created_at": datetime.now(timezone.utc).isoformat(),
                 "updated_at": datetime.now(timezone.utc).isoformat()
@@ -670,12 +672,13 @@ async def init_default_countries():
                 "country_code": "JO",
                 "name_ar": "الأردن",
                 "name_en": "Jordan",
+                "name_ku": "ئوردن",
                 "flag": "🇯🇴",
                 "currency": "JOD",
                 "is_active": True,
                 "transfer_methods": [
-                    {"method_id": "cliq", "name_ar": "كليك", "name_en": "CliQ", "is_active": True, "fields": [], "fee_type": "percentage", "fee_value": 2},
-                    {"method_id": "bank", "name_ar": "تحويل بنكي", "name_en": "Bank Transfer", "is_active": True, "fields": [], "fee_type": "percentage", "fee_value": 3}
+                    {"method_id": "cliq", "name_ar": "كليك", "name_en": "CliQ", "name_ku": "کلیک", "is_active": True, "fields": [], "fee_type": "percentage", "fee_value": 2},
+                    {"method_id": "bank", "name_ar": "تحويل بنكي", "name_en": "Bank Transfer", "name_ku": "گواستنەوەی بانکی", "is_active": True, "fields": [], "fee_type": "percentage", "fee_value": 3}
                 ],
                 "created_at": datetime.now(timezone.utc).isoformat(),
                 "updated_at": datetime.now(timezone.utc).isoformat()
