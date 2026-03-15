@@ -70,6 +70,21 @@ async def lifespan(app: FastAPI):
 # Create the main app without a prefix
 app = FastAPI(title="Dubai International Exchange API", lifespan=lifespan)
 
+# ===== NO-CACHE MIDDLEWARE (prevents Cloudflare from caching API responses) =====
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request as StarletteRequest
+
+class NoCacheAPIMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: StarletteRequest, call_next):
+        response = await call_next(request)
+        if request.url.path.startswith("/api/"):
+            response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+            response.headers["Pragma"] = "no-cache"
+            response.headers["Surrogate-Control"] = "no-store"
+        return response
+
+app.add_middleware(NoCacheAPIMiddleware)
+
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
