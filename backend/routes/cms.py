@@ -72,9 +72,10 @@ async def update_service(
     """Update service"""
     update_doc = {"updated_at": datetime.now(timezone.utc).isoformat()}
     
-    for field, value in update.model_dump(exclude_unset=True).items():
-        if value is not None:
-            update_doc[field] = value
+    # Use exclude_unset=True so only sent fields are updated.
+    # We explicitly allow False and 0 (only exclude None)
+    for field, value in update.model_dump(exclude_unset=True, exclude_none=False).items():
+        update_doc[field] = value
     
     result = await services_collection.find_one_and_update(
         {"service_id": service_id},
@@ -152,9 +153,9 @@ async def update_country(
     """Update country config"""
     update_doc = {"updated_at": datetime.now(timezone.utc).isoformat()}
     
-    for field, value in update.model_dump(exclude_unset=True).items():
-        if value is not None:
-            update_doc[field] = value
+    # Allow False and 0 values (only filter out fields that were not sent)
+    for field, value in update.model_dump(exclude_unset=True, exclude_none=False).items():
+        update_doc[field] = value
     
     result = await countries_collection.find_one_and_update(
         {"country_code": country_code.upper()},

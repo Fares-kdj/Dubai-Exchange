@@ -78,11 +78,6 @@ const AdminServices = () => {
     loadServices();
   }, []);
 
-  const getAuthHeaders = () => {
-    const token = localStorage.getItem('adminToken');
-    return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token };
-  };
-
   const handleToggleActive = async (service) => {
     // التحديث الفوري (Optimistic Update)
     const originalServices = [...services];
