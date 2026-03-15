@@ -456,34 +456,33 @@ const TransferSuccess = () => {
               >
                 <h3 className={`text-2xl font-bold mb-6 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                   <Banknote className="w-6 h-6 text-[#D4AF37]" />
-                  {t('تفاصيل المبلغ', 'Amount Details', 'زانیاريی بڕی پارە')}
+                  {t('تفاصيل المبلغ', 'Amount Details', 'زانیاری بڕی پارە')}
                 </h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {orderData.amount && (
-                    <div className={`rounded-2xl p-6 border-2 ${isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-slate-200'
-                      }`}>
-                      <p className={`text-sm mb-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                        {t('المبلغ', 'Amount', 'بڕ')}
-                      </p>
-                      <p className="text-3xl font-bold text-[#D4AF37]">
-                        {orderData.currency ? `${orderData.amount} ${orderData.currency}` : `${Number(orderData.amount).toLocaleString()} ${t('د.ع', 'IQD', 'د.ع')}`}
-                      </p>
-                    </div>
-                  )}
+                  <div className={`rounded-2xl p-6 border-2 ${isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-slate-200'}`}>
+                    <p className={`text-sm mb-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('المبلغ', 'Amount', 'بڕ')}</p>
+                    <p className="text-3xl font-bold text-[#D4AF37]">
+                      {orderData.currency || 'IQD'} {Number(orderData.amount || 0).toLocaleString()}
+                    </p>
+                  </div>
 
-                  {(orderData.total || orderData.iqdAmount) && (
-                    <div className={`rounded-2xl p-6 border-2 ${isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-slate-200'
-                      }`}>
-                      <p className={`text-sm mb-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                        {t('الإجمالي للدفع', 'Total to Pay', 'کۆی گشتی بۆ پارەدان')}
-                      </p>
-                      <p className="text-3xl font-bold text-[#D4AF37]">
-                        {Number(orderData.total || orderData.iqdAmount).toLocaleString()} {t('د.ع', 'IQD', 'د.ع')}
-                      </p>
-                    </div>
-                  )}
+                  <div className={`rounded-xl p-4 border ${isDark ? 'bg-slate-700/30 border-slate-600' : 'bg-slate-50 border-slate-100'}`}>
+                    <p className={`text-xs mb-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('المبلغ النهائي', 'Final Amount', 'بڕی کۆتایی')}</p>
+                    <p className="text-xl font-bold text-blue-500">
+                      IQD {Number(orderData.total || 0).toLocaleString()}
+                    </p>
+                  </div>
                 </div>
+
+                {orderData.type === 'country' && (
+                  <div className={`mt-4 p-4 rounded-xl ${isDark ? 'bg-slate-700/30' : 'bg-slate-50'}`}>
+                    <div className="flex justify-between items-center text-sm">
+                      <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>{t('العملة المستلمة', 'Receiver Currency', 'دراوی وەرگیراو')}</span>
+                      <span className="font-semibold text-blue-500">{orderData.receiverCurrency || orderData.currencyName}</span>
+                    </div>
+                  </div>
+                )}
 
                 {orderData.serviceFee && (
                   <div className={`mt-4 p-4 rounded-xl ${isDark ? 'bg-slate-800/30' : 'bg-white/50'}`}>

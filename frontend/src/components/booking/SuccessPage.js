@@ -321,7 +321,7 @@ const SuccessPage = ({ orderData }) => {
                 <div className="bg-white rounded-2xl p-6 border-2 border-slate-200">
                   <p className="text-sm text-slate-500 mb-1">{t('بالدولار', 'In USD', 'بە دۆلار')}</p>
                   <p className="text-3xl font-bold text-[#D4AF37]">
-                    ${orderData?.usdAmount || '0'}
+                    ${orderData?.usdAmount ? Number(orderData.usdAmount).toLocaleString() : '0'}
                   </p>
                 </div>
                 <div className="bg-white rounded-2xl p-6 border-2 border-slate-200">

@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
 import { useTheme } from '@/context/ThemeContext';
-import { motion } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import { MapPin, Globe, ArrowRight, Building2, Sparkles } from 'lucide-react';
 import Header3D from '../landing/Header3D';
 import Footer3D from '../landing/Footer3D';
@@ -13,6 +13,8 @@ const TransfersHub = () => {
   const { isDark } = useTheme();
   const isArabic = currentLanguage === 'ar';
   const isKurdish = currentLanguage === 'ku';
+  const sectionRef = React.useRef(null);
+  const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
 
   const t = (ar, en, ku) => {
     if (isKurdish) return ku || en;
@@ -61,12 +63,12 @@ const TransfersHub = () => {
           {/* Header Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
             className="text-center mb-16"
           >
             <motion.div
               initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
+              animate={isInView ? { scale: 1 } : {}}
               transition={{ delay: 0.2 }}
               className={`inline-flex items-center gap-2 px-4 py-2 border rounded-full mb-6 ${isDark
                   ? 'bg-[#D4AF37]/10 border-[#D4AF37]/30'
@@ -92,37 +94,15 @@ const TransfersHub = () => {
           </motion.div>
 
           {/* Transfer Type Cards with Floating Animation */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div ref={sectionRef} className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {transferTypes.map((type, index) => (
               <motion.div
                 key={type.id}
                 initial={{ opacity: 0, y: 40, scale: 0.9 }}
-                animate={{
-                  opacity: 1,
-                  y: [0, -18, 0, -12, 0],
-                  scale: [1, 1.02, 1, 1.01, 1],
-                  rotate: [0, 1.5, 0, -1, 0]
-                }}
+                animate={isInView ? { opacity: 1, y: 0, scale: 1 } : {}}
                 transition={{
-                  opacity: { delay: 0.3 + index * 0.15, duration: 0.6 },
-                  y: {
-                    delay: index * 0.5,
-                    duration: 2.8 + index * 0.3,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  },
-                  scale: {
-                    delay: index * 0.5,
-                    duration: 2.8 + index * 0.3,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  },
-                  rotate: {
-                    delay: index * 0.5,
-                    duration: 3.5 + index * 0.2,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }
+                  duration: 0.6,
+                  delay: 0.3 + index * 0.15
                 }}
                 whileHover={{
                   y: -25,
@@ -144,45 +124,9 @@ const TransfersHub = () => {
                     : 'bg-white/90 border-slate-200 hover:border-slate-300'
                   } backdrop-blur-sm`}>
 
-                  {/* Floating Particles */}
-                  <motion.div className="absolute inset-0 pointer-events-none overflow-hidden">
-                    {[...Array(6)].map((_, i) => (
-                      <motion.div
-                        key={i}
-                        className={`absolute w-2 h-2 rounded-full bg-gradient-to-r ${type.gradient} opacity-30`}
-                        style={{
-                          left: `${10 + i * 15}%`,
-                          top: `${20 + (i % 3) * 25}%`
-                        }}
-                        animate={{
-                          y: [-20, -50, -20],
-                          x: [0, (i % 2 === 0 ? 10 : -10), 0],
-                          opacity: [0.2, 0.6, 0.2],
-                          scale: [0.8, 1.2, 0.8]
-                        }}
-                        transition={{
-                          duration: 3 + i * 0.5,
-                          delay: i * 0.3,
-                          repeat: Infinity,
-                          ease: "easeInOut"
-                        }}
-                      />
-                    ))}
-                  </motion.div>
 
-                  {/* Animated Background Glow */}
-                  <motion.div
-                    className={`absolute -top-20 -right-20 w-48 h-48 ${type.bgGlow} rounded-full blur-3xl`}
-                    animate={{
-                      scale: [1, 1.3, 1],
-                      opacity: [0.3, 0.6, 0.3]
-                    }}
-                    transition={{
-                      duration: 4,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
-                  />
+                  {/* Background Glow */}
+                  <div className={`absolute -top-20 -right-20 w-48 h-48 ${type.bgGlow} rounded-full blur-3xl opacity-40`} />
 
                   {/* Shimmer Effect on Hover */}
                   <motion.div
@@ -193,26 +137,13 @@ const TransfersHub = () => {
                   <div className="absolute inset-0 bg-gradient-to-br from-[#D4AF37]/0 to-[#D4AF37]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl" />
 
                   <div className="relative z-10">
-                    {/* Icon with Floating and Rotate Animation */}
                     <motion.div
-                      animate={{
-                        boxShadow: [
-                          '0 0 0 0 rgba(212, 175, 55, 0)',
-                          '0 0 25px 8px rgba(212, 175, 55, 0.15)',
-                          '0 0 0 0 rgba(212, 175, 55, 0)'
-                        ],
-                        rotate: [0, 3, -3, 0]
-                      }}
-                      transition={{
-                        boxShadow: { duration: 2.5, repeat: Infinity, delay: index * 0.5 },
-                        rotate: { duration: 5, repeat: Infinity, ease: "easeInOut" }
-                      }}
+                      className={`w-24 h-24 rounded-3xl bg-gradient-to-br ${type.gradient} flex items-center justify-center mb-8 shadow-2xl group-hover:shadow-3xl transition-all relative`}
                       whileHover={{
                         rotate: [0, -15, 15, -10, 10, 0],
                         scale: 1.15,
                         transition: { duration: 0.6 }
                       }}
-                      className={`w-24 h-24 rounded-3xl bg-gradient-to-br ${type.gradient} flex items-center justify-center mb-8 shadow-2xl group-hover:shadow-3xl transition-shadow relative`}
                     >
                       {/* Inner Glow */}
                       <div className="absolute inset-0 rounded-3xl bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

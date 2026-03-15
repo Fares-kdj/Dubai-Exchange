@@ -574,7 +574,7 @@ const BookingForm = ({ onSubmit }) => {
                   id="iqdAmount"
                   type="text"
                   dir="ltr"
-                  value={formData.iqdAmount}
+                  value={formData.iqdAmount ? Number(formData.iqdAmount).toLocaleString() : '0'}
                   readOnly
                   className={`h-12 font-bold ${isDark ? 'bg-slate-600 border-slate-500 text-slate-300' : 'bg-slate-50 border-slate-300 text-slate-700'}`}
                   placeholder="0"

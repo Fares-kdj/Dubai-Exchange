@@ -39,6 +39,7 @@ const CountryWizard = () => {
     method: null,
     receiverCurrency: '', // New: Receiver's currency
     customCurrencyName: '', // New: Free-text currency name for "Other Countries"
+    customCountryName: '', // New: Free-text country name for "Other Countries"
     senderName: '',
     receiverName: '',
     senderPhone: '',
@@ -254,6 +255,7 @@ const CountryWizard = () => {
     if (!wizardData.senderPhone.trim()) newErrors.senderPhone = t('مطلوب', 'Required', 'پێویستە');
     if (!wizardData.receiverPhone.trim()) newErrors.receiverPhone = t('مطلوب', 'Required', 'پێویستە');
     if (isOtherCountry && !wizardData.customCurrencyName.trim()) newErrors.customCurrencyName = t('أدخل اسم العملة', 'Enter currency name', 'ناوی دراو بنووسە');
+    if (isOtherCountry && !wizardData.customCountryName.trim()) newErrors.customCountryName = t('أدخل اسم الدولة', 'Enter country name', 'ناوی وڵات بنووسە');
     if (!isOtherCountry && isBankTransfer && !wizardData.receiverCurrency) newErrors.receiverCurrency = t('اختر عملة المستلم', 'Select receiver currency', 'دراوی وەرگر هەڵبژێرە');
     if (!wizardData.purpose) newErrors.purpose = t('مطلوب', 'Required', 'پێویستە');
 
@@ -304,7 +306,7 @@ const CountryWizard = () => {
           receiverPhone: wizardData.receiverPhone,
           countryCode: wizardData.country,
           countryName: isOtherCountry
-            ? t('دول أخرى', 'Other Countries', 'وڵاتی تر')
+            ? wizardData.customCountryName
             : (selectedCountry ? (isArabic ? selectedCountry.name_ar : selectedCountry.name_en) : ''),
           methodId: wizardData.method,
           methodName: selectedMethod ? t(selectedMethod.name_ar, selectedMethod.name_en, selectedMethod.name_ku) : '',
@@ -334,6 +336,7 @@ const CountryWizard = () => {
             orderData: {
               ...orderData.details,
               type: 'country_based',
+              currency: 'USD',
               receiverCurrencyName: isOtherCountry
                 ? wizardData.customCurrencyName
                 : (selectedCurrency ? (isArabic ? selectedCurrency.nameAr : selectedCurrency.nameEn) : ''),
@@ -526,22 +529,19 @@ const CountryWizard = () => {
                       type="button"
                       whileHover={{ scale: 1.05 }}
                       onClick={() => setWizardData(p => ({ ...p, country: 'OTHER', method: null, customCurrencyName: '' }))}
-                      className={`p-4 rounded-2xl border-2 text-center transition-colors ${
-                        wizardData.country === 'OTHER'
-                          ? 'border-[#D4AF37] bg-[#D4AF37]/10'
-                          : isDark ? 'border-indigo-600/60 hover:border-indigo-500 bg-indigo-900/10' : 'border-indigo-300 hover:border-indigo-400 bg-indigo-50/50'
-                      }`}
+                      className={`p-4 rounded-2xl border-2 text-center transition-colors ${wizardData.country === 'OTHER'
+                        ? 'border-[#D4AF37] bg-[#D4AF37]/10'
+                        : isDark ? 'border-indigo-600/60 hover:border-indigo-500 bg-indigo-900/10' : 'border-indigo-300 hover:border-indigo-400 bg-indigo-50/50'
+                        }`}
                     >
                       <div className="flex justify-center mb-2">
-                        <div className={`w-12 h-10 flex items-center justify-center rounded-lg border text-xl ${
-                          isDark ? 'bg-indigo-900/30 border-indigo-700/50' : 'bg-indigo-100 border-indigo-200'
-                        }`}>
+                        <div className={`w-12 h-10 flex items-center justify-center rounded-lg border text-xl ${isDark ? 'bg-indigo-900/30 border-indigo-700/50' : 'bg-indigo-100 border-indigo-200'
+                          }`}>
                           🌐
                         </div>
                       </div>
-                      <span className={`text-sm font-medium ${
-                        isDark ? 'text-indigo-300' : 'text-indigo-700'
-                      }`}>
+                      <span className={`text-sm font-medium ${isDark ? 'text-indigo-300' : 'text-indigo-700'
+                        }`}>
                         {t('دول أخرى', 'Other Countries', 'وڵاتی تر')}
                       </span>
                     </motion.button>
@@ -634,13 +634,13 @@ const CountryWizard = () => {
                       </span>
                     </div>
                     {!isOtherCountry && (
-                    <div className="flex justify-between">
-                      <span className={isDark ? 'text-slate-300' : 'text-slate-600'}>{t('سعر الصرف', 'Exchange Rate', 'نرخی ئاڵوگۆڕ')}</span>
-                      {hasRateForCurrency
-                        ? <span dir="ltr" className="font-bold text-[#D4AF37]">1 USD = {crossRate} {effectiveCurrency}</span>
-                        : <span className="font-bold text-red-500">{t('غير متوفر', 'Not available', 'بەردەست نییە')}</span>
-                      }
-                    </div>
+                      <div className="flex justify-between">
+                        <span className={isDark ? 'text-slate-300' : 'text-slate-600'}>{t('سعر الصرف', 'Exchange Rate', 'نرخی ئاڵوگۆڕ')}</span>
+                        {hasRateForCurrency
+                          ? <span dir="ltr" className="font-bold text-[#D4AF37]">1 USD = {crossRate} {effectiveCurrency}</span>
+                          : <span className="font-bold text-red-500">{t('غير متوفر', 'Not available', 'بەردەست نییە')}</span>
+                        }
+                      </div>
                     )}
 
                     {/* No-rate warning - only for regular countries */}
@@ -687,8 +687,8 @@ const CountryWizard = () => {
                     disabled={!isOtherCountry && !hasRateForCurrency}
                     whileHover={(isOtherCountry || hasRateForCurrency) ? { scale: 1.02 } : {}}
                     className={`w-full mt-8 py-4 font-bold rounded-2xl flex items-center justify-center gap-2 transition-opacity ${(isOtherCountry || hasRateForCurrency)
-                        ? isDark ? 'bg-[#D4AF37] text-slate-900 hover:bg-[#FCD34D]' : 'bg-slate-900 text-white hover:bg-slate-800'
-                        : 'bg-slate-300 text-slate-500 cursor-not-allowed opacity-60'
+                      ? isDark ? 'bg-[#D4AF37] text-slate-900 hover:bg-[#FCD34D]' : 'bg-slate-900 text-white hover:bg-slate-800'
+                      : 'bg-slate-300 text-slate-500 cursor-not-allowed opacity-60'
                       }`}>
                     {t('المتابعة', 'Continue', 'بەردەوام بە')} <ArrowRight className="w-5 h-5" />
                   </motion.button>
@@ -726,26 +726,34 @@ const CountryWizard = () => {
                   </div>
 
 
-                  {/* Currency Name Field - For "Other Countries" (free text) */}
+                  {/* Country and Currency Name Fields - For "Other Countries" */}
                   {isOtherCountry && (
-                    <div className={`rounded-2xl p-6 mb-6 ${isDark ? 'bg-indigo-900/20 border border-indigo-700/50' : 'bg-indigo-50 border border-indigo-200'}`}>
-                      <Label className={`text-lg font-bold mb-2 block ${isDark ? 'text-indigo-400' : 'text-indigo-700'}`}>
-                        {t('اسم العملة', 'Currency Name', 'ناوی دراو')} *
-                      </Label>
-                      <p className={`text-xs mb-3 ${isDark ? 'text-indigo-300' : 'text-indigo-600'}`}>
-                        {t(
-                          'أدخل اسم العملة التي تريد استلام المبلغ بها (مثال: يورو، دولار كندي، ريال سعودي...)',
-                          'Enter the currency name you want to receive the amount in (e.g. Euro, CAD, Saudi Riyal...)',
-                          'ناوی دراوێک بنووسە کە دەتەوێت بڕەکە پێیدا وەربگیری (بۆ نموونە: یۆرۆ، دۆلاری کەنەدی...)'
-                        )}
-                      </p>
-                      <Input
-                        value={wizardData.customCurrencyName}
-                        onChange={e => setWizardData(p => ({ ...p, customCurrencyName: e.target.value }))}
-                        className={`h-12 mt-1 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : ''}`}
-                        placeholder={t('مثال: يورو، ريال سعودي...', 'e.g. Euro, SAR...', 'بۆ نموونە: یۆرۆ، دۆلار...')}
-                      />
-                      {errors.customCurrencyName && <p className="text-red-500 mt-2"><AlertCircle className="w-4 h-4 inline" /> {errors.customCurrencyName}</p>}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                      <div className={`rounded-2xl p-6 ${isDark ? 'bg-indigo-900/20 border border-indigo-700/50' : 'bg-indigo-50 border border-indigo-200'}`}>
+                        <Label className={`text-lg font-bold mb-2 block ${isDark ? 'text-indigo-400' : 'text-indigo-700'}`}>
+                          {t('اسم الدولة', 'Country Name', 'ناوی وڵات')} *
+                        </Label>
+                        <Input
+                          value={wizardData.customCountryName}
+                          onChange={e => setWizardData(p => ({ ...p, customCountryName: e.target.value }))}
+                          className={`h-12 mt-1 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : ''}`}
+                          placeholder={t('مثال: كندا، السويد...', 'e.g. Canada, Sweden...', 'بۆ نموونە: کەنەدا، سوید...')}
+                        />
+                        {errors.customCountryName && <p className="text-red-500 mt-2"><AlertCircle className="w-4 h-4 inline" /> {errors.customCountryName}</p>}
+                      </div>
+
+                      <div className={`rounded-2xl p-6 ${isDark ? 'bg-indigo-900/20 border border-indigo-700/50' : 'bg-indigo-50 border border-indigo-200'}`}>
+                        <Label className={`text-lg font-bold mb-2 block ${isDark ? 'text-indigo-400' : 'text-indigo-700'}`}>
+                          {t('اسم العملة', 'Currency Name', 'ناوی دراو')} *
+                        </Label>
+                        <Input
+                          value={wizardData.customCurrencyName}
+                          onChange={e => setWizardData(p => ({ ...p, customCurrencyName: e.target.value }))}
+                          className={`h-12 mt-1 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : ''}`}
+                          placeholder={t('مثال: يورو، ريال سعودي...', 'e.g. Euro, SAR...', 'بۆ نموونە: یۆرۆ، دۆلار...')}
+                        />
+                        {errors.customCurrencyName && <p className="text-red-500 mt-2"><AlertCircle className="w-4 h-4 inline" /> {errors.customCurrencyName}</p>}
+                      </div>
                     </div>
                   )}
 

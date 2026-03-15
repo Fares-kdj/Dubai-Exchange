@@ -178,6 +178,7 @@ const CardRecharge = () => {
             orderData: {
               ...formData,
               type: 'card_recharge',
+              currency: 'USD',
               amountIQD: calculateIQD(),
               serviceFee: calculateFeeAmount(),
               total: calculateTotalAmount(),

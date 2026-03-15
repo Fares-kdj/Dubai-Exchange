@@ -300,7 +300,7 @@ const ServiceSuccess = () => {
                       {isUSDT ? 'USDT' : t('المبلغ', 'Amount', 'بڕ')}
                     </p>
                     <p className="text-3xl font-bold text-[#D4AF37]">
-                      {isUSDT ? `${orderData.amount} USDT` : `${Number(orderData.amountIQD || orderData.amount || 0).toLocaleString()} IQD`}
+                      {isUSDT ? `${orderData.amount} USDT` : `${orderData.currency || 'IQD'} ${Number(orderData.amountIQD || orderData.amount || 0).toLocaleString()}`}
                     </p>
                   </div>
 

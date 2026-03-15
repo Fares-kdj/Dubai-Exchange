@@ -226,6 +226,7 @@ const USDTRecharge = () => {
             orderData: {
               ...formData,
               type: 'usdt_recharge',
+              currency: 'USDT',
               networkName: selectedNetwork ? t(selectedNetwork.labelAr, selectedNetwork.labelEn, selectedNetwork.labelKu) : '',
               amountIQD: calculateIQD(),
               serviceFee: calculateFee(),
