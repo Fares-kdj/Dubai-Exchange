@@ -86,21 +86,24 @@ const AdminCountries = () => {
   };
 
   const handleToggleActive = async (country) => {
+    // التحديث الفوري (Optimistic Update)
+    const originalCountries = [...countries];
+    setCountries(countries.map(c => 
+      c.country_code === country.country_code ? { ...c, is_active: !c.is_active } : c
+    ));
+
     try {
       const response = await fetch(API_URL + '/api/cms/countries/' + country.country_code, {
         method: 'PUT',
         headers: getAuthHeaders(),
         body: JSON.stringify({ is_active: !country.is_active })
       });
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.detail || 'فشل في تحديث حالة الدولة');
-      }
-      loadData();
+      if (!response.ok) throw new Error('Failed');
       toast.success('تم تحديث حالة الدولة بنجاح');
     } catch (err) {
       console.error('Error:', err);
-      toast.error(err.message || 'حدث خطأ ما');
+      setCountries(originalCountries); // Revert on error
+      toast.error('حدث خطأ ما');
     }
   };
 
@@ -109,20 +112,21 @@ const AdminCountries = () => {
       title: 'حذف الدولة',
       message: 'هل أنت متأكد من حذف هذه الدولة؟ سيتم حذف جميع الربط الخاص بها.',
       onConfirm: async () => {
+        const originalCountries = [...countries];
+        setCountries(countries.filter(c => c.country_code !== code));
+        if (expandedCountry === code) setExpandedCountry(null);
+
         try {
           const response = await fetch(API_URL + '/api/cms/countries/' + code, {
             method: 'DELETE',
             headers: getAuthHeaders()
           });
-          if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.detail || 'فشل في حذف الدولة');
-          }
-          loadData();
+          if (!response.ok) throw new Error('Failed');
           toast.success('تم حذف الدولة بنجاح');
         } catch (err) {
           console.error('Error:', err);
-          toast.error(err.message || 'حدث خطأ ما');
+          setCountries(originalCountries);
+          toast.error('حدث خطأ ما');
         }
       }
     });
@@ -276,9 +280,15 @@ const AdminCountries = () => {
         throw new Error(detail || 'فشل في حفظ الدولة');
       }
 
+      const savedData = await response.json();
       toast.success(editingCountry ? 'تم تحديث الدولة بنجاح' : 'تم إضافة الدولة بنجاح');
       setShowForm(false);
-      loadData();
+      
+      if (editingCountry) {
+        setCountries(countries.map(c => c.country_code === editingCountry.country_code ? savedData : c));
+      } else {
+        setCountries([...countries, savedData]);
+      }
     } catch (err) {
       console.error('Error:', err);
       toast.error(err.message || 'حدث خطأ ما');

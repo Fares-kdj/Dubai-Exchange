@@ -84,28 +84,46 @@ const AdminServices = () => {
   };
 
   const handleToggleActive = async (service) => {
+    // التحديث الفوري (Optimistic Update)
+    const originalServices = [...services];
+    setServices(services.map(s => 
+      s.service_id === service.service_id ? { ...s, is_active: !s.is_active } : s
+    ));
+
     try {
-      await fetch(API_URL + '/api/cms/services/' + service.service_id, {
+      const res = await fetch(API_URL + '/api/cms/services/' + service.service_id, {
         method: 'PUT',
         headers: getAuthHeaders(),
         body: JSON.stringify({ is_active: !service.is_active })
       });
-      loadServices();
+      if (!res.ok) throw new Error('Failed');
+      toast.success(service.is_active ? 'تم تعطيل الخدمة' : 'تم تفعيل الخدمة');
     } catch (err) {
       console.error('Error:', err);
+      setServices(originalServices); // Revert on error
+      toast.error('حدث خطأ');
     }
   };
 
   const handleToggleHero = async (service) => {
+    // التحديث الفوري (Optimistic Update)
+    const originalServices = [...services];
+    setServices(services.map(s => 
+      s.service_id === service.service_id ? { ...s, is_hero_pinned: !s.is_hero_pinned } : s
+    ));
+
     try {
-      await fetch(API_URL + '/api/cms/services/' + service.service_id, {
+      const res = await fetch(API_URL + '/api/cms/services/' + service.service_id, {
         method: 'PUT',
         headers: getAuthHeaders(),
         body: JSON.stringify({ is_hero_pinned: !service.is_hero_pinned })
       });
-      loadServices();
+      if (!res.ok) throw new Error('Failed');
+      toast.success(service.is_hero_pinned ? 'تمت الإزالة من القسم الرئيسي' : 'تم التثبيت في القسم الرئيسي');
     } catch (err) {
       console.error('Error:', err);
+      setServices(originalServices); // Revert on error
+      toast.error('حدث خطأ');
     }
   };
 
@@ -114,15 +132,19 @@ const AdminServices = () => {
       title: 'حذف الخدمة',
       message: 'هل أنت متأكد من حذف هذه الخدمة؟ لا يمكن التراجع عن هذا الإجراء.',
       onConfirm: async () => {
+        const originalServices = [...services];
+        setServices(services.filter(s => s.service_id !== serviceId));
+
         try {
-          await fetch(API_URL + '/api/cms/services/' + serviceId, {
+          const res = await fetch(API_URL + '/api/cms/services/' + serviceId, {
             method: 'DELETE',
             headers: getAuthHeaders()
           });
+          if (!res.ok) throw new Error('Failed');
           toast.success('تم حذف الخدمة بنجاح');
-          loadServices();
         } catch (err) {
           console.error('Error:', err);
+          setServices(originalServices);
           toast.error('حدث خطأ أثناء الحذف');
         }
       }
@@ -181,13 +203,15 @@ const AdminServices = () => {
       });
 
       if (response.ok) {
-        toast.success(editingService ? 'تم تحديث الخدمة بنجاح' : 'تم إضافة الخدمة بنجاح', {
-          duration: 3000
-        });
-        setTimeout(() => {
-          setShowForm(false);
-          loadServices();
-        }, 500); // Small delay to let the toast be seen
+        const savedData = await response.json();
+        toast.success(editingService ? 'تم تحديث الخدمة بنجاح' : 'تم إضافة الخدمة بنجاح');
+        setShowForm(false);
+        // التحديث المباشر في القائمة لتجنب الانتظار
+        if (editingService) {
+          setServices(services.map(s => s.service_id === editingService.service_id ? savedData : s));
+        } else {
+          setServices([...services, savedData].sort((a, b) => (a.order || 0) - (b.order || 0)));
+        }
       } else {
         toast.error('حدث خطأ أثناء الحفظ');
       }
@@ -204,23 +228,37 @@ const AdminServices = () => {
     const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
     if (newIndex < 0 || newIndex >= services.length) return;
 
-    // Swap orders
-    const otherService = services[newIndex];
+    const originalServices = [...services];
+    const newServices = [...services];
+    
+    // Swap items in local state instantly
+    const currentItem = { ...newServices[currentIndex], order: services[newIndex].order };
+    const otherItem = { ...newServices[newIndex], order: services[currentIndex].order };
+    
+    newServices[currentIndex] = otherItem;
+    newServices[newIndex] = currentItem;
+    
+    setServices(newServices.sort((a, b) => (a.order || 0) - (b.order || 0)));
+
+    const otherServiceId = otherItem.service_id;
+
     try {
-      await fetch(API_URL + '/api/cms/services/' + serviceId, {
+      const res1 = await fetch(API_URL + '/api/cms/services/' + serviceId, {
         method: 'PUT',
         headers: getAuthHeaders(),
-        body: JSON.stringify({ ...services[currentIndex], order: services[newIndex].order })
+        body: JSON.stringify({ order: currentItem.order })
       });
-      await fetch(API_URL + '/api/cms/services/' + otherService.service_id, {
+      const res2 = await fetch(API_URL + '/api/cms/services/' + otherServiceId, {
         method: 'PUT',
         headers: getAuthHeaders(),
-        body: JSON.stringify({ ...otherService, order: services[currentIndex].order })
+        body: JSON.stringify({ order: otherItem.order })
       });
-      toast.success('تم تغيير ترتيب الخدمة');
-      loadServices();
+      
+      if (!res1.ok || !res2.ok) throw new Error('Failed to update order');
+      toast.success('تم تغيير الترتيب');
     } catch (err) {
       console.error('Error:', err);
+      setServices(originalServices);
       toast.error('حدث خطأ أثناء تغيير الترتيب');
     }
   };
