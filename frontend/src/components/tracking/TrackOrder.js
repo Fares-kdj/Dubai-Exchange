@@ -85,7 +85,6 @@ const TrackOrder = () => {
       });
 
       const order = response.data;
-      // Map API response to component format
       setOrderResult({
         orderId: order.order_id,
         type: order.order_type,
@@ -153,7 +152,6 @@ const TrackOrder = () => {
       }
       toast.success(t('تم إرسال إثبات الدفع بنجاح!', 'Payment proof submitted!', 'بەڵگەی پارەدان بە سەرکەوتوویی نێردرا!'));
       setPaymentProofs([]);
-      // Refresh order data
       handleSearch();
     } catch (err) {
       toast.error(t('حدث خطأ أثناء رفع الملف', 'Error uploading file', 'هەڵەیەک لە کاتی بارکردنی پەڕگەکە ڕوویدا'));
@@ -404,238 +402,6 @@ const TrackOrder = () => {
                       </div>
                     </div>
 
-                    {/* Service Details */}
-                    <div className={`rounded-3xl border-2 p-8 shadow-xl ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'}`}>
-                      <h3 className={`text-xl font-bold mb-6 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                        <FileText className="w-6 h-6 text-purple-600" />
-                        {t('تفاصيل الطلب', 'Order Details', 'زانیاری داواکاری')}
-                      </h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {(() => {
-                          const labels = {
-                            travelType: { ar: 'نوع السفر', en: 'Travel Type', ku: 'جۆری گەشت' },
-                            destination: { ar: 'الوجهة', en: 'Destination', ku: 'شوێنی مەبەست' },
-                            travelDate: { ar: 'تاريخ السفر', en: 'Travel Date', ku: 'بەرواری گەشت' },
-                            pickupLocation: { ar: 'مكان الاستلام', en: 'Pickup Location', ku: 'شوێنی وەرگرتن' },
-                            usdAmount: { ar: 'المبلغ ($)', en: 'Amount ($)', ku: 'بڕ ($)' },
-                            iqdAmount: { ar: 'المبلغ (د.ع)', en: 'Amount (IQD)', ku: 'بڕ (د.ع)' },
-                            paymentMethod: { ar: 'طريقة الدفع', en: 'Payment Method', ku: 'شێوازی پارەدان' },
-                            senderName: { ar: 'اسم المرسل', en: 'Sender Name', ku: 'ناوی نێرەر' },
-                            receiverName: { ar: 'اسم المستلم', en: 'Receiver Name', ku: 'ناوی وەرگرەر' },
-                            senderProvince: { ar: 'محافظة المرسل', en: 'Sender Province', ku: 'پارێزگای نێرەر' },
-                            receiverProvince: { ar: 'محافظة المستلم', en: 'Receiver Province', ku: 'پارێزگای وەرگرەر' },
-                            senderCountry: { ar: 'دولة المرسل', en: 'Sender Country', ku: 'وڵاتی نێرەر' },
-                            receiverCountry: { ar: 'دولة المستلم', en: 'Receiver Country', ku: 'وڵاتی وەرگرەر' },
-                            currency: { ar: 'العملة', en: 'Currency', ku: 'دراو' },
-                            amount: { ar: 'المبلغ', en: 'Amount', ku: 'بڕ' },
-                            serviceFee: { ar: 'رسوم الخدمة', en: 'Service Fee', ku: 'کرێی خزمەتگوزاری' },
-                            amountUSD: { ar: 'المبلغ ($)', en: 'Amount ($)', ku: 'بڕ ($)' },
-                            amountIQD: { ar: 'المبلغ (د.ع)', en: 'Amount (IQD)', ku: 'بڕ (د.ع)' },
-                            phone: { ar: 'رقم الهاتف', en: 'Phone', ku: 'ژمارەی مۆبایل' },
-                            senderPhone: { ar: 'هاتف المرسل', en: 'Sender Phone', ku: 'مۆبایلی نێرەر' },
-                            receiverPhone: { ar: 'هاتف المستلم', en: 'Receiver Phone', ku: 'مۆبایلی وەرگرەر' },
-                            senderCurrency: { ar: 'عملة المرسل', en: 'Sender Currency', ku: 'دراوی نێرەر' },
-                            receiverCurrency: { ar: 'عملة المستلم', en: 'Receiver Currency', ku: 'دراوی وەرگرەر' },
-                            exchangeRate: { ar: 'سعر الصرف', en: 'Exchange Rate', ku: 'نرخی ئاڵوگۆڕ' },
-                            total: { ar: 'الإجمالي', en: 'Total', ku: 'تێکڕا' },
-                            // Card Recharge specific
-                            cardName: { ar: 'الاسم على البطاقة', en: 'Name on Card', ku: 'ناوی سەر کارتەکە' },
-                            numberType: { ar: 'نوع الرقم', en: 'Number Type', ku: 'جۆری ژمارە' },
-                            cardType: { ar: 'نوع البطاقة', en: 'Card Type', ku: 'جۆری کارت' },
-                            cardNumber: { ar: 'رقم البطاقة', en: 'Card Number', ku: 'ژمارەی کارت' },
-                            accountNumber: { ar: 'رقم الحساب', en: 'Account Number', ku: 'ژمارەی هەژمار' },
-                            // USDT specific
-                            networkName: { ar: 'الشبكة', en: 'Network', ku: 'تۆڕ' },
-                            walletAddress: { ar: 'عنوان المحفظة', en: 'Wallet Address', ku: 'ناونیشانی وێڵێت' },
-                            // International transfer fields
-                            rip: { ar: 'رقم الحساب (RIP)', en: 'Account Number (RIP)', ku: 'ژمارەی ئەژمار (RIP)' },
-                            bankName: { ar: 'اسم البنك', en: 'Bank Name', ku: 'ناوی بانک' },
-                            beneficiaryName: { ar: 'اسم المستفيد', en: 'Beneficiary Name', ku: 'ناوی وەرگر' },
-                            iban: { ar: 'رقم الآيبان (IBAN)', en: 'IBAN', ku: 'IBAN' },
-                            swift: { ar: 'سويفت كود (SWIFT)', en: 'SWIFT Code', ku: 'کۆدی SWIFT' },
-                            generic_account: { ar: 'رقم الحساب أو المعرف', en: 'Account or ID', ku: 'ژمارەی ئەژمار يان ناسێنەر' },
-                            // Travel fields
-                            passport_number: { ar: 'رقم الجواز', en: 'Passport Number', ku: 'ژمارەی پۆسپۆرت' },
-                            mother_name: { ar: 'اسم الأم', en: 'Mother\'s Name', ku: 'ناوی دایک' },
-                            ticket_number: { ar: 'رقم التذكرة', en: 'Ticket Number', ku: 'ژمارەی بلیت' },
-                            batch_number: { ar: 'رقم الوجبة', en: 'Batch Number', ku: 'ژمارەی بەش' },
-                            batch_date: { ar: 'تاريخ الوجبة', en: 'Batch Date', ku: 'بەرواری بەش' },
-                            travel_time: { ar: 'وقت السفر', en: 'Travel Time', ku: 'کاتی گەشت' },
-                            passport_issue_date: { ar: 'تاريخ إصدار الجواز', en: 'Passport Issue Date', ku: 'بەرواری دەرچوونی پۆسپۆرت' },
-                            passport_expiry_date: { ar: 'تاريخ نفاذ الجواز', en: 'Passport Expiry Date', ku: 'بەرواری بەسەرچوونی پۆسپۆرت' },
-                            travel_agency: { ar: 'مكتب السياحة', en: 'Travel Agency', ku: 'نووسینگەی گەشتياري' },
-                            // International Transfer - Country & Method
-                            countryCode: { ar: 'كود الدولة', en: 'Country Code', ku: 'کۆدی وڵات' },
-                            countryName: { ar: 'الدولة', en: 'Country', ku: 'وڵات' },
-                            methodId: { ar: 'معرف الطريقة', en: 'Method ID', ku: 'ناسنامەی ڕێگا' },
-                            methodName: { ar: 'طريقة التحويل', en: 'Transfer Method', ku: 'ڕێگای گواستنەوە' },
-                            receiveAmount: { ar: 'المبلغ المستلم', en: 'Receive Amount', ku: 'بڕی وەرگیراو' },
-                            // MoneyGram New Fields
-                            senderFirstName: { ar: 'الاسم الثلاثي للمرسل', en: 'Sender Full Name', ku: 'ناوی تەواوی نێرەر' },
-                            senderLastName: { ar: 'اللقب للمرسل', en: 'Sender Nickname', ku: 'نازناوی نێرەر' },
-                            senderAddress: { ar: 'عنوان المرسل', en: 'Sender Address', ku: 'ناونیشانی نێرەر' },
-                            senderPhone: { ar: 'رقم هاتف المرسل', en: 'Sender Phone', ku: 'مۆبایلی نێرەر' },
-                            senderDOB: { ar: 'تاريخ ميلاد المرسل', en: 'Sender Date of Birth', ku: 'بەرواری لەدایکبوونی نێرەر' },
-                            senderPOB: { ar: 'مكان ميلاد المرسل', en: 'Sender Place of Birth', ku: 'شوێنی لەدایکبوونی نێرەر' },
-                            receiverFirstName: { ar: 'الاسم الثلاثي للمستلم', en: 'Receiver Full Name', ku: 'ناوی تەواوی وەرگر' },
-                            receiverLastName: { ar: 'اللقب للمستلم', en: 'Receiver Nickname', ku: 'نازناوی وەرگر' },
-                            receiverDOB: { ar: 'تاريخ ميلاد المستلم', en: 'Receiver Date of Birth', ku: 'بەرواری لەدایکبوونی وەرگر' },
-                            receiverPhone: { ar: 'رقم هاتف المستلم', en: 'Receiver Phone', ku: 'مۆبایلی وەرگر' },
-                            // Western Union New Fields
-                            receiverAddress: { ar: 'عنوان المستلم', en: 'Receiver Address', ku: 'ناونیشانی وەرگر' },
-                            address: { ar: 'عنوان العميل', en: 'Customer Address', ku: 'ناونیشانی کڕیار' },
-                            idType: { ar: 'نوع الهوية', en: 'ID Type', ku: 'جۆری ناسنامە' },
-                            purpose: { ar: 'الغرض من التحويل', en: 'Transfer Purpose', ku: 'مەبەستی گواستنەوە' },
-                            senderDistrict: { ar: 'قضاء المرسل', en: 'Sender District', ku: 'قەزای نێرەر' },
-                            receiverDistrict: { ar: 'قضاء المستلم', en: 'Receiver District', ku: 'قەزای وەرگر' },
-                            pickupLocationName: { ar: 'مكان الاستلام', en: 'Pickup Location', ku: 'شوێنی وەرگرتن' },
-                            // Other Countries - custom currency
-                            customCurrencyName: { ar: 'اسم العملة المطلوبة', en: 'Requested Currency Name', ku: 'ناوی دراوی داواکراو' }
-                          };
-
-                          const valueMappings = {
-                            'zain_cash': t('زين كاش', 'Zain Cash', 'زەین کاش'),
-                            'mastercard_rafidain': t('ماستركارد الرافدين', 'Mastercard Rafidain', 'ماستەرکاردی ڕافیدەین'),
-                            'fib': 'FIB',
-                            'air': t('جوي', 'Air', 'ئاسمانی'),
-                            'land': t('بري', 'Land', 'وشکانی'),
-                            'USD': t('دولار أمريكي', 'US Dollar', 'دۆلاري ئەمریکی'),
-                            'IQD': t('دينار عراقي', 'Iraqi Dinar', 'دیناري عێراقي'),
-                            'card': t('رقم بطاقة (16 رقم)', 'Card Number (16 digits)', 'ژمارەی کارت (١٦ ژمارە)'),
-                            'account': t('رقم حساب (10 أرقام)', 'Account Number (10 digits)', 'ژمارەی هەژمار (١٠ ژمارە)'),
-                            'usdt_recharge': t('شحن USDT', 'USDT Recharge', 'بارگاويكردنەوەی USDT'),
-                            'card_recharge': t('شحن بطاقة', 'Card Recharge', 'بارگاويكردنەوەی کارت'),
-                            'usdt': 'USDT',
-                            // Provinces
-                            'baghdad': t('بغداد', 'Baghdad', 'بەغدا'),
-                            'basra': t('البصرة', 'Basra', 'بەسرە'),
-                            'erbil': t('أربيل', 'Erbil', 'هەولێر'),
-                            'sulaymaniyah': t('السليمانية', 'Sulaymaniyah', 'سلێمانی'),
-                            'duhok': t('دهوك', 'Duhok', 'دهۆک'),
-                            'nineveh': t('نينوى', 'Nineveh', 'نەینەوا'),
-                            'kirkuk': t('كركوك', 'Kirkuk', 'کەرکوک'),
-                            'diyala': t('ديالى', 'Diyala', 'دیالە'),
-                            'anbar': t('الأنبار', 'Anbar', 'ئەنبار'),
-                            'najaf': t('النجف', 'Najaf', 'نەجەف'),
-                            'karbala': t('كربلاء', 'Karbala', 'کەربەلا'),
-                            'babylon': t('بابل', 'Babylon', 'بابل'),
-                            'wasit': t('واسط', 'Wasit', 'واسیتی'),
-                            'maysan': t('ميسان', 'Maysan', 'میسان'),
-                            'dhiqar': t('ذي قار', 'Dhi Qar', 'زیقار'),
-                            'muthanna': t('المثنى', 'Muthanna', 'موسەنا'),
-                            'qadisiyyah': t('القادسية', 'Qadisiyyah', 'قادسیە'),
-                            'saladin': t('صلاح الدين', 'Saladin', 'سەڵاحەدین'),
-                            // Currencies
-                            'DZD': t('دينار جزائري', 'Algerian Dinar', 'دیناری جەزائیری'),
-                            'EUR': t('يورو', 'Euro', 'یۆرۆ'),
-                            'TRY': t('ليرة تركية', 'Turkish Lira', 'لیرەی تورکی'),
-                            'AED': t('درهم إماراتي', 'UAE Dirham', 'درهەمی ئیماراتی'),
-                            'EGP': t('جنيه مصري', 'Egyptian Pound', 'جونەیهی میسری'),
-                            // Countries & Methods (Values)
-                            'iraq': t('العراق', 'Iraq', 'عێراق'),
-                            'uae': t('الإمارات', 'UAE', 'ئیمارات'),
-                            'saudi': t('السعودية', 'Saudi Arabia', 'سعودیە'),
-                            'jordan': t('الأردن', 'Jordan', 'ئوردن'),
-                            'egypt': t('مصر', 'Egypt', 'میسر'),
-                            'usa': t('الولايات المتحدة', 'United States', 'ئەمریکا'),
-                            'uk': t('بريطانيا', 'United Kingdom', 'بەریتانیا'),
-                            'germany': t('ألمانيا', 'Germany', 'ئەڵمانیا'),
-                            'france': t('فرنسا', 'France', 'فەڕەنسا'),
-                            'canada': t('كندا', 'Canada', 'کەنەدا'),
-                            'australia': t('أستراليا', 'Australia', 'ئوستورالیا'),
-                            'india': t('الهند', 'India', 'هیندستان'),
-                            'pakistan': t('باكستان', 'Pakistan', 'پاکستان'),
-                            'lebanon': t('لبنان', 'Lebanon', 'لوبنان'),
-                            'syria': t('سوريا', 'Syria', 'سوریا'),
-                            'DZ': t('الجزائر', 'Algeria', 'جەزائیر'),
-                            'Algeria': t('الجزائر', 'Algeria', 'جەزائیر'),
-                            'algeria': t('الجزائر', 'Algeria', 'جەزائیر'),
-                            'TR': t('تركيا', 'Turkey', 'تورکیا'),
-                            'Turkey': t('تركيا', 'Turkey', 'تورکیا'),
-                            'turkey': t('تركيا', 'Turkey', 'تورکیا'),
-                            'TRY': t('ليرة تركية', 'Turkish Lira', 'لیرەی تورکی'),
-                            'try': t('ليرة تركية', 'Turkish Lira', 'لیرەی تورکی'),
-                            'TRY_TRY': t('ليرة تركية', 'Turkish Lira', 'ليرەی توركي'),
-                            'BaridiMob': t('بريدي موب', 'BaridiMob', 'بەریدی مۆب'),
-                            'western_union': t('ويسترن يونيون', 'Western Union', 'وێستەرن یونیۆن'),
-                            'ria': t('ريا', 'Ria', 'ڕیا'),
-                            'bank_dropdown_test': t('تحويل بنكي', 'Bank Transfer', 'گواستنەوەی بانكي'),
-                            'Bank Transfer (Test)': t('تحويل بنكي', 'Bank Transfer', 'گواستنەوەی بانکی'),
-                            'Bank Transfer (Dropdown Test)': t('تحويل بنكي', 'Bank Transfer', 'گواستنەوەی بانكي'),
-                            'تحويل بنكي (تجريبي)': t('تحويل بنكي', 'Bank Transfer', 'گواستنەوەی بانكي'),
-                            'bank_transfer': t('تحويل بنكي', 'Bank Transfer', 'گواستنەوەی بانكي'),
-                            // ID Types (Western Union)
-                            'passport': t('جواز سفر', 'Passport', 'پاسپۆرت'),
-                            'national_id': t('بطاقة هوية', 'National ID Card', 'کارتی ناسنامە'),
-                            // Purposes (Western Union)
-                            'trade': t('تجارة', 'Trade', 'بازرگانی'),
-                            'family_expenses': t('نفقات الأسرة', 'Family Expenses', 'خەرجی خێزان'),
-                            'medical': t('علاج', 'Medical Treatment', 'چارە‌سەری پزیشکی')
-                          };
-
-                          const rawDetails = { ...orderResult.details };
-                          if (rawDetails.customFields && typeof rawDetails.customFields === 'object') {
-                            Object.assign(rawDetails, rawDetails.customFields);
-                            delete rawDetails.customFields;
-                          }
-
-                          return Object.entries(rawDetails)
-                            .filter(([key, value]) => {
-                              if (value === null || value === undefined || value === '') return false;
-                              // Hide internal IDs if friendly names are available
-                              if (key === 'methodId' && rawDetails.methodName) return false;
-                              if (key === 'countryCode' && rawDetails.countryName) return false;
-                              if (key === 'pickupLocation' && rawDetails.pickupLocationName) return false;
-                              // Hide internal tracking/stamping fields
-                              if (key === 'pickupStampId' || key === 'pickupStampImage') return false;
-                              // Hide image URLs (they will be shown in the Documents section)
-                              if (typeof value === 'string' && (value.startsWith('/uploads/') || value.startsWith('http') || value.startsWith('data:image'))) return false;
-                              return true;
-                            })
-                            .map(([key, value]) => {
-                              // Try to find field definition in methods
-                              let label = key;
-                              if (labels[key]) {
-                                label = t(labels[key].ar, labels[key].en, labels[key].ku);
-                              } else if (orderResult.details?.methodId || orderResult.details?.methodName) {
-                                const methodId = orderResult.details.methodId;
-                                const method = methods.find(m => m.method_id === methodId);
-                                const field = method?.fields?.find(f => f.field_id === key);
-                                if (field) {
-                                  label = t(field.name_ar, field.name_en, field.name_ku);
-                                }
-                              }
-
-                              const displayValue = valueMappings[value] || value;
-
-                              if (typeof value === 'object') return null;
-
-                              return (
-                                <div key={key} className={`p-4 rounded-xl ${isDark ? 'bg-slate-700/50' : 'bg-slate-50'}`}>
-                                  <p className={`text-xs mb-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{label}</p>
-                                  {key === 'walletAddress' ? (
-                                    <div className="flex items-center gap-2">
-                                      <p className={`font-mono text-[10px] break-all flex-1 leading-relaxed ${isDark ? 'text-white' : 'text-slate-900'}`}>{displayValue}</p>
-                                      <button
-                                        onClick={() => {
-                                          navigator.clipboard.writeText(displayValue);
-                                          toast.success(t('تم نسخ العنوان', 'Address copied', 'ناونیشانەکە کۆپی کرا'));
-                                        }}
-                                        className={`p-1.5 rounded-lg shrink-0 transition-colors ${isDark ? 'hover:bg-white/10' : 'hover:bg-slate-200'}`}
-                                      >
-                                        <Copy className="w-4 h-4 text-slate-500" />
-                                      </button>
-                                    </div>
-                                  ) : (
-                                    <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{displayValue}</p>
-                                  )}
-                                </div>
-                              );
-                            });
-                        })()}
-                      </div>
-                    </div>
-
                     {/* Documents */}
                     <div className={`rounded-3xl border-2 p-8 shadow-xl ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'}`}>
                       <h3 className={`text-xl font-bold mb-6 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
@@ -668,7 +434,6 @@ const TrackOrder = () => {
                           </div>
                         )}
 
-                        {/* New: Dynamic Images from Custom Fields */}
                         {orderResult.details && Object.entries(orderResult.details.customFields || {}).map(([key, value], idx) => {
                           if (typeof value === 'string' && (value.startsWith('/uploads/') || value.startsWith('http'))) {
                             return (
@@ -697,9 +462,9 @@ const TrackOrder = () => {
                       <div className={`p-6 rounded-2xl inline-block ${isDark ? 'bg-white' : 'bg-slate-50'}`}>
                         <QRCodeSVG
                           value={`رقم الطلب: ${orderResult.orderId}
-الاسم: ${orderResult.customer.fullName}
-التاريخ: ${formatDate(orderResult.createdAt)}
-http://dubai-international-iq.online/track-order?id=${orderResult.orderId}`}
+ الاسم: ${orderResult.customer.fullName}
+ التاريخ: ${formatDate(orderResult.createdAt)}
+ http://dubai-international-iq.online/track-order?id=${orderResult.orderId}`}
                           size={150}
                           level="H"
                           includeMargin={true}

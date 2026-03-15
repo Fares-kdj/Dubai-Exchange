@@ -6,7 +6,7 @@ import { useTheme } from '@/context/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   CheckCircle, Copy, ArrowRight, CreditCard, Wallet, Phone, User, DollarSign, Network,
-  MessageCircle, Upload, X, Image, FileText, AlertCircle, ExternalLink, Send
+  MessageCircle, Upload, X, Image as ImageIcon, FileText, AlertCircle, ExternalLink, SendHorizontal
 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import Header3D from '../landing/Header3D';
@@ -462,7 +462,7 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
                         data-testid="proof-upload-side"
                       />
                       <div className="text-center">
-                        <Image className={`w-8 h-8 mx-auto mb-2 ${isDark ? 'text-slate-500' : 'text-slate-400'}`} />
+                        <ImageIcon className={`w-8 h-8 mx-auto mb-2 ${isDark ? 'text-slate-500' : 'text-slate-400'}`} />
                         <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>
                           {t('رفع صورة الإيصال', 'Upload receipt', 'وێنەی وەسڵەکە بار بکە')}
                         </p>
@@ -506,7 +506,7 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
                           disabled={uploading}
                           className="w-full mt-3 py-2 bg-blue-500 text-white text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-2"
                         >
-                          {uploading ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Send className="w-4 h-4" />}
+                          {uploading ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <SendHorizontal className="w-4 h-4" />}
                           {uploading ? t('جاري...', 'Uploading...', 'بارکردن...') : t('رفع الآن', 'Upload Now', 'ئێستا بار بکە')}
                         </motion.button>
                       )}
