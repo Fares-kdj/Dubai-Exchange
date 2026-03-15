@@ -85,11 +85,11 @@ const CountryWizard = () => {
     };
 
     if (isBankTransfer) {
-      // For bank transfers: USD, EUR, or local currency
+      // For bank transfers: local currency first, then USD and EUR
       return [
+        localCurrencyInfo,
         { code: 'USD', nameAr: currencyNames['USD'].ar, nameEn: currencyNames['USD'].en, nameKu: currencyNames['USD'].ku },
-        { code: 'EUR', nameAr: currencyNames['EUR'].ar, nameEn: currencyNames['EUR'].en, nameKu: currencyNames['EUR'].ku },
-        localCurrencyInfo
+        { code: 'EUR', nameAr: currencyNames['EUR'].ar, nameEn: currencyNames['EUR'].en, nameKu: currencyNames['EUR'].ku }
       ];
     } else {
       // For non-bank methods: local currency only
@@ -162,8 +162,8 @@ const CountryWizard = () => {
         // For non-bank, auto-set to local currency
         setWizardData(p => ({ ...p, receiverCurrency: country.currency }));
       } else if (isBankType && !wizardData.receiverCurrency) {
-        // For bank, default to USD
-        setWizardData(p => ({ ...p, receiverCurrency: 'USD' }));
+        // For bank, default to local currency if available, otherwise fallback to USD
+        setWizardData(p => ({ ...p, receiverCurrency: country?.currency || 'USD' }));
       }
     }
   }, [wizardData.method, wizardData.country, countries]);
