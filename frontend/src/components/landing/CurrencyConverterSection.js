@@ -118,13 +118,13 @@ export const CurrencyConverterSection = () => {
     if (fromCurrency === 'IQD' && toCurrency !== 'IQD') {
       const toRate = rates.find(r => r.currency_code === toCurrency);
       if (toRate) {
-        setResult((numAmount / toRate.sell_rate).toFixed(2));
+        setResult((numAmount / toRate.sell_rate).toFixed(5));
       }
     } else if (fromCurrency !== 'IQD' && toCurrency === 'IQD') {
       const fromRate = rates.find(r => r.currency_code === fromCurrency);
       if (fromRate) {
         // Convert to IQD using selling price
-        setResult((numAmount * fromRate.sell_rate).toFixed(2));
+        setResult((numAmount * fromRate.sell_rate).toFixed(5));
       }
     } else if (fromCurrency !== 'IQD' && toCurrency !== 'IQD') {
       const fromRate = rates.find(r => r.currency_code === fromCurrency);
@@ -133,10 +133,10 @@ export const CurrencyConverterSection = () => {
         // 1. Convert initial amount to IQD using FROM currency's selling rate
         const iqd = numAmount * fromRate.sell_rate;
         // 2. Convert IQD to target currency using TO currency's selling rate
-        setResult((iqd / toRate.sell_rate).toFixed(2));
+        setResult((iqd / toRate.sell_rate).toFixed(5));
       }
     } else {
-      setResult(numAmount.toFixed(2));
+      setResult(numAmount.toFixed(5));
     }
   };
 
@@ -324,23 +324,13 @@ export const CurrencyConverterSection = () => {
     >
       {/* Premium Background Effects */}
       <div className="absolute inset-0 overflow-hidden">
-        {/* Animated Gradient Orbs */}
-        <motion.div
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.3, 0.5, 0.3]
-          }}
-          transition={{ duration: 8, repeat: Infinity }}
-          className={`absolute top-20 right-1/4 w-96 h-96 rounded-full blur-3xl ${isDark ? 'bg-[#D4AF37]/20' : 'bg-[#D4AF37]/30'
+        {/* Static Static Gradient Orbs (Removed animations for performance) */}
+        <div
+          className={`absolute top-20 right-1/4 w-96 h-96 rounded-full blur-3xl opacity-30 ${isDark ? 'bg-[#D4AF37]/20' : 'bg-[#D4AF37]/30'
             }`}
         />
-        <motion.div
-          animate={{
-            scale: [1.2, 1, 1.2],
-            opacity: [0.2, 0.4, 0.2]
-          }}
-          transition={{ duration: 10, repeat: Infinity, delay: 2 }}
-          className={`absolute bottom-20 left-1/4 w-80 h-80 rounded-full blur-3xl ${isDark ? 'bg-blue-500/15' : 'bg-blue-400/20'
+        <div
+          className={`absolute bottom-20 left-1/4 w-80 h-80 rounded-full blur-3xl opacity-20 ${isDark ? 'bg-blue-500/15' : 'bg-blue-400/20'
             }`}
         />
 
@@ -468,11 +458,9 @@ export const CurrencyConverterSection = () => {
                       <span className="text-lg font-semibold">{getLocalizedCurrency(fromCurrency)}</span>
                     </div>
                   </motion.div>
-                  {/* Border Glow Effect */}
-                  <motion.div
-                    className="absolute inset-0 rounded-2xl pointer-events-none"
-                    animate={{ boxShadow: ['0 0 0 2px transparent', '0 0 0 2px rgba(212, 175, 55, 0.3)', '0 0 0 2px transparent'] }}
-                    transition={{ duration: 2, repeat: Infinity }}
+                  {/* Border Glow Effect - Removed infinite animation for performance */}
+                  <div
+                    className={`absolute inset-0 rounded-2xl pointer-events-none border-2 ${isDark ? 'border-slate-700/50' : 'border-slate-200'}`}
                   />
                 </div>
               </div>
@@ -565,19 +553,13 @@ export const CurrencyConverterSection = () => {
                           />
                         </div>
                         <div>
-                          <motion.div
-                            className={`text-4xl md:text-5xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}
-                            data-testid="converter-result"
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            key={result}
-                          >
-                            {parseFloat(result).toLocaleString('en-US')}
-                            <span className={`text-2xl ${isDark ? 'text-slate-400' : 'text-slate-500'}`}> {getLocalizedCurrency(toCurrency)}</span>
-                          </motion.div>
-                          <div className={`text-sm mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                            <span>1 {getLocalizedCurrency(fromCurrency)} = {amount && parseFloat(amount) > 0 ? (parseFloat(result) / parseFloat(amount)).toLocaleString('en-US', { maximumFractionDigits: 4 }) : 0} {getLocalizedCurrency(toCurrency)}</span>
-                          </div>
+                        <div className={`text-4xl md:text-5xl font-bold ${isDark ? 'text-white' : 'text-slate-900'}`} data-testid="converter-result">
+                          {parseFloat(result).toLocaleString('en-US', { maximumFractionDigits: 5 })}
+                          <span className={`text-2xl ${isDark ? 'text-slate-400' : 'text-slate-500'}`}> {getLocalizedCurrency(toCurrency)}</span>
+                        </div>
+                        <div className={`text-sm mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                          <span>1 {getLocalizedCurrency(fromCurrency)} = {amount && parseFloat(amount) > 0 ? (parseFloat(result) / parseFloat(amount)).toLocaleString('en-US', { maximumFractionDigits: 5 }) : 0} {getLocalizedCurrency(toCurrency)}</span>
+                        </div>
                         </div>
                       </div>
                     </div>

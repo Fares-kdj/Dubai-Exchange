@@ -4,7 +4,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { toast } from 'sonner';
 import { useTheme } from '@/context/ThemeContext';
 import { motion } from 'framer-motion';
-import { CheckCircle, Copy, Download, Upload, X, Clock, MapPin, DollarSign, CreditCard, Phone, User, Globe, ArrowRight, FileText } from 'lucide-react';
+import { CheckCircle, Copy, Download, Upload, X, Clock, MapPin, DollarSign, Banknote, CreditCard, Phone, User, Globe, ArrowRight, FileText } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import Header3D from '../landing/Header3D';
 import Footer3D from '../landing/Footer3D';
@@ -455,8 +455,8 @@ const TransferSuccess = () => {
                   }`}
               >
                 <h3 className={`text-2xl font-bold mb-6 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                  <DollarSign className="w-6 h-6 text-[#D4AF37]" />
-                  {t('تفاصيل المبلغ', 'Amount Details', 'زانیاری بڕی پارە')}
+                  <Banknote className="w-6 h-6 text-[#D4AF37]" />
+                  {t('تفاصيل المبلغ', 'Amount Details', 'زانیاريی بڕی پارە')}
                 </h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

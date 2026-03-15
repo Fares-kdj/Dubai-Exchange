@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
 import { useTheme } from '@/context/ThemeContext';
 import { motion } from 'framer-motion';
-import { MapPin, User, Phone, DollarSign, CreditCard, CheckCircle, AlertCircle, ArrowRight, ArrowLeft } from 'lucide-react';
+import { MapPin, User, Phone, DollarSign, Banknote, CreditCard, CheckCircle, AlertCircle, ArrowRight, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -40,7 +40,7 @@ const LocalTransfer = () => {
     receiverPhone: '',
     amountUSD: '', // Keep for backward compatibility or rename if safe, but user said "as we did for receiver"
     amount: '',
-    senderCurrency: '', // IQD or USD
+    senderCurrency: 'USD', // User wants to enter amount in USD
     receiverCurrency: '', // IQD or USD
     paymentMethod: ''
   });
@@ -112,7 +112,6 @@ const LocalTransfer = () => {
   const calculateAmountIQD = () => {
     if (!formData.amount) return 0;
     const amount = parseFloat(formData.amount);
-    if (formData.senderCurrency === 'IQD') return Math.round(amount);
     return Math.round(amount * usdToIqdRate);
   };
 
@@ -139,7 +138,6 @@ const LocalTransfer = () => {
     if (!formData.senderPhone.trim()) newErrors.senderPhone = t('رقم هاتف المرسل مطلوب', 'Sender phone required', 'ژمارەی مۆبایلی نێرەر پێویستە');
     if (!formData.receiverPhone.trim()) newErrors.receiverPhone = t('رقم هاتف المستلم مطلوب', 'Receiver phone required', 'ژمارەی مۆبایلی وەرگر پێویستە');
     if (!formData.amount || parseFloat(formData.amount) <= 0) newErrors.amount = t('المبلغ مطلوب', 'Amount required', 'بڕی پارە پێويستە');
-    if (!formData.senderCurrency) newErrors.senderCurrency = t('عملة المرسل مطلوبة', 'Sender currency required', 'دراوی نێرەر پێویستە');
     if (!formData.receiverCurrency) newErrors.receiverCurrency = t('عملة المستلم مطلوبة', 'Receiver currency required', 'دراوی وەرگر پێویستە');
     if (!formData.paymentMethod) newErrors.paymentMethod = t('طريقة الدفع مطلوبة', 'Payment method required', 'شێوازی پارەدان پێویستە');
 
@@ -470,9 +468,9 @@ const LocalTransfer = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Amount */}
-                <div className="space-y-2">
+                <div className="space-y-2 md:col-span-2">
                   <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
-                    {t('المبلغ', 'Amount', 'بڕ')} *
+                    {t('المبلغ (بالدولار الأمريكي)', 'Amount (in USD)', 'بڕ (بە دۆلاری ئەمریکی)')} *
                   </Label>
                   <Input
                     type="number"
@@ -487,30 +485,6 @@ const LocalTransfer = () => {
                   {errors.amount && (
                     <p className="text-sm text-red-500 flex items-center gap-1">
                       <AlertCircle className="w-4 h-4" />{errors.amount}
-                    </p>
-                  )}
-                </div>
-
-                {/* Sender Currency */}
-                <div className="space-y-2">
-                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
-                    {t('عملة المرسل', 'Sender Currency', 'دراوی نێرەر')} *
-                  </Label>
-                  <Select value={formData.senderCurrency} onValueChange={(v) => handleInputChange('senderCurrency', v)}>
-                    <SelectTrigger className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} data-testid="sender-currency-select">
-                      <SelectValue placeholder={t('اختر العملة', 'Select currency', 'دراو هەڵبژێرە')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {currencies.map(c => (
-                        <SelectItem key={c.value} value={c.value}>
-                          {c.symbol} {t(c.labelAr, c.labelEn, c.labelKu)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {errors.senderCurrency && (
-                    <p className="text-sm text-red-500 flex items-center gap-1">
-                      <AlertCircle className="w-4 h-4" />{errors.senderCurrency}
                     </p>
                   )}
                 </div>
@@ -590,22 +564,20 @@ const LocalTransfer = () => {
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between">
                       <span className={isDark ? 'text-emerald-200' : 'text-emerald-800'}>
-                        {t('المبلغ', 'Amount', 'بڕ')} ({formData.senderCurrency})
+                        {t('المبلغ', 'Amount', 'بڕ')}
                       </span>
                       <span dir="ltr" className={`font-semibold ${isDark ? 'text-white' : ''}`}>
-                        {formData.senderCurrency === 'USD' ? '$' : ''}{parseFloat(formData.amount).toLocaleString()} {formData.senderCurrency === 'IQD' ? 'IQD' : ''}
+                        ${parseFloat(formData.amount).toLocaleString()}
                       </span>
                     </div>
-                    {formData.senderCurrency === 'USD' && (
-                      <div className="flex justify-between">
-                        <span className={isDark ? 'text-emerald-200' : 'text-emerald-800'}>
-                          {t('المقابل بالدينار', 'Amount in IQD', 'بڕ بە دینار')}
-                        </span>
-                        <span dir="ltr" className={`font-semibold ${isDark ? 'text-white' : ''}`}>
-                          {calculateAmountIQD().toLocaleString()} IQD
-                        </span>
-                      </div>
-                    )}
+                    <div className="flex justify-between">
+                      <span className={isDark ? 'text-emerald-200' : 'text-emerald-800'}>
+                        {t('المقابل بالدينار', 'Equivalent in IQD', 'بڕ بە دینار')}
+                      </span>
+                      <span dir="ltr" className={`font-semibold ${isDark ? 'text-white' : ''}`}>
+                        {calculateAmountIQD().toLocaleString()} IQD
+                      </span>
+                    </div>
                     {formData.receiverCurrency && (
                       <div className="flex justify-between">
                         <span className={isDark ? 'text-emerald-200' : 'text-emerald-800'}>
