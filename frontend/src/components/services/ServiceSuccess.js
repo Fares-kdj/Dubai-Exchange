@@ -324,139 +324,6 @@ const ServiceSuccess = () => {
                   </div>
                 )}
               </motion.div>
-
-              {/* Payment Proof Upload Section */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-                className={`rounded-3xl border-2 shadow-xl p-8 ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'
-                  }`}
-              >
-                <h3 className={`text-2xl font-bold mb-6 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                  <Upload className="w-6 h-6 text-blue-500" />
-                  {t('رفع إثبات الدفع', 'Upload Payment Proof', 'بارکردنی بەڵگەی پارەدان')}
-                </h3>
-
-                <p className={`text-sm mb-6 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                  {t(
-                    'بعد إتمام الدفع، قم برفع صورة إيصال الدفع لتسريع معالجة طلبك',
-                    'After completing payment, upload your payment receipt to speed up processing',
-                    'دوای تەواوکردنی پارەدان، وێنەی وەسڵی پارەدانەکە بار بکە بۆ خێراکردنی پرۆسەی داواکارییەکەت'
-                  )}
-                </p>
-
-                <AnimatePresence mode="wait">
-                  {!proofImage ? (
-                    <motion.label
-                      key="upload-area"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      className={`block border-2 border-dashed rounded-2xl p-8 cursor-pointer transition-all ${isDark
-                        ? 'border-slate-600 hover:border-blue-500 hover:bg-blue-500/10'
-                        : 'border-slate-300 hover:border-blue-400 hover:bg-blue-50'
-                        }`}
-                    >
-                      <input
-                        type="file"
-                        ref={fileInputRef}
-                        accept="image/*"
-                        onChange={handleFileSelect}
-                        className="hidden"
-                        data-testid="proof-upload"
-                      />
-                      <div className="text-center">
-                        <motion.div
-                          animate={{ y: [0, -5, 0] }}
-                          transition={{ duration: 2, repeat: Infinity }}
-                        >
-                          <Image className={`w-12 h-12 mx-auto mb-4 ${isDark ? 'text-slate-500' : 'text-slate-400'}`} />
-                        </motion.div>
-                        <p className={`font-medium mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                          {t('اضغط لرفع الصورة', 'Click to upload image', 'بۆ بارکردنی وێنەکە لێرە کلیک بکە')}
-                        </p>
-                        <p className={`text-sm ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
-                          PNG, JPG {t('(الحد الأقصى 5 ميجابايت)', '(max 5MB)', '(زۆرترین ٥ مێگابایت)')}
-                        </p>
-                      </div>
-                    </motion.label>
-                  ) : (
-                    <motion.div
-                      key="preview"
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
-                      className={`rounded-2xl border-2 p-4 ${uploadSuccess
-                        ? 'border-[#D4AF37] bg-[#D4AF37]/10'
-                        : isDark
-                          ? 'border-slate-600 bg-slate-700/50'
-                          : 'border-slate-200 bg-slate-50'
-                        }`}
-                    >
-                      <div className="flex items-center gap-4">
-                        <img
-                          src={proofImage.preview}
-                          alt="Proof"
-                          className="w-20 h-20 rounded-xl object-cover"
-                        />
-                        <div className="flex-1 min-w-0">
-                          <p className={`font-medium truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                            {proofImage.name}
-                          </p>
-                          {uploadSuccess ? (
-                            <p className="text-sm text-[#D4AF37] flex items-center gap-1 mt-1">
-                              <CheckCircle className="w-4 h-4" />
-                              {t('تم الرفع بنجاح!', 'Uploaded successfully!', 'بە سەرکەوتوویی بارکرا!')}
-                            </p>
-                          ) : (
-                            <p className={`text-sm mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                              {t('جاهز للرفع', 'Ready to upload', 'ئامادەیە بۆ بارکردن')}
-                            </p>
-                          )}
-                        </div>
-                        <button
-                          onClick={removeProofImage}
-                          className={`p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-red-500/20' : 'hover:bg-red-50'
-                            }`}
-                        >
-                          <X className="w-5 h-5 text-red-500" />
-                        </button>
-                      </div>
-
-                      {!uploadSuccess && (
-                        <motion.button
-                          onClick={handleUploadProof}
-                          disabled={uploading}
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                          className={`w-full mt-4 py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2 ${uploading
-                            ? 'bg-slate-500 cursor-not-allowed'
-                            : 'bg-blue-500 hover:bg-blue-600 text-white'
-                            }`}
-                        >
-                          {uploading ? (
-                            <>
-                              <motion.div
-                                animate={{ rotate: 360 }}
-                                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                              >
-                                <Upload className="w-5 h-5" />
-                              </motion.div>
-                              {t('جاري الرفع...', 'Uploading...', 'لە کاتی بارکردن...')}
-                            </>
-                          ) : (
-                            <>
-                              <Send className="w-5 h-5" />
-                              {t('رفع الإثبات', 'Upload Proof', 'بارکردنی بەڵگە')}
-                            </>
-                          )}
-                        </motion.button>
-                      )}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
             </div>
 
             {/* Sidebar - Right Column */}
@@ -559,6 +426,93 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
                       : t('سيتم تنفيذ الخدمة فوراً', 'Service executed instantly', 'خزمەتگوزارییەکە دەستبەجێ ئەنجام دەدرێت')}
                   </p>
                 </div>
+              </motion.div>
+
+              {/* Payment Proof Upload Section (Side) */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7 }}
+                className={`rounded-3xl border-2 shadow-xl p-6 ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'
+                  }`}
+              >
+                <h3 className={`text-xl font-bold mb-4 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                  <Upload className="w-5 h-5 text-blue-500" />
+                  {t('رفع إثبات الدفع', 'Upload Payment Proof', 'بارکردنی بەڵگەی پارەدان')}
+                </h3>
+
+                <AnimatePresence mode="wait">
+                  {!proofImage ? (
+                    <motion.label
+                      key="upload-area-side"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className={`block border-2 border-dashed rounded-xl p-6 cursor-pointer transition-all ${isDark
+                        ? 'border-slate-600 hover:border-blue-500 hover:bg-blue-500/10'
+                        : 'border-slate-300 hover:border-blue-400 hover:bg-blue-50'
+                        }`}
+                    >
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        accept="image/*"
+                        onChange={handleFileSelect}
+                        className="hidden"
+                        data-testid="proof-upload-side"
+                      />
+                      <div className="text-center">
+                        <Image className={`w-8 h-8 mx-auto mb-2 ${isDark ? 'text-slate-500' : 'text-slate-400'}`} />
+                        <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                          {t('رفع صورة الإيصال', 'Upload receipt', 'وێنەی وەسڵەکە بار بکە')}
+                        </p>
+                      </div>
+                    </motion.label>
+                  ) : (
+                    <motion.div
+                      key="preview-side"
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      className={`rounded-xl border-2 p-3 ${uploadSuccess
+                        ? 'border-[#D4AF37] bg-[#D4AF37]/10'
+                        : isDark
+                          ? 'border-slate-600 bg-slate-800'
+                          : 'border-slate-200 bg-slate-50'
+                        }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={proofImage.preview}
+                          alt="Proof"
+                          className="w-12 h-12 rounded-lg object-cover"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <p className={`text-xs font-medium truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>{proofImage.name}</p>
+                          {uploadSuccess && (
+                             <p className="text-[10px] text-[#D4AF37] flex items-center gap-1">
+                               <CheckCircle className="w-3 h-3" /> {t('تم الرفع', 'Uploaded', 'بارکرا')}
+                             </p>
+                          )}
+                        </div>
+                        <button onClick={removeProofImage} className="p-1 hover:bg-red-500/20 rounded">
+                          <X className="w-4 h-4 text-red-500" />
+                        </button>
+                      </div>
+
+                      {!uploadSuccess && (
+                        <motion.button
+                          onClick={handleUploadProof}
+                          disabled={uploading}
+                          className="w-full mt-3 py-2 bg-blue-500 text-white text-sm font-bold rounded-lg transition-all flex items-center justify-center gap-2"
+                        >
+                          {uploading ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <Send className="w-4 h-4" />}
+                          {uploading ? t('جاري...', 'Uploading...', 'بارکردن...') : t('رفع الآن', 'Upload Now', 'ئێستا بار بکە')}
+                        </motion.button>
+                      )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </motion.div>
 
               {/* Important Notice */}
