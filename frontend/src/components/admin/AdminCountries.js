@@ -59,8 +59,8 @@ const AdminCountries = () => {
     setLoading(true);
     try {
       const [countriesRes, templatesRes] = await Promise.all([
-        fetch(API_URL + '/api/cms/countries'),
-        fetch(API_URL + '/api/cms/predefined-methods')
+        fetch(`${API_URL}/api/cms/countries?t=${Date.now()}`),
+        fetch(`${API_URL}/api/cms/predefined-methods?t=${Date.now()}`)
       ]);
       const countriesData = await countriesRes.json();
       const templatesData = await templatesRes.json();
@@ -218,7 +218,7 @@ const AdminCountries = () => {
       return;
     }
     try {
-      const response = await fetch(API_URL + '/api/cms/predefined-methods', {
+      const response = await fetch(`${API_URL}/api/cms/predefined-methods?t=${Date.now()}`, {
         method: 'POST',
         headers: getAuthHeaders(),
         body: JSON.stringify(newMethod)

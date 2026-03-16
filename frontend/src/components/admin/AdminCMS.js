@@ -51,10 +51,10 @@ const AdminCMS = () => {
     setLoading(true);
     try {
       const [termsRes, travelerTermsRes, contactRes, rateModeRes] = await Promise.all([
-        fetch(API_URL + '/api/cms/terms'),
-        fetch(API_URL + '/api/cms/traveler-terms'),
-        fetch(API_URL + '/api/cms/contact'),
-        fetch(API_URL + '/api/rates/settings/mode')
+        fetch(`${API_URL}/api/cms/terms?t=${Date.now()}`),
+        fetch(`${API_URL}/api/cms/traveler-terms?t=${Date.now()}`),
+        fetch(`${API_URL}/api/cms/contact?t=${Date.now()}`),
+        fetch(`${API_URL}/api/rates/settings/mode?t=${Date.now()}`)
       ]);
 
       const termsData = await termsRes.json();

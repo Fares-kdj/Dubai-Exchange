@@ -33,12 +33,27 @@ IRAQI_PREFIXES = ["+964", "00964", "964"]
 
 
 def is_iraqi_number(phone: str) -> bool:
-    """Check if phone number is Iraqi.
-    ⚠️  TEMPORARILY DISABLED — accepts ALL numbers for testing.
-    Re-enable the real check after testing!
-    """
-    # TODO: Re-enable Iraqi filter after testing
-    return True  # TEMP: allow all numbers
+    """Check if phone number is Iraqi"""
+    if not phone:
+        return False
+    
+    # Clean the phone number
+    cleaned = phone.replace(" ", "").replace("-", "")
+    
+    # Check for Iraqi prefixes
+    for prefix in IRAQI_PREFIXES:
+        if cleaned.startswith(prefix):
+            return True
+    
+    # Check if it starts with 07 (Iraqi mobile format without country code)
+    if cleaned.startswith("07") and len(cleaned) >= 10:
+        return True
+    
+    # Check if it starts with 7 (Iraqi mobile without leading zero e.g. 7801234567)
+    if cleaned.startswith("7") and len(cleaned) == 10:
+        return True
+    
+    return False
 
 
 def format_iraqi_number(phone: str) -> str:

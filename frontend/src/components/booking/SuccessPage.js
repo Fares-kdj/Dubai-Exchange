@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
+import { useTheme } from '@/context/ThemeContext';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { CheckCircle, Copy, Download, Upload, X, Clock, MapPin, Calendar, DollarSign, CreditCard, Phone, User } from 'lucide-react';
@@ -10,6 +11,7 @@ const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const SuccessPage = ({ orderData }) => {
   const { currentLanguage } = useLanguage();
+  const { isDark } = useTheme();
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
   const [paymentProofs, setPaymentProofs] = useState([]);
@@ -129,7 +131,9 @@ const SuccessPage = ({ orderData }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-slate-50 pt-20">
+    <div className={`min-h-screen pt-20 transition-colors duration-300 ${
+      isDark ? 'bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900' : 'bg-gradient-to-b from-blue-50 via-white to-slate-50'
+    }`}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Progress Indicator */}
         <motion.div
@@ -142,7 +146,7 @@ const SuccessPage = ({ orderData }) => {
               <div className="w-8 h-8 rounded-full bg-[#D4AF37] text-white flex items-center justify-center text-sm font-bold">
                 <CheckCircle className="w-5 h-5" />
               </div>
-              <span className="text-sm font-medium text-slate-500">
+              <span className={`text-sm font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                 {t('الشروط', 'Terms', 'مەرجەکان')}
               </span>
             </div>
@@ -151,7 +155,7 @@ const SuccessPage = ({ orderData }) => {
               <div className="w-8 h-8 rounded-full bg-[#D4AF37] text-white flex items-center justify-center text-sm font-bold">
                 <CheckCircle className="w-5 h-5" />
               </div>
-              <span className="text-sm font-medium text-slate-500">
+              <span className={`text-sm font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                 {t('معلومات الحجز', 'Booking Details', 'زانیارییەکانی حجزکردن')}
               </span>
             </div>
@@ -160,7 +164,7 @@ const SuccessPage = ({ orderData }) => {
               <div className="w-8 h-8 rounded-full bg-[#D4AF37] text-white flex items-center justify-center text-sm font-bold">
                 <CheckCircle className="w-5 h-5" />
               </div>
-              <span className="text-sm font-medium text-slate-900">
+              <span className={`text-sm font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 {t('التأكيد', 'Confirmation', 'دووپاتکردنەوە')}
               </span>
             </div>
@@ -177,10 +181,10 @@ const SuccessPage = ({ orderData }) => {
           <div className="w-24 h-24 bg-[#D4AF37] rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl">
             <CheckCircle className="w-14 h-14 text-white" />
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-3">
+          <h1 className={`text-4xl md:text-5xl font-bold mb-3 ${isDark ? 'text-white' : 'text-slate-900'}`}>
             {t('تم تسجيل طلبك بنجاح!', 'Order Created Successfully!', 'داواکارییەکەت بە سەرکەوتوویی تۆمارکرا!')}
           </h1>
-          <p className="text-lg text-slate-600">
+          <p className={`text-lg ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
             {t(
               'احتفظ برقم الطلب لتتبع حالته',
               'Keep your order ID to track your request',
@@ -241,9 +245,13 @@ const SuccessPage = ({ orderData }) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="bg-white rounded-3xl border-2 border-slate-200 shadow-xl p-8"
+              className={`rounded-3xl border-2 shadow-xl p-8 ${
+                isDark ? 'bg-slate-800/80 border-slate-700/50' : 'bg-white border-slate-200'
+              }`}
             >
-              <h3 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+              <h3 className={`text-2xl font-bold mb-6 flex items-center gap-2 ${
+                isDark ? 'text-white' : 'text-slate-900'
+              }`}>
                 <User className="w-6 h-6 text-blue-600" />
                 {t('بيانات العميل', 'Customer Information', 'زانیارییەکانی کڕیار')}
               </h3>
@@ -254,12 +262,14 @@ const SuccessPage = ({ orderData }) => {
                   label={t('الاسم', 'Name', 'ناو')}
                   value={orderData?.fullName || '---'}
                   color="blue"
+                  isDark={isDark}
                 />
                 <InfoItem
                   icon={Phone}
                   label={t('رقم الهاتف', 'Phone', 'ژمارەی مۆبایل')}
                   value={orderData?.phone || '---'}
                   color="blue"
+                  isDark={isDark}
                 />
                 <InfoItem
                   icon={MapPin}
@@ -267,6 +277,7 @@ const SuccessPage = ({ orderData }) => {
                   value={orderData?.address || '---'}
                   color="purple"
                   className="md:col-span-2"
+                  isDark={isDark}
                 />
               </div>
             </motion.div>
@@ -276,9 +287,13 @@ const SuccessPage = ({ orderData }) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="bg-white rounded-3xl border-2 border-slate-200 shadow-xl p-8"
+              className={`rounded-3xl border-2 shadow-xl p-8 ${
+                isDark ? 'bg-slate-800/80 border-slate-700/50' : 'bg-white border-slate-200'
+              }`}
             >
-              <h3 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+              <h3 className={`text-2xl font-bold mb-6 flex items-center gap-2 ${
+                isDark ? 'text-white' : 'text-slate-900'
+              }`}>
                 <MapPin className="w-6 h-6 text-purple-600" />
                 {t('بيانات السفر', 'Travel Details', 'زانیارییەکانی گەشت')}
               </h3>
@@ -289,18 +304,21 @@ const SuccessPage = ({ orderData }) => {
                   label={t('الوجهة', 'Destination', 'شوێنی مەبەست')}
                   value={orderData?.destination || '---'}
                   color="purple"
+                  isDark={isDark}
                 />
                 <InfoItem
                   icon={Calendar}
                   label={t('تاريخ السفر', 'Travel Date', 'تاریخی گەشت')}
                   value={orderData?.travelDate || '---'}
                   color="pink"
+                  isDark={isDark}
                 />
                 <InfoItem
                   icon={MapPin}
                   label={t('مكان الاستلام', 'Pickup Location', 'شوێنی وەرگرتن')}
                   value={getPickupLabel(orderData?.pickupLocation)}
                   color="indigo"
+                  isDark={isDark}
                 />
               </div>
             </motion.div>
@@ -310,32 +328,46 @@ const SuccessPage = ({ orderData }) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl border-2 border-blue-200 shadow-xl p-8"
+              className={`rounded-3xl border-2 shadow-xl p-8 ${
+                isDark ? 'bg-blue-900/20 border-blue-800/50' : 'bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200'
+              }`}
             >
-              <h3 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+              <h3 className={`text-2xl font-bold mb-6 flex items-center gap-2 ${
+                isDark ? 'text-white' : 'text-slate-900'
+              }`}>
                 <DollarSign className="w-6 h-6 text-[#D4AF37]" />
                 {t('المبلغ المحجوز', 'Booking Amount', 'بڕی حجزکراو')}
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-white rounded-2xl p-6 border-2 border-slate-200">
-                  <p className="text-sm text-slate-500 mb-1">{t('بالدولار', 'In USD', 'بە دۆلار')}</p>
+                <div className={`rounded-2xl p-6 border-2 ${
+                  isDark ? 'bg-slate-800/80 border-slate-700/50' : 'bg-white border-slate-200'
+                }`}>
+                  <p className={`text-sm mb-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                    {t('بالدولار', 'In USD', 'بە دۆلار')}
+                  </p>
                   <p className="text-3xl font-bold text-[#D4AF37]">
                     ${orderData?.usdAmount ? Number(orderData.usdAmount).toLocaleString() : '0'}
                   </p>
                 </div>
-                <div className="bg-white rounded-2xl p-6 border-2 border-slate-200">
-                  <p className="text-sm text-slate-500 mb-1">{t('بالدينار', 'In IQD', 'بە دینار')}</p>
+                <div className={`rounded-2xl p-6 border-2 ${
+                  isDark ? 'bg-slate-800/80 border-slate-700/50' : 'bg-white border-slate-200'
+                }`}>
+                  <p className={`text-sm mb-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                    {t('بالدينار', 'In IQD', 'بە دینار')}
+                  </p>
                   <p className="text-3xl font-bold text-[#D4AF37]">
                     {orderData?.iqdAmount ? Number(orderData.iqdAmount).toLocaleString() : '0'} {t('د.ع', 'IQD', 'د.ع')}
                   </p>
                 </div>
               </div>
 
-              <div className="mt-6 flex items-center gap-2 text-sm text-slate-600">
+              <div className={`mt-6 flex items-center gap-2 text-sm ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
                 <CreditCard className="w-4 h-4" />
                 <span>{t('طريقة الدفع:', 'Payment Method:', 'شێوازی پارەدان:')}</span>
-                <span className="font-medium">{getPaymentMethodLabel(orderData?.paymentMethod)}</span>
+                <span className={`font-medium ${isDark ? 'text-white' : ''}`}>
+                  {getPaymentMethodLabel(orderData?.paymentMethod)}
+                </span>
               </div>
             </motion.div>
           </div>
@@ -347,13 +379,15 @@ const SuccessPage = ({ orderData }) => {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.6 }}
-              className="bg-white rounded-3xl border-2 border-slate-200 shadow-xl p-8 text-center"
+              className={`rounded-3xl border-2 shadow-xl p-8 text-center ${
+                isDark ? 'bg-slate-800/80 border-slate-700/50' : 'bg-white border-slate-200'
+              }`}
             >
-              <h3 className="text-lg font-bold text-slate-900 mb-6">
+              <h3 className={`text-lg font-bold mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 {t('رمز QR للطلب', 'Order QR Code', 'کۆدی QRی داواکاری')}
               </h3>
 
-              <div className="bg-slate-50 p-6 rounded-2xl mb-4 inline-block">
+              <div className="bg-white p-6 rounded-2xl mb-4 inline-block shadow-sm">
                 <QRCodeSVG
                   value={`رقم الطلب: ${orderId}
 الاسم: ${orderData?.fullName || ''}
@@ -365,7 +399,7 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
                 />
               </div>
 
-              <p className="text-xs text-slate-500 mb-4">
+              <p className={`text-xs mb-4 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                 {t(
                   'استخدم هذا الرمز للتحقق عند الاستلام',
                   'Use this code for verification at pickup',
@@ -373,7 +407,9 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
                 )}
               </p>
 
-              <button className="w-full py-2 text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors flex items-center justify-center gap-2">
+              <button className={`w-full py-2 text-sm rounded-lg transition-colors flex items-center justify-center gap-2 ${
+                isDark ? 'text-slate-300 hover:text-white hover:bg-slate-700' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+              }`}>
                 <Download className="w-4 h-4" />
                 {t('تحميل QR', 'Download QR', 'داگرتنی QR')}
               </button>
@@ -437,13 +473,15 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7 }}
-              className="bg-blue-50 border-2 border-blue-200 rounded-3xl p-6"
+              className={`border-2 rounded-3xl p-6 ${
+                isDark ? 'bg-blue-900/10 border-blue-800/30' : 'bg-blue-50 border-blue-200'
+              }`}
             >
-              <h3 className="text-lg font-bold text-blue-900 mb-4">
+              <h3 className={`text-lg font-bold mb-4 ${isDark ? 'text-blue-400' : 'text-blue-900'}`}>
                 {t('تعليمات الدفع', 'Payment Instructions', 'ڕێنماییەکانی پارەدان')}
               </h3>
 
-              <div className="space-y-3 text-sm text-blue-800">
+              <div className={`space-y-3 text-sm ${isDark ? 'text-blue-300' : 'text-blue-800'}`}>
                 <p className="flex items-start gap-2">
                   <span className="font-bold">1.</span>
                   {t('قم بالدفع من حسابك او من احد الوكلاء في منطقتك', 'Pay from your account or a local agent', 'لە هەژمارەکەتەوە یان لە بریکارێکی ناوخۆیی پارە بدە')}
@@ -458,8 +496,8 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
                 </p>
               </div>
 
-              <div className="mt-4 p-3 bg-blue-100 rounded-xl">
-                <p className="text-xs text-blue-700">
+              <div className={`mt-4 p-3 rounded-xl ${isDark ? 'bg-blue-900/30' : 'bg-blue-100'}`}>
+                <p className={`text-xs ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>
                   {t(
                     '📱 سيصلك إشعار SMS عند تغيير حالة طلبك',
                     '📱 You will receive SMS notification when your order status changes',
@@ -474,16 +512,20 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8 }}
-              className="bg-white rounded-3xl border-2 border-slate-200 shadow-xl p-6"
+              className={`rounded-3xl border-2 shadow-xl p-6 ${
+                isDark ? 'bg-slate-800/80 border-slate-700/50' : 'bg-white border-slate-200'
+              }`}
               data-testid="payment-proof-section"
             >
-              <h3 className="text-lg font-bold text-slate-900 mb-4">
+              <h3 className={`text-lg font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 {t('إثبات الدفع', 'Payment Proof', 'بەڵگەی پارەدان')}
               </h3>
 
               {/* Upload Area */}
               {paymentProofs.length === 0 ? (
-                <label className="block border-2 border-dashed border-slate-300 rounded-2xl p-6 hover:border-[#D4AF37] hover:bg-slate-50 transition-all cursor-pointer text-center">
+                <label className={`block border-2 border-dashed rounded-2xl p-6 transition-all cursor-pointer text-center ${
+                  isDark ? 'border-slate-600 hover:border-[#D4AF37] hover:bg-slate-800' : 'border-slate-300 hover:border-[#D4AF37] hover:bg-slate-50'
+                }`}>
                   <input
                     type="file"
                     accept="image/*"
@@ -492,22 +534,24 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
                     className="hidden"
                     data-testid="payment-proof-input"
                   />
-                  <Upload className="w-10 h-10 text-slate-400 mx-auto mb-2" />
-                  <p className="text-sm text-slate-600 mb-1">
+                  <Upload className={`w-10 h-10 mx-auto mb-2 ${isDark ? 'text-slate-500' : 'text-slate-400'}`} />
+                  <p className={`text-sm mb-1 ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
                     {t('اضغط لرفع الصور', 'Click to upload images', 'کلیک بکە بۆ بەرزکردنەوەی وێنەکان')}
                   </p>
-                  <p className="text-xs text-slate-400">
+                  <p className={`text-xs ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
                     {t('يمكنك رفع عدة صور', 'You can upload multiple images', 'دەتوانیت چەند وێنەیەک بەرز بکەیتەوە')}
                   </p>
                 </label>
               ) : (
                 <div className="space-y-3">
                   {paymentProofs.map((proof) => (
-                    <div key={proof.id} className="flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-xl p-3">
+                    <div key={proof.id} className={`flex items-center gap-3 border rounded-xl p-3 ${
+                      isDark ? 'bg-slate-800 border-slate-700' : 'bg-blue-50 border-blue-200'
+                    }`}>
                       <img src={proof.preview} alt="proof" className="w-12 h-12 rounded-lg object-cover" />
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-slate-900 truncate">{proof.name}</p>
-                        <p className="text-xs text-blue-600">
+                        <p className={`text-sm font-medium truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>{proof.name}</p>
+                        <p className={`text-xs ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
                           {t('جاهز للإرسال', 'Ready to submit', 'ئامادەیە بۆ ناردن')}
                         </p>
                       </div>
@@ -579,7 +623,9 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
           </button>
           <button
             onClick={() => navigate('/')}
-            className="flex-1 py-4 bg-white border-2 border-slate-200 text-slate-900 font-bold rounded-2xl hover:border-slate-300 transition-colors"
+            className={`flex-1 py-4 border-2 font-bold rounded-2xl transition-colors ${
+              isDark ? 'bg-slate-800 border-slate-700 text-white hover:border-slate-600' : 'bg-white border-slate-200 text-slate-900 hover:border-slate-300'
+            }`}
             data-testid="back-home-btn"
           >
             {t('العودة للرئيسية', 'Back to Home', 'گەڕانەوە بۆ سەرەتا')}
@@ -591,14 +637,14 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
 };
 
 // Info Item Component
-const InfoItem = ({ icon: Icon, label, value, color }) => {
+const InfoItem = ({ icon: Icon, label, value, color, isDark }) => {
   const colorClasses = {
-    blue: 'bg-blue-100 text-blue-600',
-    green: 'bg-blue-100 text-blue-600',
-    purple: 'bg-purple-100 text-purple-600',
-    pink: 'bg-pink-100 text-pink-600',
-    indigo: 'bg-indigo-100 text-indigo-600',
-    emerald: 'bg-blue-100 text-blue-600'
+    blue: isDark ? 'bg-blue-900/40 text-blue-400' : 'bg-blue-100 text-blue-600',
+    green: isDark ? 'bg-green-900/40 text-green-400' : 'bg-blue-100 text-blue-600',
+    purple: isDark ? 'bg-purple-900/40 text-purple-400' : 'bg-purple-100 text-purple-600',
+    pink: isDark ? 'bg-pink-900/40 text-pink-400' : 'bg-pink-100 text-pink-600',
+    indigo: isDark ? 'bg-indigo-900/40 text-indigo-400' : 'bg-indigo-100 text-indigo-600',
+    emerald: isDark ? 'bg-emerald-900/40 text-emerald-400' : 'bg-blue-100 text-blue-600'
   };
 
   return (
@@ -607,8 +653,8 @@ const InfoItem = ({ icon: Icon, label, value, color }) => {
         <Icon className="w-5 h-5" />
       </div>
       <div>
-        <p className="text-xs text-slate-500 mb-1">{label}</p>
-        <p className="text-sm font-medium text-slate-900">{value}</p>
+        <p className={`text-xs mb-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{label}</p>
+        <p className={`text-sm font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{value}</p>
       </div>
     </div>
   );

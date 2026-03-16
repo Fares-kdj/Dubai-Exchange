@@ -105,14 +105,14 @@ const AdminOverview = () => {
       const headers = getAuthHeaders();
 
       // Fetch recent orders
-      const ordersRes = await fetch(`${API_URL}/api/orders?page=1&page_size=5`, { headers });
+      const ordersRes = await fetch(`${API_URL}/api/orders?page=1&page_size=5&t=${Date.now()}`, { headers });
       const ordersJson = await ordersRes.json();
       setRecentOrders(ordersJson.orders || []);
 
       // Fetch order counts for each service type in parallel
       const countResults = await Promise.allSettled(
         SERVICE_DEFS.map(async (svc) => {
-          const res = await fetch(`${API_URL}/api/orders?page=1&page_size=1&order_type=${svc.queryType}`, { headers });
+          const res = await fetch(`${API_URL}/api/orders?page=1&page_size=1&order_type=${svc.queryType}&t=${Date.now()}`, { headers });
           const json = await res.json();
           return { key: svc.key, count: json.total ?? json.orders?.length ?? 0 };
         })

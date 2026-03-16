@@ -64,7 +64,7 @@ const AdminServices = () => {
   const loadServices = async () => {
     setLoading(true);
     try {
-      const res = await fetch(API_URL + '/api/cms/services');
+      const res = await fetch(`${API_URL}/api/cms/services?t=${Date.now()}`);
       const data = await res.json();
       // Sort by order
       setServices(data.sort((a, b) => (a.order || 0) - (b.order || 0)));

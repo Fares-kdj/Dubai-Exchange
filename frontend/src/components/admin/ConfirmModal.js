@@ -1,5 +1,7 @@
+import { AnimatePresence, motion } from 'framer-motion';
 import { AlertTriangle, Info, Trash2, X } from 'lucide-react';
 import { useEffect } from 'react';
+
 
 const ConfirmModal = ({
     isOpen,

@@ -24,7 +24,7 @@ const AdminRates = () => {
   const loadRates = async () => {
     setLoading(true);
     try {
-      const res = await fetch(API_URL + '/api/rates?active_only=false');
+      const res = await fetch(`${API_URL}/api/rates?active_only=false&t=${Date.now()}`);
       const data = await res.json();
       setRates(data);
     } catch (err) {
