@@ -268,9 +268,14 @@ const CountryWizard = () => {
           newErrors[f.field_id] = t('مطلوب', 'Required', 'پێویستە');
         }
       });
-    } else if (!wizardData.customFields.generic_account?.trim()) {
-      // Only require generic if no custom fields are defined
-      newErrors.generic_account = t('مطلوب', 'Required', 'پێویستە');
+    } else {
+      // For "Other Countries" or countries with no custom fields, require Bank Name and IBAN
+      if (!wizardData.customFields.bank_name?.trim()) {
+        newErrors.bank_name = t('مطلوب', 'Required', 'پێویستە');
+      }
+      if (!wizardData.customFields.account_number_iban?.trim()) {
+        newErrors.account_number_iban = t('مطلوب', 'Required', 'پێویستە');
+      }
     }
 
     if (Object.keys(newErrors).length > 0) {

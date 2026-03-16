@@ -447,6 +447,31 @@ const TransferSuccess = () => {
                     </div>
                   )}
 
+                  {/* Bank Details */}
+                  {orderData.customFields?.bank_name && (
+                    <div className="flex items-start gap-3">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-indigo-500/20' : 'bg-indigo-100'}`}>
+                        <Globe className="w-5 h-5 text-indigo-600" />
+                      </div>
+                      <div>
+                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('اسم البنك', 'Bank Name', 'ناوی بانک')}</p>
+                        <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{orderData.customFields.bank_name}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {orderData.customFields?.account_number_iban && (
+                    <div className="flex items-start gap-3">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-indigo-500/20' : 'bg-indigo-100'}`}>
+                        <Globe className="w-5 h-5 text-indigo-600" />
+                      </div>
+                      <div>
+                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('رقم الحساب أو IBAN', 'Account Number or IBAN', 'ژمارەی هەژمار یان IBAN')}</p>
+                        <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{orderData.customFields.account_number_iban}</p>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Phone fallback for non-local types */}
                   {orderData.phone && !orderData.senderPhone && (
                     <div className="flex items-start gap-3">

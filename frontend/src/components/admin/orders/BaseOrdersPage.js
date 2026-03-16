@@ -133,7 +133,9 @@ const FIELD_LABELS_AR = {
   'reference_number': 'الرقم المرجعي',
   'address': 'عنوان العميل',
   'senderDistrict': 'قضاء المرسل',
-  'receiverDistrict': 'قضاء المستلم'
+  'receiverDistrict': 'قضاء المستلم',
+  'bank_name': 'اسم البنك',
+  'account_number_iban': 'رقم الحساب أو IBAN'
 };
 
 // Centralized document type labels for Arabic translation
