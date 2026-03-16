@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import ReactCountryFlag from 'react-country-flag';
 import { COUNTRIES } from '@/utils/countries';
-import { ChevronDown, X } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 
 const CountryPhoneSelect = ({ value, onChange, className, isDark }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -125,9 +125,10 @@ const CountryPhoneSelect = ({ value, onChange, className, isDark }) => {
               >
                 <ReactCountryFlag
                   countryCode={c.code}
+                  svg
                   style={{
-                    fontSize: '1.6em',
-                    lineHeight: '1em',
+                    width: '1.8em',
+                    height: '1.8em',
                   }}
                 />
                 <div className="flex flex-col min-w-0">
