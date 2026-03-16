@@ -956,19 +956,37 @@ const CountryWizard = () => {
                         </div>
                       ))
                     ) : (
-                      /* Fallback to generic account number if no custom fields defined */
-                      <div>
-                        <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
-                          {t('رقم الحساب أو المعرف', 'Account or ID', 'ژمارەی ئەژمار یان ناسێنەر')} *
-                        </Label>
-                        <Input
-                          value={wizardData.customFields.generic_account || ''}
-                          onChange={e => setWizardData(p => ({
-                            ...p,
-                            customFields: { ...p.customFields, generic_account: e.target.value }
-                          }))}
-                          className={`h-12 mt-2 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : ''}`}
-                        />
+                      <div className="space-y-4">
+                        <div>
+                          <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
+                            {t('اسم البنك', 'Bank Name', 'ناوی بانک')} *
+                          </Label>
+                          <Input
+                            value={wizardData.customFields.bank_name || ''}
+                            onChange={e => setWizardData(p => ({
+                              ...p,
+                              customFields: { ...p.customFields, bank_name: e.target.value }
+                            }))}
+                            className={`h-12 mt-2 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : ''}`}
+                            placeholder={t('اسم البنك المستلم', 'Receiving Bank Name', 'ناوی بانکی وەرگر')}
+                          />
+                          {errors.bank_name && <p className="text-red-500 text-sm mt-1">{errors.bank_name}</p>}
+                        </div>
+                        <div>
+                          <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
+                            {t('رقم الحساب البنكي أو الدولي (IBAN)', 'Bank Account Number or IBAN', 'ژمارەی هەژماری بانکی یان (IBAN)')} *
+                          </Label>
+                          <Input
+                            value={wizardData.customFields.account_number_iban || ''}
+                            onChange={e => setWizardData(p => ({
+                              ...p,
+                              customFields: { ...p.customFields, account_number_iban: e.target.value }
+                            }))}
+                            className={`h-12 mt-2 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : ''}`}
+                            placeholder={t('رقم الحساب أو IBAN', 'Account Number or IBAN', 'ژمارەی هەژمار یان IBAN')}
+                          />
+                          {errors.account_number_iban && <p className="text-red-500 text-sm mt-1">{errors.account_number_iban}</p>}
+                        </div>
                       </div>
                     )}
                   </div>
