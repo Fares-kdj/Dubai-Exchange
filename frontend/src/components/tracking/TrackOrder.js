@@ -441,12 +441,12 @@ const TrackOrder = () => {
                         </div>
                         <p className="text-sm md:text-base leading-relaxed font-medium">
                           {orderResult.status === 'waiting_payment' && t(
-                            'تم تسجيل طلبكم وهو في انتظار إكمال الإيداع. يرجى إتمام الدفع للمتابعة في معالجة الطلب.',
+                            'تم تسجيل طلبكم وهو في انتظار الإيداع. لإكمال الطلب يرجى التواصل عبر واتساب مع خدمة العملاء للحصول على رقم حساب الإيداع وإتمام عملية الدفع.',
                             'Your order has been registered and is waiting for deposit. Please complete the payment to proceed with processing.',
                             'داواکارییەکەت تۆمارکراوە و لە چاوەڕوانی پارەدایە. تکایە پارەدانەکە تەواو بکە بۆ بەردەوامبوون لە جێبەجێکردنی.'
                           )}
                           {(orderResult.status === 'pending_review' || orderResult.status === 'under_review') && t(
-                            'تم استلام طلبكم وهو قيد المراجعة. يرجى إكمال الإيداع خلال ساعتين لتجنب إلغاء الطلب.',
+                            'تم استلام إثبات الدفع الخاص بطلبكم وهو الآن قيد المراجعة. يرجى الانتظار قليلاً ريثما يتم التحقق من صحة البيانات، ونشكركم على صبركم.',
                             'Your order has been received and is under review. Please complete the deposit within two hours to avoid cancellation.',
                             'داواکارییەکەت وەرگیراوە و لەژێر پێداچوونەوەدایە. تکایە لە ماوەی دوو کاتژمێردا پارەدانەکە تەواو بکە بۆ ئەوەی داواکارییەکەت هەڵنەوەشێتەوە.'
                           )}

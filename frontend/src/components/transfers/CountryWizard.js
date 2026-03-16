@@ -10,6 +10,8 @@ import { Label } from '@/components/ui/label';
 import ReactCountryFlag from 'react-country-flag';
 import Header3D from '../landing/Header3D';
 import Footer3D from '../landing/Footer3D';
+import { PAYMENT_METHODS } from '@/config/payments';
+import CountryPhoneSelect from '@/components/ui/CountryPhoneSelect';
 
 const CountryWizard = () => {
   const navigate = useNavigate();
@@ -45,6 +47,7 @@ const CountryWizard = () => {
     senderPhone: '',
     receiverPhone: '',
     purpose: '',
+    paymentMethod: '',
     customFields: {},
     fieldUploads: {} // New: Store upload progress/status for dynamic fields
   });
@@ -254,6 +257,7 @@ const CountryWizard = () => {
     if (!wizardData.receiverName.trim()) newErrors.receiverName = t('مطلوب', 'Required', 'پێویستە');
     if (!wizardData.senderPhone.trim()) newErrors.senderPhone = t('مطلوب', 'Required', 'پێویستە');
     if (!wizardData.receiverPhone.trim()) newErrors.receiverPhone = t('مطلوب', 'Required', 'پێویستە');
+    if (!wizardData.paymentMethod) newErrors.paymentMethod = t('اختر طريقة الدفع', 'Select payment method', 'شێوازی پارەدان هەڵبژێرە');
     if (isOtherCountry && !wizardData.customCurrencyName.trim()) newErrors.customCurrencyName = t('أدخل اسم العملة', 'Enter currency name', 'ناوی دراو بنووسە');
     if (isOtherCountry && !wizardData.customCountryName.trim()) newErrors.customCountryName = t('أدخل اسم الدولة', 'Enter country name', 'ناوی وڵات بنووسە');
     if (!isOtherCountry && isBankTransfer && !wizardData.receiverCurrency) newErrors.receiverCurrency = t('اختر عملة المستلم', 'Select receiver currency', 'دراوی وەرگر هەڵبژێرە');
@@ -321,6 +325,7 @@ const CountryWizard = () => {
           amountIQD: calculateIQD(),
           serviceFee: calculateFee(),
           total: calculateTotal(),
+          paymentMethod: wizardData.paymentMethod,
           purpose: selectedCountry?.country_code?.toUpperCase() === 'CN' ? 'trade' : wizardData.purpose,
           customFields: wizardData.customFields
         }
@@ -803,6 +808,34 @@ const CountryWizard = () => {
                     </div>
                   )}
 
+
+
+                  {/* Payment Method Selection */}
+                  <div className={`rounded-2xl p-6 mb-6 ${isDark ? 'bg-slate-700/50 border border-slate-600' : 'bg-slate-50 border border-slate-200'}`}>
+                    <Label className={`text-lg font-bold mb-4 block ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                      {t('طريقة الدفع', 'Payment Method', 'شێوازی پارەدان')} *
+                    </Label>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      {PAYMENT_METHODS.filter(pm => pm.active).map(method => (
+                        <motion.button
+                          key={method.value}
+                          type="button"
+                          whileHover={{ scale: 1.02 }}
+                          onClick={() => setWizardData(p => ({ ...p, paymentMethod: method.value }))}
+                          className={`p-4 rounded-xl border-2 text-center transition-all ${wizardData.paymentMethod === method.value
+                            ? 'border-[#D4AF37] bg-[#D4AF37]/10'
+                            : isDark ? 'bg-slate-800 border-slate-700 hover:border-slate-600' : 'bg-white border-slate-200 hover:border-slate-300'
+                            }`}
+                        >
+                          <span className={`text-sm font-bold block ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                            {t(method.labelAr, method.labelEn, method.labelKu)}
+                          </span>
+                        </motion.button>
+                      ))}
+                    </div>
+                    {errors.paymentMethod && <p className="text-red-500 mt-2"><AlertCircle className="w-4 h-4 inline" /> {errors.paymentMethod}</p>}
+                  </div>
+
                   {/* Transfer Info */}
                   <div className="space-y-5">
                     <div>
@@ -826,14 +859,22 @@ const CountryWizard = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{t('رقم هاتف المرسل', 'Sender Phone', 'مۆبایلی نێرەر')} *</Label>
-                        <Input value={wizardData.senderPhone} onChange={e => setWizardData(p => ({ ...p, senderPhone: e.target.value }))}
-                          className={`h-12 mt-2 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : ''}`} placeholder="+964" />
+                        <CountryPhoneSelect
+                          value={wizardData.senderPhone}
+                          onChange={val => setWizardData(p => ({ ...p, senderPhone: val }))}
+                          isDark={isDark}
+                          className="mt-2"
+                        />
                         {errors.senderPhone && <p className="text-red-500 text-sm mt-1">{errors.senderPhone}</p>}
                       </div>
                       <div>
                         <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{t('رقم هاتف المستلم', 'Receiver Phone', 'مۆبایلی وەرگرەر')} *</Label>
-                        <Input value={wizardData.receiverPhone} onChange={e => setWizardData(p => ({ ...p, receiverPhone: e.target.value }))}
-                          className={`h-12 mt-2 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : ''}`} placeholder="+964" />
+                        <CountryPhoneSelect
+                          value={wizardData.receiverPhone}
+                          onChange={val => setWizardData(p => ({ ...p, receiverPhone: val }))}
+                          isDark={isDark}
+                          className="mt-2"
+                        />
                         {errors.receiverPhone && <p className="text-red-500 text-sm mt-1">{errors.receiverPhone}</p>}
                       </div>
                     </div>
