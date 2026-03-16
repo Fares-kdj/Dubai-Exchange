@@ -29,9 +29,9 @@ const AdminCMS = () => {
 
   // Contact State
   const [contact, setContact] = useState({
-    ar: { address: '', phone: '', email: '', working_hours: '' },
-    en: { address: '', phone: '', email: '', working_hours: '' },
-    ku: { address: '', phone: '', email: '', working_hours: '' }
+    ar: { address: '', phone: '', whatsapp: '', email: '', working_hours: '' },
+    en: { address: '', phone: '', whatsapp: '', email: '', working_hours: '' },
+    ku: { address: '', phone: '', whatsapp: '', email: '', working_hours: '' }
   });
 
   // Rate Mode State
@@ -76,9 +76,9 @@ const AdminCMS = () => {
 
       // Contact: merge with defaults
       setContact({
-        ar: { address: '', phone: '', email: '', working_hours: '', ...(contactData?.ar || {}) },
-        en: { address: '', phone: '', email: '', working_hours: '', ...(contactData?.en || {}) },
-        ku: { address: '', phone: '', email: '', working_hours: '', ...(contactData?.ku || {}) }
+        ar: { address: '', phone: '', whatsapp: '', email: '', working_hours: '', ...(contactData?.ar || {}) },
+        en: { address: '', phone: '', whatsapp: '', email: '', working_hours: '', ...(contactData?.en || {}) },
+        ku: { address: '', phone: '', whatsapp: '', email: '', working_hours: '', ...(contactData?.ku || {}) }
       });
 
       if (rateModeData) {
@@ -545,6 +545,17 @@ const AdminCMS = () => {
                     onChange={e => updateContact(lang, 'phone', e.target.value)}
                     dir="ltr"
                     data-testid={`contact-phone-${lang}`}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-sm text-slate-500 flex items-center gap-1">
+                    <Phone className="w-3 h-3" /> واتساب
+                  </Label>
+                  <Input
+                    value={contact[lang]?.whatsapp || ''}
+                    onChange={e => updateContact(lang, 'whatsapp', e.target.value)}
+                    dir="ltr"
+                    data-testid={`contact-whatsapp-${lang}`}
                   />
                 </div>
                 <div className="space-y-1">

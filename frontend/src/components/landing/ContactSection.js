@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { useTheme } from '@/context/ThemeContext';
 import { ASSETS } from '@/config/assets';
 import { Phone, Mail, MapPin, MessageCircle, Clock, Send, Facebook, Instagram, Twitter, Youtube, Linkedin } from 'lucide-react';
+import CountryPhoneSelect from '@/components/ui/CountryPhoneSelect';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -142,7 +143,7 @@ export const ContactSection = () => {
   // Merge CMS data with defaults
   const info = contactInfo ? {
     phone: getLocalizedField(contactInfo, 'phone') || defaultContact.phone,
-    whatsapp: getLocalizedField(contactInfo, 'phone') || defaultContact.whatsapp,
+    whatsapp: getLocalizedField(contactInfo, 'whatsapp') || getLocalizedField(contactInfo, 'phone') || defaultContact.whatsapp,
     email: getLocalizedField(contactInfo, 'email') || defaultContact.email,
     address: getLocalizedField(contactInfo, 'address') || (isKurdish ? defaultContact.address.ku : isArabic ? defaultContact.address.ar : defaultContact.address.en),
     hours: getLocalizedField(contactInfo, 'working_hours') || (isKurdish ? defaultContact.hours.ku : isArabic ? defaultContact.hours.ar : defaultContact.hours.en),
@@ -343,15 +344,10 @@ export const ContactSection = () => {
                   <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
                     {t.yourPhone}
                   </label>
-                  <input
-                    type="tel"
-                    required
+                  <CountryPhoneSelect
                     value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className={`w-full px-4 py-3 rounded-xl border transition-colors ${isDark
-                      ? 'bg-white/5 border-white/20 text-white focus:border-[#D4AF37]'
-                      : 'bg-slate-50 border-slate-200 text-slate-900 focus:border-[#D4AF37]'
-                      } outline-none`}
+                    onChange={(val) => setFormData({ ...formData, phone: val })}
+                    isDark={isDark}
                     data-testid="contact-phone"
                   />
                 </div>

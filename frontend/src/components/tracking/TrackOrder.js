@@ -3,7 +3,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { toast } from 'sonner';
 import { useTheme } from '@/context/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Package, User, Phone, MapPin, Calendar, DollarSign, CreditCard, FileText, Upload, X, CheckCircle, Clock, AlertCircle, Copy, Eye, Globe, Ban } from 'lucide-react';
+import { Search, Package, User, Phone, MapPin, Calendar, DollarSign, CreditCard, FileText, Upload, X, CheckCircle, Clock, AlertCircle, Copy, Eye, Globe, Ban, MessageCircle, ExternalLink } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -33,6 +33,7 @@ const TrackOrder = () => {
   const [uploading, setUploading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [methods, setMethods] = useState([]);
+  const [whatsappNumber, setWhatsappNumber] = useState('+9647800000000'); // Default fallback
 
   useEffect(() => {
     const fetchMethods = async () => {
@@ -45,6 +46,23 @@ const TrackOrder = () => {
     };
     fetchMethods();
   }, [API_URL]);
+
+  useEffect(() => {
+    const fetchContact = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/cms/contact`);
+        if (res.ok) {
+          const data = await res.json();
+          const lang = isKurdish ? 'ku' : isArabic ? 'ar' : 'en';
+          const whatsapp = data[lang]?.whatsapp || data['ar']?.whatsapp || data[lang]?.phone || data['ar']?.phone;
+          if (whatsapp) setWhatsappNumber(whatsapp);
+        }
+      } catch (err) {
+        console.error('Failed to fetch contact for WhatsApp:', err);
+      }
+    };
+    fetchContact();
+  }, [isArabic, isKurdish]);
 
   const orderTypes = [
     { value: 'traveler', labelAr: 'حجز الدولار للمسافرين', labelEn: 'Traveler USD Booking', labelKu: 'بۆردی دۆلار بۆ گەشتیاران' },
@@ -481,6 +499,37 @@ const TrackOrder = () => {
                         📱 {t('ستصلك رسالة SMS عند تحديث حالة طلبك', 'You will receive an SMS when your order status updates', 'نامەیەکی SMSت پێدەگات کاتێک بارودۆخی داواکارییەکەت نوێکرایەوە')}
                       </p>
                     </div>
+
+                    {/* WhatsApp Support Block */}
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className={`rounded-3xl border-2 p-6 shadow-xl ${isDark ? 'bg-blue-900/20 border-blue-700/50' : 'bg-blue-50 border-blue-200'}`}
+                    >
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isDark ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-100 text-blue-600'}`}>
+                          <MessageCircle className="w-5 h-5" />
+                        </div>
+                        <h3 className={`text-lg font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                          {t('دعم واتساب', 'WhatsApp Support', 'پشتیوانی واتسئەپ')}
+                        </h3>
+                      </div>
+                      
+                      <p className={`text-sm mb-4 ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>
+                        {t('هل لديك استفسار حول طلبك؟ تواصل معنا مباشرة', 'Have a question about your order? Contact us directly', 'پسیارێکت هەیە هەیە دەربارەی داواکارییەکەت؟ پەیوەندیمان پێوە بکە')}
+                      </p>
+
+                      <a
+                        href={`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(t('مرحباً، لدي استفسار حول الطلب رقم: ', 'Hello, I have an inquiry about order number: ', 'سڵاو، پرسیارێکم هەیە دەربارەی داواکاری ژمارە: ') + orderResult.orderId)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-2 w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-blue-500/20"
+                      >
+                        <MessageCircle className="w-5 h-5" />
+                        {t('ابدأ المحادثة', 'Start Chat', 'دەستپێکردنی گفتوگۆ')}
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                    </motion.div>
 
                     {/* Payment Proof Upload - Only if waiting and not blocked */}
                     {orderResult.status === 'waiting_payment' && !orderResult.customer_blocked && (

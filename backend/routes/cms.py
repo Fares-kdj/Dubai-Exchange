@@ -13,6 +13,7 @@ from models.cms import (
 )
 from models.user import Permission, UserInDB
 from routes.auth import get_current_user, require_permission, check_permission
+from services.sms_service import sms_service
 
 router = APIRouter(prefix="/cms", tags=["CMS"])
 
@@ -497,6 +498,9 @@ async def update_contact(
         {"$set": settings_doc},
         upsert=True
     )
+    
+    # Sync with SMS service
+    await sms_service.sync_whatsapp(db)
     
     return {"message": "Contact info updated", "content": content}
 

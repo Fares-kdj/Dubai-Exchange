@@ -8,6 +8,7 @@ import { CreditCard, User, Phone, DollarSign, CheckCircle, AlertCircle, ArrowLef
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import CountryPhoneSelect from '@/components/ui/CountryPhoneSelect';
 import Header3D from '../landing/Header3D';
 import Footer3D from '../landing/Footer3D';
 import { PAYMENT_METHODS, SERVICE_FEES, calculateFee, calculateTotal } from '@/config/payments';
@@ -272,12 +273,10 @@ const CardRecharge = () => {
                   <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                     {t('رقم الهاتف', 'Phone', 'ژمارەی مۆبایل')} *
                   </Label>
-                  <Input
-                    type="tel"
+                  <CountryPhoneSelect
                     value={formData.phone}
-                    onChange={(e) => handleInputChange('phone', e.target.value)}
-                    className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`}
-                    placeholder="+964 7XX XXX XXXX"
+                    onChange={(val) => handleInputChange('phone', val)}
+                    isDark={isDark}
                     data-testid="phone-input"
                   />
                   {errors.phone && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.phone}</p>}

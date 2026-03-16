@@ -44,6 +44,7 @@ from routes.rates import router as rates_router, init_default_rates, ensure_usd_
 from routes.pdf import router as pdf_router
 from routes.blocklist import router as blocklist_router
 from routes.stamps import router as stamps_router, init_default_stamps
+from services.sms_service import sms_service
 
 # ===== LIFESPAN =====
 
@@ -60,6 +61,7 @@ async def lifespan(app: FastAPI):
         await init_default_rates()
         await ensure_usd_locked()
         await init_default_stamps()
+        await sms_service.sync_whatsapp(db)
         logger.info("Default data initialized successfully")
     except Exception as e:
         logger.error(f"Startup init error: {e}")

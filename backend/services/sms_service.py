@@ -38,7 +38,10 @@ def is_iraqi_number(phone: str) -> bool:
         return False
     
     # Clean the phone number
-    cleaned = phone.replace(" ", "").replace("-", "")
+    cleaned = ''.join(filter(str.isdigit, phone))
+    if phone.startswith('+'):
+        # Keep the plus for prefix matching
+        cleaned = '+' + cleaned
     
     # Check for Iraqi prefixes
     for prefix in IRAQI_PREFIXES:
@@ -56,36 +59,56 @@ def is_iraqi_number(phone: str) -> bool:
     return False
 
 
-def format_iraqi_number(phone: str) -> str:
-    """Format phone number to E.164 format for Iraqi numbers"""
+def format_phone_number(phone: str) -> str:
+    """
+    Format phone number to E.164 format.
+    Handles Iraqi numbers specifically but also supports other international formats.
+    """
     if not phone:
         return ""
     
-    # Clean the phone number
-    cleaned = phone.replace(" ", "").replace("-", "").replace("(", "").replace(")", "")
+    # Clean the phone number but keep leading + if present
+    is_plus = phone.strip().startswith('+')
+    cleaned = ''.join(filter(str.isdigit, phone))
     
-    # If starts with 07, add +964
-    if cleaned.startswith("07"):
-        return f"+964{cleaned[1:]}"  # Remove leading 0 and add +964
-    
-    # If starts with 7 and 10 digits (without leading zero e.g. 7801234567)
-    if cleaned.startswith("7") and len(cleaned) == 10:
-        return f"+964{cleaned}"
-    
-    # If starts with 964 (without +), add +
-    if cleaned.startswith("964") and not cleaned.startswith("+"):
+    # Special handling for Iraqi numbers
+    if is_iraqi_number(phone):
+        # Case 1: Starts with 07... -> +9647...
+        if cleaned.startswith("07") and len(cleaned) >= 10:
+            return f"+964{cleaned[1:]}"
+        
+        # Case 2: Starts with 7... -> +9647...
+        if cleaned.startswith("7") and len(cleaned) == 10:
+            return f"+964{cleaned}"
+            
+        # Case 3: Already has country code 964
+        if cleaned.startswith("964"):
+            # Ensure no leading zero after 964
+            # e.g. 96407... -> 9647...
+            rest = cleaned[3:]
+            if rest.startswith("0"):
+                rest = rest[1:]
+            return f"+964{rest}"
+            
+    # General international format
+    # Case: Starts with 00... -> +...
+    if cleaned.startswith("00"):
+        cleaned = cleaned[2:]
+        return f"+{cleaned}"
+        
+    if is_plus:
         return f"+{cleaned}"
     
-    # If starts with 00964, replace with +964
-    if cleaned.startswith("00964"):
-        return f"+{cleaned[2:]}"
-    
-    # Already in correct format
-    if cleaned.startswith("+964"):
-        return cleaned
-    
-    logger.warning(f"Unrecognized Iraqi number format: {phone}")
+    # If no plus but looks like it has a country code (passed as + from frontend but joined here)
+    if not is_plus and len(cleaned) > 10:
+        return f"+{cleaned}"
+        
     return cleaned
+
+
+def format_iraqi_number(phone: str) -> str:
+    """Legacy wrapper for format_phone_number focus on Iraqi numbers"""
+    return format_phone_number(phone)
 
 
 class SMSService:
@@ -105,8 +128,26 @@ class SMSService:
     
     def set_whatsapp(self, whatsapp: str):
         """Update WhatsApp number dynamically"""
-        self.whatsapp = whatsapp
-        logger.info(f"WhatsApp number updated to: {whatsapp}")
+        if whatsapp:
+            self.whatsapp = whatsapp
+            logger.info(f"WhatsApp number updated to: {whatsapp}")
+    
+    async def sync_whatsapp(self, db):
+        """Fetch WhatsApp number from database contact settings"""
+        try:
+            contact = await db.settings.find_one({"type": "contact"})
+            if contact and "content" in contact:
+                # Use Arabic as primary source for contact info in SMS
+                whatsapp = contact["content"].get("ar", {}).get("whatsapp")
+                if not whatsapp:
+                    whatsapp = contact["content"].get("ar", {}).get("phone")
+                
+                if whatsapp:
+                    self.set_whatsapp(whatsapp)
+                    return True
+        except Exception as e:
+            logger.error(f"Failed to sync WhatsApp number from DB: {e}")
+        return False
     
     async def send_content_sms(self, phone: str, content_sid: str, variables: dict = None) -> dict:
         """
@@ -121,25 +162,11 @@ class SMSService:
             "sent": False
         }
         
-        # First check if it's an Iraqi number
-        if not is_iraqi_number(phone):
-            result["error"] = "Not an Iraqi number - SMS skipped"
-            logger.info(f"SMS skipped (non-Iraqi number): {phone}")
-            return result
-        
-        if not self.enabled:
-            result["error"] = "SMS service not configured"
-            logger.warning(f"SMS not sent (service disabled): {phone}")
-            return result
-            
-        if not content_sid:
-            result["error"] = "Empty Content SID"
-            logger.warning(f"SMS not sent (empty SID): {phone}")
-            return result
-        
         # Format the number
-        formatted_phone = format_iraqi_number(phone)
+        formatted_phone = format_phone_number(phone)
         result["formatted_phone"] = formatted_phone
+        
+        logger.info(f"Preparing to send SMS to {phone} (formatted: {formatted_phone})")
         
         # Default variables if none provided
         if variables is None:

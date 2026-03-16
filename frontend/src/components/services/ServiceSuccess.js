@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
 import { toast } from 'sonner';
@@ -39,7 +39,25 @@ const ServiceSuccess = () => {
   const isCard = orderData.type === 'card_recharge';
 
   // WhatsApp configuration
-  const whatsappNumber = '+9647800000000'; // Company WhatsApp
+  const [whatsappNumber, setWhatsappNumber] = useState('+9647800000000'); // Default fallback
+
+  useEffect(() => {
+    const fetchContact = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/cms/contact`);
+        if (res.ok) {
+          const data = await res.json();
+          const lang = isKurdish ? 'ku' : isArabic ? 'ar' : 'en';
+          const whatsapp = data[lang]?.whatsapp || data['ar']?.whatsapp || data[lang]?.phone || data['ar']?.phone;
+          if (whatsapp) setWhatsappNumber(whatsapp.replace(/\s/g, ''));
+        }
+      } catch (err) {
+        console.error('Failed to fetch contact for WhatsApp:', err);
+      }
+    };
+    fetchContact();
+  }, [isArabic, isKurdish, API_URL]);
+
   const whatsappMessage = encodeURIComponent(
     t(
       `مرحباً، رقم طلبي هو: ${orderId}\nالنوع: ${isUSDT ? 'شحن USDT' : isCard ? 'تعبئة بطاقات' : 'تحويل'}\nالمبلغ: ${orderData.total?.toLocaleString()} IQD`,

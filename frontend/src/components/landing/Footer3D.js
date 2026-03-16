@@ -97,12 +97,13 @@ const Footer3D = () => {
   };
 
   const phone = getContactField('phone') || '+964 780 123 4567';
+  const whatsapp = getContactField('whatsapp') || phone;
   const email = getContactField('email') || 'info@dubai-exchange.com';
   const address = getContactField('address') || (isKurdish ? 'بەغداد، عێراق' : isArabic ? 'بغداد، العراق' : 'Baghdad, Iraq');
 
   const contactInfo = [
     { icon: Phone, value: phone, href: `tel:${phone.replace(/\s/g, '')}` },
-    { icon: MessageCircle, value: 'WhatsApp', href: `https://wa.me/${phone.replace(/[^0-9]/g, '')}` },
+    { icon: MessageCircle, value: 'WhatsApp', href: `https://wa.me/${whatsapp.replace(/[^0-9]/g, '')}` },
     { icon: Mail, value: email, href: `mailto:${email}` },
     { icon: MapPin, value: address, href: null }
   ];

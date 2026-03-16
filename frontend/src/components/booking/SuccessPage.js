@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 import { useTheme } from '@/context/ThemeContext';
 import { toast } from 'sonner';
@@ -16,8 +16,26 @@ const SuccessPage = ({ orderData }) => {
   const [copied, setCopied] = useState(false);
   const [paymentProofs, setPaymentProofs] = useState([]);
   const [uploading, setUploading] = useState(false);
+  const [whatsappNumber, setWhatsappNumber] = useState('+9647800000000'); // Default fallback
   const isArabic = currentLanguage === 'ar';
   const isKurdish = currentLanguage === 'ku';
+
+  useEffect(() => {
+    const fetchContact = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/cms/contact`);
+        if (res.ok) {
+          const data = await res.json();
+          const lang = isKurdish ? 'ku' : isArabic ? 'ar' : 'en';
+          const whatsapp = data[lang]?.whatsapp || data['ar']?.whatsapp || data[lang]?.phone || data['ar']?.phone;
+          if (whatsapp) setWhatsappNumber(whatsapp);
+        }
+      } catch (err) {
+        console.error('Failed to fetch contact for WhatsApp:', err);
+      }
+    };
+    fetchContact();
+  }, [isArabic, isKurdish]);
 
   const t = (ar, en, ku) => {
     if (isKurdish) return ku || en;
@@ -437,11 +455,11 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
                   {t('رقم الواتساب:', 'WhatsApp Number:', 'ژمارەی واتسئەپ:')}
                 </p>
                 <div className="flex items-center justify-between">
-                  <span className="text-xl font-bold tracking-wider" dir="ltr">+964 750 123 4567</span>
+                  <span className="text-xl font-bold tracking-wider" dir="ltr">{whatsappNumber}</span>
                   <motion.button
                     onClick={async () => {
                       try {
-                        await navigator.clipboard.writeText('+9647501234567');
+                        await navigator.clipboard.writeText(whatsappNumber.replace(/\s/g, ''));
                         setCopied(true);
                         setTimeout(() => setCopied(false), 2000);
                       } catch (err) {
@@ -459,7 +477,7 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
               </div>
 
               <a
-                href="https://wa.me/9647501234567"
+                href={`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block w-full py-3 bg-white text-blue-600 font-bold rounded-xl text-center hover:bg-blue-50 transition-colors"

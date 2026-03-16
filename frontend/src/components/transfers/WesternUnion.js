@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import CountryPhoneSelect from '@/components/ui/CountryPhoneSelect';
 import Header3D from '../landing/Header3D';
 import Footer3D from '../landing/Footer3D';
 
@@ -344,12 +345,10 @@ const WesternUnion = () => {
                     <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                       {t('رقم هاتف المرسل', 'Sender Phone', 'مۆبایلی نێرەر')} *
                     </Label>
-                    <Input
-                      type="tel"
+                    <CountryPhoneSelect
                       value={formData.senderPhone}
-                      onChange={(e) => handleInputChange('senderPhone', e.target.value)}
-                      className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`}
-                      placeholder="+964 7XX XXX XXXX"
+                      onChange={(val) => handleInputChange('senderPhone', val)}
+                      isDark={isDark}
                       data-testid="sender-phone"
                     />
                     {errors.senderPhone && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.senderPhone}</p>}
@@ -409,12 +408,10 @@ const WesternUnion = () => {
                     <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                       {t('رقم هاتف المستلم', 'Receiver Phone', 'مۆبایلی وەرگر')}
                     </Label>
-                    <Input
-                      type="tel"
+                    <CountryPhoneSelect
                       value={formData.receiverPhone}
-                      onChange={(e) => handleInputChange('receiverPhone', e.target.value)}
-                      className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`}
-                      placeholder="+1 XXX XXX XXXX"
+                      onChange={(val) => handleInputChange('receiverPhone', val)}
+                      isDark={isDark}
                       data-testid="receiver-phone"
                     />
                   </div>
