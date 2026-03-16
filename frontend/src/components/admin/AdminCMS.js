@@ -263,16 +263,16 @@ const AdminCMS = () => {
   }
 
   return (
-    <div className="space-y-6" data-testid="admin-cms-page">
+    <div className="space-y-6 px-4 sm:px-0" data-testid="admin-cms-page">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">إدارة المحتوى</h1>
           <p className="text-slate-600">تعديل محتوى الموقع والإعدادات</p>
         </div>
         <button
           onClick={loadData}
-          className="px-4 py-2 border border-slate-300 text-slate-700 rounded-xl flex items-center gap-2 hover:bg-slate-50"
+          className="px-4 py-2 w-full sm:w-auto border border-slate-300 text-slate-700 rounded-xl flex items-center justify-center gap-2 hover:bg-slate-50"
           data-testid="refresh-btn"
         >
           <RefreshCw className="w-4 h-4" />تحديث
@@ -290,7 +290,7 @@ const AdminCMS = () => {
       )}
 
       {/* Tabs */}
-      <div className="flex gap-2 border-b border-slate-200 pb-2">
+      <div className="flex flex-wrap gap-2 border-b border-slate-200 pb-2">
         {tabs.map(tab => (
           <button
             key={tab.id}
@@ -299,18 +299,18 @@ const AdminCMS = () => {
             className={`px-4 py-2 rounded-t-lg flex items-center gap-2 transition-colors ${activeTab === tab.id
               ? 'bg-amber-500 text-white'
               : 'text-slate-600 hover:bg-slate-100'
-              }`}
+              } text-sm sm:text-base whitespace-nowrap`}
           >
             <tab.icon className="w-4 h-4" />
-            {tab.label}
+            <span className="hidden sm:inline">{tab.label}</span>
           </button>
         ))}
       </div>
 
       {/* Terms Tab */}
       {activeTab === 'terms' && (
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-6" data-testid="terms-section">
-          <div className="flex items-center justify-between">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-6 space-y-6" data-testid="terms-section">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
               <FileText className="w-5 h-5 text-amber-500" />
               الشروط والأحكام
@@ -319,7 +319,7 @@ const AdminCMS = () => {
               onClick={saveTerms}
               disabled={saving}
               data-testid="save-terms-btn"
-              className="px-4 py-2 bg-amber-500 text-white font-medium rounded-xl flex items-center gap-2 disabled:opacity-50 hover:bg-amber-600"
+              className="px-4 py-2 w-full sm:w-auto bg-amber-500 text-white font-medium rounded-xl flex items-center justify-center gap-2 disabled:opacity-50 hover:bg-amber-600"
             >
               <Save className="w-4 h-4" />
               {saving ? 'جاري الحفظ...' : 'حفظ التغييرات'}
@@ -329,7 +329,7 @@ const AdminCMS = () => {
           {/* Language Sections */}
           {['ar', 'en', 'ku'].map(lang => (
             <div key={lang} className="border border-slate-200 rounded-xl p-4 space-y-4">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <h3 className={`font-bold flex items-center gap-2 ${lang === 'ar' ? 'text-amber-600' : lang === 'en' ? 'text-blue-600' : 'text-green-600'
                   }`}>
                   <Globe className="w-4 h-4" />
@@ -395,8 +395,8 @@ const AdminCMS = () => {
 
       {/* Traveler Terms Tab */}
       {activeTab === 'traveler_terms' && (
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-6" data-testid="traveler-terms-section">
-          <div className="flex items-center justify-between">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-6 space-y-6" data-testid="traveler-terms-section">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
               <Plane className="w-5 h-5 text-amber-500" />
               شروط وأحكام حجز المسافرين
@@ -405,7 +405,7 @@ const AdminCMS = () => {
               onClick={saveTravelerTerms}
               disabled={saving}
               data-testid="save-traveler-terms-btn"
-              className="px-4 py-2 bg-amber-500 text-white font-medium rounded-xl flex items-center gap-2 disabled:opacity-50 hover:bg-amber-600"
+              className="px-4 py-2 w-full sm:w-auto bg-amber-500 text-white font-medium rounded-xl flex items-center justify-center gap-2 disabled:opacity-50 hover:bg-amber-600"
             >
               <Save className="w-4 h-4" />
               {saving ? 'جاري الحفظ...' : 'حفظ التغييرات'}
@@ -415,7 +415,7 @@ const AdminCMS = () => {
           {/* Language Sections */}
           {['ar', 'en', 'ku'].map(lang => (
             <div key={lang} className="border border-slate-200 rounded-xl p-4 space-y-4">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <h3 className={`font-bold flex items-center gap-2 ${lang === 'ar' ? 'text-amber-600' : lang === 'en' ? 'text-blue-600' : 'text-green-600'
                   }`}>
                   <Globe className="w-4 h-4" />
@@ -498,8 +498,8 @@ const AdminCMS = () => {
         </div>
       )}
       {activeTab === 'contact' && (
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-6" data-testid="contact-section">
-          <div className="flex items-center justify-between">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-6 space-y-6" data-testid="contact-section">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
               <Phone className="w-5 h-5 text-amber-500" />
               معلومات الاتصال
@@ -508,7 +508,7 @@ const AdminCMS = () => {
               onClick={saveContact}
               disabled={saving}
               data-testid="save-contact-btn"
-              className="px-4 py-2 bg-amber-500 text-white font-medium rounded-xl flex items-center gap-2 disabled:opacity-50 hover:bg-amber-600"
+              className="px-4 py-2 w-full sm:w-auto bg-amber-500 text-white font-medium rounded-xl flex items-center justify-center gap-2 disabled:opacity-50 hover:bg-amber-600"
             >
               <Save className="w-4 h-4" />
               {saving ? 'جاري الحفظ...' : 'حفظ التغييرات'}
@@ -588,8 +588,8 @@ const AdminCMS = () => {
 
       {/* Rate Settings Tab */}
       {activeTab === 'rates' && (
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-6" data-testid="rates-section">
-          <div className="flex items-center justify-between">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 sm:p-6 space-y-6" data-testid="rates-section">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
               <Settings className="w-5 h-5 text-amber-500" />
               إعدادات أسعار الصرف
