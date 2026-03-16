@@ -80,7 +80,7 @@ export const HeroSection3D = () => {
   React.useEffect(() => {
     const fetchServices = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/cms/services?active_only=true`);
+        const res = await fetch(`${API_URL}/api/cms/services?active_only=true&t=${Date.now()}`);
         if (res.ok) {
           const data = await res.json();
           // Filter only hero pinned services
@@ -351,8 +351,8 @@ export const HeroSection3D = () => {
                 </button>
 
 
-                {/* 4 Main Service Buttons with Strong Floating Effect */}
-                <div className="grid grid-cols-2 gap-4 mb-10 relative z-20">
+                {/* Main Service Buttons with Strong Floating Effect - Now supports more than 4 */}
+                <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-4 mb-10 relative z-20">
                   {loading ? (
                     // Loading skeleton
                     [...Array(4)].map((_, i) => (

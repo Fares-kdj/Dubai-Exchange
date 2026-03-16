@@ -137,7 +137,7 @@ export const ServicesSection3D = () => {
   React.useEffect(() => {
     const fetchServices = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/cms/services?active_only=true`);
+        const res = await fetch(`${API_URL}/api/cms/services?active_only=true&t=${Date.now()}`);
         if (res.ok) {
           const data = await res.json();
           // Map backend data to frontend format
@@ -233,7 +233,7 @@ export const ServicesSection3D = () => {
         </motion.div>
 
         {/* Services Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {loading ? (
             // Loading placeholder
             [...Array(4)].map((_, i) => (
