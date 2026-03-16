@@ -420,6 +420,50 @@ const TrackOrder = () => {
                       </div>
                     </div>
 
+                    {/* Status Specific Message */}
+                    {orderResult && (
+                      <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className={`p-6 rounded-3xl border-2 flex items-start gap-4 ${
+                          orderResult.status === 'rejected'
+                            ? (isDark ? 'bg-red-500/10 border-red-500/20 text-red-200' : 'bg-red-50 border-red-100 text-red-700')
+                            : orderResult.status === 'approved'
+                            ? (isDark ? 'bg-green-500/10 border-green-500/20 text-green-200' : 'bg-green-50 border-green-100 text-green-700')
+                            : (isDark ? 'bg-amber-500/10 border-amber-500/20 text-amber-200' : 'bg-amber-50 border-amber-100 text-amber-700')
+                        }`}
+                      >
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
+                          orderResult.status === 'rejected' ? 'bg-red-500/20' : 
+                          orderResult.status === 'approved' ? 'bg-green-500/20' : 'bg-amber-500/20'
+                        }`}>
+                          <AlertCircle className="w-5 h-5" />
+                        </div>
+                        <p className="text-sm md:text-base leading-relaxed font-medium">
+                          {orderResult.status === 'waiting_payment' && t(
+                            'تم تسجيل طلبكم وهو في انتظار إكمال الإيداع. يرجى إتمام الدفع للمتابعة في معالجة الطلب.',
+                            'Your order has been registered and is waiting for deposit. Please complete the payment to proceed with processing.',
+                            'داواکارییەکەت تۆمارکراوە و لە چاوەڕوانی پارەدایە. تکایە پارەدانەکە تەواو بکە بۆ بەردەوامبوون لە جێبەجێکردنی.'
+                          )}
+                          {(orderResult.status === 'pending_review' || orderResult.status === 'under_review') && t(
+                            'تم استلام طلبكم وهو قيد المراجعة. يرجى إكمال الإيداع خلال ساعتين لتجنب إلغاء الطلب.',
+                            'Your order has been received and is under review. Please complete the deposit within two hours to avoid cancellation.',
+                            'داواکارییەکەت وەرگیراوە و لەژێر پێداچوونەوەدایە. تکایە لە ماوەی دوو کاتژمێردا پارەدانەکە تەواو بکە بۆ ئەوەی داواکارییەکەت هەڵنەوەشێتەوە.'
+                          )}
+                          {orderResult.status === 'approved' && t(
+                            'تم قبول طلبكم. لإكمال الإجراءات يرجى التواصل مع خدمة العملاء.',
+                            'Your order has been approved. To complete the procedures, please contact customer service.',
+                            'داواکارییەکەت پەسەندکرا. بۆ تەواوکردنی ڕێکارەکان تکایە پەيوەندی بە خزمەتگوزاری کڕیارانەوە بکە.'
+                          )}
+                          {orderResult.status === 'rejected' && t(
+                            'نعتذر، تم رفض طلبكم. للمزيد من التفاصيل يرجى التواصل مع خدمة العملاء.',
+                            'We apologize, your order has been rejected. For more details, please contact customer service.',
+                            'ببوورە، داواکارییەکەت ڕەتکرایەوە. بۆ زانیاری زیاتر تکایە پەیوەندی بە خزمەتگوزاری کڕیارانەوە بکە.'
+                          )}
+                        </p>
+                      </motion.div>
+                    )}
+
                     {/* Documents */}
                     <div className={`rounded-3xl border-2 p-8 shadow-xl ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'}`}>
                       <h3 className={`text-xl font-bold mb-6 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
