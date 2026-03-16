@@ -19,7 +19,7 @@ const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 // Status configuration
 const statusConfig = {
-  pending_review: { label: 'قيد المراجعة', color: 'bg-yellow-100 text-yellow-800', icon: Clock },
+  under_review: { label: 'قيد المراجعة', color: 'bg-yellow-100 text-yellow-800', icon: Clock },
   waiting_payment: { label: 'في انتظار الدفع', color: 'bg-amber-100 text-amber-800', icon: Clock },
   approved: { label: 'مقبول', color: 'bg-green-100 text-green-800', icon: CheckCircle },
   rejected: { label: 'مرفوض', color: 'bg-red-100 text-red-800', icon: XCircle },
@@ -1007,7 +1007,7 @@ const BaseOrdersPage = ({
 
   const statusOptions = [
     { value: 'all', label: 'جميع الحالات' },
-    { value: 'pending_review', label: 'قيد المراجعة' },
+    { value: 'under_review', label: 'قيد المراجعة' },
     { value: 'waiting_payment', label: 'في انتظار الدفع' },
     { value: 'approved', label: 'مقبول' },
     { value: 'rejected', label: 'مرفوض' },
@@ -1023,7 +1023,7 @@ const BaseOrdersPage = ({
     if (showLoading) setLoading(true);
     try {
       let url = `${API_URL}/api/orders?page=${page}&page_size=${pageSize}`;
-      if (orderType) url += `&order_type=${orderType}`;
+      if (orderType && orderType !== 'all') url += `&order_type=${orderType}`;
       if (filterStatus !== 'all') url += `&status=${filterStatus}`;
       if (searchQuery) url += `&search=${encodeURIComponent(searchQuery)}`;
 
@@ -1177,6 +1177,9 @@ const BaseOrdersPage = ({
               <thead className="bg-slate-50">
                 <tr>
                   <th className="text-right px-6 py-4 text-xs font-medium text-slate-500 uppercase">رقم الطلب</th>
+                  {orderType === 'all' && (
+                    <th className="text-right px-6 py-4 text-xs font-medium text-slate-500 uppercase">النوع</th>
+                  )}
                   <th className="text-right px-6 py-4 text-xs font-medium text-slate-500 uppercase">العميل</th>
                   <th className="text-right px-6 py-4 text-xs font-medium text-slate-500 uppercase">الهاتف</th>
                   <th className="text-right px-6 py-4 text-xs font-medium text-slate-500 uppercase">المبلغ</th>
@@ -1198,6 +1201,13 @@ const BaseOrdersPage = ({
                     <td className="px-6 py-4">
                       <span className="font-mono font-medium text-slate-900">{order.order_id}</span>
                     </td>
+                    {orderType === 'all' && (
+                      <td className="px-6 py-4">
+                        <span className="text-sm text-slate-600">
+                          {orderTypeConfig[order.order_type]?.label || order.order_type}
+                        </span>
+                      </td>
+                    )}
                     <td className="px-6 py-4">
                       <div className="flex flex-col">
                         <span className="font-medium text-slate-900">{order.customer?.full_name}</span>
