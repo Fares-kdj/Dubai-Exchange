@@ -41,6 +41,7 @@ const Contact = () => {
   };
 
   const phone = getField('phone') || '+964 XXX XXX XXXX';
+  const whatsapp = getField('whatsapp') || phone;
   const email = getField('email') || 'info@dubai-exchange.com';
   const address = getField('address') || (lang === 'en' ? 'Baghdad, Iraq' : lang === 'ku' ? 'بەغداد، عێراق' : 'بغداد، العراق');
 
@@ -56,8 +57,8 @@ const Contact = () => {
     {
       icon: MessageCircle,
       titleKey: 'contact.whatsapp',
-      value: phone,
-      link: `https://wa.me/${phone.replace(/[^0-9]/g, '')}`,
+      value: whatsapp,
+      link: `https://wa.me/${whatsapp.replace(/[^0-9]/g, '')}`,
       color: 'from-green-500 to-emerald-500',
       bgColor: isDark ? 'bg-green-900/30' : 'bg-green-50'
     },
