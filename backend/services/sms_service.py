@@ -133,14 +133,26 @@ class SMSService:
             logger.info(f"WhatsApp number updated to: {whatsapp}")
     
     async def sync_whatsapp(self, db):
-        """Fetch WhatsApp number from database contact settings"""
+        """Fetch WhatsApp number from database settings (checking company first, then contact)"""
         try:
+            # 1. Try company settings (Primary)
+            company = await db.settings.find_one({"type": "company"})
+            if company:
+                whatsapp = company.get("whatsapp")
+                if not whatsapp:
+                    whatsapp = company.get("phone")
+                
+                if whatsapp:
+                    self.set_whatsapp(whatsapp)
+                    return True
+
+            # 2. Try contact settings (Fallback)
             contact = await db.settings.find_one({"type": "contact"})
             if contact and "content" in contact:
-                # Use Arabic as primary source for contact info in SMS
-                whatsapp = contact["content"].get("ar", {}).get("whatsapp")
-                if not whatsapp:
-                    whatsapp = contact["content"].get("ar", {}).get("phone")
+                # Use Arabic as source for contact info
+                content = contact.get("content", {})
+                ar_content = content.get("ar", {})
+                whatsapp = ar_content.get("whatsapp") or ar_content.get("phone")
                 
                 if whatsapp:
                     self.set_whatsapp(whatsapp)
@@ -207,21 +219,78 @@ class SMSService:
             logger.exception(f"Twilio SMS exception for {phone}: {e}")
         
         return result
+
+    async def send_plain_sms(self, phone: str, body: str) -> dict:
+        """
+        Send a standard plain text SMS using the 'Body' parameter
+        Returns: dict with success status and details
+        """
+        result = {
+            "success": False,
+            "phone": phone,
+            "body": body,
+            "error": None,
+            "sent": False
+        }
+        
+        # Format the number
+        formatted_phone = format_phone_number(phone)
+        result["formatted_phone"] = formatted_phone
+        
+        logger.info(f"Preparing to send plain SMS to {phone} (formatted: {formatted_phone})")
+        
+        try:
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                url = f"https://api.twilio.com/2010-04-01/Accounts/{self.account_sid}/Messages.json"
+                
+                # Build the request payload with Body instead of ContentSid
+                payload = {
+                    "To": formatted_phone,
+                    "MessagingServiceSid": self.messaging_service_sid,
+                    "Body": body
+                }
+                
+                response = await client.post(
+                    url,
+                    data=payload,
+                    auth=(self.account_sid, self.auth_token)
+                )
+                
+                data = response.json()
+                
+                if response.status_code in [200, 201]:
+                    result["success"] = True
+                    result["sent"] = True
+                    result["message_sid"] = data.get("sid")
+                    logger.info(f"Twilio Plain SMS sent successfully to {formatted_phone}")
+                else:
+                    result["error"] = data.get("message", "Twilio API Error")
+                    result["error_code"] = data.get("code")
+                    logger.error(f"Twilio Plain SMS failed: {data}")
+                    
+        except Exception as e:
+            result["error"] = str(e)
+            logger.exception(f"Twilio Plain SMS exception for {phone}: {e}")
+        
+        return result
     
     async def send_order_submitted(self, phone: str, order_id: str = "", whatsapp: str = None) -> dict:
-        """Send SMS when order is submitted"""
-        vars = {"order_number": order_id, "support_phone": whatsapp or self.whatsapp}
-        return await self.send_content_sms(phone, TWILIO_CONTENT_ORDER_SUBMITTED, vars)
+        """Send SMS when order is submitted (Always Plain Text as requested)"""
+        support = whatsapp or self.whatsapp
+        body = f"تم استلام طلبك رقم {order_id} بنجاح. سنقوم بمراجعته قريباً. للتواصل: {support}"
+        return await self.send_plain_sms(phone, body)
     
     async def send_order_approved(self, phone: str, order_id: str = "", whatsapp: str = None) -> dict:
-        """Send SMS when order is approved"""
-        vars = {"order_number": order_id, "support_phone": whatsapp or self.whatsapp}
-        return await self.send_content_sms(phone, TWILIO_CONTENT_ORDER_APPROVED, vars)
+        """Send SMS when order is approved (Always Plain Text as requested)"""
+        support = whatsapp or self.whatsapp
+        body = f"تمت الموافقة على طلبك رقم {order_id}. شكراً لتعاملك معنا. للتواصل: {support}"
+        return await self.send_plain_sms(phone, body)
     
     async def send_order_rejected(self, phone: str, order_id: str = "", whatsapp: str = None) -> dict:
-        """Send SMS when order is rejected"""
-        vars = {"order_number": order_id, "support_phone": whatsapp or self.whatsapp}
-        return await self.send_content_sms(phone, TWILIO_CONTENT_ORDER_REJECTED, vars)
+        """Send SMS when order is rejected (Always Plain Text as requested)"""
+        support = whatsapp or self.whatsapp
+        body = f"نعتذر، تم رفض طلبك رقم {order_id}. يرجى التواصل مع الدعم للمزيد من المعلومات: {support}"
+        return await self.send_plain_sms(phone, body)
 
 
 # Create singleton

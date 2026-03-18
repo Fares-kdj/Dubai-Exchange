@@ -166,6 +166,10 @@ async def update_company_settings(settings: CompanySettings):
         {"$set": settings_dict},
         upsert=True
     )
+    # Sync with SMS service
+    from database import db as database_db
+    await sms_service.sync_whatsapp(database_db)
+    
     return settings
 
 @api_router.get("/settings/exchange-rates", response_model=ExchangeRatesSettings)

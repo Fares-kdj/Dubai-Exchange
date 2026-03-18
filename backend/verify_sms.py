@@ -27,7 +27,10 @@ async def send_test_sms(phone: str, content_sid: str, label: str):
         "To": phone,
         "MessagingServiceSid": sms_service.messaging_service_sid,
         "ContentSid": content_sid,
-        "ContentVariables": json.dumps({"1": sms_service.whatsapp}),
+        "ContentVariables": json.dumps({
+            "order_number": "TEST-123",
+            "support_phone": sms_service.whatsapp
+        }),
     }
 
     async with httpx.AsyncClient(timeout=30.0) as client:
@@ -67,55 +70,41 @@ async def verify_all_sms(phone: str):
     print(f"  WhatsApp     : {sms_service.whatsapp}")
     print()
 
-    # ── تجاوز فحص الرقم العراقي للاختبار ──
-    original_check = sms_module.is_iraqi_number
-    sms_module.is_iraqi_number = lambda x: True
-
     try:
         # اختبار 1: رسالة الحجز (Order Submitted)
         print("📩 رسالة 1 — طلب جديد (حجز):")
-        if TWILIO_CONTENT_ORDER_SUBMITTED:
-            await send_test_sms(phone, TWILIO_CONTENT_ORDER_SUBMITTED, "Order Submitted")
+        res1 = await sms_service.send_order_submitted(phone, "TEST-123")
+        if res1["success"]:
+            print(f"  ✅ Order Submitted => نجح! {'(Plain Text Fallback)' if not res1.get('content_sid') else '(Content SID)'}")
         else:
-            print("  ⚠️  TWILIO_CONTENT_ORDER_SUBMITTED غير موجود في .env")
+            print(f"  ❌ Order Submitted => فشل! {res1.get('error')}")
 
         # اختبار 2: رسالة القبول (Order Approved)
         print("\n📩 رسالة 2 — طلب مقبول (قبول):")
-        if TWILIO_CONTENT_ORDER_APPROVED:
-            await send_test_sms(phone, TWILIO_CONTENT_ORDER_APPROVED, "Order Approved")
+        res2 = await sms_service.send_order_approved(phone, "TEST-123")
+        if res2["success"]:
+            print(f"  ✅ Order Approved => نجح! {'(Plain Text Fallback)' if not res2.get('content_sid') else '(Content SID)'}")
         else:
-            print("  ⚠️  TWILIO_CONTENT_ORDER_APPROVED غير موجود في .env")
+            print(f"  ❌ Order Approved => فشل! {res2.get('error')}")
 
         # اختبار 3: رسالة الرفض (Order Rejected)
         print("\n📩 رسالة 3 — طلب مرفوض (رفض):")
-        if TWILIO_CONTENT_ORDER_REJECTED:
-            await send_test_sms(phone, TWILIO_CONTENT_ORDER_REJECTED, "Order Rejected")
+        res3 = await sms_service.send_order_rejected(phone, "TEST-123")
+        if res3["success"]:
+            print(f"  ✅ Order Rejected => نجح! {'(Plain Text Fallback)' if not res3.get('content_sid') else '(Content SID)'}")
         else:
-            print("  ⚠️  TWILIO_CONTENT_ORDER_REJECTED غير موجود في .env")
+            print(f"  ❌ Order Rejected => فشل! {res3.get('error')}")
 
         # اختبار 4: رسالة نصية بسيطة (للتحقق من الاتصال الأساسي)
-        print("\n📩 رسالة 4 — نص حر (للتحقق من الاتصال):")
-        url = f"https://api.twilio.com/2010-04-01/Accounts/{sms_service.account_sid}/Messages.json"
-        payload_plain = {
-            "To": phone,
-            "MessagingServiceSid": sms_service.messaging_service_sid,
-            "Body": "Test from Dubai Exchange. If you see this, basic SMS is working. / اختبار من دبي إكستشينج.",
-        }
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            resp = await client.post(
-                url,
-                data=payload_plain,
-                auth=(sms_service.account_sid, sms_service.auth_token),
-            )
-            d = resp.json()
-        if resp.status_code in [200, 201]:
-            print(f"  ✅ نص حر => نجح! SID: {d.get('sid')}")
+        print("\n📩 رسالة 4 — نص حر مباشر:")
+        res4 = await sms_service.send_plain_sms(phone, "Test direct plain text from Dubai Exchange.")
+        if res4["success"]:
+            print(f"  ✅ نص حر => نجح!")
         else:
-            print(f"  ❌ نص حر => فشل! (code={d.get('code')}) {d.get('message')}")
+            print(f"  ❌ نص حر => فشل! {res4.get('error')}")
 
     finally:
-        # استعادة الدالة الأصلية
-        sms_module.is_iraqi_number = original_check
+        pass
 
     print("\n" + "=" * 55)
     print("انتهى الاختبار.")
