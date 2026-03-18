@@ -133,20 +133,9 @@ class SMSService:
             logger.info(f"WhatsApp number updated to: {whatsapp}")
     
     async def sync_whatsapp(self, db):
-        """Fetch WhatsApp number from database settings (checking company first, then contact)"""
+        """Fetch WhatsApp number from database settings (Prioritizing Contact Information from CMS)"""
         try:
-            # 1. Try company settings (Primary)
-            company = await db.settings.find_one({"type": "company"})
-            if company:
-                whatsapp = company.get("whatsapp")
-                if not whatsapp:
-                    whatsapp = company.get("phone")
-                
-                if whatsapp:
-                    self.set_whatsapp(whatsapp)
-                    return True
-
-            # 2. Try contact settings (Fallback)
+            # 1. Try contact settings (Primary - as requested by user)
             contact = await db.settings.find_one({"type": "contact"})
             if contact and "content" in contact:
                 # Use Arabic as source for contact info
@@ -156,6 +145,19 @@ class SMSService:
                 
                 if whatsapp:
                     self.set_whatsapp(whatsapp)
+                    logger.info(f"WhatsApp synced from Contact Info: {whatsapp}")
+                    return True
+
+            # 2. Try company settings (Fallback)
+            company = await db.settings.find_one({"type": "company"})
+            if company:
+                whatsapp = company.get("whatsapp")
+                if not whatsapp:
+                    whatsapp = company.get("phone")
+                
+                if whatsapp:
+                    self.set_whatsapp(whatsapp)
+                    logger.info(f"WhatsApp synced from Company Settings: {whatsapp}")
                     return True
         except Exception as e:
             logger.error(f"Failed to sync WhatsApp number from DB: {e}")
@@ -277,19 +279,19 @@ class SMSService:
     async def send_order_submitted(self, phone: str, order_id: str = "", whatsapp: str = None) -> dict:
         """Send SMS when order is submitted (Always Plain Text as requested)"""
         support = whatsapp or self.whatsapp
-        body = f"تم استلام طلبك رقم {order_id} بنجاح. سنقوم بمراجعته قريباً. للتواصل: {support}"
+        body = f"تم استلام طلبكم {order_id} وهو قيد المراجعة. يرجى إكمال الإيداع خلال ساعتين لتجنب إلغاء الطلب. للدعم {support}"
         return await self.send_plain_sms(phone, body)
     
     async def send_order_approved(self, phone: str, order_id: str = "", whatsapp: str = None) -> dict:
         """Send SMS when order is approved (Always Plain Text as requested)"""
         support = whatsapp or self.whatsapp
-        body = f"تمت الموافقة على طلبك رقم {order_id}. شكراً لتعاملك معنا. للتواصل: {support}"
+        body = f"تم قبول طلبكم {order_id}. لإكمال الإجراءات يرجى التواصل مع خدمة العملاء {support}"
         return await self.send_plain_sms(phone, body)
     
     async def send_order_rejected(self, phone: str, order_id: str = "", whatsapp: str = None) -> dict:
         """Send SMS when order is rejected (Always Plain Text as requested)"""
         support = whatsapp or self.whatsapp
-        body = f"نعتذر، تم رفض طلبك رقم {order_id}. يرجى التواصل مع الدعم للمزيد من المعلومات: {support}"
+        body = f"نعتذر، تم رفض طلبكم {order_id}. للمزيد من التفاصيل يرجى التواصل مع خدمة العملاء {support}"
         return await self.send_plain_sms(phone, body)
 
 
