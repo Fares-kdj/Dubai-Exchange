@@ -85,7 +85,7 @@ const Header3D = () => {
     >
       <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
-          {/* Logo */}
+          {/* Logo - Only shown when branding is loaded from CMS */}
           <motion.div
             className="flex items-center gap-3 cursor-pointer"
             whileHover={{ scale: 1.02 }}
@@ -93,12 +93,14 @@ const Header3D = () => {
             onClick={() => navigate('/')}
             data-testid="header-logo"
           >
-            <img
-              src={isDark ? logoDark : logoLight}
-              alt="شعار الشركة"
-              className={`h-10 md:h-12 object-contain ${!isDark ? 'drop-shadow-sm' : ''}`}
-              style={!isDark ? { filter: 'sepia(30%) saturate(150%)' } : {}}
-            />
+            {(isDark ? logoDark : logoLight) ? (
+              <img
+                src={isDark ? logoDark : logoLight}
+                alt="شعار الشركة"
+                className={`h-10 md:h-12 object-contain ${!isDark ? 'drop-shadow-sm' : ''}`}
+                style={!isDark ? { filter: 'sepia(30%) saturate(150%)' } : {}}
+              />
+            ) : null}
           </motion.div>
 
           {/* Desktop Navigation */}

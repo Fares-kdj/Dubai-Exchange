@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { ASSETS } from '@/config/assets';
 
 const BrandingContext = createContext(null);
 
@@ -11,11 +10,12 @@ export const BrandingProvider = ({ children }) => {
         return JSON.parse(saved);
       } catch (e) {
         console.error('Failed to parse cached branding', e);
+        localStorage.removeItem('app_branding');
       }
     }
     return {
-      logoLight: ASSETS.logoBlack,
-      logoDark: ASSETS.logoWhite,
+      logoLight: null,
+      logoDark: null,
       faviconUrl: null,
       primaryColor: '#d45535',
       secondaryColor: '#221d3a',
@@ -43,8 +43,8 @@ export const BrandingProvider = ({ children }) => {
       const logoDarkUrl = fixUrl(data.logo_dark_url);
 
       const newBranding = {
-        logoLight: logoUrl || logoDarkUrl || ASSETS.logoBlack,
-        logoDark: logoDarkUrl || logoUrl || ASSETS.logoWhite,
+        logoLight: logoUrl || logoDarkUrl || null,
+        logoDark: logoDarkUrl || logoUrl || null,
         faviconUrl: fixUrl(data.favicon_url),
         primaryColor: data.primary_color || '#D4AF37',
         secondaryColor: data.secondary_color || '#1E293B',

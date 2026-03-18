@@ -126,31 +126,34 @@ const SplashScreen = ({ onComplete, minDuration = 2000 }) => {
 
           {/* Content Container */}
           <div className="relative z-10 flex flex-col items-center text-center px-6">
-            {/* Logo - Full Size No Background */}
+            {/* Logo - Only rendered when branding is loaded */}
             <motion.div
               variants={logoVariants}
               initial="initial"
               animate="animate"
               className="relative mb-8"
             >
-              {/* Removed rotating ring for mobile performance */}
-
-              <motion.img
-                src={isDark ? logoDark : logoLight}
-                alt="شعار الشركة"
-                fetchpriority="high"
-                loading="eager"
-                className="w-52 h-52 object-contain relative z-10"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{
-                  opacity: 1,
-                  scale: 1
-                }}
-                transition={{
-                  duration: 0.8,
-                  ease: [0.16, 1, 0.3, 1]
-                }}
-              />
+              {(isDark ? logoDark : logoLight) ? (
+                <motion.img
+                  src={isDark ? logoDark : logoLight}
+                  alt="شعار الشركة"
+                  fetchpriority="high"
+                  loading="eager"
+                  className="w-52 h-52 object-contain relative z-10"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{
+                    opacity: 1,
+                    scale: 1
+                  }}
+                  transition={{
+                    duration: 0.8,
+                    ease: [0.16, 1, 0.3, 1]
+                  }}
+                />
+              ) : (
+                /* Placeholder while logo loads */
+                <div className={`w-52 h-32 rounded-2xl animate-pulse ${isDark ? 'bg-slate-700/40' : 'bg-slate-200/60'}`} />
+              )}
             </motion.div>
 
             {/* Welcome Headline */}

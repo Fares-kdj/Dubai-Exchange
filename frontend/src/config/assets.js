@@ -20,13 +20,6 @@ export const ASSETS = {
   // Global Network
   globalNetwork: '/assets/external/global-network.webp',
 
-  // Company Logos
-  logoColor: '/assets/external/logo-black.svg',
-  logoWhite: '/assets/external/logo-white.svg',
-  logoBlack: '/assets/external/logo-black.svg',
-  iconmarkWhite: '/assets/external/iconmark-white.svg',
-  iconmarkBlack: '/assets/external/iconmark-black.svg',
-
   // Partner Logos
   partners: {
     altayf: '/assets/external/altayf.png',
