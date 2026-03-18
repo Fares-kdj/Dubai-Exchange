@@ -88,11 +88,18 @@ export const useBranding = () => {
 
 // Helper: update the <link rel="icon"> in <head>
 function applyFavicon(url) {
-  let link = document.querySelector("link[rel~='icon']");
-  if (!link) {
-    link = document.createElement('link');
+  // Update all types of icon links
+  const links = document.querySelectorAll("link[rel*='icon']");
+  links.forEach(link => {
+    link.href = url;
+    if (url.endsWith('.svg')) link.type = 'image/svg+xml';
+    else if (url.endsWith('.png')) link.type = 'image/png';
+  });
+
+  if (links.length === 0) {
+    const link = document.createElement('link');
     link.rel = 'icon';
+    link.href = url;
     document.head.appendChild(link);
   }
-  link.href = url;
 }

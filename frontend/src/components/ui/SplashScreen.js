@@ -117,30 +117,11 @@ const SplashScreen = ({ onComplete, minDuration = 2000 }) => {
             : 'bg-gradient-to-br from-white/60 via-amber-50/50 to-white/60'
             }`} />
 
-          {/* Background Effects */}
-          <div className="absolute inset-0 overflow-hidden">
-            {!prefersReducedMotion && (
-              <>
-                <motion.div
-                  animate={{
-                    scale: [1, 1.2, 1],
-                    opacity: [0.3, 0.5, 0.3]
-                  }}
-                  transition={{ duration: 4, repeat: Infinity }}
-                  className={`absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl ${isDark ? 'bg-[#D4AF37]/10' : 'bg-[#D4AF37]/15'
-                    }`}
-                />
-                <motion.div
-                  animate={{
-                    scale: [1.2, 1, 1.2],
-                    opacity: [0.2, 0.4, 0.2]
-                  }}
-                  transition={{ duration: 5, repeat: Infinity, delay: 1 }}
-                  className={`absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full blur-3xl ${isDark ? 'bg-blue-500/10' : 'bg-amber-400/10'
-                    }`}
-                />
-              </>
-            )}
+          {/* Background Effects - Simplified for performance */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            {/* Static subtle glows instead of animated blobs */}
+            <div className={`absolute top-1/4 left-1/4 w-96 h-96 rounded-full opacity-20 ${isDark ? 'bg-[#D4AF37]/5' : 'bg-[#D4AF37]/10'}`} />
+            <div className={`absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full opacity-10 ${isDark ? 'bg-blue-500/5' : 'bg-amber-400/5'}`} />
           </div>
 
           {/* Content Container */}
@@ -152,14 +133,7 @@ const SplashScreen = ({ onComplete, minDuration = 2000 }) => {
               animate="animate"
               className="relative mb-8"
             >
-              {/* Rotating ring around logo */}
-              {!prefersReducedMotion && (
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
-                  className="absolute -inset-8 rounded-full border-2 border-dashed border-[#D4AF37]/30"
-                />
-              )}
+              {/* Removed rotating ring for mobile performance */}
 
               <motion.img
                 src={isDark ? logoDark : logoLight}
@@ -167,30 +141,14 @@ const SplashScreen = ({ onComplete, minDuration = 2000 }) => {
                 fetchpriority="high"
                 loading="eager"
                 className="w-52 h-52 object-contain relative z-10"
-                initial={{ opacity: 0, scale: 0, y: -20 }}
+                initial={{ opacity: 0, scale: 0.8 }}
                 animate={{
                   opacity: 1,
-                  scale: 1,
-                  y: [0, -10, 0],
+                  scale: 1
                 }}
                 transition={{
-                  opacity: { duration: 0.5, ease: 'easeOut' },
-                  scale: {
-                    duration: 0.9,
-                    ease: [0.16, 1, 0.3, 1], // expo out - fast rise, soft land
-                  },
-                  y: {
-                    delay: 0.9,
-                    duration: 3.5,
-                    repeat: Infinity,
-                    ease: 'easeInOut',
-                    repeatType: 'mirror',
-                  }
-                }}
-                style={{
-                  filter: isDark
-                    ? 'drop-shadow(0 0 32px rgba(212,175,55,0.7)) drop-shadow(0 0 64px rgba(212,175,55,0.35))'
-                    : 'drop-shadow(0 8px 24px rgba(212,175,55,0.6)) drop-shadow(0 0 48px rgba(212,175,55,0.3))'
+                  duration: 0.8,
+                  ease: [0.16, 1, 0.3, 1]
                 }}
               />
             </motion.div>
@@ -233,9 +191,6 @@ const SplashScreen = ({ onComplete, minDuration = 2000 }) => {
                   animate={{ width: `${Math.min(progress, 100)}%` }}
                   transition={{ duration: 0.3, ease: "easeOut" }}
                   className="h-full rounded-full bg-gradient-to-r from-[#D4AF37] to-[#FCD34D]"
-                  style={{
-                    boxShadow: isDark ? '0 0 10px rgba(212, 175, 55, 0.5)' : '0 0 8px rgba(212, 175, 55, 0.3)'
-                  }}
                 />
               </div>
 
