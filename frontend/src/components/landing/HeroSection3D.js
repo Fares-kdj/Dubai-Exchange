@@ -159,27 +159,31 @@ export const HeroSection3D = () => {
       {/* Background Image/Video Container */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         {/* Hero Background - Using images (easy to swap with video later) */}
+        {/* Hero Background - Conditionally render only the active video to save resources */}
         <div className={`absolute inset-0 ${isDark ? 'bg-slate-950' : 'bg-slate-100'}`}>
-          {/* Dark Mode Background Video */}
-          <video
-            src={HERO_ASSETS.dark}
-            autoPlay
-            muted
-            loop
-            playsInline
-            fetchpriority="high"
-            className={`absolute top-0 right-0 w-full h-1/2 lg:h-full object-cover lg:object-right object-right transition-opacity duration-700 scale-100 lg:scale-100 origin-right-top ${isDark ? 'opacity-100' : 'opacity-0'}`}
-          />
-          {/* Light Mode Background Video */}
-          <video
-            src={HERO_ASSETS.light}
-            autoPlay
-            muted
-            loop
-            playsInline
-            fetchpriority="high"
-            className={`absolute top-0 right-0 w-full h-1/2 lg:h-full object-cover lg:object-right object-right transition-opacity duration-700 scale-100 lg:scale-100 origin-right-top ${isDark ? 'opacity-0' : 'opacity-100'}`}
-          />
+          {isDark ? (
+            <video
+              key="hero-dark"
+              src={HERO_ASSETS.dark}
+              autoPlay
+              muted
+              loop
+              playsInline
+              fetchpriority="high"
+              className="absolute top-0 right-0 w-full h-1/2 lg:h-full object-cover lg:object-right object-right transition-opacity duration-700 scale-100 lg:scale-100 origin-right-top opacity-100"
+            />
+          ) : (
+            <video
+              key="hero-light"
+              src={HERO_ASSETS.light}
+              autoPlay
+              muted
+              loop
+              playsInline
+              fetchpriority="high"
+              className="absolute top-0 right-0 w-full h-1/2 lg:h-full object-cover lg:object-right object-right transition-opacity duration-700 scale-100 lg:scale-100 origin-right-top opacity-100"
+            />
+          )}
         </div>
 
         {/* Gradient Overlay for text readability */}

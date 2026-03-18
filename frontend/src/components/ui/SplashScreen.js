@@ -21,16 +21,17 @@ const SplashScreen = ({ onComplete, minDuration = 2000 }) => {
     : false;
 
   useEffect(() => {
-    // Animate progress
+    // Animate progress - slowed down to 200ms to reduce CPU overhead
     const progressInterval = setInterval(() => {
       setProgress(prev => {
         if (prev >= 100) {
           clearInterval(progressInterval);
           return 100;
         }
-        return prev + Math.random() * 15 + 5;
+        // Slightly larger increment steps to account for slower interval
+        return prev + Math.random() * 20 + 8;
       });
-    }, 100);
+    }, 200);
 
     // Ensure minimum display time
     const minTimeoutId = setTimeout(() => {

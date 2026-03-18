@@ -137,7 +137,7 @@ export const PartnersSection3D = () => {
         {/* Infinite Marquee */}
         <div className="overflow-hidden py-8">
           <motion.div
-            animate={{ x: isArabic || isKurdish ? [0, 300] : [-300, 0] }}
+            animate={isInView ? { x: isArabic || isKurdish ? [0, 300] : [-300, 0] } : { x: 0 }}
             transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
             className="flex gap-16 items-center"
           >

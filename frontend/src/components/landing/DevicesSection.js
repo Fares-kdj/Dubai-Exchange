@@ -133,7 +133,7 @@ export const DevicesSection = () => {
             className="flex flex-col items-center"
           >
             <motion.div
-              animate={{ y: [0, -10, 0] }}
+              animate={isInView ? { y: [0, -10, 0] } : { y: 0 }}
               transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               className="relative mb-6"
             >
@@ -179,7 +179,7 @@ export const DevicesSection = () => {
             className="flex flex-col items-center"
           >
             <motion.div
-              animate={{ y: [0, -15, 0] }}
+              animate={isInView ? { y: [0, -15, 0] } : { y: 0 }}
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
               className="relative mb-6"
             >
@@ -225,7 +225,7 @@ export const DevicesSection = () => {
             className="flex flex-col items-center"
           >
             <motion.div
-              animate={{ y: [0, -8, 0] }}
+              animate={isInView ? { y: [0, -8, 0] } : { y: 0 }}
               transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
               className="relative mb-6"
             >
