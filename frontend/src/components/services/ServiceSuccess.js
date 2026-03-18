@@ -390,7 +390,7 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
               >
                 <h3 className={`text-lg font-bold mb-4 flex items-center gap-2 ${isDark ? 'text-blue-400' : 'text-blue-900'}`}>
                   <MessageCircle className="w-5 h-5" />
-                  {t('تواصل عبر واتساب', 'WhatsApp Support', 'پشتیوانی واتسئەپ')}
+                  {t('لطلب حساب الايداع تواصل معنا عبر الواتساب', 'To request the deposit account, contact us via WhatsApp', 'بۆ داواکردنی هەژماری سپاردن، لە ڕێگەی واتسئەپەوە پەیوەندیمان پێوە بکە')}
                 </h3>
 
                 <p className={`text-sm mb-4 ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>

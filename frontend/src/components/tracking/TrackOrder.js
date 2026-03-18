@@ -441,7 +441,7 @@ const TrackOrder = () => {
                         </div>
                         <p className="text-sm md:text-base leading-relaxed font-medium">
                           {orderResult.status === 'waiting_payment' && t(
-                            'تم تسجيل طلبكم وهو في انتظار الإيداع. لإكمال الطلب يرجى التواصل عبر واتساب مع خدمة العملاء للحصول على رقم حساب الإيداع وإتمام عملية الدفع.',
+                            'تم استلام طلبكم بنجاح، وهو حالياً قيد الانتظار إلى حين استكمال إجراءات الدفع. يرجى التواصل عبر واتساب للحصول على بيانات حساب الإيداع وإتمام عملية الدفع وإرفاق صورة الاثبات .',
                             'Your order has been registered and is waiting for deposit. Please complete the payment to proceed with processing.',
                             'داواکارییەکەت تۆمارکراوە و لە چاوەڕوانی پارەدایە. تکایە پارەدانەکە تەواو بکە بۆ بەردەوامبوون لە جێبەجێکردنی.'
                           )}
@@ -555,7 +555,7 @@ const TrackOrder = () => {
                           <MessageCircle className="w-5 h-5" />
                         </div>
                         <h3 className={`text-lg font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                          {t('دعم واتساب', 'WhatsApp Support', 'پشتیوانی واتسئەپ')}
+                          {t('لطلب حساب الايداع تواصل معنا عبر الواتساب', 'To request the deposit account, contact us via WhatsApp', 'بۆ داواکردنی هەژماری سپاردن، لە ڕێگەی واتسئەپەوە پەیوەندیمان پێوە بکە')}
                         </h3>
                       </div>
                       

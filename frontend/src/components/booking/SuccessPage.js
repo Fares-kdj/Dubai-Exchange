@@ -446,7 +446,7 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
                   <Phone className="w-6 h-6" />
                 </div>
                 <h3 className="text-lg font-bold">
-                  {t('تواصل معنا عبر واتساب', 'Contact us via WhatsApp', 'پەیوەندیمان پێوە بکەن لە ڕێگەی واتسئەپ')}
+                  {t('لطلب حساب الايداع تواصل معنا عبر الواتساب', 'To request the deposit account, contact us via WhatsApp', 'بۆ داواکردنی هەژماری سپاردن، لە ڕێگەی واتسئەپەوە پەیوەندیمان پێوە بکە')}
                 </h3>
               </div>
 

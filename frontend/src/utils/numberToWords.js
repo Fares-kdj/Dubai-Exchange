@@ -40,28 +40,25 @@ export const numberToArabicWords = (n) => {
     return words.trim();
 };
 
-export const amountToUSDWords = (amount) => {
+const currencyNames = {
+    'USD': { main: 'دولار أمريكي', sub: 'سنتاً' },
+    'EUR': { main: 'يورو', sub: 'سنتاً' },
+    'GBP': { main: 'جنيه إسترليني', sub: 'بنس' },
+    'AED': { main: 'درهم إماراتي', sub: 'فلساً' },
+    'SAR': { main: 'ريال سعودي', sub: 'هللة' },
+    'IQD': { main: 'دينار عراقي', sub: 'فلس' },
+};
+
+export const amountToWords = (amount, currency = 'USD') => {
+    const cur = currencyNames[currency] || currencyNames['USD'];
     const num = Math.floor(amount);
-    const cents = Math.round((amount - num) * 100);
+    const fraction = Math.round((amount - num) * 100);
 
-    let result = numberToArabicWords(num) + ' دولار أمريكي';
+    let result = numberToArabicWords(num) + ' ' + cur.main;
 
-    if (cents > 0) {
-        result += ' و ' + numberToArabicWords(cents) + ' سنتاً';
+    if (fraction > 0) {
+        result += ' و ' + numberToArabicWords(fraction) + ' ' + cur.sub;
     }
 
     return result + ' لا غير';
-};
-
-export const amountToIQDWords = (amount) => {
-    const num = Math.floor(amount);
-
-    let result = numberToArabicWords(num) + ' دينار عراقي';
-
-    return result + ' لا غير';
-};
-
-export const amountToWords = (amount, currency) => {
-    if (currency === 'IQD') return amountToIQDWords(amount);
-    return amountToUSDWords(amount);
 };

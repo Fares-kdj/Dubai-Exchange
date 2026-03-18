@@ -5,7 +5,7 @@
  * y: distance from the top
  */
 
-import { amountToWords, amountToUSDWords } from '../../../utils/numberToWords';
+import { amountToWords } from '../../../utils/numberToWords';
 
 const getStatusTranslation = (status) => {
     switch (status?.toLowerCase()) {
@@ -166,23 +166,23 @@ export const RECEIPT_CONFIGS = {
         template: '/assets/receipts/moneygram.jpg',
         fields: (order, admin_data, customer, details, formatDate) => [
             // Sender Information
-            { id: 'sender_first_name', value: details?.senderFirstName || details?.senderName, x: 60.4, y: 23.7, bold: true },
-            { id: 'sender_last_name', value: details?.senderLastName, x: 60.4, y: 26.3, bold: true },
-            { id: 'sender_dob', value: details?.senderDOB, x: 60.4, y: 35, bold: true },
-            { id: 'sender_pob', value: details?.senderPOB, x: 60.4, y: 37, bold: true },
-            { id: 'sender_phone', value: details?.senderPhone, x: 60.4, y: 32.2, bold: true },
-            { id: 'sender_address', value: details?.senderAddress, x: 60.4, y: 28.2, bold: true },
+            { id: 'sender_first_name', value: details?.senderFirstName || details?.senderName, x: 60.4, y: 23.7, bold: true, fontSize: 10 },
+            { id: 'sender_last_name', value: details?.senderLastName, x: 60.4, y: 26.3, bold: true, fontSize: 10 },
+            { id: 'sender_dob', value: details?.senderDOB, x: 60.4, y: 35, bold: true, fontSize: 10 },
+            { id: 'sender_pob', value: details?.senderPOB, x: 60.4, y: 37, bold: true, fontSize: 10 },
+            { id: 'sender_phone', value: details?.senderPhone, x: 60.4, y: 32.2, bold: true, fontSize: 10 },
+            { id: 'sender_address', value: details?.senderAddress, x: 60.4, y: 28.2, bold: true, fontSize: 10 },
             // Receiver Information
-            { id: 'receiver_first_name', value: details?.receiverFirstName || details?.receiverName, x: 60.4, y: 45.5, bold: true },
-            { id: 'receiver_last_name', value: details?.receiverLastName, x: 60.4, y: 48.5, bold: true },
-            { id: 'receiver_dob', value: details?.receiverDOB, x: 60.4, y: 51.6, bold: true },
-            { id: 'receiver_phone', value: details?.receiverPhone, x: 60.4, y: 54.3, bold: true },
-            { id: 'receiver_country', value: getCountryTranslation(details?.receiverCountry), x: 60.4, y: 15.9, bold: true },
+            { id: 'receiver_first_name', value: details?.receiverFirstName || details?.receiverName, x: 60.4, y: 45.5, bold: true, fontSize: 10 },
+            { id: 'receiver_last_name', value: details?.receiverLastName, x: 60.4, y: 48.5, bold: true, fontSize: 10 },
+            { id: 'receiver_dob', value: details?.receiverDOB, x: 60.4, y: 51.6, bold: true, fontSize: 10 },
+            { id: 'receiver_phone', value: details?.receiverPhone, x: 60.4, y: 54.3, bold: true, fontSize: 10 },
+            { id: 'receiver_country', value: getCountryTranslation(details?.receiverCountry), x: 60.4, y: 15.9, bold: true, fontSize: 10 },
             // Transfer Details
-            { id: 'total', value: `${details?.totalInCurrency || details?.amount} ${details?.currency}`, x: 35.4, y: 58.9, bold: true },
-            { id: 'total_words', value: details?.totalInCurrency ? amountToUSDWords(parseFloat(details.totalInCurrency)) : '', x: 85.3, y: 58.9, bold: true, size: 'text-[11px]' },
-            { id: 'purpose', value: getPurpose(details), x: 60.4, y: 39.7, bold: true },
-            { id: 'ref_number', value: details?.reference_number, x: 59.9, y: 96.3, bold: true, fontSize: 21 },
+            { id: 'total', value: `${details?.totalInCurrency || details?.amount} ${details?.currency}`, x: 35.4, y: 58.9, bold: true, fontSize: 10 },
+            { id: 'total_words', value: details?.totalInCurrency ? amountToWords(parseFloat(details.totalInCurrency), details?.currency) : '', x: 85.3, y: 58.9, bold: true, size: 'text-[9px]' },
+            { id: 'purpose', value: getPurpose(details), x: 60.4, y: 39.7, bold: true, fontSize: 10 },
+            { id: 'ref_number', value: details?.reference_number, x: 59.9, y: 96.3, bold: true, fontSize: 16 },
         ],
         stamps: {
             signature: { x: 38.4, y: 82.3, width: 300, height: 200, rotate: 0 },
