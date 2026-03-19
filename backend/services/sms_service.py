@@ -276,10 +276,16 @@ class SMSService:
         
         return result
     
-    async def send_order_submitted(self, phone: str, order_id: str = "", whatsapp: str = None) -> dict:
+    async def send_order_submitted(self, phone: str, order_id: str = "", whatsapp: str = None, customer_name: str = "") -> dict:
         """Send SMS when order is submitted (Always Plain Text as requested)"""
         support = whatsapp or self.whatsapp
-        body = f"تم استلام طلبكم {order_id} وهو قيد المراجعة. يرجى إكمال الإيداع خلال ساعتين لتجنب إلغاء الطلب. للدعم {support}"
+        body = (
+            f"عميلنا العزيز\n"
+            f"{customer_name}\n"
+            f"رقم طلبكم {order_id}\n"
+            f"تم استلام طلبكم وهو قيد المراجعه يرجى إكمال الإيداع خلال فترة زمنية محددة أقصاها ساعتين لتجنب الغاء الطلب.\n"
+            f"للاستفسار {support}"
+        )
         return await self.send_plain_sms(phone, body)
     
     async def send_order_approved(self, phone: str, order_id: str = "", whatsapp: str = None) -> dict:
