@@ -433,6 +433,23 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
               </button>
             </motion.div>
 
+            {/* Deposit Warning Note */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.62 }}
+              className="bg-red-600/90 border-2 border-red-500 rounded-2xl p-4 flex items-start gap-3 shadow-lg"
+            >
+              <span className="text-white text-xl mt-0.5">⚠️</span>
+              <p className="text-white text-sm font-semibold leading-relaxed" dir="rtl">
+                {t(
+                  'يرجى إكمال الإيداع خلال فترة زمنية لا تتجاوز ساعتين وخلاف ذلك سيتم إهمال الطلب.',
+                  'Please complete the deposit within 2 hours, otherwise the order will be cancelled.',
+                  'تکایە سپاردنەکە ناوی کاتژمێر ٢ کاتژمێر تەواو بکە، وەکو ئەوە نەبێت داواکاری پشتگوێ دەخرێت.'
+                )}
+              </p>
+            </motion.div>
+
             {/* WhatsApp Contact Section */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}

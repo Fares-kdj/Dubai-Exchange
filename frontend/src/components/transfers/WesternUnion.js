@@ -37,7 +37,7 @@ const WesternUnion = () => {
     receiverName: '',
     receiverAddress: '',
     receiverPhone: '',
-    senderCountry: 'iraq',
+    senderCountry: '',
     receiverCountry: '',
     idType: '',
     currency: '',
@@ -371,14 +371,13 @@ const WesternUnion = () => {
                     <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                       {t('دولة المرسل', 'Sender Country', 'وڵاتی نێرەر')}
                     </Label>
-                    <Select value={formData.senderCountry} disabled>
-                      <SelectTrigger className={`h-12 ${isDark ? 'bg-slate-600 border-slate-500 text-white' : 'bg-slate-50 border-slate-300'}`}>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="iraq">{t('العراق', 'Iraq', 'عێراق')}</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Input
+                      value={formData.senderCountry}
+                      onChange={(e) => handleInputChange('senderCountry', e.target.value)}
+                      className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`}
+                      placeholder={t('أدخل دولة المرسل', 'Enter sender country', 'وڵاتی نێرەر بنووسە')}
+                      data-testid="sender-country"
+                    />
                   </div>
                 </div>
               </div>
@@ -433,18 +432,13 @@ const WesternUnion = () => {
                     <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                       {t('دولة المستلم', 'Receiver Country', 'وڵاتی وەرگر')} *
                     </Label>
-                    <Select value={formData.receiverCountry} onValueChange={(v) => handleInputChange('receiverCountry', v)}>
-                      <SelectTrigger className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} data-testid="receiver-country">
-                        <SelectValue placeholder={t('اختر الدولة', 'Select country', 'وڵات هەڵبژێرە')} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {countries.filter(c => c.value !== 'iraq').map(c => (
-                          <SelectItem key={c.value} value={c.value}>
-                            {t(c.labelAr, c.labelEn, c.labelKu)}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Input
+                      value={formData.receiverCountry}
+                      onChange={(e) => handleInputChange('receiverCountry', e.target.value)}
+                      className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`}
+                      placeholder={t('أدخل دولة المستلم', 'Enter receiver country', 'وڵاتی وەرگر بنووسە')}
+                      data-testid="receiver-country"
+                    />
                     {errors.receiverCountry && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.receiverCountry}</p>}
                   </div>
                 </div>
@@ -526,7 +520,7 @@ const WesternUnion = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
-                    {t('العملة', 'Currency', 'دراو')} *
+                    {t('عملة المستلم', 'Receiver Currency', 'دراوی وەرگر')} *
                   </Label>
                   <Select value={formData.currency} onValueChange={(v) => handleInputChange('currency', v)}>
                     <SelectTrigger className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} data-testid="currency-select">
