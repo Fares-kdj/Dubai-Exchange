@@ -139,7 +139,7 @@ const LocalTransfer = () => {
     if (!formData.senderPhone.trim()) newErrors.senderPhone = t('رقم هاتف المرسل مطلوب', 'Sender phone required', 'ژمارەی مۆبایلی نێرەر پێویستە');
     if (!formData.receiverPhone.trim()) newErrors.receiverPhone = t('رقم هاتف المستلم مطلوب', 'Receiver phone required', 'ژمارەی مۆبایلی وەرگر پێویستە');
     if (!formData.amount || parseFloat(formData.amount) <= 0) newErrors.amount = t('المبلغ مطلوب', 'Amount required', 'بڕی پارە پێويستە');
-    if (!formData.receiverCurrency) newErrors.receiverCurrency = t('عملة المستلم مطلوبة', 'Receiver currency required', 'دراوی وەرگر پێویستە');
+    if (!formData.receiverCurrency) newErrors.receiverCurrency = t('عملة الاستلام مطلوبة', 'Receiving currency required', 'دراوی وەرگر پێویستە');
     if (!formData.paymentMethod) newErrors.paymentMethod = t('طريقة الدفع مطلوبة', 'Payment method required', 'شێوازی پارەدان پێویستە');
 
     setErrors(newErrors);
@@ -489,7 +489,7 @@ const LocalTransfer = () => {
                 {/* Receiver Currency */}
                 <div className="space-y-2 md:col-span-2">
                   <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
-                    {t('عملة المستلم', 'Receiver Currency', 'دراوی وەرگر')} *
+                    {t('عملة الاستلام', 'Receiving Currency', 'دراوی وەرگر')} *
                   </Label>
                   <Select value={formData.receiverCurrency} onValueChange={(v) => handleInputChange('receiverCurrency', v)}>
                     <SelectTrigger className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} data-testid="receiver-currency-select">
@@ -515,6 +515,16 @@ const LocalTransfer = () => {
                   <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                     {t('طريقة الدفع', 'Payment Method', 'شێوازی پارەدان')} *
                   </Label>
+                  <div className={`p-4 rounded-xl mb-4 flex items-center gap-3 border ${
+                    isDark 
+                      ? 'bg-orange-500/10 border-orange-500/20 text-orange-400' 
+                      : 'bg-orange-50 border-orange-200 text-orange-700'
+                  }`}>
+                    <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                    <p className="text-sm md:text-base font-bold">
+                      {t('حدد كيف تدفع لنا', 'Select how you pay us', 'چۆنێتی پارەدانەکەمان بۆ دیاری بکە')}
+                    </p>
+                  </div>
                   <div className={`p-6 rounded-2xl ${isDark ? 'bg-slate-700/50' : 'bg-slate-50'}`}>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                       {paymentMethods.map(m => (
@@ -578,7 +588,7 @@ const LocalTransfer = () => {
                     {formData.receiverCurrency && (
                       <div className="flex justify-between">
                         <span className={isDark ? 'text-emerald-200' : 'text-emerald-800'}>
-                          {t('عملة المستلم', 'Receiver Currency', 'دراوی وەرگر')}
+                          {t('عملة الاستلام', 'Receiving Currency', 'دراوی وەرگر')}
                         </span>
                         <span className={`font-semibold ${isDark ? 'text-white' : ''}`}>
                           {formData.receiverCurrency}

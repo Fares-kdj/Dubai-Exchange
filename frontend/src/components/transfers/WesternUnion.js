@@ -520,7 +520,7 @@ const WesternUnion = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
-                    {t('عملة المستلم', 'Receiver Currency', 'دراوی وەرگر')} *
+                    {t('عملة الاستلام', 'Receiving Currency', 'دراوی وەرگر')} *
                   </Label>
                   <Select value={formData.currency} onValueChange={(v) => handleInputChange('currency', v)}>
                     <SelectTrigger className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} data-testid="currency-select">
@@ -558,6 +558,16 @@ const WesternUnion = () => {
                   <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                     {t('طريقة الدفع', 'Payment Method', 'شێوازى پارەدان')} *
                   </Label>
+                  <div className={`p-4 rounded-xl mb-4 flex items-center gap-3 border ${
+                    isDark 
+                      ? 'bg-orange-500/10 border-orange-500/20 text-orange-400' 
+                      : 'bg-orange-50 border-orange-200 text-orange-700'
+                  }`}>
+                    <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                    <p className="text-sm md:text-base font-bold">
+                      {t('حدد كيف تدفع لنا', 'Select how you pay us', 'چۆنێتی پارەدانەکەمان بۆ دیاری بکە')}
+                    </p>
+                  </div>
                   <div className={`p-6 rounded-2xl ${isDark ? 'bg-slate-700/50' : 'bg-slate-50'}`}>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                       {paymentMethods.map(m => (

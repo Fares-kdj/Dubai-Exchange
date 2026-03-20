@@ -521,7 +521,7 @@ const TransferSuccess = () => {
                 {orderData.type === 'country' && (
                   <div className={`mt-4 p-4 rounded-xl ${isDark ? 'bg-slate-700/30' : 'bg-slate-50'}`}>
                     <div className="flex justify-between items-center text-sm">
-                      <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>{t('العملة المستلمة', 'Receiver Currency', 'دراوی وەرگیراو')}</span>
+                      <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>{t('عملة الاستلام', 'Receiving Currency', 'دراوی وەرگیراو')}</span>
                       <span className="font-semibold text-blue-500">{orderData.receiverCurrency || orderData.currencyName}</span>
                     </div>
                   </div>

@@ -260,7 +260,7 @@ const CountryWizard = () => {
     if (!wizardData.paymentMethod) newErrors.paymentMethod = t('اختر طريقة الدفع', 'Select payment method', 'شێوازی پارەدان هەڵبژێرە');
     if (isOtherCountry && !wizardData.customCurrencyName.trim()) newErrors.customCurrencyName = t('أدخل اسم العملة', 'Enter currency name', 'ناوی دراو بنووسە');
     if (isOtherCountry && !wizardData.customCountryName.trim()) newErrors.customCountryName = t('أدخل اسم الدولة', 'Enter country name', 'ناوی وڵات بنووسە');
-    if (!isOtherCountry && isBankTransfer && !wizardData.receiverCurrency) newErrors.receiverCurrency = t('اختر عملة المستلم', 'Select receiver currency', 'دراوی وەرگر هەڵبژێرە');
+    if (!isOtherCountry && isBankTransfer && !wizardData.receiverCurrency) newErrors.receiverCurrency = t('اختر عملة الاستلام', 'Select receiving currency', 'دراوی وەرگر هەڵبژێرە');
     if (!wizardData.purpose) newErrors.purpose = t('مطلوب', 'Required', 'پێویستە');
 
     // Add dynamic field validation
@@ -754,7 +754,7 @@ const CountryWizard = () => {
 
                       <div className={`rounded-2xl p-6 ${isDark ? 'bg-indigo-900/20 border border-indigo-700/50' : 'bg-indigo-50 border border-indigo-200'}`}>
                         <Label className={`text-lg font-bold mb-2 block ${isDark ? 'text-indigo-400' : 'text-indigo-700'}`}>
-                          {t('اسم العملة', 'Currency Name', 'ناوی دراو')} *
+                          {t('اسم عملة الاستلام', 'Receiving Currency Name', 'ناوی دراوی وەرگر')} *
                         </Label>
                         <Input
                           value={wizardData.customCurrencyName}
@@ -771,7 +771,7 @@ const CountryWizard = () => {
                   {isBankTransfer && !isOtherCountry && (
                     <div className={`rounded-2xl p-6 mb-6 ${isDark ? 'bg-blue-900/20 border border-blue-700/50' : 'bg-blue-50 border border-blue-200'}`}>
                       <Label className={`text-lg font-bold mb-4 block ${isDark ? 'text-blue-400' : 'text-blue-700'}`}>
-                        {t('عملة المستلم', 'Receiver Currency', 'دراوی وەرگر')} *
+                        {t('عملة الاستلام', 'Receiving Currency', 'دراوی وەرگر')} *
                       </Label>
                       <div className="grid grid-cols-3 gap-3">
                         {getAvailableCurrencies().map(currency => (
@@ -812,9 +812,19 @@ const CountryWizard = () => {
 
                   {/* Payment Method Selection */}
                   <div className={`rounded-2xl p-6 mb-6 ${isDark ? 'bg-slate-700/50 border border-slate-600' : 'bg-slate-50 border border-slate-200'}`}>
-                    <Label className={`text-lg font-bold mb-4 block ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                    <Label className={`text-lg font-bold mb-2 block ${isDark ? 'text-white' : 'text-slate-900'}`}>
                       {t('طريقة الدفع', 'Payment Method', 'شێوازی پارەدان')} *
                     </Label>
+                    <div className={`p-4 rounded-xl mb-4 flex items-center gap-3 border ${
+                      isDark 
+                        ? 'bg-orange-500/10 border-orange-500/20 text-orange-400' 
+                        : 'bg-orange-50 border-orange-200 text-orange-700'
+                    }`}>
+                      <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                      <p className="text-sm md:text-base font-bold">
+                        {t('حدد كيف تدفع لنا', 'Select how you pay us', 'چۆنێتی پارەدانەکەمان بۆ دیاری بکە')}
+                      </p>
+                    </div>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       {PAYMENT_METHODS.filter(pm => pm.active).map(method => (
                         <motion.button
