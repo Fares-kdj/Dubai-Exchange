@@ -386,6 +386,19 @@ const TransferSuccess = () => {
                     </div>
                   )}
 
+                  {/* Receiver Address */}
+                  {orderData.receiverAddress && (
+                    <div className="flex items-start gap-3">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-cyan-500/20' : 'bg-cyan-100'}`}>
+                        <MapPin className="w-5 h-5 text-cyan-600" />
+                      </div>
+                      <div>
+                        <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('عنوان المستلم', 'Receiver Address', 'ناونیشانی وەرگر')}</p>
+                        <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{orderData.receiverAddress}</p>
+                      </div>
+                    </div>
+                  )}
+
                   {/* ID Type */}
                   {orderData.idType && (
                     <div className="flex items-start gap-3">

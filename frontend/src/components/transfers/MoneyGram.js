@@ -42,6 +42,7 @@ const MoneyGram = () => {
     senderPOB: '',
     receiverFirstName: '',
     receiverLastName: '',
+    receiverAddress: '',
     receiverDOB: '',
     receiverPhone: '',
     senderCountry: 'iraq',
@@ -148,6 +149,7 @@ const MoneyGram = () => {
 
     if (!formData.receiverFirstName.trim()) newErrors.receiverFirstName = t('مطلوب', 'Required', 'پێویستە');
     if (!formData.receiverLastName.trim()) newErrors.receiverLastName = t('مطلوب', 'Required', 'پێویستە');
+    if (!formData.receiverAddress.trim()) newErrors.receiverAddress = t('مطلوب', 'Required', 'پێویستە');
     if (!formData.receiverDOB) newErrors.receiverDOB = t('مطلوب', 'Required', 'پێویستە');
     if (!formData.receiverPhone.trim()) newErrors.receiverPhone = t('مطلوب', 'Required', 'پێویستە');
 
@@ -206,6 +208,7 @@ const MoneyGram = () => {
           senderPOB: formData.senderPOB,
           receiverFirstName: formData.receiverFirstName,
           receiverLastName: formData.receiverLastName,
+          receiverAddress: formData.receiverAddress,
           receiverDOB: formData.receiverDOB,
           receiverPhone: formData.receiverPhone,
           senderCountry: formData.senderCountry,
@@ -395,6 +398,12 @@ const MoneyGram = () => {
                     isDark={isDark}
                   />
                   {errors.receiverPhone && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.receiverPhone}</p>}
+                </div>
+
+                <div className="space-y-2">
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>{t('عنوان المستلم', 'Receiver Address', 'ناونیشانی وەرگر')} *</Label>
+                  <Input value={formData.receiverAddress} onChange={(e) => handleInputChange('receiverAddress', e.target.value)} className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} />
+                  {errors.receiverAddress && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.receiverAddress}</p>}
                 </div>
 
                 <div className="space-y-2">

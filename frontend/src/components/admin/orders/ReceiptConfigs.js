@@ -177,6 +177,7 @@ export const RECEIPT_CONFIGS = {
             { id: 'receiver_last_name', value: details?.receiverLastName, x: 60.4, y: 48.5, bold: true, fontSize: 10 },
             { id: 'receiver_dob', value: details?.receiverDOB, x: 60.4, y: 51.6, bold: true, fontSize: 10 },
             { id: 'receiver_phone', value: details?.receiverPhone, x: 60.4, y: 54.3, bold: true, fontSize: 10 },
+            { id: 'receiver_address', value: details?.receiverAddress, x: 60.4, y: 17.9, bold: true, fontSize: 10 },
             { id: 'receiver_country', value: getCountryTranslation(details?.receiverCountry), x: 60.4, y: 15.9, bold: true, fontSize: 10 },
             // Transfer Details
             { id: 'total', value: `${details?.totalInCurrency || details?.amount} ${details?.currency}`, x: 35.4, y: 58.9, bold: true, fontSize: 10 },
