@@ -812,18 +812,13 @@ const CountryWizard = () => {
 
                   {/* Payment Method Selection */}
                   <div className={`rounded-2xl p-6 mb-6 ${isDark ? 'bg-slate-700/50 border border-slate-600' : 'bg-slate-50 border border-slate-200'}`}>
-                    <Label className={`text-lg font-bold mb-2 block ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                      {t('طريقة الدفع', 'Payment Method', 'شێوازی پارەدان')} *
-                    </Label>
-                    <div className={`p-4 rounded-xl mb-4 flex items-center gap-3 border ${
-                      isDark 
-                        ? 'bg-orange-500/10 border-orange-500/20 text-orange-400' 
-                        : 'bg-orange-50 border-orange-200 text-orange-700'
-                    }`}>
-                      <AlertCircle className="w-5 h-5 flex-shrink-0" />
-                      <p className="text-sm md:text-base font-bold">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Label className={`text-lg font-bold block ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                        {t('طريقة الدفع', 'Payment Method', 'شێوازی پارەدان')} *
+                      </Label>
+                      <span className="text-red-500 text-sm font-bold">
                         {t('حدد كيف تدفع لنا', 'Select how you pay us', 'چۆنێتی پارەدانەکەمان بۆ دیاری بکە')}
-                      </p>
+                      </span>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       {PAYMENT_METHODS.filter(pm => pm.active).map(method => (
