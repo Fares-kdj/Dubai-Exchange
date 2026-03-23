@@ -519,14 +519,14 @@ const TransferSuccess = () => {
                   <div className={`rounded-2xl p-6 border-2 ${isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-slate-200'}`}>
                     <p className={`text-sm mb-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('المبلغ', 'Amount', 'بڕ')}</p>
                     <p className="text-3xl font-bold text-[#D4AF37]">
-                      {orderData.currency || 'IQD'} {Number(orderData.amount || 0).toLocaleString()}
+                      {orderData.currency === 'USD' ? '$' : ''}{Number(orderData.amount || 0).toLocaleString()} {orderData.currency !== 'USD' && (orderData.currency === 'IQD' ? t('د.ع', 'IQD', 'د.ع') : orderData.currency)}
                     </p>
                   </div>
 
                   <div className={`rounded-xl p-4 border ${isDark ? 'bg-slate-700/30 border-slate-600' : 'bg-slate-50 border-slate-100'}`}>
                     <p className={`text-xs mb-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('المبلغ النهائي', 'Final Amount', 'بڕی کۆتایی')}</p>
                     <p className="text-xl font-bold text-blue-500">
-                      IQD {Number(orderData.total || 0).toLocaleString()}
+                      {Number(orderData.total || 0).toLocaleString()} {t('د.ع', 'IQD', 'د.ع')}
                     </p>
                   </div>
                 </div>

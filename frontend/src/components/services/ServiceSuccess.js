@@ -318,7 +318,7 @@ const ServiceSuccess = () => {
                       {isUSDT ? 'USDT' : t('المبلغ', 'Amount', 'بڕ')}
                     </p>
                     <p className="text-3xl font-bold text-[#D4AF37]">
-                      {isUSDT ? `${orderData.amount} USDT` : `${orderData.currency || 'IQD'} ${Number(orderData.amountIQD || orderData.amount || 0).toLocaleString()}`}
+                      {isUSDT ? `${orderData.amount} USDT` : `${orderData.currency === 'USD' ? '$' : ''}${Number(orderData.amountIQD || orderData.amount || 0).toLocaleString()} ${orderData.currency !== 'USD' && (orderData.currency === 'IQD' ? t('د.ع', 'IQD', 'د.ع') : (orderData.currency || 'IQD'))}`}
                     </p>
                   </div>
 
@@ -328,7 +328,7 @@ const ServiceSuccess = () => {
                       {t('الإجمالي للدفع', 'Total to Pay', 'کۆی گشتی بۆ پارەدان')}
                     </p>
                     <p className="text-3xl font-bold text-[#D4AF37]">
-                      {Number(orderData.total || 0).toLocaleString()} IQD
+                      {Number(orderData.total || 0).toLocaleString()} {t('د.ع', 'IQD', 'د.ع')}
                     </p>
                   </div>
                 </div>
@@ -337,7 +337,7 @@ const ServiceSuccess = () => {
                   <div className={`mt-4 p-4 rounded-xl ${isDark ? 'bg-slate-800/30' : 'bg-white/50'}`}>
                     <div className="flex justify-between items-center text-sm">
                       <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>{t('رسوم الخدمة (2%)', 'Service Fee (2%)', 'رسوومی خزمەتگوزاری (٢٪)')}</span>
-                      <span className="font-semibold text-amber-500">{Number(orderData.serviceFee || 0).toLocaleString()} IQD</span>
+                      <span className="font-semibold text-amber-500">{Number(orderData.serviceFee || 0).toLocaleString()} {t('د.ع', 'IQD', 'د.ع')}</span>
                     </div>
                   </div>
                 )}

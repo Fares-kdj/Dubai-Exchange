@@ -3,7 +3,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { toast } from 'sonner';
 import { useTheme } from '@/context/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Package, User, Phone, MapPin, Calendar, DollarSign, CreditCard, FileText, Upload, X, CheckCircle, Clock, AlertCircle, Copy, Eye, Globe, Ban, MessageCircle, ExternalLink, AlertTriangle } from 'lucide-react';
+import { Search, Package, User, Phone, MapPin, Calendar, DollarSign, CreditCard, FileText, Upload, X, CheckCircle, Clock, AlertCircle, Copy, Eye, Globe, Ban, MessageCircle, ExternalLink, AlertTriangle, Banknote } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -186,6 +186,74 @@ const TrackOrder = () => {
   const getOrderTypeLabel = (type) => {
     const o = orderTypes.find(o => o.value === type);
     return o ? t(o.labelAr, o.labelEn, o.labelKu) : type;
+  };
+
+  const renderAmountDetails = () => {
+    if (!orderResult || !orderResult.details) return null;
+
+    const details = orderResult.details;
+    const isUSDT = orderResult.type === 'usdt_recharge' || orderResult.type === 'usdt';
+
+    // Base amount and currency
+    let baseAmount = details.amount || details.usdAmount || 0;
+    let baseCurrency = details.currency || (details.usdAmount ? 'USD' : (isUSDT ? 'USDT' : 'IQD'));
+
+    // Total in IQD
+    let totalIQD = details.total || details.iqdAmount || details.amountIQD || 0;
+
+    // If baseAmount is missing but totalIQD exists (like in some local transfers)
+    if (!baseAmount && totalIQD) {
+      baseAmount = totalIQD;
+      baseCurrency = 'IQD';
+    }
+
+    // Skip rendering if no amounts found
+    if (!baseAmount && !totalIQD) return null;
+
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className={`rounded-3xl border-2 shadow-xl p-8 mb-6 ${isDark
+          ? 'bg-blue-900/20 border-blue-700/50'
+          : 'bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200'
+          }`}
+      >
+        <h3 className={`text-2xl font-bold mb-6 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
+          <Banknote className="w-6 h-6 text-[#D4AF37]" />
+          {t('تفاصيل المبلغ', 'Amount Details', 'زانیاری بڕی پارە')}
+        </h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className={`rounded-2xl p-6 border-2 ${isDark ? 'bg-slate-800/80 border-slate-700/50' : 'bg-white border-slate-200'}`}>
+            <p className={`text-sm mb-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+              {isUSDT ? 'USDT' : t('المبلغ', 'Amount', 'بڕ')}
+            </p>
+            <p className="text-3xl font-bold text-[#D4AF37]">
+              {baseCurrency === 'USD' ? '$' : ''}{Number(baseAmount).toLocaleString()} {baseCurrency !== 'USD' && (baseCurrency === 'IQD' ? t('د.ع', 'IQD', 'د.ع') : baseCurrency)}
+            </p>
+          </div>
+
+          <div className={`rounded-2xl p-6 border-2 ${isDark ? 'bg-slate-800/80 border-slate-700/50' : 'bg-white border-slate-200'}`}>
+            <p className={`text-sm mb-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+              {t('الإجمالي للدفع', 'Total to Pay', 'کۆی گشتی بۆ پارەدان')}
+            </p>
+            <p className="text-3xl font-bold text-[#D4AF37]">
+              {Number(totalIQD).toLocaleString()} {t('د.ع', 'IQD', 'د.ع')}
+            </p>
+          </div>
+        </div>
+
+        {(details.exchangeRate || details.exchange_rate) && (
+          <div className={`mt-4 p-4 rounded-xl ${isDark ? 'bg-slate-800/30' : 'bg-white/50'}`}>
+            <div className="flex justify-between items-center text-sm">
+              <span className={isDark ? 'text-slate-400' : 'text-slate-600'}>{t('سعر الصرف', 'Exchange Rate', 'نرخی ئاڵوگۆڕ')}</span>
+              <span className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>{details.exchangeRate || details.exchange_rate}</span>
+            </div>
+          </div>
+        )}
+      </motion.div>
+    );
   };
 
   const formatDate = (dateStr) => {
@@ -419,6 +487,8 @@ const TrackOrder = () => {
                         </div>
                       </div>
                     </div>
+
+                    {renderAmountDetails()}
 
                     {/* Status Specific Message */}
                     {orderResult && (
