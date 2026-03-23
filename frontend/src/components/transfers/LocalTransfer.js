@@ -309,25 +309,6 @@ const LocalTransfer = () => {
                   )}
                 </div>
 
-                {/* Receiver Name */}
-                <div className="space-y-2">
-                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
-                    {t('اسم المستلم', 'Receiver Name', 'ناوی وەرگر')} *
-                  </Label>
-                  <Input
-                    value={formData.receiverName}
-                    onChange={(e) => handleInputChange('receiverName', e.target.value)}
-                    className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`}
-                    placeholder={t('أدخل اسم المستلم', 'Enter receiver name', 'ناوی وەرگر بنووسە')}
-                    data-testid="receiver-name-input"
-                  />
-                  {errors.receiverName && (
-                    <p className="text-sm text-red-500 flex items-center gap-1">
-                      <AlertCircle className="w-4 h-4" />{errors.receiverName}
-                    </p>
-                  )}
-                </div>
-
                 {/* Sender Province */}
                 <div className="space-y-2">
                   <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
@@ -348,6 +329,61 @@ const LocalTransfer = () => {
                   {errors.senderProvince && (
                     <p className="text-sm text-red-500 flex items-center gap-1">
                       <AlertCircle className="w-4 h-4" />{errors.senderProvince}
+                    </p>
+                  )}
+                </div>
+
+                {/* Sender District */}
+                <div className="space-y-2">
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
+                    {t('قضاء المرسل', 'Sender District', 'قەزای نێرەر')} *
+                  </Label>
+                  <Input
+                    value={formData.senderDistrict}
+                    onChange={(e) => handleInputChange('senderDistrict', e.target.value)}
+                    className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`}
+                    placeholder={t('أدخل قضاء المرسل', 'Enter sender district', 'ناوی قەزای نێرەر بنووسە')}
+                  />
+                  {errors.senderDistrict && (
+                    <p className="text-sm text-red-500 flex items-center gap-1">
+                      <AlertCircle className="w-4 h-4" />{errors.senderDistrict}
+                    </p>
+                  )}
+                </div>
+
+                {/* Sender Phone */}
+                <div className="space-y-2">
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
+                    {t('رقم هاتف المرسل', 'Sender Phone', 'ژمارەی مۆبایلی نێرەر')} *
+                  </Label>
+                  <CountryPhoneSelect
+                    value={formData.senderPhone}
+                    onChange={(val) => handleInputChange('senderPhone', val)}
+                    isDark={isDark}
+                    data-testid="sender-phone-input"
+                  />
+                  {errors.senderPhone && (
+                    <p className="text-sm text-red-500 flex items-center gap-1">
+                      <AlertCircle className="w-4 h-4" />{errors.senderPhone}
+                    </p>
+                  )}
+                </div>
+
+                {/* Receiver Name */}
+                <div className="space-y-2">
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
+                    {t('اسم المستلم', 'Receiver Name', 'ناوی وەرگر')} *
+                  </Label>
+                  <Input
+                    value={formData.receiverName}
+                    onChange={(e) => handleInputChange('receiverName', e.target.value)}
+                    className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`}
+                    placeholder={t('أدخل اسم المستلم', 'Enter receiver name', 'ناوی وەرگر بنووسە')}
+                    data-testid="receiver-name-input"
+                  />
+                  {errors.receiverName && (
+                    <p className="text-sm text-red-500 flex items-center gap-1">
+                      <AlertCircle className="w-4 h-4" />{errors.receiverName}
                     </p>
                   )}
                 </div>
@@ -376,42 +412,6 @@ const LocalTransfer = () => {
                   )}
                 </div>
 
-                {/* Sender Phone - moved beside District */}
-                <div className="space-y-2">
-                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
-                    {t('رقم هاتف المرسل', 'Sender Phone', 'ژمارەی مۆبایلی نێرەر')} *
-                  </Label>
-                  <CountryPhoneSelect
-                    value={formData.senderPhone}
-                    onChange={(val) => handleInputChange('senderPhone', val)}
-                    isDark={isDark}
-                    data-testid="sender-phone-input"
-                  />
-                  {errors.senderPhone && (
-                    <p className="text-sm text-red-500 flex items-center gap-1">
-                      <AlertCircle className="w-4 h-4" />{errors.senderPhone}
-                    </p>
-                  )}
-                </div>
-
-                {/* Sender District */}
-                <div className="space-y-2">
-                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
-                    {t('قضاء المرسل', 'Sender District', 'قەزای نێرەر')} *
-                  </Label>
-                  <Input
-                    value={formData.senderDistrict}
-                    onChange={(e) => handleInputChange('senderDistrict', e.target.value)}
-                    className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`}
-                    placeholder={t('أدخل قضاء المرسل', 'Enter sender district', 'ناوی قەزای نێرەر بنووسە')}
-                  />
-                  {errors.senderDistrict && (
-                    <p className="text-sm text-red-500 flex items-center gap-1">
-                      <AlertCircle className="w-4 h-4" />{errors.senderDistrict}
-                    </p>
-                  )}
-                </div>
-
                 {/* Receiver District */}
                 <div className="space-y-2">
                   <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
@@ -434,7 +434,7 @@ const LocalTransfer = () => {
                 {/* Receiver Phone */}
                 <div className="space-y-2">
                   <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
-                    {t('رقم هاتف المستلم', 'Receiver Phone', 'ژمارەی مۆبایلی وەرگر')} *
+                    {t('رقم هاتف المستلم', 'Receiver Phone', 'ژمارەی مۆبایلي وەرگر')} *
                   </Label>
                   <CountryPhoneSelect
                     value={formData.receiverPhone}
@@ -522,26 +522,43 @@ const LocalTransfer = () => {
                   </div>
                   <div className={`p-6 rounded-2xl ${isDark ? 'bg-slate-700/50' : 'bg-slate-50'}`}>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                      {paymentMethods.map(m => (
-                        <motion.button
-                          key={m.value}
-                          type="button"
-                          whileHover={{ scale: 1.02 }}
-                          onMouseEnter={() => setHoveredMethod(m.value)}
-                          onMouseLeave={() => setHoveredMethod(null)}
-                          onClick={() => handleInputChange('paymentMethod', m.value)}
-                          className={`p-4 rounded-xl border-2 text-center transition-colors ${formData.paymentMethod === m.value
-                            ? 'border-[#D4AF37] bg-[#D4AF37]/10'
-                            : hoveredMethod === m.value
-                              ? 'border-[#D4AF37]'
-                              : isDark ? 'border-slate-600' : 'border-slate-200'
-                            }`}
-                        >
-                          <span className={`font-bold block text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                            {t(m.labelAr, m.labelEn, m.labelKu)}
-                          </span>
-                        </motion.button>
-                      ))}
+                      {paymentMethods.map(m => {
+                        const isSelected = formData.paymentMethod === m.value;
+                        return (
+                          <motion.button
+                            key={m.value}
+                            type="button"
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => handleInputChange('paymentMethod', m.value)}
+                            className={`relative p-5 rounded-2xl border-2 text-center transition-all duration-300 ${isSelected
+                              ? isDark
+                                ? 'border-emerald-500 bg-emerald-500/20 shadow-[0_0_20px_rgba(16,185,129,0.2)]'
+                                : 'border-emerald-500 bg-emerald-50 shadow-lg'
+                              : isDark
+                                ? 'border-slate-600 bg-slate-700/30 hover:border-slate-500'
+                                : 'border-slate-200 bg-white hover:border-slate-300'
+                              }`}
+                          >
+                            {isSelected && (
+                              <motion.div
+                                initial={{ scale: 0, rotate: -45 }}
+                                animate={{ scale: 1, rotate: 0 }}
+                                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                                className="absolute -top-2 -right-2 bg-emerald-500 text-white rounded-full p-1 shadow-lg z-10"
+                              >
+                                <CheckCircle className="w-4 h-4" />
+                              </motion.div>
+                            )}
+                            <span className={`font-bold block text-sm transition-colors ${isSelected
+                              ? 'text-emerald-500'
+                              : isDark ? 'text-slate-300' : 'text-slate-700'
+                              }`}>
+                              {t(m.labelAr, m.labelEn, m.labelKu)}
+                            </span>
+                          </motion.button>
+                        );
+                      })}
                     </div>
                   </div>
                   {errors.paymentMethod && (

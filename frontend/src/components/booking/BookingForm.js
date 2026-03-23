@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLanguage } from '@/context/LanguageContext';
 import { toast } from 'sonner';
 import { useTheme } from '@/context/ThemeContext';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { User, Phone, Plane, MapPin, Calendar, DollarSign, CreditCard, Upload, X, CheckCircle, AlertCircle, RefreshCw } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -602,16 +602,41 @@ const BookingForm = ({ onSubmit }) => {
                         onMouseEnter={() => setHoveredMethod(method.value)}
                         onMouseLeave={() => setHoveredMethod(null)}
                         onClick={() => handleInputChange('paymentMethod', method.value)}
-                        className={`p-4 rounded-xl border-2 text-center transition-colors ${formData.paymentMethod === method.value
-                          ? 'border-[#D4AF37] bg-[#D4AF37]/10'
+                        className={`p-4 rounded-xl border-2 text-center transition-all relative overflow-hidden ${formData.paymentMethod === method.value
+                          ? 'border-emerald-500 bg-emerald-500/10 shadow-[0_0_15px_rgba(16,185,129,0.1)]'
                           : hoveredMethod === method.value
-                            ? 'border-[#D4AF37]'
+                            ? 'border-emerald-400/50'
                             : isDark ? 'border-slate-600' : 'border-slate-200'
                           }`}
                       >
-                        <span className={`font-bold block text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                        <AnimatePresence>
+                          {formData.paymentMethod === method.value && (
+                            <motion.div
+                              initial={{ scale: 0, opacity: 0 }}
+                              animate={{ scale: 1, opacity: 1 }}
+                              exit={{ scale: 0, opacity: 0 }}
+                              className="absolute top-2 right-2 z-10"
+                            >
+                              <CheckCircle className="w-5 h-5 text-emerald-500 fill-emerald-500/20" />
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+
+                        <span className={`font-bold block text-sm relative z-0 ${formData.paymentMethod === method.value
+                          ? 'text-emerald-600'
+                          : isDark ? 'text-white' : 'text-slate-900'
+                          }`}>
                           {t(method.labelAr, method.labelEn, method.labelKu)}
                         </span>
+
+                        {formData.paymentMethod === method.value && (
+                          <motion.div
+                            layoutId="activeGlow"
+                            className="absolute inset-0 bg-emerald-500/5"
+                            initial={false}
+                            transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                          />
+                        )}
                       </motion.button>
                     ))}
                   </div>

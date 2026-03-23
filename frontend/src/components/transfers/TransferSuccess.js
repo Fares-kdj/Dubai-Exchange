@@ -4,7 +4,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { toast } from 'sonner';
 import { useTheme } from '@/context/ThemeContext';
 import { motion } from 'framer-motion';
-import { CheckCircle, Copy, Download, Upload, X, Clock, MapPin, DollarSign, Banknote, CreditCard, Phone, User, Globe, ArrowRight, FileText } from 'lucide-react';
+import { CheckCircle, Copy, Download, Upload, X, Clock, MapPin, DollarSign, Banknote, CreditCard, Phone, User, Globe, ArrowRight, FileText, AlertTriangle } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import Header3D from '../landing/Header3D';
 import Footer3D from '../landing/Footer3D';
@@ -583,57 +583,84 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
               </motion.div>
 
               {/* WhatsApp Contact Section */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.55 }}
-                className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-6 text-white shadow-xl"
-                data-testid="transfer-whatsapp-contact"
-              >
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                    <Phone className="w-6 h-6" />
-                  </div>
-                  <h3 className="text-lg font-bold">
-                    {t('تواصل معنا عبر واتساب', 'Contact us via WhatsApp', 'پەیوەندیمان پێوە بکە لە ڕێگەی واتسئەپ')}
-                  </h3>
-                </div>
-
-                <div className="bg-white/10 rounded-2xl p-4 mb-4">
-                  <p className="text-sm opacity-90 mb-2">
-                    {t('رقم الواتساب:', 'WhatsApp Number:', 'ژمارەی واتسئەپ:')}
-                  </p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xl font-bold tracking-wider" dir="ltr">{whatsappNumber}</span>
-                    <motion.button
-                      onClick={async () => {
-                        try {
-                          await navigator.clipboard.writeText(whatsappNumber.replace(/\s/g, ''));
-                          setCopied(true);
-                          setTimeout(() => setCopied(false), 2000);
-                        } catch (err) {
-                          console.warn('Copy failed:', err);
-                        }
-                      }}
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
-                      data-testid="copy-transfer-whatsapp"
-                    >
-                      {copied ? <CheckCircle className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
-                    </motion.button>
-                  </div>
-                </div>
-
-                <a
-                  href={`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(t('مرحباً، لدي استفسار حول الطلب رقم: ', 'Hello, I have an inquiry about order number: ', 'سڵاو، پرسیارێکم هەیە دەربارەی داواکاری ژمارە: ') + orderId)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block w-full py-3 bg-white text-blue-600 font-bold rounded-xl text-center hover:bg-blue-50 transition-colors"
+              <div className="space-y-4">
+                {/* Deadline Alert */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={`border-2 rounded-3xl p-5 flex items-start gap-4 shadow-sm ${isDark ? 'bg-red-900/20 border-red-800/50' : 'bg-red-50 border-red-100'
+                    }`}
                 >
-                  {t('فتح واتساب', 'Open WhatsApp', 'واتسئەپ بکەرەوە')}
-                </a>
-              </motion.div>
+                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 ${isDark ? 'bg-red-900/40' : 'bg-red-100'
+                    }`}>
+                    <AlertTriangle className={`w-6 h-6 ${isDark ? 'text-red-400' : 'text-red-600'}`} />
+                  </div>
+                  <div className="space-y-1">
+                    <h4 className={`font-bold flex items-center gap-2 ${isDark ? 'text-red-400' : 'text-red-900'}`}>
+                      {t('تنبيه هام - يرجى الدفع خلال ساعتين', 'Important Alert - Please pay within 2 hours', 'بەرگری گرنگ - تکایە لە ماوەی ٢ کاتژمێردا پارە بدە')}
+                    </h4>
+                    <p className={`text-sm leading-relaxed ${isDark ? 'text-red-300/90' : 'text-red-700'}`}>
+                      {t(
+                        'يجب إتمام الدفع في خلال ساعتين من الآن. سيتم إلغاء التحويل تلقائياً في حال عدم إتمام الدفع خلال المدة المحددة.',
+                        'Payment must be completed within two hours from now. The transfer will be automatically cancelled if not paid within the period.',
+                        'دەبێت پارەدان لە ماوەی ٢ کاتژمێردا تەواو بکرێت. ئەگەر لەو ماوەیەدا پارە نەدرێت، گواستنەوەکە بە شێوەیەکی خۆکار هەڵدەوەشێتەوە.'
+                      )}
+                    </p>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.55 }}
+                  className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-6 text-white shadow-xl"
+                  data-testid="transfer-whatsapp-contact"
+                >
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                      <Phone className="w-6 h-6" />
+                    </div>
+                    <h3 className="text-lg font-bold">
+                      {t('تواصل معنا عبر واتساب', 'Contact us via WhatsApp', 'پەیوەندیمان پێوە بکە لە ڕێگەی واتسئەپ')}
+                    </h3>
+                  </div>
+
+                  <div className="bg-white/10 rounded-2xl p-4 mb-4">
+                    <p className="text-sm opacity-90 mb-2">
+                      {t('رقم الواتساب:', 'WhatsApp Number:', 'ژمارەی واتسئەپ:')}
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xl font-bold tracking-wider" dir="ltr">{whatsappNumber}</span>
+                      <motion.button
+                        onClick={async () => {
+                          try {
+                            await navigator.clipboard.writeText(whatsappNumber.replace(/\s/g, ''));
+                            setCopied(true);
+                            setTimeout(() => setCopied(false), 2000);
+                          } catch (err) {
+                            console.warn('Copy failed:', err);
+                          }
+                        }}
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
+                        data-testid="copy-transfer-whatsapp"
+                      >
+                        {copied ? <CheckCircle className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
+                      </motion.button>
+                    </div>
+                  </div>
+
+                  <a
+                    href={`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(t('مرحباً، لدي استفسار حول الطلب رقم: ', 'Hello, I have an inquiry about order number: ', 'سڵاو، پرسیارێکم هەیە دەربارەی داواکاری ژمارە: ') + orderId)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block w-full py-3 bg-white text-blue-600 font-bold rounded-xl text-center hover:bg-blue-50 transition-colors"
+                  >
+                    {t('فتح واتساب', 'Open WhatsApp', 'واتسئەپ بکەرەوە')}
+                  </a>
+                </motion.div>
+              </div>
 
               {/* Payment Instructions */}
               <motion.div

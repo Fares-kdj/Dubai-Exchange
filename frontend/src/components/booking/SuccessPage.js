@@ -149,9 +149,8 @@ const SuccessPage = ({ orderData }) => {
   };
 
   return (
-    <div className={`min-h-screen pt-20 transition-colors duration-300 ${
-      isDark ? 'bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900' : 'bg-gradient-to-b from-blue-50 via-white to-slate-50'
-    }`}>
+    <div className={`min-h-screen pt-20 transition-colors duration-300 ${isDark ? 'bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900' : 'bg-gradient-to-b from-blue-50 via-white to-slate-50'
+      }`}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Progress Indicator */}
         <motion.div
@@ -263,13 +262,11 @@ const SuccessPage = ({ orderData }) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className={`rounded-3xl border-2 shadow-xl p-8 ${
-                isDark ? 'bg-slate-800/80 border-slate-700/50' : 'bg-white border-slate-200'
-              }`}
+              className={`rounded-3xl border-2 shadow-xl p-8 ${isDark ? 'bg-slate-800/80 border-slate-700/50' : 'bg-white border-slate-200'
+                }`}
             >
-              <h3 className={`text-2xl font-bold mb-6 flex items-center gap-2 ${
-                isDark ? 'text-white' : 'text-slate-900'
-              }`}>
+              <h3 className={`text-2xl font-bold mb-6 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'
+                }`}>
                 <User className="w-6 h-6 text-blue-600" />
                 {t('بيانات العميل', 'Customer Information', 'زانیارییەکانی کڕیار')}
               </h3>
@@ -305,13 +302,11 @@ const SuccessPage = ({ orderData }) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className={`rounded-3xl border-2 shadow-xl p-8 ${
-                isDark ? 'bg-slate-800/80 border-slate-700/50' : 'bg-white border-slate-200'
-              }`}
+              className={`rounded-3xl border-2 shadow-xl p-8 ${isDark ? 'bg-slate-800/80 border-slate-700/50' : 'bg-white border-slate-200'
+                }`}
             >
-              <h3 className={`text-2xl font-bold mb-6 flex items-center gap-2 ${
-                isDark ? 'text-white' : 'text-slate-900'
-              }`}>
+              <h3 className={`text-2xl font-bold mb-6 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'
+                }`}>
                 <MapPin className="w-6 h-6 text-purple-600" />
                 {t('بيانات السفر', 'Travel Details', 'زانیارییەکانی گەشت')}
               </h3>
@@ -346,21 +341,18 @@ const SuccessPage = ({ orderData }) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className={`rounded-3xl border-2 shadow-xl p-8 ${
-                isDark ? 'bg-blue-900/20 border-blue-800/50' : 'bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200'
-              }`}
+              className={`rounded-3xl border-2 shadow-xl p-8 ${isDark ? 'bg-blue-900/20 border-blue-800/50' : 'bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200'
+                }`}
             >
-              <h3 className={`text-2xl font-bold mb-6 flex items-center gap-2 ${
-                isDark ? 'text-white' : 'text-slate-900'
-              }`}>
+              <h3 className={`text-2xl font-bold mb-6 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'
+                }`}>
                 <DollarSign className="w-6 h-6 text-[#D4AF37]" />
                 {t('المبلغ المحجوز', 'Booking Amount', 'بڕی حجزکراو')}
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className={`rounded-2xl p-6 border-2 ${
-                  isDark ? 'bg-slate-800/80 border-slate-700/50' : 'bg-white border-slate-200'
-                }`}>
+                <div className={`rounded-2xl p-6 border-2 ${isDark ? 'bg-slate-800/80 border-slate-700/50' : 'bg-white border-slate-200'
+                  }`}>
                   <p className={`text-sm mb-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                     {t('بالدولار', 'In USD', 'بە دۆلار')}
                   </p>
@@ -368,9 +360,8 @@ const SuccessPage = ({ orderData }) => {
                     ${orderData?.usdAmount ? Number(orderData.usdAmount).toLocaleString() : '0'}
                   </p>
                 </div>
-                <div className={`rounded-2xl p-6 border-2 ${
-                  isDark ? 'bg-slate-800/80 border-slate-700/50' : 'bg-white border-slate-200'
-                }`}>
+                <div className={`rounded-2xl p-6 border-2 ${isDark ? 'bg-slate-800/80 border-slate-700/50' : 'bg-white border-slate-200'
+                  }`}>
                   <p className={`text-sm mb-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                     {t('بالدينار', 'In IQD', 'بە دینار')}
                   </p>
@@ -397,9 +388,8 @@ const SuccessPage = ({ orderData }) => {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.6 }}
-              className={`rounded-3xl border-2 shadow-xl p-8 text-center ${
-                isDark ? 'bg-slate-800/80 border-slate-700/50' : 'bg-white border-slate-200'
-              }`}
+              className={`rounded-3xl border-2 shadow-xl p-8 text-center ${isDark ? 'bg-slate-800/80 border-slate-700/50' : 'bg-white border-slate-200'
+                }`}
             >
               <h3 className={`text-lg font-bold mb-6 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                 {t('رمز QR للطلب', 'Order QR Code', 'کۆدی QRی داواکاری')}
@@ -425,9 +415,8 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
                 )}
               </p>
 
-              <button className={`w-full py-2 text-sm rounded-lg transition-colors flex items-center justify-center gap-2 ${
-                isDark ? 'text-slate-300 hover:text-white hover:bg-slate-700' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-              }`}>
+              <button className={`w-full py-2 text-sm rounded-lg transition-colors flex items-center justify-center gap-2 ${isDark ? 'text-slate-300 hover:text-white hover:bg-slate-700' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                }`}>
                 <Download className="w-4 h-4" />
                 {t('تحميل QR', 'Download QR', 'داگرتنی QR')}
               </button>
@@ -451,13 +440,39 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
             </motion.div>
 
             {/* WhatsApp Contact Section */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.65 }}
-              className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-6 text-white shadow-xl"
-              data-testid="whatsapp-contact"
-            >
+            <div className="space-y-4">
+              {/* Deadline Alert */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={`border-2 rounded-3xl p-5 flex items-start gap-4 shadow-sm ${isDark ? 'bg-red-900/20 border-red-800/50' : 'bg-red-50 border-red-100'
+                  }`}
+              >
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 ${isDark ? 'bg-red-900/40' : 'bg-red-100'
+                  }`}>
+                  <AlertTriangle className={`w-6 h-6 ${isDark ? 'text-red-400' : 'text-red-600'}`} />
+                </div>
+                <div className="space-y-1 text-right">
+                  <h4 className={`font-bold flex items-center gap-2 ${isDark ? 'text-red-400' : 'text-red-900'}`}>
+                    {t('تنبيه هام - يرجى الدفع خلال ساعتين', 'Important Alert - Please pay within 2 hours', 'بەرگری گرنگ - تکایە لە ماوەی ٢ کاتژمێردا پارە بدە')}
+                  </h4>
+                  <p className={`text-sm leading-relaxed ${isDark ? 'text-red-300/90' : 'text-red-700'}`}>
+                    {t(
+                      'يجب إتمام الدفع في خلال ساعتين من الآن. سيتم إلغاء التحويل تلقائياً في حال عدم إتمام الدفع خلال المدة المحددة.',
+                      'Payment must be completed within two hours from now. The booking will be automatically cancelled if not paid within the period.',
+                      'دەبێت پارەدان لە ماوەی ٢ کاتژمێردا تەواو بکرێت. ئەگەر لەو ماوەیەدا پارە نەدرێت، حجوزاتەکە بە شێوەیەکی خۆکار هەڵدەوەشێتەوە.'
+                    )}
+                  </p>
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.65 }}
+                className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-6 text-white shadow-xl"
+                data-testid="whatsapp-contact"
+              >
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
                   <Phone className="w-6 h-6" />
@@ -502,15 +517,15 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
                 {t('فتح واتساب', 'Open WhatsApp', 'کردنەوەی واتسئەپ')}
               </a>
             </motion.div>
+          </div>
 
             {/* Payment Instructions */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7 }}
-              className={`border-2 rounded-3xl p-6 ${
-                isDark ? 'bg-blue-900/10 border-blue-800/30' : 'bg-blue-50 border-blue-200'
-              }`}
+              className={`border-2 rounded-3xl p-6 ${isDark ? 'bg-blue-900/10 border-blue-800/30' : 'bg-blue-50 border-blue-200'
+                }`}
             >
               <h3 className={`text-lg font-bold mb-4 ${isDark ? 'text-blue-400' : 'text-blue-900'}`}>
                 {t('تعليمات الدفع', 'Payment Instructions', 'ڕێنماییەکانی پارەدان')}
@@ -547,9 +562,8 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8 }}
-              className={`rounded-3xl border-2 shadow-xl p-6 ${
-                isDark ? 'bg-slate-800/80 border-slate-700/50' : 'bg-white border-slate-200'
-              }`}
+              className={`rounded-3xl border-2 shadow-xl p-6 ${isDark ? 'bg-slate-800/80 border-slate-700/50' : 'bg-white border-slate-200'
+                }`}
               data-testid="payment-proof-section"
             >
               <h3 className={`text-lg font-bold mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
@@ -558,9 +572,8 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
 
               {/* Upload Area */}
               {paymentProofs.length === 0 ? (
-                <label className={`block border-2 border-dashed rounded-2xl p-6 transition-all cursor-pointer text-center ${
-                  isDark ? 'border-slate-600 hover:border-[#D4AF37] hover:bg-slate-800' : 'border-slate-300 hover:border-[#D4AF37] hover:bg-slate-50'
-                }`}>
+                <label className={`block border-2 border-dashed rounded-2xl p-6 transition-all cursor-pointer text-center ${isDark ? 'border-slate-600 hover:border-[#D4AF37] hover:bg-slate-800' : 'border-slate-300 hover:border-[#D4AF37] hover:bg-slate-50'
+                  }`}>
                   <input
                     type="file"
                     accept="image/*"
@@ -580,9 +593,8 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
               ) : (
                 <div className="space-y-3">
                   {paymentProofs.map((proof) => (
-                    <div key={proof.id} className={`flex items-center gap-3 border rounded-xl p-3 ${
-                      isDark ? 'bg-slate-800 border-slate-700' : 'bg-blue-50 border-blue-200'
-                    }`}>
+                    <div key={proof.id} className={`flex items-center gap-3 border rounded-xl p-3 ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-blue-50 border-blue-200'
+                      }`}>
                       <img src={proof.preview} alt="proof" className="w-12 h-12 rounded-lg object-cover" />
                       <div className="flex-1 min-w-0">
                         <p className={`text-sm font-medium truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>{proof.name}</p>
@@ -658,9 +670,8 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
           </button>
           <button
             onClick={() => navigate('/')}
-            className={`flex-1 py-4 border-2 font-bold rounded-2xl transition-colors ${
-              isDark ? 'bg-slate-800 border-slate-700 text-white hover:border-slate-600' : 'bg-white border-slate-200 text-slate-900 hover:border-slate-300'
-            }`}
+            className={`flex-1 py-4 border-2 font-bold rounded-2xl transition-colors ${isDark ? 'bg-slate-800 border-slate-700 text-white hover:border-slate-600' : 'bg-white border-slate-200 text-slate-900 hover:border-slate-300'
+              }`}
             data-testid="back-home-btn"
           >
             {t('العودة للرئيسية', 'Back to Home', 'گەڕانەوە بۆ سەرەتا')}

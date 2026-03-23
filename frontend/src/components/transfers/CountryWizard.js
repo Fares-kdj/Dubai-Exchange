@@ -827,14 +827,39 @@ const CountryWizard = () => {
                           type="button"
                           whileHover={{ scale: 1.02 }}
                           onClick={() => setWizardData(p => ({ ...p, paymentMethod: method.value }))}
-                          className={`p-4 rounded-xl border-2 text-center transition-all ${wizardData.paymentMethod === method.value
-                            ? 'border-[#D4AF37] bg-[#D4AF37]/10'
+                          className={`p-4 rounded-xl border-2 text-center transition-all relative overflow-hidden ${wizardData.paymentMethod === method.value
+                            ? 'border-emerald-500 bg-emerald-500/10 shadow-[0_0_15px_rgba(16,185,129,0.1)]'
                             : isDark ? 'bg-slate-800 border-slate-700 hover:border-slate-600' : 'bg-white border-slate-200 hover:border-slate-300'
                             }`}
                         >
-                          <span className={`text-sm font-bold block ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                          <AnimatePresence>
+                            {wizardData.paymentMethod === method.value && (
+                              <motion.div
+                                initial={{ scale: 0, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                exit={{ scale: 0, opacity: 0 }}
+                                className="absolute top-2 right-2 z-10"
+                              >
+                                <CheckCircle className="w-5 h-5 text-emerald-500 fill-emerald-500/20" />
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+
+                          <span className={`text-sm font-bold block relative z-0 ${wizardData.paymentMethod === method.value
+                            ? 'text-emerald-600'
+                            : isDark ? 'text-white' : 'text-slate-900'
+                            }`}>
                             {t(method.labelAr, method.labelEn, method.labelKu)}
                           </span>
+
+                          {wizardData.paymentMethod === method.value && (
+                            <motion.div
+                              layoutId="activeGlow"
+                              className="absolute inset-0 bg-emerald-500/5"
+                              initial={false}
+                              transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                            />
+                          )}
                         </motion.button>
                       ))}
                     </div>

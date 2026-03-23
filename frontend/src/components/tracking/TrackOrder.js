@@ -3,7 +3,7 @@ import { useLanguage } from '@/context/LanguageContext';
 import { toast } from 'sonner';
 import { useTheme } from '@/context/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Package, User, Phone, MapPin, Calendar, DollarSign, CreditCard, FileText, Upload, X, CheckCircle, Clock, AlertCircle, Copy, Eye, Globe, Ban, MessageCircle, ExternalLink } from 'lucide-react';
+import { Search, Package, User, Phone, MapPin, Calendar, DollarSign, CreditCard, FileText, Upload, X, CheckCircle, Clock, AlertCircle, Copy, Eye, Globe, Ban, MessageCircle, ExternalLink, AlertTriangle } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -425,18 +425,16 @@ const TrackOrder = () => {
                       <motion.div
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        className={`p-6 rounded-3xl border-2 flex items-start gap-4 ${
-                          orderResult.status === 'rejected'
+                        className={`p-6 rounded-3xl border-2 flex items-start gap-4 ${orderResult.status === 'rejected'
                             ? (isDark ? 'bg-red-500/10 border-red-500/20 text-red-200' : 'bg-red-50 border-red-100 text-red-700')
                             : orderResult.status === 'approved'
-                            ? (isDark ? 'bg-green-500/10 border-green-500/20 text-green-200' : 'bg-green-50 border-green-100 text-green-700')
-                            : (isDark ? 'bg-amber-500/10 border-amber-500/20 text-amber-200' : 'bg-amber-50 border-amber-100 text-amber-700')
-                        }`}
+                              ? (isDark ? 'bg-green-500/10 border-green-500/20 text-green-200' : 'bg-green-50 border-green-100 text-green-700')
+                              : (isDark ? 'bg-amber-500/10 border-amber-500/20 text-amber-200' : 'bg-amber-50 border-amber-100 text-amber-700')
+                          }`}
                       >
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
-                          orderResult.status === 'rejected' ? 'bg-red-500/20' : 
-                          orderResult.status === 'approved' ? 'bg-green-500/20' : 'bg-amber-500/20'
-                        }`}>
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${orderResult.status === 'rejected' ? 'bg-red-500/20' :
+                            orderResult.status === 'approved' ? 'bg-green-500/20' : 'bg-amber-500/20'
+                          }`}>
                           <AlertCircle className="w-5 h-5" />
                         </div>
                         <p className="text-sm md:text-base leading-relaxed font-medium">
@@ -545,35 +543,62 @@ const TrackOrder = () => {
                     </div>
 
                     {/* WhatsApp Support Block */}
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      className={`rounded-3xl border-2 p-6 shadow-xl ${isDark ? 'bg-blue-900/20 border-blue-700/50' : 'bg-blue-50 border-blue-200'}`}
-                    >
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isDark ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-100 text-blue-600'}`}>
-                          <MessageCircle className="w-5 h-5" />
-                        </div>
-                        <h3 className={`text-lg font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                          {t('لطلب حساب الايداع تواصل معنا عبر الواتساب', 'To request the deposit account, contact us via WhatsApp', 'بۆ داواکردنی هەژماری سپاردن، لە ڕێگەی واتسئەپەوە پەیوەندیمان پێوە بکە')}
-                        </h3>
-                      </div>
-                      
-                      <p className={`text-sm mb-4 ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>
-                        {t('هل لديك استفسار حول طلبك؟ تواصل معنا مباشرة', 'Have a question about your order? Contact us directly', 'پسیارێکت هەیە هەیە دەربارەی داواکارییەکەت؟ پەیوەندیمان پێوە بکە')}
-                      </p>
-
-                      <a
-                        href={`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(t('مرحباً، لدي استفسار حول الطلب رقم: ', 'Hello, I have an inquiry about order number: ', 'سڵاو، پرسیارێکم هەیە دەربارەی داواکاری ژمارە: ') + orderResult.orderId)}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-2 w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-blue-500/20"
+                    <div className="space-y-4">
+                      {/* Deadline Alert */}
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className={`border-2 rounded-3xl p-5 flex items-start gap-4 shadow-sm ${isDark ? 'bg-red-900/20 border-red-800/50' : 'bg-red-50 border-red-100'
+                          }`}
                       >
-                        <MessageCircle className="w-5 h-5" />
-                        {t('ابدأ المحادثة', 'Start Chat', 'دەستپێکردنی گفتوگۆ')}
-                        <ExternalLink className="w-4 h-4" />
-                      </a>
-                    </motion.div>
+                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 ${isDark ? 'bg-red-900/40' : 'bg-red-100'
+                          }`}>
+                          <AlertTriangle className={`w-6 h-6 ${isDark ? 'text-red-400' : 'text-red-600'}`} />
+                        </div>
+                        <div className="space-y-1 text-right">
+                          <h4 className={`font-bold flex items-center gap-2 ${isDark ? 'text-red-400' : 'text-red-900'}`}>
+                             {t('تنبيه هام - يرجى الدفع خلال ساعتين', 'Important Alert - Please pay within 2 hours', 'بەرگری گرنگ - تکایە لە ماوەی ٢ کاتژمێردا پارە بدە')}
+                          </h4>
+                          <p className={`text-sm leading-relaxed ${isDark ? 'text-red-300/90' : 'text-red-700'}`}>
+                            {t(
+                              'يجب إتمام الدفع في خلال ساعتين من الآن. سيتم إلغاء التحويل تلقائياً في حال عدم إتمام الدفع خلال المدة المحددة.',
+                              'Payment must be completed within two hours from now. The order will be automatically cancelled if not paid within the period.',
+                              'دەبێت پارەدان لە ماوەی ٢ کاتژمێردا تەواو بکرێت. ئەگەر لەو ماوەیەدا پارە نەدرێت، داواکارییەکە بە شێوەیەکی خۆکار هەڵدەوەشێتەوە.'
+                            )}
+                          </p>
+                        </div>
+                      </motion.div>
+
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className={`rounded-3xl border-2 p-6 shadow-xl ${isDark ? 'bg-blue-900/20 border-blue-700/50' : 'bg-blue-50 border-blue-200'}`}
+                      >
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${isDark ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-100 text-blue-600'}`}>
+                            <MessageCircle className="w-5 h-5" />
+                          </div>
+                          <h3 className={`text-lg font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                            {t('لطلب حساب الايداع تواصل معنا عبر الواتساب', 'To request the deposit account, contact us via WhatsApp', 'بۆ داواکردنی هەژماری سپاردن، لە ڕێگەی واتسئەپەوە پەیوەندیمان پێوە بکە')}
+                          </h3>
+                        </div>
+
+                        <p className={`text-sm mb-4 ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>
+                          {t('هل لديك استفسار حول طلبك؟ تواصل معنا مباشرة', 'Have a question about your order? Contact us directly', 'پسیارێکت هەیە هەیە دەربارەی داواکارییەکەت؟ پەیوەندیمان پێوە بکە')}
+                        </p>
+
+                        <a
+                          href={`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(t('مرحباً، لدي استفسار حول الطلب رقم: ', 'Hello, I have an inquiry about order number: ', 'سڵاو، پرسیارێکم هەیە دەربارەی داواکاری ژمارە: ') + orderResult.orderId)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-center gap-2 w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-lg hover:shadow-blue-500/20"
+                        >
+                          <MessageCircle className="w-5 h-5" />
+                          {t('ابدأ المحادثة', 'Start Chat', 'دەستپێکردنی گفتوگۆ')}
+                          <ExternalLink className="w-4 h-4" />
+                        </a>
+                      </motion.div>
+                    </div>
 
                     {/* Payment Proof Upload - Only if waiting and not blocked */}
                     {orderResult.status === 'waiting_payment' && !orderResult.customer_blocked && (

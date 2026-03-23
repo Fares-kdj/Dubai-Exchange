@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Package, DollarSign, Users, RefreshCw, Plane, MapPin, Wallet, CreditCard, Globe, ArrowLeftRight, Send } from 'lucide-react';
+import { Package, DollarSign, Users, RefreshCw, Plane, MapPin, Wallet, CreditCard, Globe, ArrowLeftRight, Send, Copy } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 const SERVICE_DEFS = [
   {
@@ -261,7 +262,20 @@ const AdminOverview = () => {
                     onClick={() => navigate('/admin/orders')}
                   >
                     <td className="px-6 py-4">
-                      <span className="font-mono font-medium text-slate-900 text-xs">{order.order_id?.slice(0, 8)}...</span>
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono font-medium text-slate-900 text-xs">{order.order_id?.slice(0, 8)}...</span>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigator.clipboard.writeText(order.order_id);
+                            toast.success('تم نسخ رقم الطلب');
+                          }}
+                          className="p-1 hover:bg-slate-200 rounded transition-colors"
+                          title="نسخ رقم الطلب"
+                        >
+                          <Copy className="w-3.5 h-3.5 text-slate-400" />
+                        </button>
+                      </div>
                     </td>
                     <td className="px-6 py-4 text-slate-600">{orderTypeLabels[order.order_type] || order.order_type}</td>
                     <td className="px-6 py-4 text-slate-900 font-medium">{order.customer?.full_name}</td>

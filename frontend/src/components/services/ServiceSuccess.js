@@ -6,7 +6,7 @@ import { useTheme } from '@/context/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   CheckCircle, Copy, ArrowRight, CreditCard, Wallet, Phone, User, DollarSign, Network,
-  MessageCircle, Upload, X, Image as ImageIcon, FileText, AlertCircle, ExternalLink, SendHorizontal
+  MessageCircle, Upload, X, Image as ImageIcon, FileText, AlertCircle, ExternalLink, SendHorizontal, AlertTriangle
 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import Header3D from '../landing/Header3D';
@@ -381,40 +381,67 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
               </motion.div>
 
               {/* WhatsApp Contact Block */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.55 }}
-                className={`rounded-3xl border-2 shadow-xl p-6 ${isDark ? 'bg-blue-900/20 border-blue-700/50' : 'bg-blue-50 border-blue-200'
-                  }`}
-              >
-                <h3 className={`text-lg font-bold mb-4 flex items-center gap-2 ${isDark ? 'text-blue-400' : 'text-blue-900'}`}>
-                  <MessageCircle className="w-5 h-5" />
-                  {t('لطلب حساب الايداع تواصل معنا عبر الواتساب', 'To request the deposit account, contact us via WhatsApp', 'بۆ داواکردنی هەژماری سپاردن، لە ڕێگەی واتسئەپەوە پەیوەندیمان پێوە بکە')}
-                </h3>
-
-                <p className={`text-sm mb-4 ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>
-                  {t(
-                    'هل لديك استفسار؟ تواصل معنا مباشرة عبر واتساب',
-                    'Have a question? Contact us directly via WhatsApp',
-                    'پسیارێکت هەیە؟ ڕاستەوخۆ لە ڕێگەی واتسئەپ پەیوەندیمان پێوە بکە'
-                  )}
-                </p>
-
-                <motion.a
-                  href={`https://wa.me/${whatsappNumber.replace('+', '')}?text=${whatsappMessage}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="flex items-center justify-center gap-2 w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-colors"
-                  data-testid="whatsapp-link"
+              <div className="space-y-4">
+                {/* Deadline Alert */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={`border-2 rounded-3xl p-5 flex items-start gap-4 shadow-sm ${isDark ? 'bg-red-900/20 border-red-800/50' : 'bg-red-50 border-red-100'
+                    }`}
                 >
-                  <MessageCircle className="w-5 h-5" />
-                  {t('ابدأ المحادثة', 'Start Chat', 'دەتەوێت دەست پێ بکەیت')}
-                  <ExternalLink className="w-4 h-4" />
-                </motion.a>
-              </motion.div>
+                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 ${isDark ? 'bg-red-900/40' : 'bg-red-100'
+                    }`}>
+                    <AlertTriangle className={`w-6 h-6 ${isDark ? 'text-red-400' : 'text-red-600'}`} />
+                  </div>
+                  <div className="space-y-1 text-right">
+                    <h4 className={`font-bold flex items-center gap-2 ${isDark ? 'text-red-400' : 'text-red-900'}`}>
+                       {t('تنبيه هام - يرجى الدفع خلال ساعتين', 'Important Alert - Please pay within 2 hours', 'بەرگری گرنگ - تکایە لە ماوەی ٢ کاتژمێردا پارە بدە')}
+                    </h4>
+                    <p className={`text-sm leading-relaxed ${isDark ? 'text-red-300/90' : 'text-red-700'}`}>
+                      {t(
+                        'يجب إتمام الدفع في خلال ساعتين من الآن. سيتم إلغاء التحويل تلقائياً في حال عدم إتمام الدفع خلال المدة المحددة.',
+                        'Payment must be completed within two hours from now. The transfer will be automatically cancelled if not paid within the period.',
+                        'دەبێت پارەدان لە ماوەی ٢ کاتژمێردا تەواو بکرێت. ئەگەر لەو ماوەیەدا پارە نەدرێت، گواستنەوەکە بە شێوەیەکی خۆکار هەڵدەوەشێتەوە.'
+                      )}
+                    </p>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.55 }}
+                  className={`rounded-3xl border-2 shadow-xl p-6 ${isDark ? 'bg-blue-900/20 border-blue-700/50' : 'bg-blue-50 border-blue-200'
+                    }`}
+                >
+                  <h3 className={`text-lg font-bold mb-4 flex items-center gap-2 ${isDark ? 'text-blue-400' : 'text-blue-900'}`}>
+                    <MessageCircle className="w-5 h-5" />
+                    {t('لطلب حساب الايداع تواصل معنا عبر الواتساب', 'To request the deposit account, contact us via WhatsApp', 'بۆ داواکردنی هەژماری سپاردن، لە ڕێگەی واتسئەپەوە پەیوەندیمان پێوە بکە')}
+                  </h3>
+
+                  <p className={`text-sm mb-4 ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>
+                    {t(
+                      'هل لديك استفسار؟ تواصل معنا مباشرة عبر واتساب',
+                      'Have a question? Contact us directly via WhatsApp',
+                      'پسیارێکت هەیە؟ ڕاستەوخۆ لە ڕێگەی واتسئەپ پەیوەندیمان پێوە بکە'
+                    )}
+                  </p>
+
+                  <motion.a
+                    href={`https://wa.me/${whatsappNumber.replace('+', '')}?text=${whatsappMessage}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="flex items-center justify-center gap-2 w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-colors"
+                    data-testid="whatsapp-link"
+                  >
+                    <MessageCircle className="w-5 h-5" />
+                    {t('ابدأ المحادثة', 'Start Chat', 'دەتەوێت دەست پێ بکەیت')}
+                    <ExternalLink className="w-4 h-4" />
+                  </motion.a>
+                </motion.div>
+              </div>
 
               {/* Instructions */}
               <motion.div
@@ -508,9 +535,9 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
                         <div className="flex-1 min-w-0">
                           <p className={`text-xs font-medium truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>{proofImage.name}</p>
                           {uploadSuccess && (
-                             <p className="text-[10px] text-[#D4AF37] flex items-center gap-1">
-                               <CheckCircle className="w-3 h-3" /> {t('تم الرفع', 'Uploaded', 'بارکرا')}
-                             </p>
+                            <p className="text-[10px] text-[#D4AF37] flex items-center gap-1">
+                              <CheckCircle className="w-3 h-3" /> {t('تم الرفع', 'Uploaded', 'بارکرا')}
+                            </p>
                           )}
                         </div>
                         <button onClick={removeProofImage} className="p-1 hover:bg-red-500/20 rounded">

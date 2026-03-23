@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
 import { toast } from 'sonner';
 import { useTheme } from '@/context/ThemeContext';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { CreditCard, User, Phone, DollarSign, CheckCircle, AlertCircle, ArrowLeft } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -469,16 +469,41 @@ const CardRecharge = () => {
                           onMouseEnter={() => setHoveredMethod(m.value)}
                           onMouseLeave={() => setHoveredMethod(null)}
                           onClick={() => handleInputChange('paymentMethod', m.value)}
-                          className={`p-4 rounded-xl border-2 text-center transition-colors ${formData.paymentMethod === m.value
-                            ? 'border-purple-500 bg-purple-500/10'
+                          className={`p-4 rounded-xl border-2 text-center transition-all relative overflow-hidden ${formData.paymentMethod === m.value
+                            ? 'border-emerald-500 bg-emerald-500/10 shadow-[0_0_15px_rgba(16,185,129,0.1)]'
                             : hoveredMethod === m.value
-                              ? 'border-purple-500'
+                              ? 'border-emerald-400/50'
                               : isDark ? 'border-slate-600' : 'border-slate-200'
                             }`}
                         >
-                          <span className={`font-bold block text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                          <AnimatePresence>
+                            {formData.paymentMethod === m.value && (
+                              <motion.div
+                                initial={{ scale: 0, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                exit={{ scale: 0, opacity: 0 }}
+                                className="absolute top-2 right-2 z-10"
+                              >
+                                <CheckCircle className="w-5 h-5 text-emerald-500 fill-emerald-500/20" />
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+
+                          <span className={`font-bold block text-sm relative z-0 ${formData.paymentMethod === m.value
+                            ? 'text-emerald-600'
+                            : isDark ? 'text-white' : 'text-slate-900'
+                            }`}>
                             {t(m.labelAr, m.labelEn, m.labelKu)}
                           </span>
+
+                          {formData.paymentMethod === m.value && (
+                            <motion.div
+                              layoutId="activeGlow"
+                              className="absolute inset-0 bg-emerald-500/5"
+                              initial={false}
+                              transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                            />
+                          )}
                         </motion.button>
                       ))}
                     </div>

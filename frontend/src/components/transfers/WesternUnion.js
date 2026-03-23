@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/context/LanguageContext';
 import { useTheme } from '@/context/ThemeContext';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { User, Phone, DollarSign, CreditCard, CheckCircle, AlertCircle, ArrowLeft, Upload, X, Globe, FileText } from 'lucide-react';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
@@ -555,6 +555,23 @@ const WesternUnion = () => {
                 </div>
 
                 <div className="space-y-2">
+                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
+                    {t('الغرض من التحويل', 'Transfer Purpose', 'مەبەستی گواستنەوە')} *
+                  </Label>
+                  <Select value={formData.purpose} onValueChange={(v) => handleInputChange('purpose', v)}>
+                    <SelectTrigger className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} data-testid="purpose">
+                      <SelectValue placeholder={t('اختر الغرض', 'Select Purpose', 'مەبەست هەڵبژێرە')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="trade">{t('تجارة', 'Trade', 'بازرگانی')}</SelectItem>
+                      <SelectItem value="family_expenses">{t('نفقات الأسرة', 'Family Expenses', 'خەرجی خێزان')}</SelectItem>
+                      <SelectItem value="medical">{t('علاج', 'Medical Treatment', 'چاره‌سەری پزیشکی')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {errors.purpose && <p className="text-sm text-red-500 flex items-center gap-1 mt-1"><AlertCircle className="w-4 h-4" />{errors.purpose}</p>}
+                </div>
+
+                <div className="space-y-2">
                   <div className="flex items-center gap-2 mb-4">
                     <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
                       {t('طريقة الدفع', 'Payment Method', 'شێوازى پارەدان')} *
@@ -573,16 +590,41 @@ const WesternUnion = () => {
                           onMouseEnter={() => setHoveredMethod(m.value)}
                           onMouseLeave={() => setHoveredMethod(null)}
                           onClick={() => handleInputChange('paymentMethod', m.value)}
-                          className={`p-4 rounded-xl border-2 text-center transition-colors ${formData.paymentMethod === m.value
-                            ? 'border-yellow-400 bg-yellow-400/10'
+                          className={`p-4 rounded-xl border-2 text-center transition-all relative overflow-hidden ${formData.paymentMethod === m.value
+                            ? 'border-emerald-500 bg-emerald-500/10 shadow-[0_0_15px_rgba(16,185,129,0.1)]'
                             : hoveredMethod === m.value
-                              ? 'border-yellow-400'
+                              ? 'border-emerald-400/50'
                               : isDark ? 'border-slate-600' : 'border-slate-200'
                             }`}
                         >
-                          <span className={`font-bold block text-sm ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                          <AnimatePresence>
+                            {formData.paymentMethod === m.value && (
+                              <motion.div
+                                initial={{ scale: 0, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                exit={{ scale: 0, opacity: 0 }}
+                                className="absolute top-2 right-2 z-10"
+                              >
+                                <CheckCircle className="w-5 h-5 text-emerald-500 fill-emerald-500/20" />
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+
+                          <span className={`font-bold block text-sm relative z-0 ${formData.paymentMethod === m.value
+                            ? 'text-emerald-600'
+                            : isDark ? 'text-white' : 'text-slate-900'
+                            }`}>
                             {t(m.labelAr, m.labelEn, m.labelKu)}
                           </span>
+
+                          {formData.paymentMethod === m.value && (
+                            <motion.div
+                              layoutId="activeGlow"
+                              className="absolute inset-0 bg-emerald-500/5"
+                              initial={false}
+                              transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                            />
+                          )}
                         </motion.button>
                       ))}
                     </div>
@@ -590,22 +632,6 @@ const WesternUnion = () => {
                   {errors.paymentMethod && <p className="text-sm text-red-500 flex items-center gap-1"><AlertCircle className="w-4 h-4" />{errors.paymentMethod}</p>}
                 </div>
 
-                <div className="space-y-2">
-                  <Label className={isDark ? 'text-slate-300' : 'text-slate-700'}>
-                    {t('الغرض من التحويل', 'Transfer Purpose', 'مەبەستی گواستنەوە')} *
-                  </Label>
-                  <Select value={formData.purpose} onValueChange={(v) => handleInputChange('purpose', v)}>
-                    <SelectTrigger className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`} data-testid="purpose">
-                      <SelectValue placeholder={t('اختر الغرض', 'Select Purpose', 'مەبەست هەڵبژێرە')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="trade">{t('تجارة', 'Trade', 'بازرگانی')}</SelectItem>
-                      <SelectItem value="family_expenses">{t('نفقات الأسرة', 'Family Expenses', 'خەرجی خێزان')}</SelectItem>
-                      <SelectItem value="medical">{t('علاج', 'Medical Treatment', 'چاره‌سەری پزیشکی')}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {errors.purpose && <p className="text-sm text-red-500 flex items-center gap-1 mt-1"><AlertCircle className="w-4 h-4" />{errors.purpose}</p>}
-                </div>
               </div>
 
               {/* Summary */}
