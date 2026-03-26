@@ -1,312 +1,169 @@
-"""
-Twilio SMS Service for Dubai International Exchange
-Sends SMS notifications to Iraqi phone numbers using Twilio Content SIDs
-"""
 import os
 import httpx
 import logging
 import json
-from typing import Optional
+from typing import Dict, Optional
 from dotenv import load_dotenv
 from pathlib import Path
 
-# Load environment variables
-load_dotenv(Path(__file__).parent.parent / '.env')
+load_dotenv(Path(__file__).parent.parent / ".env")
 
 logger = logging.getLogger(__name__)
 
-# Twilio Configuration
-TWILIO_ACCOUNT_SID = os.environ.get("TWILIO_ACCOUNT_SID", "")
-TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_AUTH_TOKEN", "")
-TWILIO_MESSAGING_SERVICE_SID = os.environ.get("TWILIO_SERVICE", "")
-
-# Content SIDs from Twilio Console
-TWILIO_CONTENT_ORDER_SUBMITTED = os.environ.get("TWILIO_CONTENT_ORDER_SUBMITTED", "")
-TWILIO_CONTENT_ORDER_APPROVED = os.environ.get("TWILIO_CONTENT_ORDER_APPROVED", "")
-TWILIO_CONTENT_ORDER_REJECTED = os.environ.get("TWILIO_CONTENT_ORDER_REJECTED", "")
-
-# Default WhatsApp number
+SMSTO_API_KEY = os.environ.get("SMSTO_API_KEY", "")
+SMSTO_SENDER_ID = os.environ.get("SMSTO_SENDER_ID", "DubaiExch")
 DEFAULT_WHATSAPP = os.environ.get("COMPANY_WHATSAPP", "+964XXXXXXXXXX")
 
-# Iraqi phone number prefixes
-IRAQI_PREFIXES = ["+964", "00964", "964"]
-
-
 def is_iraqi_number(phone: str) -> bool:
-    """Check if phone number is Iraqi"""
     if not phone:
         return False
-    
-    # Clean the phone number
-    cleaned = ''.join(filter(str.isdigit, phone))
-    if phone.startswith('+'):
-        # Keep the plus for prefix matching
-        cleaned = '+' + cleaned
-    
-    # Check for Iraqi prefixes
-    for prefix in IRAQI_PREFIXES:
-        if cleaned.startswith(prefix):
-            return True
-    
-    # Check if it starts with 07 (Iraqi mobile format without country code)
-    if cleaned.startswith("07") and len(cleaned) >= 10:
+    digits = "".join(filter(str.isdigit, phone))
+    if any(digits.startswith(p) for p in ["964", "077", "078", "075", "77", "78", "75"]):
         return True
-    
-    # Check if it starts with 7 (Iraqi mobile without leading zero e.g. 7801234567)
-    if cleaned.startswith("7") and len(cleaned) == 10:
-        return True
-    
     return False
 
-
 def format_phone_number(phone: str) -> str:
-    """
-    Format phone number to E.164 format.
-    Handles Iraqi numbers specifically but also supports other international formats.
-    """
     if not phone:
         return ""
     
-    # Clean the phone number but keep leading + if present
-    is_plus = phone.strip().startswith('+')
-    cleaned = ''.join(filter(str.isdigit, phone))
+    digits = "".join(filter(str.isdigit, phone))
     
-    # Special handling for Iraqi numbers
     if is_iraqi_number(phone):
-        # Case 1: Starts with 07... -> +9647...
-        if cleaned.startswith("07") and len(cleaned) >= 10:
-            return f"+964{cleaned[1:]}"
-        
-        # Case 2: Starts with 7... -> +9647...
-        if cleaned.startswith("7") and len(cleaned) == 10:
-            return f"+964{cleaned}"
+        if digits.startswith("07"):
+            digits = digits[1:]
+        elif digits.startswith("9640"):
+            digits = digits[4:]
+        elif digits.startswith("964"):
+            digits = digits[3:]
             
-        # Case 3: Already has country code 964
-        if cleaned.startswith("964"):
-            # Ensure no leading zero after 964
-            # e.g. 96407... -> 9647...
-            rest = cleaned[3:]
-            if rest.startswith("0"):
-                rest = rest[1:]
-            return f"+964{rest}"
-            
-    # General international format
-    # Case: Starts with 00... -> +...
-    if cleaned.startswith("00"):
-        cleaned = cleaned[2:]
-        return f"+{cleaned}"
-        
-    if is_plus:
-        return f"+{cleaned}"
+        if len(digits) == 10 and digits.startswith("7"):
+            return f"+964{digits}"
     
-    # If no plus but looks like it has a country code (passed as + from frontend but joined here)
-    if not is_plus and len(cleaned) > 10:
-        return f"+{cleaned}"
+    if phone.strip().startswith("+"):
+        return f"+{digits}"
+    if digits.startswith("00"):
+        return f"+{digits[2:]}"
         
-    return cleaned
-
-
-def format_iraqi_number(phone: str) -> str:
-    """Legacy wrapper for format_phone_number focus on Iraqi numbers"""
-    return format_phone_number(phone)
-
+    return f"+{digits}" if len(digits) > 10 else digits
 
 class SMSService:
-    """Service for sending SMS via Twilio using Content SIDs"""
-    
     def __init__(self):
-        self.account_sid = TWILIO_ACCOUNT_SID
-        self.auth_token = TWILIO_AUTH_TOKEN
-        self.messaging_service_sid = TWILIO_MESSAGING_SERVICE_SID
+        self.api_key = SMSTO_API_KEY
+        self.sender_id = SMSTO_SENDER_ID
         self.whatsapp = DEFAULT_WHATSAPP
-        self.enabled = bool(self.account_sid and self.auth_token and self.messaging_service_sid)
-        
+
+        self.enabled = bool(self.api_key)
+
         if not self.enabled:
-            logger.warning("SMS Service disabled: Twilio credentials missing in .env")
+            logger.warning("⚠️ SMS service is disabled: Missing SMS.to API Key")
         else:
-            logger.info(f"SMS Service enabled with Twilio Account: {self.account_sid}")
-    
+            logger.info("🚀 SMS service ready (SMS.to)")
+
     def set_whatsapp(self, whatsapp: str):
         """Update WhatsApp number dynamically"""
         if whatsapp:
             self.whatsapp = whatsapp
             logger.info(f"WhatsApp number updated to: {whatsapp}")
-    
+
     async def sync_whatsapp(self, db):
-        """Fetch WhatsApp number from database settings (Prioritizing Contact Information from CMS)"""
+        """Fetch WhatsApp number from database settings"""
         try:
-            # 1. Try contact settings (Primary - as requested by user)
             contact = await db.settings.find_one({"type": "contact"})
             if contact and "content" in contact:
-                # Use Arabic as source for contact info
                 content = contact.get("content", {})
                 ar_content = content.get("ar", {})
                 whatsapp = ar_content.get("whatsapp") or ar_content.get("phone")
-                
                 if whatsapp:
                     self.set_whatsapp(whatsapp)
-                    logger.info(f"WhatsApp synced from Contact Info: {whatsapp}")
                     return True
 
-            # 2. Try company settings (Fallback)
             company = await db.settings.find_one({"type": "company"})
             if company:
-                whatsapp = company.get("whatsapp")
-                if not whatsapp:
-                    whatsapp = company.get("phone")
-                
+                whatsapp = company.get("whatsapp") or company.get("phone")
                 if whatsapp:
                     self.set_whatsapp(whatsapp)
-                    logger.info(f"WhatsApp synced from Company Settings: {whatsapp}")
                     return True
         except Exception as e:
             logger.error(f"Failed to sync WhatsApp number from DB: {e}")
         return False
-    
-    async def send_content_sms(self, phone: str, content_sid: str, variables: dict = None) -> dict:
-        """
-        Send SMS using a Twilio Content SID
-        Returns: dict with success status and details
-        """
-        result = {
-            "success": False,
-            "phone": phone,
-            "content_sid": content_sid,
-            "error": None,
-            "sent": False
-        }
-        
-        # Format the number
-        formatted_phone = format_phone_number(phone)
-        result["formatted_phone"] = formatted_phone
-        
-        logger.info(f"Preparing to send SMS to {phone} (formatted: {formatted_phone})")
-        
-        # Default variables if none provided
-        if variables is None:
-            variables = {"1": self.whatsapp} # Default variable mapping
+
+    async def _send_request(self, payload: Dict) -> Dict:
+        """Internal unified request handler for SMS.to"""
+        result = {"success": False, "sent": False, "error": None, "response": None}
         
         try:
             async with httpx.AsyncClient(timeout=30.0) as client:
-                url = f"https://api.twilio.com/2010-04-01/Accounts/{self.account_sid}/Messages.json"
+                url = "https://api.sms.to/sms/send"
                 
-                # Build the request payload
-                payload = {
-                    "To": formatted_phone,
-                    "MessagingServiceSid": self.messaging_service_sid,
-                    "ContentSid": content_sid,
-                    "ContentVariables": json.dumps(variables)
+                headers = {
+                    "Authorization": f"Bearer {self.api_key}",
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
                 }
                 
-                response = await client.post(
-                    url,
-                    data=payload,
-                    auth=(self.account_sid, self.auth_token)
-                )
-                
-                data = response.json()
-                
-                if response.status_code in [200, 201]:
-                    result["success"] = True
-                    result["sent"] = True
-                    result["message_sid"] = data.get("sid")
-                    logger.info(f"Twilio SMS sent successfully to {formatted_phone} using SID {content_sid}")
+                if self.sender_id:
+                    payload["sender_id"] = self.sender_id
+
+                # SMS.to usually requires 'bypass_optout' for transactional SMS
+                payload["bypass_optout"] = True
+
+                res = await client.post(url, json=payload, headers=headers)
+                data = res.json()
+                result["response"] = data
+
+                if res.status_code == 200 and data.get("success"):
+                    result.update({
+                        "success": True,
+                        "sent": True,
+                        "message_id": data.get("message_id") or data.get("request_id"),
+                        "status": "sent"
+                    })
+                    logger.info(f"✅ SMS Sent Successfully to {payload.get('to')}")
                 else:
-                    result["error"] = data.get("message", "Twilio API Error")
-                    result["error_code"] = data.get("code")
-                    logger.error(f"Twilio SMS failed: {data}")
-                    
+                    result["error"] = data.get("message") or "Unknown API Error"
+                    logger.error(f"❌ SMS.to Error: {result['error']}")
+
         except Exception as e:
             result["error"] = str(e)
-            logger.exception(f"Twilio SMS exception for {phone}: {e}")
-        
+            logger.error(f"🚨 Connection Error: {str(e)}")
+
         return result
 
-    async def send_plain_sms(self, phone: str, body: str) -> dict:
-        """
-        Send a standard plain text SMS using the 'Body' parameter
-        Returns: dict with success status and details
-        """
-        result = {
-            "success": False,
-            "phone": phone,
-            "body": body,
-            "error": None,
-            "sent": False
+    async def send_plain_sms(self, phone: str, body: str) -> Dict:
+        formatted = format_phone_number(phone)
+        payload = {
+            "to": formatted,
+            "message": body
         }
-        
-        # Format the number
-        formatted_phone = format_phone_number(phone)
-        result["formatted_phone"] = formatted_phone
-        
-        logger.info(f"Preparing to send plain SMS to {phone} (formatted: {formatted_phone})")
-        
-        try:
-            async with httpx.AsyncClient(timeout=30.0) as client:
-                url = f"https://api.twilio.com/2010-04-01/Accounts/{self.account_sid}/Messages.json"
-                
-                # Build the request payload with Body instead of ContentSid
-                payload = {
-                    "To": formatted_phone,
-                    "MessagingServiceSid": self.messaging_service_sid,
-                    "Body": body
-                }
-                
-                response = await client.post(
-                    url,
-                    data=payload,
-                    auth=(self.account_sid, self.auth_token)
-                )
-                
-                data = response.json()
-                
-                if response.status_code in [200, 201]:
-                    result["success"] = True
-                    result["sent"] = True
-                    result["message_sid"] = data.get("sid")
-                    logger.info(f"Twilio Plain SMS sent successfully to {formatted_phone}")
-                else:
-                    result["error"] = data.get("message", "Twilio API Error")
-                    result["error_code"] = data.get("code")
-                    logger.error(f"Twilio Plain SMS failed: {data}")
-                    
-        except Exception as e:
-            result["error"] = str(e)
-            logger.exception(f"Twilio Plain SMS exception for {phone}: {e}")
-        
-        return result
-    
-    async def send_order_submitted(self, phone: str, order_id: str = "", whatsapp: str = None, customer_name: str = "") -> dict:
-        """Send SMS when order is submitted (Always Plain Text as requested)"""
-        support = whatsapp or self.whatsapp
-        body = (
-            f"عميلنا العزيز\n"
-            f"{customer_name}\n"
-            f"رقم طلبكم {order_id}\n"
-            f"تم استلام طلبكم وهو قيد المراجعه يرجى إكمال الإيداع خلال فترة زمنية محددة أقصاها ساعتين لتجنب الغاء الطلب.\n"
-            f"للاستفسار {support}"
-        )
-        return await self.send_plain_sms(phone, body)
-    
-    async def send_order_approved(self, phone: str, order_id: str = "", whatsapp: str = None) -> dict:
-        """Send SMS when order is approved (Always Plain Text as requested)"""
-        support = whatsapp or self.whatsapp
-        body = f"تم قبول طلبكم {order_id}. لإكمال الإجراءات يرجى التواصل مع خدمة العملاء {support}"
-        return await self.send_plain_sms(phone, body)
-    
-    async def send_order_rejected(self, phone: str, order_id: str = "", whatsapp: str = None) -> dict:
-        """Send SMS when order is rejected (Always Plain Text as requested)"""
-        support = whatsapp or self.whatsapp
-        body = f"نعتذر، تم رفض طلبكم {order_id}. للمزيد من التفاصيل يرجى التواصل مع خدمة العملاء {support}"
+        return await self._send_request(payload)
+
+    async def send_content_sms(self, phone: str, content_sid: str, variables: Optional[Dict] = None) -> Dict:
+        # Fallback to plain text for SMS.to
+        body = f"Update received. Support: {self.whatsapp}"
         return await self.send_plain_sms(phone, body)
 
+    async def send_order_submitted(self, phone: str, order_id: str = "", whatsapp: Optional[str] = None) -> Dict:
+        return await self.send_order_status(phone, order_id, "submitted", whatsapp)
 
-# Create singleton
+    async def send_order_approved(self, phone: str, order_id: str = "", whatsapp: Optional[str] = None) -> Dict:
+        return await self.send_order_status(phone, order_id, "approved", whatsapp)
+
+    async def send_order_rejected(self, phone: str, order_id: str = "", whatsapp: Optional[str] = None) -> Dict:
+        return await self.send_order_status(phone, order_id, "rejected", whatsapp)
+
+    async def send_order_status(self, phone: str, order_id: str, status: str, whatsapp: Optional[str] = None) -> Dict:
+        support = whatsapp or self.whatsapp
+        messages = {
+            "submitted": f"Order {order_id} received and under review. Support: {support}",
+            "approved": f"Order {order_id} approved. Processing your request. Support: {support}",
+            "rejected": f"Order {order_id} rejected. For details: {support}"
+        }
+        body = messages.get(status, f"Update for order {order_id}. Contact: {support}")
+        return await self.send_plain_sms(phone, body)
+
 sms_service = SMSService()
 
-
 def reinitialize_sms_service():
-    """Reinitialize SMS service (call after env changes)"""
     global sms_service
     sms_service = SMSService()
     return sms_service

@@ -195,8 +195,8 @@ const TrackOrder = () => {
     const isUSDT = orderResult.type === 'usdt_recharge' || orderResult.type === 'usdt';
 
     // Base amount and currency
-    let baseAmount = details.amount || details.usdAmount || 0;
-    let baseCurrency = details.currency || (details.usdAmount ? 'USD' : (isUSDT ? 'USDT' : 'IQD'));
+    let baseAmount = details.amountUSD || details.amount || details.usdAmount || 0;
+    let baseCurrency = details.currency || (details.amountUSD || details.usdAmount ? 'USD' : (isUSDT ? 'USDT' : 'IQD'));
 
     // Total in IQD
     let totalIQD = details.total || details.iqdAmount || details.amountIQD || 0;
@@ -460,35 +460,97 @@ const TrackOrder = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   {/* Left Column - Details */}
                   <div className="lg:col-span-2 space-y-6">
-                    {/* Customer Info */}
+                    {/* Transfer/Order Details */}
                     <div className={`rounded-3xl border-2 p-8 shadow-xl ${isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-200'}`}>
                       <h3 className={`text-xl font-bold mb-6 flex items-center gap-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>
                         <User className="w-6 h-6 text-blue-600" />
-                        {t('بيانات العميل', 'Customer Information', 'زانیاری کڕیار')}
+                        {['local', 'western_union', 'moneygram', 'country_based'].includes(orderResult.type) 
+                          ? t('تفاصيل التحويل', 'Transfer Details', 'زانیاری گواستنەوە')
+                          : t('بيانات العميل', 'Customer Information', 'زانیاری کڕیار')}
                       </h3>
+                      
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Sender Name */}
                         <div className="flex items-start gap-3">
                           <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-blue-500/20' : 'bg-blue-100'}`}>
                             <User className="w-5 h-5 text-blue-600" />
                           </div>
                           <div>
-                            <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('الاسم', 'Name', 'ناو')}</p>
-                            <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{orderResult.customer.fullName}</p>
+                            <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                              {['local', 'western_union', 'moneygram', 'country_based'].includes(orderResult.type)
+                                ? t('اسم المرسل', 'Sender Name', 'ناوی نێرەر')
+                                : t('الاسم', 'Name', 'ناو')}
+                            </p>
+                            <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                              {orderResult.customer.fullName}
+                            </p>
                           </div>
                         </div>
-                        <div className="flex items-start gap-3">
-                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-blue-500/20' : 'bg-blue-100'}`}>
-                            <Phone className="w-5 h-5 text-blue-600" />
+
+                        {/* Receiver Name (only for transfers) */}
+                        {['local', 'western_union', 'moneygram', 'country_based'].includes(orderResult.type) && (orderResult.details?.receiverName || (orderResult.details?.receiverFirstName && orderResult.details?.receiverLastName)) && (
+                          <div className="flex items-start gap-3">
+                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-blue-500/20' : 'bg-blue-100'}`}>
+                              <User className="w-5 h-5 text-blue-600" />
+                            </div>
+                            <div>
+                              <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                                {t('اسم المستلم', 'Receiver Name', 'ناوی وەرگر')}
+                              </p>
+                              <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                                {orderResult.details.receiverName || `${orderResult.details.receiverFirstName} ${orderResult.details.receiverLastName}`}
+                              </p>
+                            </div>
                           </div>
-                          <div>
-                            <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('الهاتف', 'Phone', 'مۆبایل')}</p>
-                            <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{orderResult.customer.phone}</p>
+                        )}
+
+                        {/* Phone (only for non-transfers) */}
+                        {!['local', 'western_union', 'moneygram', 'country_based'].includes(orderResult.type) && orderResult.customer.phone && (
+                          <div className="flex items-start gap-3">
+                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-blue-500/20' : 'bg-blue-100'}`}>
+                              <Phone className="w-5 h-5 text-blue-600" />
+                            </div>
+                            <div>
+                              <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('الهاتف', 'Phone', 'مۆبایل')}</p>
+                              <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>{orderResult.customer.phone}</p>
+                            </div>
                           </div>
-                        </div>
+                        )}
+
+                        {/* Total Amount (only for transfers) */}
+                        {['local', 'western_union', 'moneygram', 'country_based'].includes(orderResult.type) && (
+                          <div className="flex items-start gap-3">
+                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-[#D4AF37]/20' : 'bg-amber-100'}`}>
+                              <Banknote className="w-5 h-5 text-[#D4AF37]" />
+                            </div>
+                            <div>
+                              <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('المبلغ الاجمالي للدفع', 'Total Payment Amount', 'کۆی گشتی بۆ پارەدان')}</p>
+                              <p className="font-bold text-[#D4AF37]">
+                                {Number(orderResult.details?.total || 0).toLocaleString()} {t('د.ع', 'IQD', 'د.ع')}
+                              </p>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Country (only for transfers) */}
+                        {['local', 'western_union', 'moneygram', 'country_based'].includes(orderResult.type) && (orderResult.details?.receiverCountry || orderResult.details?.countryName) && (
+                          <div className="flex items-start gap-3">
+                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-indigo-500/20' : 'bg-indigo-100'}`}>
+                              <Globe className="w-5 h-5 text-indigo-600" />
+                            </div>
+                            <div>
+                              <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t('الدولة', 'Country', 'وڵات')}</p>
+                              <p className={`font-medium ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                                {orderResult.details.countryName || orderResult.details.receiverCountry}
+                              </p>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
 
-                    {renderAmountDetails()}
+                    {/* Amount Details - Hidden for transfers as it is now in details */}
+                    {!['local', 'western_union', 'moneygram', 'country_based'].includes(orderResult.type) && renderAmountDetails()}
 
                     {/* Status Specific Message */}
                     {orderResult && (
@@ -627,13 +689,13 @@ const TrackOrder = () => {
                         </div>
                         <div className="space-y-1 text-right">
                           <h4 className={`font-bold flex items-center gap-2 ${isDark ? 'text-red-400' : 'text-red-900'}`}>
-                             {t('تنبيه هام - يرجى الدفع خلال ساعتين', 'Important Alert - Please pay within 2 hours', 'بەرگری گرنگ - تکایە لە ماوەی ٢ کاتژمێردا پارە بدە')}
+                             {t('تنبیه هام', 'Important Alert', 'بەرگری گرنگ')}
                           </h4>
                           <p className={`text-sm leading-relaxed ${isDark ? 'text-red-300/90' : 'text-red-700'}`}>
                             {t(
-                              'يجب إتمام الدفع في خلال ساعتين من الآن. سيتم إلغاء التحويل تلقائياً في حال عدم إتمام الدفع خلال المدة المحددة.',
-                              'Payment must be completed within two hours from now. The order will be automatically cancelled if not paid within the period.',
-                              'دەبێت پارەدان لە ماوەی ٢ کاتژمێردا تەواو بکرێت. ئەگەر لەو ماوەیەدا پارە نەدرێت، داواکارییەکە بە شێوەیەکی خۆکار هەڵدەوەشێتەوە.'
+                              'يرجى إكمال عملية الإيداع وارفاق صورة اثبات الدفع خلال فترة زمنية أقصاها ساعتين من الآن وخلاف ذلك سيتم إهمال الطلب .',
+                              'Please complete the deposit and attach the payment proof within a maximum of 2 hours, otherwise the order will be ignored.',
+                              'تکایە پڕۆسەی سپاردنەکە تەواو بکە و وێنەی بەڵگەی پارەدان لە ماوەی ٢ کاتژمێردا بار بکەرەوە، ئەگەرنا داواکارییەکە پشتگوێ دەخرێت.'
                             )}
                           </p>
                         </div>

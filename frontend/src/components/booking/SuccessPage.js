@@ -454,13 +454,13 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
                 </div>
                 <div className="space-y-1 text-right">
                   <h4 className={`font-bold flex items-center gap-2 ${isDark ? 'text-red-400' : 'text-red-900'}`}>
-                    {t('تنبيه هام - يرجى الدفع خلال ساعتين', 'Important Alert - Please pay within 2 hours', 'بەرگری گرنگ - تکایە لە ماوەی ٢ کاتژمێردا پارە بدە')}
+                    {t('تنبیه هام', 'Important Alert', 'بەرگری گرنگ')}
                   </h4>
                   <p className={`text-sm leading-relaxed ${isDark ? 'text-red-300/90' : 'text-red-700'}`}>
                     {t(
-                      'يجب إتمام الدفع في خلال ساعتين من الآن. سيتم إلغاء التحويل تلقائياً في حال عدم إتمام الدفع خلال المدة المحددة.',
-                      'Payment must be completed within two hours from now. The booking will be automatically cancelled if not paid within the period.',
-                      'دەبێت پارەدان لە ماوەی ٢ کاتژمێردا تەواو بکرێت. ئەگەر لەو ماوەیەدا پارە نەدرێت، حجوزاتەکە بە شێوەیەکی خۆکار هەڵدەوەشێتەوە.'
+                      'يرجى إكمال عملية الإيداع وارفاق صورة اثبات الدفع خلال فترة زمنية أقصاها ساعتين من الآن وخلاف ذلك سيتم إهمال الطلب .',
+                      'Please complete the deposit and attach the payment proof within a maximum of 2 hours, otherwise the order will be ignored.',
+                      'تکایە پڕۆسەی سپاردنەکە تەواو بکە و وێنەی بەڵگەی پارەدان لە ماوەی ٢ کاتژمێردا بار بکەرەوە، ئەگەرنا داواکارییەکە پشتگوێ دەخرێت.'
                     )}
                   </p>
                 </div>
