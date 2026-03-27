@@ -27,7 +27,7 @@ async def verify_all_sms(phone: str):
     try:
         # اختبار 1: رسالة الحجز (Order Submitted)
         print("📩 رسالة 1 — طلب جديد (حجز):")
-        res1 = await sms_service.send_order_submitted(phone, "TEST-123")
+        res1 = await sms_service.send_order_submitted(phone, "TEST-123", "أحمد محمد")
         if res1["success"]:
             print(f"  ✅ Order Submitted => نجح!")
         else:
@@ -35,7 +35,7 @@ async def verify_all_sms(phone: str):
 
         # اختبار 2: رسالة القبول (Order Approved)
         print("\n📩 رسالة 2 — طلب مقبول (قبول):")
-        res2 = await sms_service.send_order_approved(phone, "TEST-123")
+        res2 = await sms_service.send_order_approved(phone, "TEST-123", "أحمد محمد")
         if res2["success"]:
             print(f"  ✅ Order Approved => نجح!")
         else:
@@ -43,7 +43,7 @@ async def verify_all_sms(phone: str):
 
         # اختبار 3: رسالة الرفض (Order Rejected)
         print("\n📩 رسالة 3 — طلب مرفوض (رفض):")
-        res3 = await sms_service.send_order_rejected(phone, "TEST-123")
+        res3 = await sms_service.send_order_rejected(phone, "TEST-123", "أحمد محمد")
         if res3["success"]:
             print(f"  ✅ Order Rejected => نجح!")
         else:

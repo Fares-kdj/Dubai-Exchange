@@ -142,23 +142,29 @@ class SMSService:
         body = f"Update received. Support: {self.whatsapp}"
         return await self.send_plain_sms(phone, body)
 
-    async def send_order_submitted(self, phone: str, order_id: str = "", whatsapp: Optional[str] = None) -> Dict:
-        return await self.send_order_status(phone, order_id, "submitted", whatsapp)
+    async def send_order_submitted(self, phone: str, order_id: str = "", customer_name: str = "عميلنا", whatsapp: Optional[str] = None) -> Dict:
+        return await self.send_order_status(phone, order_id, "submitted", customer_name, whatsapp)
 
-    async def send_order_approved(self, phone: str, order_id: str = "", whatsapp: Optional[str] = None) -> Dict:
-        return await self.send_order_status(phone, order_id, "approved", whatsapp)
+    async def send_order_approved(self, phone: str, order_id: str = "", customer_name: str = "عميلنا", whatsapp: Optional[str] = None) -> Dict:
+        return await self.send_order_status(phone, order_id, "approved", customer_name, whatsapp)
 
-    async def send_order_rejected(self, phone: str, order_id: str = "", whatsapp: Optional[str] = None) -> Dict:
-        return await self.send_order_status(phone, order_id, "rejected", whatsapp)
+    async def send_order_rejected(self, phone: str, order_id: str = "", customer_name: str = "عميلنا", whatsapp: Optional[str] = None) -> Dict:
+        return await self.send_order_status(phone, order_id, "rejected", customer_name, whatsapp)
 
-    async def send_order_status(self, phone: str, order_id: str, status: str, whatsapp: Optional[str] = None) -> Dict:
+    async def send_order_status(self, phone: str, order_id: str, status: str, customer_name: str = "عميلنا", whatsapp: Optional[str] = None) -> Dict:
         support = whatsapp or self.whatsapp
         messages = {
-            "submitted": f"Order {order_id} received and under review. Support: {support}",
-            "approved": f"Order {order_id} approved. Processing your request. Support: {support}",
-            "rejected": f"Order {order_id} rejected. For details: {support}"
+            "submitted": (
+                f"عميلنا العزيز\n"
+                f"{customer_name}\n"
+                f"رقم طلبكم {order_id}\n"
+                f"تم استلام طلبكم و هو قيد المراجعة يرجى اكمال الايداع خلال فترة زمنية محددة اقصاها ساعتين لتجنب الغاء الطلب\n"
+                f"للاستفسار {support}"
+            ),
+            "approved": f"تم قبول طلبكم {order_id}. لاكمال الاجراءات يرجى التواصل مع خدمة العملاء {support}",
+            "rejected": f"نعتذر , تم رفض طلبكم {order_id}.\nللمزيد من التفاصيل يرجى التواصل مع خدمة العملاء {support}"
         }
-        body = messages.get(status, f"Update for order {order_id}. Contact: {support}")
+        body = messages.get(status, f"تحديث للطلب {order_id}. للتواصل: {support}")
         return await self.send_plain_sms(phone, body)
 
 sms_service = SMSService()
