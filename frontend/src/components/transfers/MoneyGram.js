@@ -411,7 +411,7 @@ const MoneyGram = () => {
                   <Select value={formData.receiverCountry} onValueChange={(v) => handleInputChange('receiverCountry', v)}>
                     <SelectTrigger className={`h-12 ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-slate-300'}`}><SelectValue placeholder={t('اختر', 'Select', 'هەڵبژاردن')} /></SelectTrigger>
                     <SelectContent>
-                      {countries.filter(c => c.value !== 'iraq').map(c => (
+                      {countries.map(c => (
                         <SelectItem key={c.value} value={c.value}>{t(c.labelAr, c.labelEn, c.labelKu)}</SelectItem>
                       ))}
                     </SelectContent>

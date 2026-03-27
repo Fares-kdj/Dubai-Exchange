@@ -441,7 +441,7 @@ http://dubai-international-iq.online/track-order?id=${orderId}`}
                   </div>
                   <div className="space-y-1">
                     <h4 className={`font-bold flex items-center gap-2 ${isDark ? 'text-red-400' : 'text-red-900'}`}>
-                      {t('تنبیه هام', 'Important Alert', 'بەرگری گرنگ')}
+                      {t('تنبيه هام', 'Important Alert', 'بەرگری گرنگ')}
                     </h4>
                     <p className={`text-sm leading-relaxed ${isDark ? 'text-red-300/90' : 'text-red-700'}`}>
                       {t(
