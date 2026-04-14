@@ -9,6 +9,7 @@ const UniversalReceipt = ({
     borders = [],
     companyStamps = [],
     signatures = [],
+    contactInfo = null,
     onImageLoad = () => { }
 }) => {
     if (!order) return null;
@@ -40,8 +41,13 @@ const UniversalReceipt = ({
         s => s.stamp_id === (admin_data?.airport_id || admin_data?.border_id)
     );
 
+    // For traveler booking, distinguish between airport and border name for the title
+    const airportNameOrBorder = admin_data?.travel_type === 'air'
+        ? (airports.find(a => String(a.stamp_id) === String(admin_data?.airport_id))?.name_ar || 'مطار')
+        : 'منافذ حدودية';
+
     // Get fields from config
-    const fields = config.fields(order, admin_data, customer, details, formatDate);
+    const fields = config.fields(order, admin_data, customer, details, formatDate, contactInfo, airportNameOrBorder);
 
     // Dynamic Image Fields (Stamps and Signatures)
     const imageFields = [];

@@ -194,6 +194,7 @@ const AdminLayout = () => {
         { path: '/admin/orders/international', icon: ArrowLeftRight, label: 'التحويل الدولي', permission: 'view_orders_international' },
         { path: '/admin/orders/usdt', icon: Wallet, label: 'شحن USDT', permission: 'view_orders_usdt' },
         { path: '/admin/orders/card', icon: CreditCard, label: 'تعبئة بطاقات', permission: 'view_orders_card' },
+        { path: '/admin/orders/picker', icon: Crosshair, label: 'أداة الإحداثيات', permission: 'view_orders_traveler' },
       ]
     },
     {

@@ -102,40 +102,44 @@ const getPurpose = (details) => {
 export const RECEIPT_CONFIGS = {
     traveler: {
         template: '/assets/receipts/traveler_recu.jpg',
-        fields: (order, admin_data, customer, details, formatDate) => [
-            { id: 'outlet_title', value: details?.pickupLocationName || admin_data?.travel_agency || 'وكيل المطار', x: 50.6, y: 39.4, bold: true, width: '40%', center: true, color: '#fff', size: 'text-[18px]', height: '30px' },
-            { id: 'batch_number', value: admin_data?.batch_number, x: 82.6, y: 34.8, bold: true, width: '4%' },
-            { id: 'batch_date', value: admin_data?.batch_date, x: 63, y: 34.8, bold: true, width: '10%' },
-            { id: 'order_number', value: order.order_id, x: 46.1, y: 34.8, bold: true, width: '11%' },
-            { id: 'order_date', value: formatDate(order.created_at), x: 20.5, y: 34.8, bold: true, width: '10%' },
-            { id: 'full_name', value: customer?.full_name, x: 81.3, y: 38.1, bold: true, width: '20%' },
-            { id: 'mother_name', value: admin_data?.mother_name, x: 39.1, y: 38.1, bold: true, width: '20%' },
-            { id: 'phone', value: customer?.phone, x: 31.2, y: 41.2, bold: true, width: '15%' },
-            { id: 'address', value: customer?.address, x: 81.3, y: 41.2, bold: true, width: '20%' },
-            { id: 'ticket_number', value: admin_data?.ticket_number || details?.ticket_number, x: 82.2, y: 44.5, bold: true, width: '10%' },
-            { id: 'travel_date', value: details?.travelDate, x: 54.3, y: 44.5, bold: true, width: '15%' },
-            { id: 'travel_time', value: admin_data?.travel_time, x: 32.1, y: 44.5, bold: true, width: '10%' },
-            { id: 'passport_number', value: admin_data?.passport_number, x: 83.4, y: 47.8, bold: true, width: '15%' },
-            { id: 'issue_date', value: admin_data?.passport_issue_date, x: 53.5, y: 47.8, bold: true, width: '15%' },
-            { id: 'expiry_date', value: admin_data?.passport_expiry_date, x: 32.6, y: 47.8, bold: true, width: '15%' },
-            { id: 'destination', value: details?.destination, x: 82.2, y: 50.9, bold: true, width: '20%' },
-            { id: 'travel_type', value: details?.travelType === 'air' ? 'جوي' : (details?.travelType === 'land' ? 'بري' : 'بحري'), x: 33.6, y: 50.9, bold: true, width: '10%' },
-            { id: 'outlet_name', value: details?.pickupLocationName || admin_data?.travel_agency || 'وكيل المطار', x: 81.5, y: 54.2, bold: true, width: '20%' },
-            { id: 'amount_usd', value: parseFloat(details?.usdAmount || details?.amountUSD || 0).toLocaleString(), x: 86, y: 57.4, bold: true, width: '10%' },
-            { id: 'selling_rate', value: Math.round(parseFloat(details?.iqdAmount || 0) / parseFloat(details?.usdAmount || 1)).toLocaleString(), x: 83.9, y: 60.6, bold: true, width: '9%' },
-            { id: 'commission', value: '0', x: 71, y: 60.5, bold: true, width: '7%' },
-            { id: 'total_iqd_final', value: parseFloat(details?.iqdAmount || 0).toLocaleString(), x: 32.8, y: 60.5, bold: true, width: '10%' },
+        fields: (order, admin_data, customer, details, formatDate, contactInfo, airportNameOrBorder) => [
+            { id: 'dynamic_title', value: airportNameOrBorder, x: 50, y: 29, bold: true, center: true, color: '#fff', fontSize: 20 },
+            { id: 'outlet_title', value: details?.pickupLocationName || admin_data?.travel_agency || 'وكيل المطار', x: 50.6, y: 39.4, bold: true, width: '40%', center: true, color: '#fff', fontSize: 17, height: '30px' },
+            { id: 'batch_number', value: admin_data?.batch_number, x: 82.6, y: 34.8, bold: true, width: '4%', fontSize: 17 },
+            { id: 'batch_date', value: admin_data?.batch_date, x: 63, y: 34.8, bold: true, width: '10%', fontSize: 17 },
+            { id: 'order_number', value: order.order_id, x: 46.1, y: 34.8, bold: true, width: '11%', fontSize: 17 },
+            { id: 'order_date', value: formatDate(order.created_at), x: 20.5, y: 34.8, bold: true, width: '10%', fontSize: 17 },
+            { id: 'full_name', value: customer?.full_name, x: 81.3, y: 38.1, bold: true, width: '20%', fontSize: 17 },
+            { id: 'mother_name', value: admin_data?.mother_name, x: 39.1, y: 38.1, bold: true, width: '20%', fontSize: 17 },
+            { id: 'phone', value: customer?.phone, x: 31.2, y: 41.2, bold: true, width: '15%', fontSize: 17 },
+            { id: 'address', value: customer?.address, x: 81.3, y: 41.2, bold: true, width: '20%', fontSize: 17 },
+            { id: 'ticket_number', value: admin_data?.ticket_number || details?.ticket_number, x: 82.2, y: 44.5, bold: true, width: '10%', fontSize: 17 },
+            { id: 'travel_date', value: details?.travelDate, x: 54.3, y: 44.5, bold: true, width: '15%', fontSize: 17 },
+            { id: 'travel_time', value: admin_data?.travel_time, x: 32.1, y: 44.5, bold: true, width: '10%', fontSize: 17 },
+            { id: 'passport_number', value: admin_data?.passport_number, x: 83.4, y: 47.8, bold: true, width: '15%', fontSize: 17 },
+            { id: 'issue_date', value: admin_data?.passport_issue_date, x: 53.5, y: 47.8, bold: true, width: '15%', fontSize: 17 },
+            { id: 'expiry_date', value: admin_data?.passport_expiry_date, x: 32.6, y: 47.8, bold: true, width: '15%', fontSize: 17 },
+            { id: 'destination', value: details?.destination, x: 82.2, y: 50.9, bold: true, width: '20%', fontSize: 17 },
+            { id: 'travel_type', value: details?.travelType === 'air' ? 'جوي' : (details?.travelType === 'land' ? 'بري' : 'بحري'), x: 33.6, y: 50.9, bold: true, width: '10%', fontSize: 17 },
+            { id: 'outlet_name', value: details?.pickupLocationName || admin_data?.travel_agency || 'وكيل المطار', x: 81.5, y: 54.2, bold: true, width: '20%', fontSize: 17 },
+            { id: 'amount_usd', value: parseFloat(details?.usdAmount || details?.amountUSD || 0).toLocaleString(), x: 86, y: 57.4, bold: true, width: '10%', fontSize: 17 },
+            { id: 'selling_rate', value: Math.round(parseFloat(details?.iqdAmount || 0) / parseFloat(details?.usdAmount || 1)).toLocaleString(), x: 83.9, y: 60.6, bold: true, width: '9%', fontSize: 17 },
+            { id: 'commission', value: '0', x: 71, y: 60.5, bold: true, width: '7%', fontSize: 17 },
+            { id: 'total_iqd_final', value: parseFloat(details?.iqdAmount || 0).toLocaleString(), x: 32.8, y: 60.5, bold: true, width: '10%', fontSize: 17 },
+            { id: 'company_phone', value: contactInfo?.ar?.phone || contactInfo?.phone, x: 91.9, y: 82.8, bold: true, fontSize: 17 },
+            { id: 'company_email', value: contactInfo?.ar?.email || contactInfo?.email, x: 91.9, y: 88.8, bold: true, fontSize: 17 },
+            { id: 'company_address', value: contactInfo?.ar?.address || contactInfo?.address, x: 91.9, y: 95, bold: true, fontSize: 17 },
         ],
         stamps: {
-            airport: { x: 67.9, y: 85.2, width: 300, height: 300, rotate: -12 },
-            signature: { x: 22.2, y: 69.4, width: 350, height: 150, rotate: 0 },
-            company: { x: 36.1, y: 84.8, width: 300, height: 300, rotate: 50 }
+            airport: { x: 67.9, y: 85.2, width: 300, height: 300, },
+            signature: { x: 22.2, y: 69.4, width: 350, height: 150, },
+            company: { x: 36.1, y: 84.8, width: 300, height: 300, }
         },
-        qr: { x: 13, y: 87.5, size: 80 }
+        qr: { x: 13, y: 87.5, size: 120 }
     },
     western_union: {
         template: '/assets/receipts/western-union.jpg',
-        fields: (order, admin_data, customer, details, formatDate) => [
+        fields: (order, admin_data, customer, details, formatDate, contactInfo, airportNameOrBorder) => [
             { id: 'order_id', value: details?.mtcn || order.order_id?.replace(/^WU-/, ''), x: 90, y: 28, bold: true, fontSize: 8 },
             { id: 'date', value: formatDate(order.created_at), x: 90, y: 30.7, bold: true, fontSize: 8 },
             { id: 'sender', value: details?.senderName, x: 34.9, y: 29.6, bold: true, fontSize: 8 },
@@ -157,6 +161,9 @@ export const RECEIPT_CONFIGS = {
             { id: 'usd_amount', value: details?.usdAmount ? `${parseFloat(details.usdAmount).toFixed(2)} USD` : '', x: 90, y: 38.8, bold: true, fontSize: 8 },
             { id: 'exchange_rate', value: details?.exchangeRateUSD ? parseFloat(details.exchangeRateUSD).toFixed(4) : '', x: 90, y: 53.3, bold: true, fontSize: 8 },
             { id: 'fee', value: `${details?.serviceFee?.toLocaleString()} IQD`, x: 90, y: 41, bold: true, fontSize: 8 },
+            { id: 'company_phone', value: contactInfo?.ar?.phone || contactInfo?.phone, x: 50, y: 92, bold: true, fontSize: 8, center: true },
+            { id: 'company_email', value: contactInfo?.ar?.email || contactInfo?.email, x: 50, y: 94, bold: true, fontSize: 8, center: true },
+            { id: 'company_address', value: contactInfo?.ar?.address || contactInfo?.address, x: 50, y: 96, bold: true, fontSize: 8, center: true },
         ],
         stamps: {
             company: { x: 83.3, y: 74.1, width: 250, height: 250, rotate: 0 }
@@ -164,7 +171,7 @@ export const RECEIPT_CONFIGS = {
     },
     moneygram: {
         template: '/assets/receipts/moneygram.jpg',
-        fields: (order, admin_data, customer, details, formatDate) => [
+        fields: (order, admin_data, customer, details, formatDate, contactInfo, airportNameOrBorder) => [
             // Sender Information
             { id: 'sender_first_name', value: details?.senderFirstName || details?.senderName, x: 60.4, y: 23.7, bold: true, fontSize: 10 },
             { id: 'sender_last_name', value: details?.senderLastName, x: 60.4, y: 26.3, bold: true, fontSize: 10 },
@@ -184,6 +191,9 @@ export const RECEIPT_CONFIGS = {
             { id: 'total_words', value: details?.totalInCurrency ? amountToWords(parseFloat(details.totalInCurrency), details?.currency) : '', x: 85.3, y: 58.9, bold: true, size: 'text-[9px]' },
             { id: 'purpose', value: getPurpose(details), x: 60.4, y: 39.7, bold: true, fontSize: 10 },
             { id: 'ref_number', value: details?.reference_number, x: 59.9, y: 96.3, bold: true, fontSize: 16 },
+            { id: 'company_phone', value: contactInfo?.ar?.phone || contactInfo?.phone, x: 15, y: 90, bold: true, fontSize: 10 },
+            { id: 'company_email', value: contactInfo?.ar?.email || contactInfo?.email, x: 15, y: 92, bold: true, fontSize: 10 },
+            { id: 'company_address', value: contactInfo?.ar?.address || contactInfo?.address, x: 15, y: 94, bold: true, fontSize: 10 },
         ],
         stamps: {
             signature: { x: 38.4, y: 82.3, width: 300, height: 200, rotate: 0 },
@@ -192,7 +202,7 @@ export const RECEIPT_CONFIGS = {
     },
     local: {
         template: '/assets/receipts/local.jpg',
-        fields: (order, admin_data, customer, details, formatDate) => [
+        fields: (order, admin_data, customer, details, formatDate, contactInfo, airportNameOrBorder) => [
             { id: 'order_id_1', value: order.order_id, x: 37.7, y: 27.6, bold: true, size: 'text-[14px]' },
             { id: 'order_id_2', value: order.order_id, x: 32.5, y: 47.2, bold: true, size: 'text-[14px]' },
             { id: 'date', value: formatDate(order.created_at), x: 80, y: 27.6, bold: true, size: 'text-[14px]' },
@@ -215,6 +225,9 @@ export const RECEIPT_CONFIGS = {
                 x: 29, y: 41.8, bold: true, color: getStatusTranslation(order.status).color,
                 size: 'text-[16px]'
             },
+            { id: 'company_phone', value: contactInfo?.ar?.phone || contactInfo?.phone, x: 74, y: 80, bold: true, fontSize: 18, center: true },
+            { id: 'company_email', value: contactInfo?.ar?.email || contactInfo?.email, x: 74, y: 84, bold: true, fontSize: 18, center: true },
+            { id: 'company_address', value: contactInfo?.ar?.address || contactInfo?.address, x: 78, y: 88, bold: true, fontSize: 18, center: true },
         ],
         stamps: {
             signature: { x: 21.5, y: 61.3, width: 300, height: 200, rotate: 0 },
@@ -224,7 +237,7 @@ export const RECEIPT_CONFIGS = {
     },
     country_based: {
         template: '/assets/receipts/country_based.jpg',
-        fields: (order, admin_data, customer, details, formatDate) => [
+        fields: (order, admin_data, customer, details, formatDate, contactInfo, airportNameOrBorder) => [
             { id: 'method_overlay', value: details?.methodName, x: 30.1, y: 37.6, bold: true, color: '#ffffff', size: 'text-[20px]', height: '35px' },
             { id: 'order_id', value: order.order_id, x: 22.1, y: 33.9, bold: true, size: 'text-[14px]' },
             { id: 'date', value: formatDate(order.created_at), x: 90.1, y: 33.9, bold: true, size: 'text-[14px]' },
@@ -238,6 +251,9 @@ export const RECEIPT_CONFIGS = {
                 x: 63, y: 64.1, bold: true, color: getStatusTranslation(order.status).color,
                 size: 'text-[16px]'
             },
+            { id: 'company_phone', value: contactInfo?.ar?.phone || contactInfo?.phone, x: 77, y: 80, bold: true, fontSize: 18, center: true },
+            { id: 'company_email', value: contactInfo?.ar?.email || contactInfo?.email, x: 77, y: 84, bold: true, fontSize: 18, center: true },
+            { id: 'company_address', value: contactInfo?.ar?.address || contactInfo?.address, x: 77, y: 88, bold: true, fontSize: 18, center: true },
         ],
         stamps: {
             signature: { x: 21.8, y: 67.9, width: 300, height: 200, rotate: 0 },
@@ -247,7 +263,7 @@ export const RECEIPT_CONFIGS = {
     },
     usdt_recharge: {
         template: '/assets/receipts/usdt_recharge.jpg',
-        fields: (order, admin_data, customer, details, formatDate) => [
+        fields: (order, admin_data, customer, details, formatDate, contactInfo, airportNameOrBorder) => [
             { id: 'order_id', value: order.order_id, x: 22, y: 33.6, bold: true, size: 'text-[14px]' },
             { id: 'date', value: formatDate(order.created_at), x: 90.2, y: 33.6, bold: true, size: 'text-[14px]' },
             { id: 'wallet', value: details?.walletAddress, x: 71.8, y: 55.1, bold: true, size: 'text-[14px]' },
@@ -275,10 +291,13 @@ export const RECEIPT_CONFIGS = {
             {
                 id: 'status',
                 value: getStatusTranslation(order.status).text,
-                x: 49.8, y: 63.9, bold: true,
+                x: 55.8, y: 63.9, bold: true,
                 color: getStatusTranslation(order.status).color,
                 size: 'text-[16px]'
             },
+            { id: 'company_phone', value: contactInfo?.ar?.phone || contactInfo?.phone, x: 85, y: 80, bold: true, fontSize: 10, center: true },
+            { id: 'company_email', value: contactInfo?.ar?.email || contactInfo?.email, x: 85, y: 84, bold: true, fontSize: 10, center: true },
+            { id: 'company_address', value: contactInfo?.ar?.address || contactInfo?.address, x: 85, y: 88, bold: true, fontSize: 10, center: true },
         ],
         stamps: {
             signature: { x: 21.2, y: 68, width: 300, height: 200, rotate: 0 },
@@ -288,7 +307,7 @@ export const RECEIPT_CONFIGS = {
     },
     card_recharge: {
         template: '/assets/receipts/card_recharge.jpg',
-        fields: (order, admin_data, customer, details, formatDate) => [
+        fields: (order, admin_data, customer, details, formatDate, contactInfo, airportNameOrBorder) => [
             { id: 'order_id', value: order.order_id, x: 22, y: 33.6, bold: true, size: 'text-[14px]' },
             { id: 'date', value: formatDate(order.created_at), x: 90.2, y: 33.6, bold: true, size: 'text-[14px]' },
             { id: 'card_name', value: details?.cardName, x: 55.8, y: 55, bold: true, size: 'text-[14px]' },
@@ -298,10 +317,13 @@ export const RECEIPT_CONFIGS = {
             {
                 id: 'status',
                 value: getStatusTranslation(order.status).text,
-                x: 49.8, y: 63.9, bold: true,
+                x: 55.8, y: 63.9, bold: true,
                 color: getStatusTranslation(order.status).color,
                 size: 'text-[16px]'
             },
+            { id: 'company_phone', value: contactInfo?.ar?.phone || contactInfo?.phone, x: 74, y: 80, bold: true, fontSize: 18, center: true },
+            { id: 'company_email', value: contactInfo?.ar?.email || contactInfo?.email, x: 74, y: 84, bold: true, fontSize: 18, center: true },
+            { id: 'company_address', value: contactInfo?.ar?.address || contactInfo?.address, x: 77, y: 88, bold: true, fontSize: 18, center: true },
         ],
         stamps: {
             signature: { x: 21.2, y: 68, width: 300, height: 200, rotate: 0 },

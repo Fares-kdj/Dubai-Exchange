@@ -259,6 +259,7 @@ const OrderDetailModal = ({ order, isOpen, onClose, onStatusChange, onBlock }) =
   const [companyStamps, setCompanyStamps] = useState([]);
   const [signatures, setSignatures] = useState([]);
   const [receiptLoaded, setReceiptLoaded] = useState(false);
+  const [contactInfo, setContactInfo] = useState(null);
 
   // Fetch airports and borders for traveler orders, and stamps/signatures for all
   useEffect(() => {
@@ -293,6 +294,9 @@ const OrderDetailModal = ({ order, isOpen, onClose, onStatusChange, onBlock }) =
             setAdminData(prev => ({ ...prev, signature_id: data[0].stamp_id }));
           }
         }).catch(() => { });
+
+      // Fetch contact info for receipt footer
+      fetch(`${API_URL}/api/cms/contact`).then(r => r.json()).then(setContactInfo).catch(() => { });
 
       setAdminData(prev => ({ ...prev, ...currentAdminData }));
     }
@@ -985,6 +989,7 @@ const OrderDetailModal = ({ order, isOpen, onClose, onStatusChange, onBlock }) =
                 borders={borders}
                 companyStamps={companyStamps}
                 signatures={signatures}
+                contactInfo={contactInfo}
                 onImageLoad={() => setReceiptLoaded(true)}
               />
             </div>
