@@ -226,7 +226,7 @@ export const RECEIPT_CONFIGS = {
                 size: 'text-[16px]'
             },
             { id: 'company_phone', value: contactInfo?.ar?.phone || contactInfo?.phone, x: 74, y: 80, bold: true, fontSize: 18, center: true },
-            { id: 'company_email', value: contactInfo?.ar?.email || contactInfo?.email, x: 74, y: 84, bold: true, fontSize: 18, center: true },
+            { id: 'company_email', value: contactInfo?.ar?.email || contactInfo?.email, x: 65, y: 84, bold: true, fontSize: 18, center: true },
             { id: 'company_address', value: contactInfo?.ar?.address || contactInfo?.address, x: 78, y: 88, bold: true, fontSize: 18, center: true },
         ],
         stamps: {
@@ -252,7 +252,7 @@ export const RECEIPT_CONFIGS = {
                 size: 'text-[16px]'
             },
             { id: 'company_phone', value: contactInfo?.ar?.phone || contactInfo?.phone, x: 77, y: 80, bold: true, fontSize: 18, center: true },
-            { id: 'company_email', value: contactInfo?.ar?.email || contactInfo?.email, x: 77, y: 84, bold: true, fontSize: 18, center: true },
+            { id: 'company_email', value: contactInfo?.ar?.email || contactInfo?.email, x: 65, y: 84, bold: true, fontSize: 18, center: true },
             { id: 'company_address', value: contactInfo?.ar?.address || contactInfo?.address, x: 77, y: 88, bold: true, fontSize: 18, center: true },
         ],
         stamps: {
@@ -295,9 +295,9 @@ export const RECEIPT_CONFIGS = {
                 color: getStatusTranslation(order.status).color,
                 size: 'text-[16px]'
             },
-            { id: 'company_phone', value: contactInfo?.ar?.phone || contactInfo?.phone, x: 85, y: 80, bold: true, fontSize: 10, center: true },
-            { id: 'company_email', value: contactInfo?.ar?.email || contactInfo?.email, x: 85, y: 84, bold: true, fontSize: 10, center: true },
-            { id: 'company_address', value: contactInfo?.ar?.address || contactInfo?.address, x: 85, y: 88, bold: true, fontSize: 10, center: true },
+            { id: 'company_phone', value: contactInfo?.ar?.phone || contactInfo?.phone, x: 74, y: 80, bold: true, fontSize: 10, center: true },
+            { id: 'company_email', value: contactInfo?.ar?.email || contactInfo?.email, x: 65, y: 84, bold: true, fontSize: 10, center: true },
+            { id: 'company_address', value: contactInfo?.ar?.address || contactInfo?.address, x: 77, y: 88, bold: true, fontSize: 10, center: true },
         ],
         stamps: {
             signature: { x: 21.2, y: 68, width: 300, height: 200, rotate: 0 },
@@ -322,7 +322,7 @@ export const RECEIPT_CONFIGS = {
                 size: 'text-[16px]'
             },
             { id: 'company_phone', value: contactInfo?.ar?.phone || contactInfo?.phone, x: 74, y: 80, bold: true, fontSize: 18, center: true },
-            { id: 'company_email', value: contactInfo?.ar?.email || contactInfo?.email, x: 74, y: 84, bold: true, fontSize: 18, center: true },
+            { id: 'company_email', value: contactInfo?.ar?.email || contactInfo?.email, x: 65, y: 84, bold: true, fontSize: 18, center: true },
             { id: 'company_address', value: contactInfo?.ar?.address || contactInfo?.address, x: 77, y: 88, bold: true, fontSize: 18, center: true },
         ],
         stamps: {
