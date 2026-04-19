@@ -126,7 +126,20 @@ const AdminLayout = () => {
     };
     fetchNotifications();
     const interval = setInterval(fetchNotifications, 60000);
-    return () => clearInterval(interval);
+
+    // Dynamic Manifest Switching for PWA
+    // This ensures that "Add to home screen" from admin panel points to /admin
+    const manifestLink = document.getElementById('manifest-link');
+    if (manifestLink) {
+      manifestLink.setAttribute('href', '/manifest-admin.json');
+    }
+
+    return () => {
+      clearInterval(interval);
+      if (manifestLink) {
+        manifestLink.setAttribute('href', '/manifest.json');
+      }
+    };
   }, []);
 
   const visibleNotifications = notifications.filter(n => !deletedIds.has(n.order_id));

@@ -189,28 +189,37 @@ http://dubai-international-iq.online/track-order?id=${order_id}`}
             <style>{`
                 @media print {
                     @page {
-                        size: A4;
+                        size: A4 ${shouldRotate ? 'landscape' : 'portrait'};
                         margin: 0;
                     }
-                    body * {
-                        visibility: hidden;
-                    }
-                    #universal-receipt, #universal-receipt * {
-                        visibility: visible;
-                    }
-                    #universal-receipt {
-                        position: absolute;
-                        left: ${shouldRotate ? '210mm' : '0'};
-                        top: 0;
-                        width: ${shouldRotate ? '297mm' : '210mm'};
-                        height: ${shouldRotate ? '210mm' : '297mm'};
-                        transform: ${shouldRotate ? 'rotate(90deg)' : 'none'};
-                        transform-origin: top left;
+                    body {
                         margin: 0;
                         padding: 0;
+                    }
+                    /* Hide everything by default */
+                    body * {
+                        visibility: hidden !important;
+                    }
+                    /* Show only the receipt and its content */
+                    #universal-receipt, 
+                    #universal-receipt * {
+                        visibility: visible !important;
+                    }
+                    #universal-receipt {
+                        position: absolute !important;
+                        left: 0 !important;
+                        top: 0 !important;
+                        width: ${shouldRotate ? '297mm' : '210mm'} !important;
+                        height: ${shouldRotate ? '210mm' : '297mm'} !important;
+                        overflow: hidden !important; /* Prevent overflow into a second page */
+                        transform: none !important;
+                        margin: 0 !important;
+                        padding: 0 !important;
                         box-shadow: none !important;
                         -webkit-print-color-adjust: exact;
                         print-color-adjust: exact;
+                        break-inside: avoid !important;
+                        page-break-inside: avoid !important;
                     }
                     .no-print {
                         display: none !important;

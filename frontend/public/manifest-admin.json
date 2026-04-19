@@ -1,0 +1,28 @@
+{
+  "short_name": "لوحة دبي",
+  "name": "لوحة تحكم دبي العالمية",
+  "description": "لوحة التحكم بشركة دبي العالمية للصرافة",
+  "icons": [
+    {
+      "src": "/uploads/f6531e80e33540bfb18f4331eb5ebc5e.png",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "/uploads/e959f629a875417888283591b4a1754c.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/uploads/e959f629a875417888283591b4a1754c.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
+    }
+  ],
+  "start_url": "/admin",
+  "display": "standalone",
+  "theme_color": "#0f172a",
+  "background_color": "#ffffff"
+}

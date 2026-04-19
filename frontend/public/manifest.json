@@ -1,6 +1,7 @@
 {
   "short_name": "DubaiExch",
   "name": "شركة دبي العالمية للصرافة",
+  "description": "شركة دبي العالمية للصرافة والتحويل المالي في العراق",
   "icons": [
     {
       "src": "/uploads/f6531e80e33540bfb18f4331eb5ebc5e.png",
@@ -10,16 +11,33 @@
     {
       "src": "/uploads/e959f629a875417888283591b4a1754c.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "any maskable"
     },
     {
       "src": "/uploads/e959f629a875417888283591b4a1754c.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any"
     }
   ],
-  "start_url": ".",
+  "start_url": "/",
   "display": "standalone",
   "theme_color": "#0f172a",
-  "background_color": "#ffffff"
+  "background_color": "#ffffff",
+  "shortcuts": [
+    {
+      "name": "لوحة التحكم",
+      "short_name": "الأدمن",
+      "description": "الدخول إلى لوحة التحكم",
+      "url": "/admin",
+      "icons": [{ "src": "/uploads/f6531e80e33540bfb18f4331eb5ebc5e.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "حجز مسافر",
+      "short_name": "حجز",
+      "url": "/traveler-booking",
+      "icons": [{ "src": "/uploads/f6531e80e33540bfb18f4331eb5ebc5e.png", "sizes": "192x192" }]
+    }
+  ]
 }
