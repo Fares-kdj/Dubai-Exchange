@@ -38,7 +38,7 @@ const ReceiptCoordinatePicker = () => {
 
     const copyToClipboard = () => {
         if (!coords) return;
-        const code = `{ id: 'field_id', value: '...', x: ${coords.x}, y: ${coords.y}, bold: true, width: '10%' },`;
+        const code = `{ id: 'field_id', value: '...', x: ${coords.x}, y: ${coords.y}, width: '10%' },`;
         navigator.clipboard.writeText(code);
         setCopied(true);
         toast.success('تم نسخ الكود بنجاح!');
@@ -199,7 +199,7 @@ const ReceiptCoordinatePicker = () => {
                                     <p className="text-sm font-medium text-slate-700">الكود المحدث:</p>
                                     <div className="bg-slate-900 text-slate-300 p-4 rounded-xl text-xs font-mono break-all leading-relaxed relative group">
                                         <code>
-                                            {`{ id: 'field_id', value: '...', x: ${coords.x}, y: ${coords.y}, bold: true, width: '10%' },`}
+                                            {`{ id: 'field_id', value: '...', x: ${coords.x}, y: ${coords.y}, width: '10%' },`}
                                         </code>
                                     </div>
                                     <button
