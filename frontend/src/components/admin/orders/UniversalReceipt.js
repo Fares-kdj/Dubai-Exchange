@@ -19,9 +19,7 @@ const UniversalReceipt = ({
 
     // Get config for this order type, fallback to traveler if not found
     const config = RECEIPT_CONFIGS[order_type] || RECEIPT_CONFIGS.traveler;
-    const shouldRotate = order_type === 'traveler' || order_type === 'western_union';
-
-    // Format dates helper
+    const shouldRotate = false;    // Format dates helper
     const formatDate = (dateStr) => {
         if (!dateStr) return '';
         try {
@@ -75,14 +73,15 @@ const UniversalReceipt = ({
             ...config.stamps.company
         });
     }
+    const isTraveler = order_type === 'traveler';
 
     return (
         <div
             id="universal-receipt"
             className="relative mx-auto bg-white overflow-hidden"
             style={{
-                width: shouldRotate ? '297mm' : '210mm',
-                height: shouldRotate ? '210mm' : '297mm',
+                width: '210mm',
+                height: '297mm',
                 fontFamily: 'Cairo, sans-serif',
                 direction: 'rtl',
                 color: '#1e293b'
@@ -111,7 +110,10 @@ const UniversalReceipt = ({
                         width: field.width || 'auto',
                         maxWidth: field.width || 'auto',
                         height: field.height || '20px',
-                        transform: field.center ? 'translate(50%, -50%)' : 'translate(0, -50%)',
+                        // transform: field.center ? 'translate(50%, -50%)' : 'translate(0, -50%)',
+                        transform: field.center
+                            ? `translate(50%, -50%) ${order_type === 'traveler' ? 'rotate(90deg)' : ''}`
+                            : `translate(0, -50%) ${order_type === 'traveler' ? 'rotate(90deg)' : ''}`,
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
@@ -142,9 +144,14 @@ const UniversalReceipt = ({
                             top: `${field.y}%`,
                             width: `${field.width}px`,
                             height: `${field.height}px`,
-                            transform: `translate(50%, -50%) rotate(${field.rotate || 0}deg)`,
+                            // transform: `translate(50%, -50%) rotate(${field.rotate || 0}deg)`,
+                            transform: `
+                                    translate(50%, -50%) 
+                                    rotate(${(field.rotate || 0) + (isTraveler ? 90 : 0)}deg)
+                                `,
                             zIndex: 50 // Highest priority
                         }}
+
                     >
                         <img
                             src={field.image.startsWith('data:') ? field.image : `${API_URL}${field.image}`}
@@ -168,7 +175,10 @@ const UniversalReceipt = ({
                     style={{
                         right: `${100 - config.qr.x}%`,
                         top: `${config.qr.y}%`,
-                        transform: 'translate(50%, -50%)',
+                        transform: `
+                                    translate(50%, -50%) 
+                                    ${isTraveler ? 'rotate(90deg)' : ''}
+                                `,
                         zIndex: 20 // Above fields but below stamps
                     }}
                 >
@@ -187,45 +197,54 @@ http://dubai-international-iq.online/track-order?id=${order_id}`}
 
             {/* Print Styles */}
             <style>{`
-                @media print {
-                    @page {
-                        size: A4 ${shouldRotate ? 'landscape' : 'portrait'};
-                        margin: 0;
-                    }
-                    body {
-                        margin: 0;
-                        padding: 0;
-                    }
-                    /* Hide everything by default */
-                    body * {
-                        visibility: hidden !important;
-                    }
-                    /* Show only the receipt and its content */
-                    #universal-receipt, 
-                    #universal-receipt * {
-                        visibility: visible !important;
-                    }
-                    #universal-receipt {
-                        position: absolute !important;
-                        left: 0 !important;
-                        top: 0 !important;
-                        width: ${shouldRotate ? '297mm' : '210mm'} !important;
-                        height: ${shouldRotate ? '210mm' : '297mm'} !important;
-                        overflow: hidden !important; /* Prevent overflow into a second page */
-                        transform: none !important;
-                        margin: 0 !important;
-                        padding: 0 !important;
-                        box-shadow: none !important;
-                        -webkit-print-color-adjust: exact;
-                        print-color-adjust: exact;
-                        break-inside: avoid !important;
-                        page-break-inside: avoid !important;
-                    }
-                    .no-print {
-                        display: none !important;
-                    }
-                }
-            `}</style>
+    @media print {
+        @page {
+            size: A4 ${shouldRotate ? 'landscape' : 'portrait'};
+            margin: 0mm;
+        }
+        html, body, #root {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+            height: 100vh !important;
+            max-height: 100vh !important;
+            overflow: hidden !important;
+        }
+        body * {
+            visibility: hidden !important;
+        }
+        #universal-receipt, 
+        #universal-receipt * {
+            visibility: visible !important;
+        }
+        #universal-receipt {
+            position: fixed !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            overflow: hidden !important;
+            transform: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            page-break-after: avoid !important;
+            page-break-before: avoid !important;
+            break-after: avoid !important;
+            break-before: avoid !important;
+        }
+        #universal-receipt img {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: fill !important;
+        }
+        .no-print {
+            display: none !important;
+        }
+    }
+`}</style>
         </div>
     );
 };
