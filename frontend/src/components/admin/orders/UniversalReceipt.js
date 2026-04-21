@@ -217,24 +217,31 @@ http://dubai-international-iq.online/track-order?id=${order_id}`}
         #universal-receipt * {
             visibility: visible !important;
         }
-        #universal-receipt {
-            position: fixed !important;
-            left: 0 !important;
-            top: 0 !important;
-            width: 100% !important;
-            height: 100% !important;
-            overflow: hidden !important;
-            transform: none !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            box-shadow: none !important;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-            page-break-after: avoid !important;
-            page-break-before: avoid !important;
-            break-after: avoid !important;
-            break-before: avoid !important;
-        }
+        html, body, #root {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: hidden !important;
+}
+#universal-receipt {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 210mm !important;
+    height: 297mm !important;
+    overflow: hidden !important;
+    transform: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    page-break-after: avoid !important;
+    page-break-before: avoid !important;
+    break-after: avoid !important;
+    break-before: avoid !important;
+}
         #universal-receipt img {
             width: 100% !important;
             height: 100% !important;
