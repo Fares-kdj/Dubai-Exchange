@@ -104,7 +104,7 @@ export const RECEIPT_CONFIGS = {
         template: '/assets/receipts/traveler_recu.jpg',
         // تم التحديث بواسطة ReceiptCoordinatePicker
         fields: (order, admin_data, customer, details, formatDate, contactInfo, airportNameOrBorder) => [
-            { id: 'dynamic_title', value: airportNameOrBorder, x: 70.8, y: 54.9, center: true, color: '#fff', fontSize: 17 },
+            { id: 'dynamic_title', value: airportNameOrBorder, x: 70.7, y: 51.5, center: true, color: '#fff', fontSize: 17 },
             { id: 'outlet_title', value: details?.pickupLocationName || admin_data?.travel_agency || 'وكيل المطار', x: 80.4, y: 16.6, width: '40%', center: true, color: '#fff', fontSize: 17, height: '30px' },
             { id: 'batch_number', value: admin_data?.batch_number, x: 67.1, y: 83.7, width: '4%', fontSize: 17 },
             { id: 'batch_date', value: admin_data?.batch_date, x: 70.2, y: 62, width: '10%', fontSize: 17 },
@@ -120,7 +120,7 @@ export const RECEIPT_CONFIGS = {
             { id: 'passport_number', value: admin_data?.passport_number, x: 59.2, y: 80, width: '15%', fontSize: 17 },
             { id: 'issue_date', value: admin_data?.passport_issue_date, x: 59.4, y: 50, width: '15%', fontSize: 17 },
             { id: 'expiry_date', value: admin_data?.passport_expiry_date, x: 59.6, y: 29.3, width: '15%', fontSize: 17 },
-            { id: 'destination', value: details?.destination, x: 58.6, y: 76.9, width: '20%', fontSize: 17 },
+            { id: 'destination', value: details?.destination, x: 59.3, y: 77.4, width: '20%', fontSize: 17 },
             { id: 'travel_type', value: details?.travelType === 'air' ? 'جوي' : (details?.travelType === 'land' ? 'بري' : 'بحري'), x: 53.7, y: 31.4, width: '10%', fontSize: 17 },
             { id: 'outlet_name', value: details?.pickupLocationName || admin_data?.travel_agency || 'وكيل المطار', x: 55.7, y: 75.1, width: '20%', fontSize: 17 },
             { id: 'amount_usd', value: parseFloat(details?.usdAmount || details?.amountUSD || 0).toLocaleString(), x: 47.6, y: 84, width: '10%', fontSize: 17 },
@@ -132,9 +132,9 @@ export const RECEIPT_CONFIGS = {
             { id: 'company_address', value: contactInfo?.ar?.address || contactInfo?.address, x: 12.9, y: 89.3, bold: true, fontSize: 17 },
         ],
         stamps: {
-            airport: { x: 17.4, y: 68.9, width: 250, height: 250, },
+            airport: { x: 17.4, y: 68.9, width: 350, height: 350, },
             signature: { x: 30.1, y: 23.8, width: 250, height: 120, },
-            company: { x: 16, y: 40, width: 250, height: 250, }
+            company: { x: 14, y: 40, width: 350, height: 350, }
         },
         qr: { x: 12.7, y: 12.9, size: 120 }
     },
