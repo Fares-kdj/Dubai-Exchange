@@ -9,8 +9,22 @@ export const LanguageProvider = ({ children }) => {
   const [direction, setDirection] = useState('rtl');
 
   useEffect(() => {
-    const lang = localStorage.getItem('language') || 'ar';
-    changeLanguage(lang);
+    const savedLang = localStorage.getItem('language');
+    
+    if (savedLang) {
+      changeLanguage(savedLang);
+    } else {
+      const browserLang = navigator.language || navigator.userLanguage || '';
+      let defaultLang = 'ar';
+      
+      if (browserLang.toLowerCase().startsWith('en')) {
+        defaultLang = 'en';
+      } else if (browserLang.toLowerCase().startsWith('ku')) {
+        defaultLang = 'ku';
+      }
+      
+      changeLanguage(defaultLang);
+    }
   }, []);
 
   const changeLanguage = (lang) => {

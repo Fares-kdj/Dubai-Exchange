@@ -127,9 +127,9 @@ export const RECEIPT_CONFIGS = {
             { id: 'selling_rate', value: Math.round(parseFloat(details?.iqdAmount || 0) / parseFloat(details?.usdAmount || 1)).toLocaleString(), x: 43.5, y: 81.9, width: '9%', fontSize: 17 },
             { id: 'commission', value: '0', x: 42.9, y: 69.9, width: '7%', fontSize: 17 },
             { id: 'total_iqd_final', value: parseFloat(details?.iqdAmount || 0).toLocaleString(), x: 44.3, y: 31, width: '10%', fontSize: 17 },
-            { id: 'company_phone', value: contactInfo?.ar?.phone || contactInfo?.phone, x: 24, y: 85.1, bold: true, fontSize: 17 },
-            { id: 'company_email', value: contactInfo?.ar?.email || contactInfo?.email, x: 17.7, y: 78, bold: true, fontSize: 17 },
-            { id: 'company_address', value: contactInfo?.ar?.address || contactInfo?.address, x: 12.9, y: 89.3, bold: true, fontSize: 17 },
+            { id: 'company_phone', value: contactInfo?.ar?.phone || contactInfo?.phone, x: 24, y: 89, bold: true, fontSize: 17 },
+            { id: 'company_email', value: contactInfo?.ar?.email || contactInfo?.email, x: 28.5, y: 81.5, width: '36%', bold: true, fontSize: 17, direction: 'ltr' },
+            { id: 'company_address', value: contactInfo?.ar?.address || contactInfo?.address, x: 8, y: 92, bold: true, fontSize: 17 },
         ],
         stamps: {
             airport: { x: 17.4, y: 68.9, width: 350, height: 350, },

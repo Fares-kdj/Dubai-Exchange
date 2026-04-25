@@ -40,9 +40,14 @@ const UniversalReceipt = ({
     );
 
     // For traveler booking, distinguish between airport and border name for the title
-    const airportNameOrBorder = admin_data?.travel_type === 'air'
+    const rawAirportName = admin_data?.travel_type === 'air'
         ? (airports.find(a => String(a.stamp_id) === String(admin_data?.airport_id))?.name_ar || 'مطار')
         : 'منافذ حدودية';
+    
+    // Fix spelling of 'الدولى' to 'الدولي'
+    const airportNameOrBorder = typeof rawAirportName === 'string' 
+        ? rawAirportName.replace('الدولى', 'الدولي').replace('دولى', 'دولي') 
+        : rawAirportName;
 
     // Get fields from config
     const fields = config.fields(order, admin_data, customer, details, formatDate, contactInfo, airportNameOrBorder);
@@ -121,7 +126,7 @@ const UniversalReceipt = ({
                         zIndex: 10,
                         color: field.color || 'inherit',
                         fontSize: field.fontSize ? `${field.fontSize}px` : undefined,
-                        direction: (field.value?.toString().startsWith('+') || field.id === 'phone') ? 'ltr' : 'inherit'
+                        direction: field.direction || ((field.value?.toString().startsWith('+') || field.id === 'phone' || field.id === 'company_email') ? 'ltr' : 'inherit')
                     }}
                 >
                     {field.value || ''}
